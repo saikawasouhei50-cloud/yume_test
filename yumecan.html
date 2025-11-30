@@ -7469,24 +7469,29 @@ async function loadFriendList() {
     }
 }
 
-// ✅ [수정됨] 타 유저 프로필 모달 (최신 데이터 로딩 기능 추가)
+// ✅ [디버깅 추가] 타 유저 프로필 모달
 async function openOtherUserProfile(initialData) {
-    // 1. 기존 모달 닫기
     const oldModal = document.getElementById('other-user-profile-modal');
     if (oldModal) oldModal.remove();
 
-    // ✨ 2. [핵심 수정] 친구의 최신 정보(카드, 상태메시지 등)를 DB에서 가져옵니다.
-    // (친구 목록에는 닉네임만 있고 인벤토리 정보가 없어서 카드가 안 떴던 것임)
     let userData = initialData;
     
     try {
-        // 로딩 중임을 알리기 위해 커서를 대기 상태로 변경 (선택 사항)
         document.body.style.cursor = 'wait';
+        console.log(`🔍 [DEBUG] UID(${initialData.uid}) 데이터 불러오는 중...`);
         
         const doc = await db.collection('users').doc(initialData.uid).get();
         if (doc.exists) {
-            // 받아온 최신 데이터로 덮어쓰기
-            userData = { ...initialData, ...doc.data() };
+            const dbData = doc.data();
+            
+            // 🔥 [여기를 확인하세요] F12 콘솔에 이 로그가 뜰 겁니다.
+            console.log("🔥 [DEBUG] 서버에서 받은 데이터:", dbData);
+            console.log("📦 [DEBUG] 인벤토리 개수:", dbData.inventory ? dbData.inventory.length : "없음");
+            console.log("👤 [DEBUG] 프로필 설정:", dbData.profile);
+
+            userData = { ...initialData, ...dbData };
+        } else {
+            console.warn("⚠️ [DEBUG] 해당 유저의 데이터가 DB에 존재하지 않습니다.");
         }
     } catch (e) {
         console.error("프로필 정보 로드 실패:", e);
@@ -7494,27 +7499,31 @@ async function openOtherUserProfile(initialData) {
         document.body.style.cursor = 'default';
     }
 
-    // 3. 모달 생성 및 데이터 표시 (이후 로직은 기존과 동일하지만 userData가 꽉 차있음)
-    const modal = document.createElement('div');
-    modal.id = 'other-user-profile-modal';
-    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[100]';
-    
+    // -----------------------------------------------------------
+    // ✨ [안전장치 추가] 헬퍼 함수 호출 전 데이터 정제
+    // inventory가 null이거나 없으면 빈 배열로 만들어서 오류 방지
+    if (!userData.inventory) userData.inventory = [];
+    if (!userData.profile) userData.profile = { repCardId: null };
+    // -----------------------------------------------------------
+
     const nickname = userData.nickname || "익명의 탐정";
     const statusMsg = (userData.profile && userData.profile.statusMessage) ? userData.profile.statusMessage : "등록된 한마디가 없습니다.";
     
-    // 이제 userData 안에 inventory가 있으므로 헬퍼 함수가 카드를 잘 찾아냅니다.
+    // 헬퍼 함수 호출
     const { imgUrl, cardName } = getUserRepInfo(userData);
 
-    // 내 프로필 여부 확인
     const isMe = (currentUser && userData.uid === currentUser.uid);
     
-    // 친구 추가 버튼 등 관계에 따른 버튼 생성
     const friendBtnHTML = isMe ? '' : `
         <button onclick="sendFriendRequest('${userData.uid}', '${nickname}')" class="flex-1 gacha-button bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold text-lg shadow-lg transition-all border border-green-500">
             🤝 친구 추가
         </button>
     `;
 
+    const modal = document.createElement('div');
+    modal.id = 'other-user-profile-modal';
+    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[100]';
+    
     modal.innerHTML = `
         <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full relative border border-gray-600 shadow-2xl mx-4 animate-fadeIn">
             <button onclick="document.getElementById('other-user-profile-modal').remove()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
