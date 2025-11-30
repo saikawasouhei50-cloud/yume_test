@@ -7622,6 +7622,7 @@ async function searchUserByName() {
         const doc = snapshot.docs[0];
         const userData = doc.data();
         const uid = doc.id;
+		const { imgUrl } = getUserRepInfo(userData);
 
         // --- ✨ [추가] 관계 상태 확인 로직 ---
         let relationStatus = 'none';
@@ -7633,11 +7634,7 @@ async function searchUserByName() {
         }
         // -------------------------------------
 
-        let imgUrl = "https://placehold.co/50x50/333/fff?text=?";
-        if (userData.representative) {
-            const charData = findCharacter(userData.representative);
-            if (charData) imgUrl = charData.imageUrl;
-        }
+    
 
         resultBox.classList.remove('hidden');
         
@@ -7824,19 +7821,17 @@ function openOtherUserProfile(userData) {
     
     const nickname = userData.nickname || "익명의 탐정";
     const statusMsg = (userData.profile && userData.profile.statusMessage) ? userData.profile.statusMessage : "등록된 한마디가 없습니다.";
-    let cardName = "카드 정보 없음";
-    let imgUrl = "https://placehold.co/400x600/000000/ffffff?text=No+Card";
     
-    if (userData.representative) {
-        const charData = findCharacter(userData.representative);
-        if (charData) {
-            imgUrl = charData.imageUrl;
-            cardName = `[${charData.rarity}] ${charData.name}`;
-        }
-    }
+    // ✨ [핵심 수정] 헬퍼 함수가 이미지와 이름을 다 결정해줍니다.
+    // 여기서 cardName과 imgUrl을 받아오면 끝입니다. 뒤에 if문이나 let 선언은 필요 없습니다.
+    const { imgUrl, cardName } = getUserRepInfo(userData);
 
-    // ✨ [추가] 내 프로필이 아닐 때만 '친구 추가' 버튼 표시
+    // ✨ 내 프로필이 아닐 때만 '친구 추가' 버튼 표시
     const isMe = (currentUser && userData.uid === currentUser.uid);
+    
+    // 관계 상태 확인은 비동기라 여기서는 기본값(친구 추가)만 보여주거나, 
+    // 이미 친구 목록 데이터를 가지고 있다면 그것을 활용할 수 있습니다.
+    // (여기서는 일단 기본 UI만 그립니다. 필요시 searchUserByName처럼 관계 확인 로직을 추가할 수 있습니다.)
     const friendBtnHTML = isMe ? '' : `
         <button onclick="sendFriendRequest('${userData.uid}', '${nickname}')" class="flex-1 gacha-button bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold text-lg shadow-lg transition-all border border-green-500">
             🤝 친구 추가
@@ -7854,7 +7849,7 @@ function openOtherUserProfile(userData) {
                         <img src="${imgUrl}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                         <div class="absolute bottom-2 left-0 right-0 text-center">
-                            <span class="inline-block bg-black/60 text-yellow-300 text-xs font-bold px-3 py-1 rounded-full border border-yellow-500/30">${cardName}</span>
+                            <span class="inline-block bg-black/60 text-yellow-300 text-xs font-bold px-3 py-1 rounded-full border border-yellow-500/30">${cardName || '카드 정보 없음'}</span>
                         </div>
                     </div>
                 </div>
@@ -8816,6 +8811,42 @@ async function distributeEventRewards(eventId, eventTitle) {
     }
 }
 
+		// ✅ [신규] 유저의 대표 정보(이미지, 이름)를 결정하는 헬퍼 함수
+// (프로필 설정 카드 우선 -> 없으면 메인 홈 캐릭터 사용)
+function getUserRepInfo(userData) {
+    let imgUrl = "https://placehold.co/50x50/333/fff?text=?";
+    let cardName = "";
+
+    // 1순위: 프로필 메뉴에서 설정한 카드 (repCardId)
+    // 인벤토리 정보가 있어야 찾을 수 있습니다.
+    if (userData.profile && userData.profile.repCardId && userData.inventory) {
+        const profileCard = userData.inventory.find(c => c.id === userData.profile.repCardId);
+        if (profileCard) {
+            const charData = findCharacter(profileCard.name);
+            if (charData) {
+                return { 
+                    imgUrl: charData.imageUrl, 
+                    cardName: `[${charData.rarity}] ${charData.name}` 
+                };
+            }
+        }
+    }
+
+    // 2순위: 메인 홈 캐릭터 (representative)
+    if (userData.representative) {
+        const charData = findCharacter(userData.representative);
+        if (charData) {
+            return { 
+                imgUrl: charData.imageUrl, 
+                cardName: `[${charData.rarity}] ${charData.name}` 
+            };
+        }
+    }
+
+    // 정보 없음
+    return { imgUrl, cardName };
+}
+
 // ✅ [수정됨] 레이드 보상 분배 함수 (NaN 오류 수정 + 안전한 랭킹 계산)
 async function distributeRaidRewards(bossName) {
     console.log("🎁 레이드 보상 분배 시작...");
@@ -9039,6 +9070,7 @@ async function loadRaidRankingData() {
         snapshot.forEach(doc => {
             const data = doc.data();
             const isMe = (currentUser && doc.id === currentUser.uid);
+			const { imgUrl } = getUserRepInfo(data);
             
             // 점수 포맷팅
             const score = (data.raidCumulativeDamage || 0).toLocaleString();
@@ -9063,33 +9095,28 @@ async function loadRaidRankingData() {
             // 내 순위 강조
             if (isMe) rankStyle += ' ring-2 ring-blue-500';
 
-            // 대표 캐릭터 이미지
-            let repImg = "https://placehold.co/50x50/333/fff?text=?";
-            if (data.representative) {
-                const charData = findCharacter(data.representative);
-                if (charData) repImg = charData.imageUrl;
-            }
+
 
             // 클릭 가능하도록 스타일 및 이벤트 추가
             div.className = `flex items-center gap-3 p-2 rounded border ${rankStyle} cursor-pointer hover:bg-white/10 transition-colors relative group`;
-            div.onclick = () => openOtherUserProfile({ ...data, uid: doc.id });
-            
-            div.innerHTML = `
-                <div class="text-xl">${rankBadge}</div>
-                <img src="${repImg}" class="w-10 h-10 rounded object-cover bg-black">
-                <div class="flex-grow">
-                    <p class="text-sm font-bold text-white truncate max-w-[120px]">
-                        ${data.nickname || '익명의 탐정'}
-                    </p>
-                    ${isMe ? '<span class="text-[10px] bg-blue-600 text-white px-1 rounded">ME</span>' : ''}
-                </div>
-                <div class="text-right">
-                    <p class="text-red-300 font-bold text-sm">${score} DAMAGE</p> 
-                </div>
-            `;
-            listContainer.appendChild(div);
-            rank++;
-        });
+    div.onclick = () => openOtherUserProfile({ ...data, uid: doc.id });
+    
+    div.innerHTML = `
+        <div class="text-xl">${rankBadge}</div>
+        <img src="${imgUrl}" class="w-10 h-10 rounded object-cover bg-black">
+        <div class="flex-grow">
+            <p class="text-sm font-bold text-white truncate max-w-[120px]">
+                ${data.nickname || '익명의 탐정'}
+            </p>
+            ${isMe ? '<span class="text-[10px] bg-blue-600 text-white px-1 rounded">ME</span>' : ''}
+        </div>
+        <div class="text-right">
+            <p class="text-yellow-300 font-bold text-sm">${(data.cumulativeEventPoints || 0).toLocaleString()} P</p>
+        </div>
+    `;
+    listContainer.appendChild(div);
+    rank++;
+});
 
     } catch (error) {
         console.error("레이드 랭킹 로드 실패:", error);
@@ -9344,6 +9371,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
