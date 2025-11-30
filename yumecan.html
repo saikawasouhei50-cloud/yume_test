@@ -7659,41 +7659,51 @@ async function searchUserByName() {
 }
 
 
-// 4. 친구 마이룸 방문 (읽기 전용 모드)
+// 4. 친구 마이룸 방문 (수정됨: 데이터가 비어있을 때 내 가구가 보이는 문제 해결)
 let originalMyRoomData = null; // 내 방 데이터를 임시 저장할 변수
 
 async function visitFriendRoom(targetUid, targetNickname) {
+    // 만약 배치 모드(수정 모드) 중이라면 끕니다.
     if (typeof isEditMode !== 'undefined' && isEditMode) {
         toggleEditMode();
     }
+
     try {
         // 1. 친구 데이터 가져오기
         const doc = await db.collection('users').doc(targetUid).get();
         if (!doc.exists) return alert("존재하지 않는 유저입니다.");
 
         const friendData = doc.data();
-        const friendInventory = friendData.inventory || []; // ✨ 친구 인벤토리 가져오기
+        const friendInventory = friendData.inventory || []; 
         
-        // 깊은 복사 (참조 끊기)
-        let friendRoom = JSON.parse(JSON.stringify(friendData.myRoom || { furniture: [], characters: [] }));
+        // ✨ [핵심 수정] 친구 방 데이터가 없으면 강제로 빈 방을 만듭니다.
+        let friendRoomData = friendData.myRoom;
+        if (!friendRoomData) {
+            friendRoomData = { furniture: [], characters: [] };
+        }
 
-        // ✨ [핵심 수정] 친구의 입주민 ID를 실제 카드 객체로 변환하여 미리 넣어둡니다.
-        if (friendRoom.characters && friendRoom.characters.length > 0) {
-            // ID 목록을 순회하며 친구 인벤토리에서 카드 정보를 찾습니다.
+        // 깊은 복사 (내 방 데이터와 섞이지 않도록)
+        let friendRoom = JSON.parse(JSON.stringify(friendRoomData));
+
+        // ✨ [안전 장치] 가구/캐릭터 배열이 없는 경우를 대비해 빈 배열 할당
+        if (!Array.isArray(friendRoom.furniture)) friendRoom.furniture = [];
+        if (!Array.isArray(friendRoom.characters)) friendRoom.characters = [];
+
+        // 친구의 입주민 ID를 실제 카드 객체로 변환
+        if (friendRoom.characters.length > 0) {
             const resolvedCharacters = friendRoom.characters
                 .map(id => friendInventory.find(c => c.id === id))
-                .filter(Boolean); // 없는 카드(파쇄됨 등) 제거
+                .filter(Boolean); // 삭제된 카드 등 잘못된 데이터 제거
             
-            // ID 목록(String Array)을 객체 목록(Object Array)으로 교체
             friendRoom.characters = resolvedCharacters;
         }
 
-        // 2. 내 방 데이터 백업
+        // 2. 내 방 데이터 백업 (아직 백업 안 했다면)
         if (!originalMyRoomData) {
             originalMyRoomData = JSON.parse(JSON.stringify(playerRoom));
         }
 
-        // 3. 현재 방 데이터를 친구 데이터로 덮어쓰기
+        // 3. 현재 방 변수(playerRoom)를 친구 데이터로 덮어쓰기
         playerRoom = friendRoom;
 
         // 4. 화면 전환
@@ -7702,12 +7712,11 @@ async function visitFriendRoom(targetUid, targetNickname) {
         // 방문 모드 UI 표시
         document.getElementById('visit-mode-overlay').classList.remove('hidden');
       
-        // ✨ 수정/상점/보관함/입주관리 버튼 모두 숨기기
+        // 수정/상점/보관함/입주관리 버튼 모두 숨기기
         document.getElementById('myroom-edit-mode').classList.add('hidden');
         document.getElementById('open-furniture-shop').classList.add('hidden');
         document.getElementById('open-furniture-storage').classList.add('hidden');
         
-        // [추가] 입주 관리 버튼 숨기기 (onclick 속성으로 찾습니다)
         const charSelectorBtn = document.querySelector('button[onclick="openMyRoomCharacterSelector()"]');
         if(charSelectorBtn) charSelectorBtn.classList.add('hidden');
 
