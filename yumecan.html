@@ -7650,7 +7650,7 @@ async function searchUserByName() {
 }
 
 
-// ✅ [최종 수정] 친구 방 방문 함수 (내용물 직접 교체 방식)
+// ✅ [수정됨] 친구 방 방문 함수 (입주민 없으면 덱 표시 기능 추가)
 let originalMyRoomData = null; // 내 방 데이터를 임시 저장할 변수
 
 async function visitFriendRoom(targetUid, targetNickname) {
@@ -7672,39 +7672,45 @@ async function visitFriendRoom(targetUid, targetNickname) {
         const friendData = doc.data();
         const friendInventory = friendData.inventory || []; 
         
-        // 3. 친구 방 데이터 준비 (없으면 빈 방)
+        // 3. 친구 방 가구 데이터 준비
         let friendFurniture = [];
+        if (friendData.myRoom && Array.isArray(friendData.myRoom.furniture)) {
+            friendFurniture = JSON.parse(JSON.stringify(friendData.myRoom.furniture));
+        }
+
+        // ✨ [핵심 수정] 캐릭터 데이터 준비 (우선순위: 입주민 -> 덱)
         let friendCharacters = [];
+        let sourceIds = [];
 
-        if (friendData.myRoom) {
-            // 가구 데이터 안전하게 가져오기
-            if (Array.isArray(friendData.myRoom.furniture)) {
-                friendFurniture = JSON.parse(JSON.stringify(friendData.myRoom.furniture));
-            }
+        // (1) 마이룸에 설정된 입주민이 있는지 확인
+        if (friendData.myRoom && Array.isArray(friendData.myRoom.characters) && friendData.myRoom.characters.length > 0) {
+            sourceIds = friendData.myRoom.characters;
+        } 
+        // (2) 입주민이 없다면, 친구의 '덱(Deck)' 정보 사용
+        else if (Array.isArray(friendData.deck) && friendData.deck.length > 0) {
+            sourceIds = friendData.deck;
+        }
 
-            // 캐릭터 데이터 안전하게 가져오기
-            if (Array.isArray(friendData.myRoom.characters)) {
-                // 저장된 ID 목록을 실제 캐릭터 객체로 변환
-                friendCharacters = friendData.myRoom.characters
-                    .map(id => friendInventory.find(c => c.id === id))
-                    .filter(Boolean); // 유효하지 않은 카드 제거
-            }
+        // (3) ID 목록을 실제 캐릭터 객체로 변환 (친구 인벤토리 기준)
+        if (sourceIds.length > 0) {
+            friendCharacters = sourceIds
+                .map(id => friendInventory.find(c => c.id === id))
+                .filter(Boolean); // 삭제된 카드 등 유효하지 않은 데이터 제거
         }
         
         console.log(`[데이터 로드 완료] 가구: ${friendFurniture.length}개, 캐릭터: ${friendCharacters.length}명`);
 
         // 4. 내 방 데이터 백업 (아직 백업 안 했다면)
         if (!originalMyRoomData) {
-            // 현재 playerRoom 상태를 깊은 복사로 백업
             originalMyRoomData = JSON.parse(JSON.stringify(playerRoom));
         }
 
-        // ✨ [핵심 수정] 객체 자체를 바꾸지 않고, 속성만 친구 데이터로 덮어씁니다.
-        // 이렇게 하면 참조 오류를 방지하고 확실하게 내용이 바뀝니다.
+        // 5. 현재 방 데이터를 친구 데이터로 덮어쓰기
+        // (객체를 직접 할당하지 않고 속성만 교체하여 참조 문제 방지)
         playerRoom.furniture = friendFurniture;
-        playerRoom.characters = friendCharacters;
+        playerRoom.characters = friendCharacters; // 이제 친구의 캐릭터 객체들이 들어갑니다.
 
-        // 5. 화면 전환 및 렌더링
+        // 6. 화면 전환 및 렌더링
         switchTab('myroom');
         
         // 방문 모드 UI 표시
@@ -7722,7 +7728,7 @@ async function visitFriendRoom(targetUid, targetNickname) {
         if (storageBtn) storageBtn.classList.add('hidden');
         if (charSelectorBtn) charSelectorBtn.classList.add('hidden');
 
-        // 방 다시 그리기 (확실하게 비우고 다시 그림)
+        // 방 다시 그리기
         const roomLayer = document.getElementById('room-layer');
         if (roomLayer) roomLayer.innerHTML = ''; 
         
