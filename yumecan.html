@@ -7881,18 +7881,16 @@ function openOtherUserProfile(userData) {
     document.body.appendChild(modal);
 }
 
-// 2. Firestore에서 랭킹 데이터 가져오기
+// ✅ [수정됨] 이벤트 랭킹 로드 함수 (프로필 카드 적용 완료)
 async function loadEventRankingData() {
     const listContainer = document.getElementById('ranking-list');
     
     try {
-        // ✨ [핵심] Firestore 쿼리
-        // users 컬렉션에서 'currentEventId'가 현재 이벤트랑 같고
-        // 'cumulativeEventPoints'가 높은 순서대로 20명만 가져옴
+        // Firestore 쿼리 (변동 없음)
         const snapshot = await db.collection('users')
-            .where('currentEventId', '==', CURRENT_EVENT_ID) // 현재 이벤트 참가자만
-            .orderBy('cumulativeEventPoints', 'desc')        // 점수 높은 순
-            .limit(20)                                       // 상위 20명
+            .where('currentEventId', '==', CURRENT_EVENT_ID)
+            .orderBy('cumulativeEventPoints', 'desc')
+            .limit(20)
             .get();
 
         listContainer.innerHTML = '';
@@ -7907,8 +7905,16 @@ async function loadEventRankingData() {
             const data = doc.data();
             const isMe = (currentUser && doc.id === currentUser.uid);
             
+            // ---------------------------------------------------------
+            // ✨ [핵심 수정] 기존의 복잡한 이미지 확인 로직을 
+            // 헬퍼 함수 호출 한 줄로 대체합니다.
+            // (이 함수가 '프로필 카드' -> '대표 캐릭터' 순으로 알아서 찾아줍니다)
+            // ---------------------------------------------------------
+            const { imgUrl } = getUserRepInfo(data); 
+
             const div = document.createElement('div');
-            // 1, 2, 3위는 특별한 색상 적용
+            
+            // 랭킹 스타일 설정 (변동 없음)
             let rankStyle = 'bg-gray-700 border-gray-600';
             let rankBadge = `<span class="font-bold w-6 text-center text-gray-400">${rank}</span>`;
             
@@ -7923,24 +7929,17 @@ async function loadEventRankingData() {
                 rankBadge = '🥉';
             }
 
-            // 내 순위 강조
             if (isMe) rankStyle += ' ring-2 ring-blue-500';
 
-            // 대표 캐릭터 이미지 (없으면 기본값)
-            let repImg = "https://placehold.co/50x50/333/fff?text=?";
-            if (data.representative) {
-                const charData = findCharacter(data.representative);
-                if (charData) repImg = charData.imageUrl;
-            }
-
-            // ✨ [수정 1] 클릭 가능하도록 스타일(cursor-pointer)과 호버 효과 추가
-    div.className = `flex items-center gap-3 p-2 rounded border ${rankStyle} cursor-pointer hover:bg-white/10 transition-colors relative group`;
-    
-    // ✨ [수정 2] 클릭 시 프로필 모달 열기 연결 (data 객체 전체를 넘김)
-    div.onclick = () => openOtherUserProfile({ ...data, uid: doc.id });
+            // 클릭 이벤트 및 스타일
+            div.className = `flex items-center gap-3 p-2 rounded border ${rankStyle} cursor-pointer hover:bg-white/10 transition-colors relative group`;
+            div.onclick = () => openOtherUserProfile({ ...data, uid: doc.id });
+            
             div.innerHTML = `
                 <div class="text-xl">${rankBadge}</div>
-                <img src="${repImg}" class="w-10 h-10 rounded object-cover bg-black">
+                
+                <img src="${imgUrl}" class="w-10 h-10 rounded object-cover bg-black border border-white/20">
+                
                 <div class="flex-grow">
                     <p class="text-sm font-bold text-white truncate max-w-[120px]">
                         ${data.nickname || '익명의 탐정'}
@@ -7958,16 +7957,15 @@ async function loadEventRankingData() {
     } catch (error) {
         console.error("랭킹 로드 실패:", error);
         
-        // ⚠️ Firestore 인덱스 에러 처리 안내
-        if (error.message.includes('The query requires an index')) {
-            listContainer.innerHTML = `
+        if (error.message.includes('index')) {
+             listContainer.innerHTML = `
                 <div class="text-red-400 text-center text-sm p-2">
                     <p class="font-bold">⚠️ 시스템 설정 필요</p>
                     <p>개발자 콘솔(F12)을 열어 Firestore 인덱스 생성 링크를 클릭해주세요.</p>
                 </div>
             `;
         } else {
-            listContainer.innerHTML = '<p class="text-center text-red-500">랭킹을 불러오지 못했습니다.</p>';
+             listContainer.innerHTML = '<p class="text-center text-red-500">랭킹을 불러오지 못했습니다.</p>';
         }
     }
 }
@@ -8001,6 +7999,7 @@ async function loadRankingPreview() {
         let rank = 0;
         snapshot.forEach(doc => {
             const data = doc.data();
+			const { imgUrl } = getUserRepInfo(data);
             const nickname = data.nickname || "익명의 탐정";
             const score = (data.cumulativeEventPoints || 0).toLocaleString();
 
@@ -9371,6 +9370,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
