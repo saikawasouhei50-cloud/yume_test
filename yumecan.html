@@ -4410,25 +4410,32 @@ async function startCombat(indices, type) {
             const delay = ms => new Promise(res => setTimeout(res, ms / combatSpeedMultiplier));
 
             // ✅ 기존 runCombatLoop 함수를 이 코드로 통째로 교체하세요.
+// ✅ [수정됨] 전투 루프 함수 (항복 시 즉시 중단 기능 추가)
 async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type) { 
     const originalMonsterDef = monsterData.stats.def;
-    
-    // ✨ [레이드] 플레이어가 입힌 총 데미지를 기록하는 변수
     let totalDamageDealt = 0; 
 
     // 몬스터나 플레이어 중 한 쪽이 전멸할 때까지 반복
     while (monsterData.stats.hp > 0 && combatDeck.some(c => c.stats.hp > 0)) {
         
+        // ✨ [핵심 1] 루프 시작 시 전투 중인지 체크. 아니라면 즉시 종료.
+        if (!isCombatRunning) return;
+
         // ===============================================
         // 1. 플레이어 턴
         // ===============================================
         for (let i = 0; i < combatDeck.length; i++) {
+            // ✨ [핵심 2] 턴 중간에도 수시로 체크
+            if (!isCombatRunning) return;
+
             const card = combatDeck[i];
             if (card.stats.hp > 0) {
                 await delay(800);
+                if (!isCombatRunning) return; // ✨ 딜레이 직후 체크 필수!
+
                 const monsterImage = document.getElementById('combat-monster-image');
                 
-                // 스킬 사용 여부 결정 (궁극기 25%, 일반스킬 40%)
+                // 스킬 사용 여부 결정
                 const useUltimate = card.rarity === 'SSR' && Math.random() < 0.25;
                 const useSkill = Math.random() < 0.4;
                 let skillToUse = null;
@@ -4439,80 +4446,62 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 let damage = 0;
 
                 if (skillToUse) {
-                    // ⚠️ 주의: HTML 태그가 들어간 문자열은 반드시 백틱(`)을 사용해야 합니다.
                     logCombat(`<strong>${card.name}</strong>의 스킬! <span class="text-yellow-300">"${skillToUse.name}"</span>`);
+                    
                     await delay(400);
+                    if (!isCombatRunning) return; // ✨ 딜레이 직후 체크
+
                     logCombat(`<em>"${skillToUse.dialogue}"</em>`);
                     
-                    // --- 스킬 타입별 효과 계산 ---
-                    
-                    // 1. 관통 (방어 무시)
+                    // --- 스킬 효과 계산 ---
                     if (skillToUse.type === 'true_damage') {
                         damage = Math.floor(card.stats.atk * skillToUse.power);
                         logCombat(`방어력을 무시한 강력한 일격!`);
-                    } 
-                    // 2. 치유 (공격 안함)
-                    else if (skillToUse.type === 'heal') {
+                    } else if (skillToUse.type === 'heal') {
                         damage = 0;
                         const healAmount = Math.floor(card.stats.atk * skillToUse.power);
                         const maxHp = originalBonusDeck[i].stats.hp;
                         card.stats.hp = Math.min(maxHp, card.stats.hp + healAmount);
                         logCombat(`<strong>${card.name}</strong>이(가) 체력을 ${healAmount} 회복했습니다!`);
-                    } 
-                    // 3. 흡혈 (공격 + 회복)
-                    else if (skillToUse.type === 'vampire') {
+                    } else if (skillToUse.type === 'vampire') {
                         damage = Math.max(1, Math.floor(card.stats.atk * skillToUse.power) - monsterData.stats.def);
                         const healedAmount = Math.floor(damage * 0.5);
                         const maxHp = originalBonusDeck[i].stats.hp;
                         card.stats.hp = Math.min(maxHp, card.stats.hp + healedAmount);
                         logCombat(`<strong>${card.name}</strong>이(가) ${healedAmount}의 체력을 흡수했습니다!`);
-                    } 
-                    // 4. 디버프 (방어 감소)
-                    else if (skillToUse.type === 'debuff_def') {
+                    } else if (skillToUse.type === 'debuff_def') {
                         monsterData.stats.def = Math.max(0, Math.floor(monsterData.stats.def * 0.8));
                         logCombat(`<strong>${monsterData.name}</strong>의 방어력이 감소했습니다!`);
-                    } 
-                    // 5. 디버프 (공격 감소)
-                    else if (skillToUse.type === 'debuff_atk') {
+                    } else if (skillToUse.type === 'debuff_atk') {
                         monsterData.stats.atk = Math.max(0, Math.floor(monsterData.stats.atk * 0.9));
                         logCombat(`<strong>${monsterData.name}</strong>의 공격력이 감소했습니다!`);
-                    } 
-                    // 6. 버프 (자기 공격 증가)
-                    else if (skillToUse.type === 'buff_atk') {
+                    } else if (skillToUse.type === 'buff_atk') {
                         card.stats.atk = Math.floor(card.stats.atk * 1.1);
                         logCombat(`<strong>${card.name}</strong>의 공격력이 상승했습니다!`);
-                    } 
-                    // 7. 일반 데미지 스킬
-                    else {
+                    } else {
                         damage = Math.max(1, Math.floor(card.stats.atk * skillToUse.power) - monsterData.stats.def);
                     }
 
                 } else {
-                    // 일반 공격
                     logCombat(`<strong>${card.name}</strong>의 일반 공격!`);
                     damage = Math.max(1, card.stats.atk - monsterData.stats.def);
                 }
                 
-                // 데미지 적용 및 누적
                 if (damage > 0) {
                     monsterData.stats.hp = Math.max(0, monsterData.stats.hp - damage);
-                    totalDamageDealt += damage; // ✨ 여기서 총 데미지 누적
-                    
+                    totalDamageDealt += damage;
                     logCombat(`<strong>${monsterData.name}</strong>에게 ${damage}의 데미지!`);
                     
-                    // 몬스터 피격 애니메이션
                     if (monsterImage) {
                         monsterImage.classList.add('shake-animation');
                         setTimeout(() => monsterImage.classList.remove('shake-animation'), 300 / combatSpeedMultiplier);
                     }
-                    
                     updateCombatUI(combatDeck, originalBonusDeck, monsterData);
                 }
 
-                // 몬스터 사망 체크
                 if (monsterData.stats.hp <= 0) break;
             }
-        } // 플레이어 턴 반복문 종료
+        } 
 
         if (monsterData.stats.hp <= 0) break;
 
@@ -4520,43 +4509,38 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
         // 2. 몬스터 턴
         // ===============================================
         await delay(1000);
+        if (!isCombatRunning) return; // ✨ 딜레이 직후 체크
+
         const alivePlayers = combatDeck.filter(c => c.stats.hp > 0);
         
         if (alivePlayers.length > 0) {
-            // ✨ [레이드] 보스가 광역 공격(AoE) 속성을 가졌는지 확인
             if (monsterData.isAoE) {
                 logCombat(`<strong>${monsterData.name}</strong>의 <span class="text-red-400 font-bold">광역 공격!</span>`);
-                
-                // 모든 생존자에게 데미지
                 for (const targetCard of alivePlayers) {
                     const damage = Math.max(1, monsterData.stats.atk - targetCard.stats.def);
                     const hpBeforeAttack = targetCard.stats.hp;
-                    
                     targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
                     logCombat(`- <strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
                     
-                    // 사망 대사
                     if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
                         await delay(200);
+                        if (!isCombatRunning) return; // ✨ 체크
                         if (targetCard.deathDialogue) {
                             logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
                         }
                     }
                 }
             } else {
-                // 기존 단일 공격 (랜덤 1명)
                 const targetCard = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
                 logCombat(`<strong>${monsterData.name}</strong>의 공격!`);
-                
                 const damage = Math.max(1, monsterData.stats.atk - targetCard.stats.def);
                 const hpBeforeAttack = targetCard.stats.hp;
-                
                 targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
                 logCombat(`<strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
                 
-                // 사망 대사
                 if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
                     await delay(400);
+                    if (!isCombatRunning) return; // ✨ 체크
                     if (targetCard.deathDialogue) {
                         logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
                     }
@@ -4567,10 +4551,14 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     } // while 루프 종료
     
     await delay(1000);
-    monsterData.stats.def = originalMonsterDef; // 방어력 원상복구 (디버프 해제)
+    if (!isCombatRunning) return; // ✨ 마지막 딜레이 후에도 체크
+
+    monsterData.stats.def = originalMonsterDef; 
     
-    // ✨ 전투 종료 함수 호출 (누적 데미지 전달)
-    endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt);
+    // ✨ [핵심 3] 전투가 '항복'으로 인해 이미 끝났는지(false) 확인 후 정상 종료 호출
+    if (isCombatRunning) {
+        endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt);
+    }
 }
 
             function logCombat(message) {
@@ -9218,7 +9206,9 @@ let raidBossData = null;
 let raidUnsubscribe = null;
 
 // ✅ [신규] 항복/도주 로직 함수
+// ✅ [수정됨] 항복/도주 로직 함수 (확실한 종료 처리)
 function fleeCombat() {
+    // 이미 전투가 끝난 상태라면 무시
     if (!isCombatRunning) return;
 
     if (!window.currentCombatIndices || !window.currentCombatType) {
@@ -9228,9 +9218,11 @@ function fleeCombat() {
         return;
     }
 
-    isCombatRunning = false; // 루프 종료 플래그 설정
+    // 1. 전투 진행 플래그를 먼저 끕니다. (이게 runCombatLoop를 멈추는 신호가 됩니다)
+    isCombatRunning = false; 
     
-    // 전투 종료 화면 호출 (isVictory=false, totalDamageDealt=0)
+    // 2. 패배 처리로 전투 종료 함수 호출
+    // (totalDamageDealt는 0으로 처리)
     endCombat(false, {
         indices: window.currentCombatIndices,
         type: window.currentCombatType
