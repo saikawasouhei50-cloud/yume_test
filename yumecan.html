@@ -644,9 +644,23 @@ body.pointer-events-none {
     </div>
 
     <div id="event-shop-view" class="hidden">
-        <p class="text-center text-gray-200 mb-4">획득한 이벤트 포인트로 특별한 보상을 교환하세요!</p>
-        <div id="event-shop-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    <div class="sticky top-0 z-10 bg-gradient-to-r from-gray-900 to-gray-800 p-4 rounded-xl mb-4 border border-pink-500/50 shadow-lg flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl animate-pulse">💎</span>
+            <div>
+                <p class="text-xs text-pink-300 font-bold">CURRENT POINTS</p>
+                <p class="text-white font-bold text-lg">보유 포인트</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span id="shop-event-point-display" class="text-3xl font-black text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">0</span>
+            <span class="text-gray-400 font-bold ml-1">P</span>
+        </div>
     </div>
+
+    <p class="text-center text-gray-200 mb-4 text-sm">획득한 이벤트 포인트로 특별한 보상을 교환하세요!</p>
+    <div id="event-shop-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4"></div>
+</div>
 
 </div>
 
@@ -2703,59 +2717,16 @@ function displayEventHomeView() {
                 });
             }
 
-            function displayEventStoryView() {
-                eventStoryContainer.innerHTML = '';
-                eventStories.forEach((story, index) => {
-                    const isUnlocked = index === 0 || clearedEventDungeons.includes(eventDungeons[index - 1].name);
-                    const storyEl = document.createElement('div');
-                    storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
-                    if (isUnlocked) {
-                        storyEl.dataset.storyIndex = index;
-                        storyEl.dataset.storyType = 'event';
-                    }
-
-                    storyEl.innerHTML = `
-                        <h3 class="text-xl font-bold ${isUnlocked ? 'text-yellow-300' : ''}">${story.title}</h3>
-                        <p class="text-sm">${isUnlocked ? '클릭하여 스토리 읽기' : `${eventDungeons[index-1].name} 클리어 시 해금`}</p>
-                    `;
-                    eventStoryContainer.appendChild(storyEl);
-                });
-            }
-            
-            // ✅ [수정됨] 이벤트 상점 화면 표시 (상단 포인트 현황판 추가)
+            // [수정됨] 이벤트 상점 표시 함수 (포인트 배너 갱신 기능 추가)
 function displayEventShopView() {
-    const view = document.getElementById('event-shop-view');
-    
-    // 1. 포인트 표시용 헤더가 없으면 새로 만듭니다. (최초 1회 실행)
-    let pointHeader = document.getElementById('shop-point-display');
-    if (!pointHeader) {
-        // 기존의 단순 텍스트 문구 숨기기
-        const oldMsg = view.querySelector('p.text-center');
-        if (oldMsg) oldMsg.style.display = 'none';
-
-        pointHeader = document.createElement('div');
-        pointHeader.id = 'shop-point-display';
-        // 스타일: 보라색 배경, 둥근 모서리, 그림자, 상단 고정(sticky)
-        pointHeader.className = "bg-indigo-900/90 border border-indigo-500 p-4 rounded-xl mb-4 flex justify-between items-center shadow-lg sticky top-0 z-10 backdrop-blur-md";
-        
-        // 상점 목록 컨테이너(grid) 바로 앞에 삽입
-        const container = document.getElementById('event-shop-container');
-        view.insertBefore(pointHeader, container);
+    // 1. 상단 포인트 배너 갱신
+    const shopPointDisplay = document.getElementById('shop-event-point-display');
+    if (shopPointDisplay) {
+        shopPointDisplay.textContent = (playerEventPoints || 0).toLocaleString();
     }
 
-    // 2. 포인트 정보 업데이트 (항상 최신 포인트 반영)
-    pointHeader.innerHTML = `
-        <div>
-            <h3 class="text-xl font-bold text-white">🎁 교환소</h3>
-            <p class="text-xs text-gray-300">획득한 포인트로 보상을 교환하세요.</p>
-        </div>
-        <div class="text-right">
-            <p class="text-xs text-indigo-300 font-bold mb-1">💎 보유 포인트</p>
-            <p class="text-3xl font-black text-yellow-300 drop-shadow-md leading-none">${playerEventPoints.toLocaleString()} P</p>
-        </div>
-    `;
-
-    // 3. (기존 로직) 상점 아이템 목록 렌더링
+    // 2. 기존 로직 (아이템 목록 생성)
+    eventPointsSpan.textContent = playerEventPoints; // (구버전 호환용)
     eventShopContainer.innerHTML = '';
     
     eventShopItems.forEach(item => {
@@ -2763,30 +2734,28 @@ function displayEventShopView() {
         const isSoldOut = purchasedCount >= item.limit;
         const canAfford = playerEventPoints >= item.cost;
 
-        // 버튼 스타일 결정
-        let btnClass = 'bg-green-600 hover:bg-green-700';
-        let btnText = '구매';
-        
-        if (isSoldOut) {
-            btnClass = 'bg-gray-600 cursor-not-allowed';
-            btnText = '품절';
-        } else if (!canAfford) {
-            btnClass = 'bg-red-500 hover:bg-red-600 cursor-not-allowed opacity-80'; // 돈 부족 시 붉은색
-        }
-
         const itemEl = document.createElement('div');
-        itemEl.className = 'bg-white/10 backdrop-blur-sm p-4 rounded-xl flex justify-between items-center border border-white/5 hover:border-white/20 transition-all';
+        // 품절되면 약간 투명하게 처리
+        itemEl.className = `bg-black/20 p-4 rounded-lg flex justify-between items-center border border-white/5 ${isSoldOut ? 'opacity-50' : ''}`;
         
+        // 아이템 타입에 따른 아이콘/텍스트 처리
+        let typeIcon = '';
+        if (item.type === 'card') typeIcon = '🃏';
+        else if (item.type === 'currency') typeIcon = '💎';
+        else if (item.type === 'fountainPen') typeIcon = '🖋️';
+        else if (item.type === 'inkwell') typeIcon = '💧';
+        else if (item.type === 'bookmark') typeIcon = '🔖';
+
         itemEl.innerHTML = `
             <div>
-                <h3 class="text-lg font-bold text-yellow-300 mb-1">${item.name}</h3>
-                <p class="text-sm text-gray-200 font-bold">💎 ${item.cost.toLocaleString()} P</p>
-                <p class="text-xs text-gray-400 mt-1">남은 횟수: <span class="${isSoldOut ? 'text-red-400' : 'text-green-400'}">${item.limit - purchasedCount}</span> / ${item.limit}</p>
+                <h3 class="text-lg font-bold text-yellow-300 flex items-center gap-2">
+                    <span>${typeIcon}</span> ${item.name}
+                </h3>
+                <p class="text-sm text-gray-300 font-bold mt-1">가격: <span class="text-pink-300">${item.cost.toLocaleString()} P</span></p>
+                <p class="text-xs text-gray-400 mt-0.5">남은 횟수: ${item.limit - purchasedCount} / ${item.limit}</p>
             </div>
-            <button data-item-id="${item.id}" 
-                class="gacha-button text-white font-bold py-2 px-6 rounded-full shadow-lg transition-transform active:scale-95 ${btnClass}" 
-                ${isSoldOut || !canAfford ? 'disabled' : ''}>
-                ${btnText}
+            <button data-item-id="${item.id}" class="gacha-button transition-all duration-200 ${isSoldOut ? 'bg-gray-600 cursor-not-allowed' : (canAfford ? 'bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg' : 'bg-red-900/50 cursor-not-allowed opacity-70')} text-white font-bold py-2 px-5 rounded-full text-sm" ${isSoldOut || !canAfford ? 'disabled' : ''}>
+                ${isSoldOut ? '품절' : '구매'}
             </button>
         `;
         eventShopContainer.appendChild(itemEl);
@@ -7646,7 +7615,7 @@ async function searchUserByName() {
 }
 
 
-// ✅ [수정됨] 친구 방 방문 함수 (입주민 없으면 덱 표시 기능 추가)
+// ✅ [최종 수정] 친구 방 방문 함수 (내용물 직접 교체 방식)
 let originalMyRoomData = null; // 내 방 데이터를 임시 저장할 변수
 
 async function visitFriendRoom(targetUid, targetNickname) {
@@ -7668,45 +7637,39 @@ async function visitFriendRoom(targetUid, targetNickname) {
         const friendData = doc.data();
         const friendInventory = friendData.inventory || []; 
         
-        // 3. 친구 방 가구 데이터 준비
+        // 3. 친구 방 데이터 준비 (없으면 빈 방)
         let friendFurniture = [];
-        if (friendData.myRoom && Array.isArray(friendData.myRoom.furniture)) {
-            friendFurniture = JSON.parse(JSON.stringify(friendData.myRoom.furniture));
-        }
-
-        // ✨ [핵심 수정] 캐릭터 데이터 준비 (우선순위: 입주민 -> 덱)
         let friendCharacters = [];
-        let sourceIds = [];
 
-        // (1) 마이룸에 설정된 입주민이 있는지 확인
-        if (friendData.myRoom && Array.isArray(friendData.myRoom.characters) && friendData.myRoom.characters.length > 0) {
-            sourceIds = friendData.myRoom.characters;
-        } 
-        // (2) 입주민이 없다면, 친구의 '덱(Deck)' 정보 사용
-        else if (Array.isArray(friendData.deck) && friendData.deck.length > 0) {
-            sourceIds = friendData.deck;
-        }
+        if (friendData.myRoom) {
+            // 가구 데이터 안전하게 가져오기
+            if (Array.isArray(friendData.myRoom.furniture)) {
+                friendFurniture = JSON.parse(JSON.stringify(friendData.myRoom.furniture));
+            }
 
-        // (3) ID 목록을 실제 캐릭터 객체로 변환 (친구 인벤토리 기준)
-        if (sourceIds.length > 0) {
-            friendCharacters = sourceIds
-                .map(id => friendInventory.find(c => c.id === id))
-                .filter(Boolean); // 삭제된 카드 등 유효하지 않은 데이터 제거
+            // 캐릭터 데이터 안전하게 가져오기
+            if (Array.isArray(friendData.myRoom.characters)) {
+                // 저장된 ID 목록을 실제 캐릭터 객체로 변환
+                friendCharacters = friendData.myRoom.characters
+                    .map(id => friendInventory.find(c => c.id === id))
+                    .filter(Boolean); // 유효하지 않은 카드 제거
+            }
         }
         
         console.log(`[데이터 로드 완료] 가구: ${friendFurniture.length}개, 캐릭터: ${friendCharacters.length}명`);
 
         // 4. 내 방 데이터 백업 (아직 백업 안 했다면)
         if (!originalMyRoomData) {
+            // 현재 playerRoom 상태를 깊은 복사로 백업
             originalMyRoomData = JSON.parse(JSON.stringify(playerRoom));
         }
 
-        // 5. 현재 방 데이터를 친구 데이터로 덮어쓰기
-        // (객체를 직접 할당하지 않고 속성만 교체하여 참조 문제 방지)
+        // ✨ [핵심 수정] 객체 자체를 바꾸지 않고, 속성만 친구 데이터로 덮어씁니다.
+        // 이렇게 하면 참조 오류를 방지하고 확실하게 내용이 바뀝니다.
         playerRoom.furniture = friendFurniture;
-        playerRoom.characters = friendCharacters; // 이제 친구의 캐릭터 객체들이 들어갑니다.
+        playerRoom.characters = friendCharacters;
 
-        // 6. 화면 전환 및 렌더링
+        // 5. 화면 전환 및 렌더링
         switchTab('myroom');
         
         // 방문 모드 UI 표시
@@ -7724,7 +7687,7 @@ async function visitFriendRoom(targetUid, targetNickname) {
         if (storageBtn) storageBtn.classList.add('hidden');
         if (charSelectorBtn) charSelectorBtn.classList.add('hidden');
 
-        // 방 다시 그리기
+        // 방 다시 그리기 (확실하게 비우고 다시 그림)
         const roomLayer = document.getElementById('room-layer');
         if (roomLayer) roomLayer.innerHTML = ''; 
         
@@ -9271,86 +9234,6 @@ function fleeCombat() {
     }, 0); 
 }
 
-// ✅ [신규] 이벤트 상점 아이템 구매 함수
-function purchaseEventItem(itemId) {
-    // 1. 아이템 데이터 찾기
-    // (yumecan_data.js에 eventShopItems가 정의되어 있다고 가정)
-    const item = eventShopItems.find(i => i.id === itemId);
-    
-    if (!item) {
-        alert("아이템 정보를 찾을 수 없습니다.");
-        return;
-    }
-
-    // 2. 구매 제한 확인
-    // purchasedEventItems는 Firebase에서 로드된 구매 기록 객체입니다.
-    const currentCount = purchasedEventItems[item.id] || 0;
-    
-    if (currentCount >= item.limit) {
-        alert("구매 가능 횟수를 초과했습니다.");
-        return;
-    }
-
-    // 3. 포인트 부족 확인
-    if (playerEventPoints < item.cost) {
-        alert("이벤트 포인트가 부족합니다.");
-        return;
-    }
-
-    // 4. 구매 확인
-    if (!confirm(`[${item.name}]을(를) 구매하시겠습니까?\n(가격: ${item.cost.toLocaleString()} P)`)) {
-        return;
-    }
-
-    // 5. 비용 차감 및 구매 횟수 증가
-    playerEventPoints -= item.cost;
-    purchasedEventItems[item.id] = currentCount + 1;
-
-    // 6. 보상 지급 로직 (아이템 타입에 따라 분기)
-    // item.type은 데이터 파일(yumecan_data.js) 설정에 따릅니다.
-    switch (item.type) {
-        case 'card':
-            // 카드 획득 (rewardId에 카드 이름이 들어있어야 함)
-            addCardToInventory(item.rewardId);
-            alert(`[${item.rewardId}] 카드가 서고에 추가되었습니다!`);
-            break;
-            
-        case 'currency':
-            // 보석 획득 (amount에 수량이 들어있어야 함)
-            playerCurrency += item.amount;
-            alert(`보석 ${item.amount}개를 획득했습니다.`);
-            break;
-            
-        case 'fountain_pen':
-            // 만년필 획득
-            playerFountainPens += item.amount;
-            alert(`만년필 ${item.amount}개를 획득했습니다.`);
-            break;
-            
-        case 'inkwell':
-            // 잉크병 획득
-            playerInkwells += item.amount;
-            alert(`잉크병 ${item.amount}개를 획득했습니다.`);
-            break;
-            
-        case 'bookmark':
-            // 책갈피 획득
-            playerBookmarks = Math.min(HARD_MAX_BOOKMARKS, playerBookmarks + item.amount);
-            alert(`책갈피 ${item.amount}개를 획득했습니다.`);
-            break;
-
-        default:
-            console.warn("알 수 없는 아이템 타입:", item.type);
-            alert("구매는 완료되었으나 보상 타입이 불명확합니다.");
-            break;
-    }
-
-    // 7. 저장 및 UI 갱신
-    saveGame();          // 데이터 저장
-    updateUI();          // 상단 재화 바 갱신
-    displayEventShopView(); // 상점 화면 갱신 (잔여 횟수, 포인트 등 반영)
-}
-
 // ... (다른 함수들)
 
 // yumecan.html - updateRaidDailyCountUI 함수 전체를 이 코드로 교체하세요 (7894행 근처)
@@ -9397,6 +9280,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
