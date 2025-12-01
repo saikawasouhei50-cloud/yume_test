@@ -4433,41 +4433,40 @@ async function startCombat(indices, type) {
     // 뷰 전환
     allViews.forEach(view => view.classList.add('hidden'));
     combatInProgressView.classList.remove('hidden');
-    combatLog.innerHTML = '';
-    combatPlayerDeck.innerHTML = '';
     
-    // 플레이어 덱 UI 그리기
-    combatDeck.forEach((card, index) => {
-        const cardEl = document.createElement('div');
-        cardEl.className = 'bg-gray-700 p-2 rounded';
-        cardEl.innerHTML = `
-            <p class="font-bold text-sm truncate" title="${card.name}">${card.name}</p>
-            <div class="hp-bar-background rounded-full h-2.5 mt-1">
-                <div id="player-hp-bar-${index}" class="hp-bar-foreground h-2.5 rounded-full" style="width: 100%"></div>
-            </div>
-            <p id="player-hp-text-${index}" class="text-xs text-center mt-0.5">${card.stats.hp} / ${originalBonusDeck[index].stats.hp}</p>
-        `;
-        combatPlayerDeck.appendChild(cardEl);
-    });
+    // ✨ [핵심 변경] 전체 레이아웃을 'Grid(좌우)'에서 'Flex(상하)'로 변경하여 공간 확보
+    combatInProgressView.className = "flex flex-col items-center justify-between gap-6 min-h-[60vh] py-4";
 
-    // 몬스터 UI 그리기 (수정됨: ID 일치시킴 + 아이콘 컨테이너 유지)
+    combatLog.innerHTML = '';
+    
+    // 1. 몬스터 영역 설정 (화면 중앙 상단)
+    combatMonsterArea.className = "flex flex-col items-center justify-center flex-grow w-full";
     combatMonsterArea.innerHTML = `
-        <h3 class="text-2xl font-bold" id="combat-monster-name">${monsterData.name}</h3>
-        
-        <div class="relative inline-block">
-            <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="my-4 h-48 w-48 object-contain">
-            <div id="combat-monster-buffs" class="absolute top-4 right-0 flex flex-col gap-1 z-10 pointer-events-none"></div>
+        <div class="relative">
+            <h3 class="text-3xl font-black text-white drop-shadow-lg mb-2 text-center" id="combat-monster-name" style="text-shadow: 0 0 10px red;">${monsterData.name}</h3>
+            <div class="relative inline-block group">
+                <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="w-48 h-48 md:w-64 md:h-64 object-contain filter drop-shadow-2xl transition-transform duration-100">
+                
+                <div id="combat-monster-buffs" class="absolute top-0 right-[-20px] flex flex-col gap-1 z-10 pointer-events-none"></div>
+            </div>
         </div>
 
-        <div class="w-full hp-bar-background rounded-full h-4">
-            <div id="combat-monster-hp-bar" class="hp-bar-foreground h-4 rounded-full" style="width: 100%"></div>
+        <div class="w-full max-w-md mt-4 relative">
+            <div class="w-full bg-gray-800 rounded-full h-6 border-2 border-gray-600 shadow-inner overflow-hidden">
+                <div id="combat-monster-hp-bar" class="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500" style="width: 100%"></div>
+            </div>
+            <p id="combat-monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+                ${monsterData.stats.hp} / ${monsterData.stats.maxHp}
+            </p>
         </div>
-        <p id="combat-monster-hp-text" class="text-sm mt-1">${monsterData.stats.hp} / ${monsterData.stats.maxHp}</p>
     `;
+
+    // 2. 플레이어 덱 영역 설정 (화면 하단 가로 정렬)
+    combatPlayerDeck.className = "flex flex-wrap justify-center items-end gap-2 md:gap-4 w-full px-2";
+    combatPlayerDeck.innerHTML = ''; // 초기화 (내용은 updateCombatUI에서 채움)
     
     // 4. 전투 루프 실행
-    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type); 
-}
+    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
 
             
             
@@ -4812,76 +4811,80 @@ function createBuffIcon(type) {
     return el;
 }
 
-             // ✅ [수정됨] UI 업데이트 함수 (버프 아이콘 표시 기능 추가)
+             // ✅ [수정됨] 카드 이미지와 버프 아이콘이 포함된 세련된 UI 업데이트 함수
 function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs = []) {
-    // 1. 몬스터 UI 업데이트
+    // 1. 몬스터 정보 업데이트 (기존 유지)
     const monsterHpBar = document.getElementById('combat-monster-hp-bar');
     const monsterHpText = document.getElementById('combat-monster-hp-text');
-    const monsterName = document.getElementById('combat-monster-name');
     
     if (monsterHpBar && monsterData) {
-        const hpPercent = (monsterData.stats.hp / monsterData.stats.maxHp) * 100;
+        const hpPercent = Math.max(0, (monsterData.stats.hp / monsterData.stats.maxHp) * 100);
         monsterHpBar.style.width = `${hpPercent}%`;
         monsterHpText.textContent = `${monsterData.stats.hp} / ${monsterData.stats.maxHp}`;
-        monsterName.textContent = monsterData.name;
     }
 
-    // ✨ [신규] 몬스터 버프 아이콘 업데이트
+    // 몬스터 버프 아이콘
     const monsterBuffsContainer = document.getElementById('combat-monster-buffs');
     if (monsterBuffsContainer && monsterData) {
-        monsterBuffsContainer.innerHTML = ''; // 기존 아이콘 초기화
-        // 몬스터에게 걸린 버프만 필터링
+        monsterBuffsContainer.innerHTML = '';
         const myBuffs = activeBuffs.filter(b => b.target === monsterData);
-        myBuffs.forEach(buff => {
-            monsterBuffsContainer.appendChild(createBuffIcon(buff.type));
-        });
+        myBuffs.forEach(buff => monsterBuffsContainer.appendChild(createBuffIcon(buff.type)));
     }
 
-    // 2. 플레이어 카드 UI 업데이트
-    const combatDeckContainer = document.getElementById('combat-deck');
+    // 2. 플레이어 덱 (카드 이미지 렌더링) ✨✨✨
+    const combatDeckContainer = document.getElementById('combat-player-deck');
     if (combatDeckContainer) {
         let html = '';
+        
         combatDeck.forEach((card, index) => {
             const originalData = originalBonusDeck[index];
             const maxHp = originalData.stats.hp;
-            const hpPercent = (card.stats.hp / maxHp) * 100;
+            const currentHp = Math.max(0, card.stats.hp);
+            const hpPercent = (currentHp / maxHp) * 100;
+            
+            // HP 상태에 따른 색상 및 스타일
             let hpColor = 'bg-green-500';
             if (hpPercent < 30) hpColor = 'bg-red-500';
             else if (hpPercent < 70) hpColor = 'bg-yellow-500';
 
-            const isDead = card.stats.hp <= 0;
-            const deadClass = isDead ? 'grayscale opacity-50' : '';
+            const isDead = currentHp <= 0;
+            const cardStyle = isDead ? 'filter: grayscale(100%) brightness(50%);' : '';
+            const borderClass = card.rarity === 'SSR' ? 'border-yellow-400 shadow-[0_0_10px_gold]' : 'border-gray-500';
 
+            // 카드 HTML 생성
             html += `
-                <div class="relative flex-shrink-0 w-20 md:w-24 text-center ${deadClass}">
-                    <div class="relative">
-                        <img src="${card.image}" alt="${card.name}" class="w-full h-24 md:h-32 object-cover rounded-lg border-2 border-gray-700 shadow-md">
+                <div class="relative flex flex-col items-center group transition-transform duration-300 ${isDead ? '' : 'hover:-translate-y-2'}" style="width: 80px; md:width: 100px;">
+                    
+                    <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden border-2 ${borderClass} bg-gray-900 shadow-lg" style="${cardStyle}">
+                        <img src="${card.cardImageUrl}" alt="${card.name}" class="w-full h-full object-cover">
                         
-                        <div class="absolute top-0 right-0 -mt-1 -mr-1 flex flex-col gap-0.5 pointer-events-none z-10 player-buff-container" data-card-index="${index}"></div>
+                        <span class="absolute top-0 left-0 bg-black/60 text-white text-[10px] px-1.5 py-0.5 font-bold rounded-br-lg backdrop-blur-sm">
+                            ${card.rarity}
+                        </span>
 
-                        ${card.rarity === 'SSR' ? '<span class="absolute top-1 right-1 bg-yellow-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full">SSR</span>' : ''}
+                        <div class="absolute top-1 right-1 flex flex-col gap-0.5 player-buff-container" data-card-index="${index}"></div>
                     </div>
-                    <div class="mt-1 bg-gray-800/80 rounded-full h-2.5 overflow-hidden shadow-inner border border-gray-600/50">
+
+                    <div class="w-full mt-2 bg-gray-800 rounded-full h-2.5 border border-gray-600 overflow-hidden relative">
                         <div class="h-full ${hpColor} transition-all duration-300" style="width: ${hpPercent}%"></div>
                     </div>
-                    <div class="text-xs mt-0.5 font-medium text-gray-200">${card.stats.hp}/${maxHp}</div>
-                     <div class="text-xs flex justify-center gap-1 mt-0.5 text-gray-400/80 scale-90">
-                        <span>⚔️${card.stats.atk}</span>
-                        <span>🛡️${card.stats.def}</span>
+                    
+                    <div class="text-center mt-1 w-full">
+                        <p class="text-[10px] text-gray-300 truncate w-full font-bold leading-tight">${card.name}</p>
+                        <p class="text-[9px] text-white font-mono">${currentHp}/${maxHp}</p>
                     </div>
                 </div>
             `;
         });
+        
         combatDeckContainer.innerHTML = html;
 
-        // ✨ [신규] 플레이어 버프 아이콘 채우기 (HTML 생성 후 실행)
+        // 플레이어 버프 아이콘 채우기
         combatDeck.forEach((card, index) => {
             const container = combatDeckContainer.querySelector(`.player-buff-container[data-card-index="${index}"]`);
             if (container && activeBuffs.length > 0) {
                 const myBuffs = activeBuffs.filter(b => b.target === card);
-                myBuffs.forEach(buff => {
-                    container.appendChild(createBuffIcon(buff.type));
-                });
+                myBuffs.forEach(buff => container.appendChild(createBuffIcon(buff.type)));
             }
         });
     }
