@@ -588,6 +588,12 @@ body.pointer-events-none {
 
 <div id="event-view" class="hidden">
     
+    <div class="max-w-lg mx-auto mb-2 flex justify-start pl-2">
+        <button onclick="switchTab('event-home')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs md:text-sm font-bold py-1.5 px-4 rounded-full flex items-center gap-1 shadow-md transition-transform hover:scale-105 border border-gray-500">
+            <span>◀</span> 이벤트 홈
+        </button>
+    </div>
+
     <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-lg mx-auto">
         <button id="event-sub-tab-battle" class="sub-tab-button active w-1/4 font-bold py-2 px-2 md:px-4 rounded-full text-sm md:text-base">전투</button>
         <button id="event-sub-tab-raid" class="sub-tab-button w-1/4 font-bold py-2 px-2 md:px-4 rounded-full text-sm md:text-base text-red-400">레이드</button>
@@ -1617,6 +1623,7 @@ let playerSystemMailHistory = []; // ✨ 이 줄이 있어야 합니다.
 let playerRaidDailyCount = 0;
 let playerRaidLastResetDate = null;
 			let playerRaidDamage = 0;
+			let combatTimeouts = [];
 
             const DECK_CAPACITY = 5;
             const PULL_ONE_COST = 10;
@@ -4431,16 +4438,22 @@ async function startCombat(indices, type) {
         combatPlayerDeck.appendChild(cardEl);
     });
 
-    // 몬스터 UI 그리기
+    // 몬스터 UI 그리기 (수정됨: 아이콘 컨테이너 추가)
     combatMonsterArea.innerHTML = `
-        <h3 class="text-2xl font-bold">${monsterData.name}</h3>
-        <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="my-4 h-48 w-48 object-contain">
+        <h3 class="text-2xl font-bold" id="combat-monster-name">${monsterData.name}</h3>
+        
+        <div class="relative inline-block">
+            <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="my-4 h-48 w-48 object-contain">
+            
+            <div id="combat-monster-buffs" class="absolute top-4 right-0 flex flex-col gap-1 z-10 pointer-events-none"></div>
+        </div>
+
         <div class="w-full hp-bar-background rounded-full h-4">
             <div id="monster-hp-bar" class="hp-bar-foreground h-4 rounded-full" style="width: 100%"></div>
         </div>
         <p id="monster-hp-text" class="text-sm mt-1">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
     `;
-
+	
     // 4. 전투 루프 실행
     await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type); 
 }
@@ -4452,31 +4465,59 @@ async function startCombat(indices, type) {
 
             // ✅ 기존 runCombatLoop 함수를 이 코드로 통째로 교체하세요.
 // ✅ [수정됨] 전투 루프 함수 (항복 시 즉시 중단 기능 추가)
+// ✅ [수정됨] 전투 루프 함수 (5턴 지속 버프 시스템 적용)
 async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type) { 
     const originalMonsterDef = monsterData.stats.def;
     let totalDamageDealt = 0; 
+    
+    // ✨ [신규] 턴 기반 버프 시스템 변수
+    let currentTurn = 0; 
+    let activeBuffs = []; // { type, target, value, expireTurn, name } 저장
 
     // 몬스터나 플레이어 중 한 쪽이 전멸할 때까지 반복
     while (monsterData.stats.hp > 0 && combatDeck.some(c => c.stats.hp > 0)) {
         
-        // ✨ [핵심 1] 루프 시작 시 전투 중인지 체크. 아니라면 즉시 종료.
         if (!isCombatRunning) return;
+
+        // ✨ [신규] 1. 라운드(턴) 시작 및 카운트 증가
+        currentTurn++;
+        
+        // ✨ [신규] 2. 만료된 버프/디버프 확인 및 해제
+        // 배열을 역순으로 돌면서 만료된 효과를 제거하고 스탯을 복구합니다.
+        for (let i = activeBuffs.length - 1; i >= 0; i--) {
+            const buff = activeBuffs[i];
+            if (currentTurn >= buff.expireTurn) {
+                // 원상 복구 로직
+                if (buff.type === 'debuff_def') {
+                    buff.target.stats.def += buff.value;
+                    logCombat(`<span class="text-gray-500"><strong>${buff.name}</strong>의 방어력이 회복되었습니다. (효과 종료)</span>`);
+                } else if (buff.type === 'debuff_atk') {
+                    buff.target.stats.atk += buff.value;
+                    logCombat(`<span class="text-gray-500"><strong>${buff.name}</strong>의 공격력이 회복되었습니다. (효과 종료)</span>`);
+                } else if (buff.type === 'buff_atk') {
+                    buff.target.stats.atk -= buff.value;
+                    logCombat(`<span class="text-gray-500"><strong>${buff.name}</strong>의 공격력 강화가 끝났습니다.</span>`);
+                }
+                
+                // 목록에서 제거 및 UI 갱신
+                activeBuffs.splice(i, 1);
+                updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+            }
+        }
 
         // ===============================================
         // 1. 플레이어 턴
         // ===============================================
         for (let i = 0; i < combatDeck.length; i++) {
-            // ✨ [핵심 2] 턴 중간에도 수시로 체크
             if (!isCombatRunning) return;
 
             const card = combatDeck[i];
             if (card.stats.hp > 0) {
                 await delay(800);
-                if (!isCombatRunning) return; // ✨ 딜레이 직후 체크 필수!
+                if (!isCombatRunning) return;
 
                 const monsterImage = document.getElementById('combat-monster-image');
                 
-                // 스킬 사용 여부 결정
                 const useUltimate = card.rarity === 'SSR' && Math.random() < 0.25;
                 const useSkill = Math.random() < 0.4;
                 let skillToUse = null;
@@ -4490,11 +4531,11 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     logCombat(`<strong>${card.name}</strong>의 스킬! <span class="text-yellow-300">"${skillToUse.name}"</span>`);
                     
                     await delay(400);
-                    if (!isCombatRunning) return; // ✨ 딜레이 직후 체크
+                    if (!isCombatRunning) return;
 
                     logCombat(`<em>"${skillToUse.dialogue}"</em>`);
                     
-                    // --- 스킬 효과 계산 ---
+                    // --- 스킬 효과 계산 (수정됨: setTimeout 제거 -> activeBuffs 추가) ---
                     if (skillToUse.type === 'true_damage') {
                         damage = Math.floor(card.stats.atk * skillToUse.power);
                         logCombat(`방어력을 무시한 강력한 일격!`);
@@ -4510,15 +4551,50 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                         const maxHp = originalBonusDeck[i].stats.hp;
                         card.stats.hp = Math.min(maxHp, card.stats.hp + healedAmount);
                         logCombat(`<strong>${card.name}</strong>이(가) ${healedAmount}의 체력을 흡수했습니다!`);
+                    
+                    // ✨ [수정] 방어력 감소 (5턴)
                     } else if (skillToUse.type === 'debuff_def') {
-                        monsterData.stats.def = Math.max(0, Math.floor(monsterData.stats.def * 0.8));
-                        logCombat(`<strong>${monsterData.name}</strong>의 방어력이 감소했습니다!`);
+                        const reduceAmount = Math.floor(monsterData.stats.def * 0.2);
+                        monsterData.stats.def = Math.max(0, monsterData.stats.def - reduceAmount);
+                        logCombat(`<strong>${monsterData.name}</strong>의 방어력이 감소했습니다! (5턴 지속)`);
+                        
+                        // 버프 목록에 추가 (현재 턴 + 5턴 뒤에 만료)
+                        activeBuffs.push({
+                            type: 'debuff_def',
+                            target: monsterData,
+                            value: reduceAmount,
+                            expireTurn: currentTurn + 5,
+                            name: monsterData.name
+                        });
+
+                    // ✨ [수정] 공격력 감소 (5턴)
                     } else if (skillToUse.type === 'debuff_atk') {
-                        monsterData.stats.atk = Math.max(0, Math.floor(monsterData.stats.atk * 0.9));
-                        logCombat(`<strong>${monsterData.name}</strong>의 공격력이 감소했습니다!`);
+                        const reduceAmount = Math.floor(monsterData.stats.atk * 0.1);
+                        monsterData.stats.atk = Math.max(0, monsterData.stats.atk - reduceAmount);
+                        logCombat(`<strong>${monsterData.name}</strong>의 공격력이 감소했습니다! (5턴 지속)`);
+
+                        activeBuffs.push({
+                            type: 'debuff_atk',
+                            target: monsterData,
+                            value: reduceAmount,
+                            expireTurn: currentTurn + 5,
+                            name: monsterData.name
+                        });
+
+                    // ✨ [수정] 자가 공격력 증가 (5턴)
                     } else if (skillToUse.type === 'buff_atk') {
-                        card.stats.atk = Math.floor(card.stats.atk * 1.1);
-                        logCombat(`<strong>${card.name}</strong>의 공격력이 상승했습니다!`);
+                        const bonusAmount = Math.floor(card.stats.atk * 0.1);
+                        card.stats.atk += bonusAmount;
+                        logCombat(`<strong>${card.name}</strong>의 공격력이 상승했습니다! (5턴 지속)`);
+
+                        activeBuffs.push({
+                            type: 'buff_atk',
+                            target: card,
+                            value: bonusAmount,
+                            expireTurn: currentTurn + 5,
+                            name: card.name
+                        });
+
                     } else {
                         damage = Math.max(1, Math.floor(card.stats.atk * skillToUse.power) - monsterData.stats.def);
                     }
@@ -4550,7 +4626,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
         // 2. 몬스터 턴
         // ===============================================
         await delay(1000);
-        if (!isCombatRunning) return; // ✨ 딜레이 직후 체크
+        if (!isCombatRunning) return;
 
         const alivePlayers = combatDeck.filter(c => c.stats.hp > 0);
         
@@ -4565,7 +4641,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     
                     if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
                         await delay(200);
-                        if (!isCombatRunning) return; // ✨ 체크
+                        if (!isCombatRunning) return;
                         if (targetCard.deathDialogue) {
                             logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
                         }
@@ -4581,7 +4657,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 
                 if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
                     await delay(400);
-                    if (!isCombatRunning) return; // ✨ 체크
+                    if (!isCombatRunning) return;
                     if (targetCard.deathDialogue) {
                         logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
                     }
@@ -4592,11 +4668,10 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     } // while 루프 종료
     
     await delay(1000);
-    if (!isCombatRunning) return; // ✨ 마지막 딜레이 후에도 체크
+    if (!isCombatRunning) return;
 
     monsterData.stats.def = originalMonsterDef; 
     
-    // ✨ [핵심 3] 전투가 '항복'으로 인해 이미 끝났는지(false) 확인 후 정상 종료 호출
     if (isCombatRunning) {
         endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt);
     }
@@ -4700,59 +4775,104 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     });
 }
 
-             // yumecan.html 파일의 function updateCombatUI 함수 전체를 이 코드로 교체하세요.
-function updateCombatUI(deck, originalBonusDeck, monster) {
-    // 1. 플레이어 덱 HP 업데이트
-    deck.forEach((card, index) => {
-        const originalCardWithBonus = originalBonusDeck[index];
-        
-        // ✨ [핵심 수정] 원본 덱 데이터가 존재하고 stats 속성도 있는지 확인합니다.
-        if(!originalCardWithBonus || !originalCardWithBonus.stats) return; 
+// ✨ [신규] 버프/디버프 아이콘 요소 생성 헬퍼 함수
+function createBuffIcon(type) {
+    const el = document.createElement('div');
+    // 공통 스타일: 작고 동그란 모양, 그림자
+    el.className = 'w-5 h-5 rounded-full flex items-center justify-center text-xs shadow-sm border border-white/20 text-white font-bold';
+    
+    switch(type) {
+        case 'buff_atk': // 공격력 증가 (파랑)
+            el.innerHTML = '⚔️↑'; 
+            el.classList.add('bg-blue-600/90'); 
+            break;
+        case 'debuff_atk': // 공격력 감소 (빨강)
+            el.innerHTML = '⚔️↓'; 
+            el.classList.add('bg-red-600/90'); 
+            break;
+        case 'debuff_def': // 방어력 감소 (보라)
+            el.innerHTML = '🛡️↓'; 
+            el.classList.add('bg-purple-600/90'); 
+            break;
+        default:
+            el.innerHTML = '?';
+            el.classList.add('bg-gray-600/90');
+    }
+    return el;
+}
 
-        const maxHp = originalCardWithBonus.stats.hp; // 전투 시작 시점의 최대 HP
-        const currentHp = card.stats.hp;
-
-        const hpPercent = maxHp > 0 ? (currentHp / maxHp) * 100 : 0;
-        
-        // HP 바 업데이트 (null 체크 추가)
-        const hpBarEl = document.getElementById(`player-hp-bar-${index}`);
-        const hpTextEl = document.getElementById(`player-hp-text-${index}`);
-
-        if (hpBarEl) {
-            hpBarEl.style.width = `${hpPercent}%`;
-        }
-        if (hpTextEl) {
-            hpTextEl.textContent = `${currentHp} / ${maxHp}`;
-        }
-    });
-
-    // 2. 몬스터 HP 업데이트 (이 부분을 아래 코드로 교체하세요)
-    let monsterMaxHp;
-
-    // A. 레이드 보스 데이터 사용 (전역 변수 raidBossDataSheet와 이름 일치 확인)
-    if (typeof raidBossDataSheet !== 'undefined' && monster.name === raidBossDataSheet.name) {
-        monsterMaxHp = raidBossDataSheet.maxHp;
-    } 
-    // B. 일반 몬스터 데이터 사용
-    else {
-        // 일반 몬스터 목록에서 Max HP를 가져옵니다.
-        monsterMaxHp = monsters[monster.name]?.stats.hp;
+             // ✅ [수정됨] UI 업데이트 함수 (버프 아이콘 표시 기능 추가)
+function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs = []) {
+    // 1. 몬스터 UI 업데이트
+    const monsterHpBar = document.getElementById('combat-monster-hp-bar');
+    const monsterHpText = document.getElementById('combat-monster-hp-text');
+    const monsterName = document.getElementById('combat-monster-name');
+    
+    if (monsterHpBar && monsterData) {
+        const hpPercent = (monsterData.stats.hp / monsterData.stats.maxHp) * 100;
+        monsterHpBar.style.width = `${hpPercent}%`;
+        monsterHpText.textContent = `${monsterData.stats.hp} / ${monsterData.stats.maxHp}`;
+        monsterName.textContent = monsterData.name;
     }
 
-    if (monsterMaxHp) { // Max HP를 찾았다면
-        const monsterHpPercent = (monster.stats.hp / monsterMaxHp) * 100;
-        
-        const monsterHpBar = document.getElementById('monster-hp-bar');
-        const monsterHpText = document.getElementById('monster-hp-text');
+    // ✨ [신규] 몬스터 버프 아이콘 업데이트
+    const monsterBuffsContainer = document.getElementById('combat-monster-buffs');
+    if (monsterBuffsContainer && monsterData) {
+        monsterBuffsContainer.innerHTML = ''; // 기존 아이콘 초기화
+        // 몬스터에게 걸린 버프만 필터링
+        const myBuffs = activeBuffs.filter(b => b.target === monsterData);
+        myBuffs.forEach(buff => {
+            monsterBuffsContainer.appendChild(createBuffIcon(buff.type));
+        });
+    }
 
-        if (monsterHpBar) {
-            monsterHpBar.style.width = `${monsterHpPercent}%`;
-        }
-        if (monsterHpText) {
-            monsterHpText.textContent = `${monster.stats.hp} / ${monsterMaxHp}`;
-        }
-    } else {
-        console.error("몬스터 원본 데이터를 찾을 수 없어 HP 업데이트를 건너뜁니다");
+    // 2. 플레이어 카드 UI 업데이트
+    const combatDeckContainer = document.getElementById('combat-deck');
+    if (combatDeckContainer) {
+        let html = '';
+        combatDeck.forEach((card, index) => {
+            const originalData = originalBonusDeck[index];
+            const maxHp = originalData.stats.hp;
+            const hpPercent = (card.stats.hp / maxHp) * 100;
+            let hpColor = 'bg-green-500';
+            if (hpPercent < 30) hpColor = 'bg-red-500';
+            else if (hpPercent < 70) hpColor = 'bg-yellow-500';
+
+            const isDead = card.stats.hp <= 0;
+            const deadClass = isDead ? 'grayscale opacity-50' : '';
+
+            html += `
+                <div class="relative flex-shrink-0 w-20 md:w-24 text-center ${deadClass}">
+                    <div class="relative">
+                        <img src="${card.image}" alt="${card.name}" class="w-full h-24 md:h-32 object-cover rounded-lg border-2 border-gray-700 shadow-md">
+                        
+                        <div class="absolute top-0 right-0 -mt-1 -mr-1 flex flex-col gap-0.5 pointer-events-none z-10 player-buff-container" data-card-index="${index}"></div>
+
+                        ${card.rarity === 'SSR' ? '<span class="absolute top-1 right-1 bg-yellow-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full">SSR</span>' : ''}
+                    </div>
+                    <div class="mt-1 bg-gray-800/80 rounded-full h-2.5 overflow-hidden shadow-inner border border-gray-600/50">
+                        <div class="h-full ${hpColor} transition-all duration-300" style="width: ${hpPercent}%"></div>
+                    </div>
+                    <div class="text-xs mt-0.5 font-medium text-gray-200">${card.stats.hp}/${maxHp}</div>
+                     <div class="text-xs flex justify-center gap-1 mt-0.5 text-gray-400/80 scale-90">
+                        <span>⚔️${card.stats.atk}</span>
+                        <span>🛡️${card.stats.def}</span>
+                    </div>
+                </div>
+            `;
+        });
+        combatDeckContainer.innerHTML = html;
+
+        // ✨ [신규] 플레이어 버프 아이콘 채우기 (HTML 생성 후 실행)
+        combatDeck.forEach((card, index) => {
+            const container = combatDeckContainer.querySelector(`.player-buff-container[data-card-index="${index}"]`);
+            if (container && activeBuffs.length > 0) {
+                const myBuffs = activeBuffs.filter(b => b.target === card);
+                myBuffs.forEach(buff => {
+                    container.appendChild(createBuffIcon(buff.type));
+                });
+            }
+        });
     }
 }
 
@@ -4841,6 +4961,9 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0) {
     console.log("1. 전투 종료 진입:", combatInfo);
 
     isCombatRunning = false; 
+	// ✨✨ [추가] 실행 중인 모든 버프/디버프 타이머 강제 종료 ✨✨
+    combatTimeouts.forEach(id => clearTimeout(id));
+    combatTimeouts = []; // 배열 비우기
 
     // [1] 전투 화면 숨기기
     const combatView = document.getElementById('combat-in-progress-view');
@@ -5065,12 +5188,13 @@ function createCard(character, options = {}) {
             return `적을 공격하고 피해량의 50%를 체력으로 흡수합니다.`;
         case 'true_damage': 
             return `적의 방어력을 무시하고 공격력의 ${powerPercent}% 피해를 줍니다.`;
-        case 'buff_atk': 
-            return `자신의 공격력이 10% 증가합니다.`;
-        case 'debuff_atk': 
-            return `적의 공격력을 10% 감소시킵니다.`;
-        case 'debuff_def': 
-            return `적의 방어력을 20% 감소시킵니다.`;
+        // getSkillDescription 함수 내부 switch문 수정 (약 9900행 근처)
+case 'buff_atk': 
+    return `5턴 동안 자신의 공격력이 10% 증가합니다.`;
+case 'debuff_atk': 
+    return `5턴 동안 적의 공격력을 10% 감소시킵니다.`;
+case 'debuff_def': 
+    return `5턴 동안 적의 방어력을 20% 감소시킵니다.`;
         default: 
             return '특별한 효과를 가진 스킬입니다.'; // 타입을 모를 때 나오는 기본 문구
     }
@@ -9295,7 +9419,7 @@ function openGachaPoolModal(gachaType) {
             // 픽업 표시
             let pickupBadge = '';
             if (gachaType === 'event') {
-                 const pickupCount = charList.filter(c => EVENT_CHARACTER_NAMES.includes(c.name)).length;
+                 const pickupCount = charList.filter(c => EVENT_CHARACTER_NAME.includes(c.name)).length;
                  if (pickupCount > 0) {
                      pickupBadge = `<span class="ml-2 text-red-400 bg-red-900/30 px-2 py-0.5 rounded-full text-sm font-medium">✨ 픽업 대상 (${pickupCount}종)</span>`;
                  }
