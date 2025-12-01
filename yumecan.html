@@ -5163,10 +5163,11 @@ function createCard(character, options = {}) {
                     const probColor = prob >= 0.8 ? 'text-green-400' : (prob >= 0.5 ? 'text-yellow-400' : 'text-red-400');
 
                     previewDisplay.innerHTML = `
-                        HP ${currentStats.hp} <span class="text-gray-400">&rarr;</span> ${nextLevelStats.hp}<br>
-                        ATK ${currentStats.atk} <span class="text-gray-400">&rarr;</span> ${nextLevelStats.atk}<br>
-                        <span class="${probColor} font-bold mt-1 block">성공 확률: ${probPercent}%</span>
-                    `;
+    HP ${currentStats.hp} <span class="text-gray-400">&rarr;</span> ${nextLevelStats.hp}<br>
+    ATK ${currentStats.atk} <span class="text-gray-400">&rarr;</span> ${nextLevelStats.atk}<br>
+    DEF ${currentStats.def} <span class="text-gray-400">&rarr;</span> ${nextLevelStats.def}<br>
+    <span class="${probColor} font-bold mt-1 block">성공 확률: ${probPercent}%</span>
+`;
                     
                     const cost = getEnhancementCost(cardInstance);
                     costDisplay.textContent = `🖋️ ${cost}`;
@@ -5199,8 +5200,8 @@ function createCard(character, options = {}) {
         inkwellCostDisplay.textContent = "-";
     } else {
         // 다음 단계 보너스 미리보기
-        const nextRevisionBonus = (cardInstance.revision + 1) * STAT_INCREASE_PER_REVISION * 100;
-        revisionPreviewDisplay.textContent = `다음 개정 시 기본 능력치 +${nextRevisionBonus}%`;
+        const nextRevisionBonus = Math.round((cardInstance.revision + 1) * STAT_INCREASE_PER_REVISION * 100);
+revisionPreviewDisplay.textContent = `다음 개정 시 기본 능력치 +${nextRevisionBonus}%`;
 
         // [옵션 1: 카드 사용] 로직
         const materialCards = playerInventory.filter(c => c.name === cardInstance.name && c.id !== cardInstance.id);
