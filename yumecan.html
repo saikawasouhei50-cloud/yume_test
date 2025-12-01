@@ -7807,7 +7807,7 @@ function exitVisitMode() {
 async function openRankingModal() {
     let modal = document.getElementById('ranking-modal');
     
-    // 모달이 없으면 새로 생성
+    // 모달이 없으면 HTML 새로 생성
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'ranking-modal';
@@ -9305,19 +9305,21 @@ function fleeCombat() {
     }, 0); 
 }
 
-unction switchRankingTab(type) {
+function switchRankingTab(type) {
     const eventBtn = document.getElementById('rank-tab-event');
     const raidBtn = document.getElementById('rank-tab-raid');
     const myLabel = document.getElementById('my-ranking-label');
     const myScore = document.getElementById('my-ranking-score');
     
-    // 1. 버튼 스타일 업데이트
+    if (!eventBtn || !raidBtn) return;
+
+    // 스타일 및 데이터 변경
     if (type === 'event') {
         eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-indigo-600 shadow-lg";
         raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
         
-        myLabel.textContent = "내 누적 포인트";
-        myScore.textContent = `${(playerCumulativeEventPoints || 0).toLocaleString()} P`;
+        if(myLabel) myLabel.textContent = "내 누적 포인트";
+        if(myScore) myScore.textContent = `${(playerCumulativeEventPoints || 0).toLocaleString()} P`;
         
         loadEventRankingData();
         
@@ -9325,25 +9327,27 @@ unction switchRankingTab(type) {
         eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
         raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-red-600 shadow-lg";
         
-        myLabel.textContent = "내 누적 데미지";
-        myScore.textContent = `${(playerRaidDamage || 0).toLocaleString()} Dmg`;
+        if(myLabel) myLabel.textContent = "내 누적 데미지";
+        // 보스가 변경되었을 때 0으로 보이는 것을 방지하기 위해 로컬 변수 사용
+        if(myScore) myScore.textContent = `${(playerRaidDamage || 0).toLocaleString()} Dmg`;
         
-        loadRaidRankingData(); // 위에서 수정한 함수 호출
+        loadRaidRankingData();
     }
 }
 
-// ✅ [신규] 새로고침 버튼 기능
+// 3. 랭킹 새로고침 함수 (신규 추가)
 function refreshCurrentRanking() {
     const eventBtn = document.getElementById('rank-tab-event');
-    // 현재 활성화된 탭을 확인하여 해당 데이터를 다시 불러옵니다.
+    // 현재 활성화된 탭(파란색 버튼)이 무엇인지 확인하여 해당 랭킹을 다시 로드
     if (eventBtn && eventBtn.classList.contains('bg-indigo-600')) {
-        loadEventRankingData(); // (참고: 이벤트 랭킹 함수도 {source:'server'}를 추가하면 더 좋습니다)
+        loadEventRankingData(); 
     } else {
         loadRaidRankingData();
     }
 }
 
-// 전역 등록
+// 전역 스코프에 함수 등록 (HTML에서 onclick으로 찾을 수 있게 함)
+window.openRankingModal = openRankingModal;
 window.switchRankingTab = switchRankingTab;
 window.refreshCurrentRanking = refreshCurrentRanking;
 
