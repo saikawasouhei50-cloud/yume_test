@@ -707,11 +707,8 @@ body.pointer-events-none {
 
     <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
 
-</div> ```
+</div>
 
-### 🛠️ 무엇을 고쳤나요?
-1.  **`</div>` 위치 이동:** 원래 코드에서는 `event-gacha-view`가 끝나자마자 `gacha-view` 전체를 닫아버리는 `</div>`가 있었습니다. 그것을 지우고, `results-container`가 끝난 뒤에 `gacha-view`가 닫히도록 수정했습니다.
-2.  **이벤트 버튼 보이기:** `gacha-tab-event` 버튼에 있던 `hidden` 클래스를 지워두었습니다. 이제 버튼이 항상 보입니다.
 
             <div id="inventory-view" class="hidden">
      <div class="text-center mb-4 relative">
