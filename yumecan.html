@@ -1664,9 +1664,15 @@ const dismantleSelectedButton = document.getElementById('dismantle-selected-butt
             // 1. 전역 변수 선언 (자동으로 모든 탭과 뷰를 잡도록 설정)
             const allTabs = document.querySelectorAll('.tab-button');
             // 모달창을 제외한 메인 뷰들을 자동으로 모두 가져옵니다.
-            const allViews = document.querySelectorAll(
-              'main > div:not(#combat-result-modal):not(#card-detail-modal):not(#interactive-story-modal)'
-            );
+            const viewIds = [
+    'home-view', 'event-home-view', 'event-view', 'gacha-view', 
+    'inventory-view', 'deck-view', 'combat-view', 'combat-in-progress-view',
+    'collection-view', 'achievements-view', 'story-view', 'trade-view', 
+    'profile-view', 'friends-view', 'myroom-view'
+];
+
+// 이 목록에 있는 요소들만 찾아옵니다.
+const allViews = viewIds.map(id => document.getElementById(id)).filter(el => el);
             const pullOneButton = document.getElementById('pull-one');
             const pullTenButton = document.getElementById('pull-ten');
             const pullOneEventButton = document.getElementById('pull-one-event');
