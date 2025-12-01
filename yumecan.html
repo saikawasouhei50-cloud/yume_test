@@ -4421,58 +4421,58 @@ async function startCombat(indices, type) {
     
     // ✨ [핵심 변경] 레이아웃 구조 재설정 (좌측 덱 / 우측 몬스터)
     // 기존 HTML 구조를 무시하고 JS에서 클래스를 재조정합니다.
-    // 1) 전체 컨테이너 설정 (Flex 유지, 높이 제한 추가)
+    // 1) 전체 컨테이너 설정
     const container = combatInProgressView.querySelector('.grid');
     if (container) {
-        // h-[600px] 등으로 높이를 강제하여 카드가 무한정 커지는 것 방지
-        container.className = "flex flex-col md:flex-row gap-4 items-start justify-center h-full max-h-[600px]"; 
+        container.className = "flex flex-col md:flex-row gap-4 items-start justify-center h-full max-h-[550px]"; 
     }
 
-    // 2) 플레이어 덱 영역 (좌측) - 크기 축소 및 3열 그리드 적용
-    // md:w-5/12 -> md:w-1/2, grid-cols-2 -> grid-cols-3 (카드를 작게 만듦)
-    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-2 order-2 md:order-1 overflow-y-auto pr-1"; 
+    // 2) 플레이어 덱 영역 (좌측)
+    // ✨ 핵심 변경: 모바일 여백(px-12)을 대폭 늘려서 카드를 작게 만듭니다. 
+    // (기존 px-6 -> px-12)
+    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto pr-1 px-12 md:px-10 content-start"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
-    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 h-full border border-white/10";
+    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 h-full border border-white/10 min-h-[200px]";
     
     // 플레이어 덱 UI 그리기
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
-        // p-2 -> p-1.5 (패딩 축소), text-xs -> text-[10px] (글자 축소)
-        cardEl.className = 'relative bg-gray-800 p-1.5 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
+        
+        cardEl.className = 'relative bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
 
         cardEl.innerHTML = `
-            <div class="relative w-full aspect-[2/3] overflow-hidden rounded mb-1">
+            <div class="relative w-full aspect-[2/3] overflow-hidden rounded mb-0.5">
                 <img src="${card.cardImageUrl}" class="w-full h-full object-cover opacity-90">
-                <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-90 origin-top-right"></div> 
+                <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-75 origin-top-right"></div> 
             </div>
             
-            <p class="font-bold text-[10px] md:text-xs truncate w-full text-center ${rarityColor} mb-1">${card.name}</p>
+            <p class="font-bold text-[8px] md:text-[10px] truncate w-full text-center ${rarityColor} mb-0.5">${card.name}</p>
             
-            <div class="w-full hp-bar-background rounded-full h-1.5 bg-gray-600">
-                <div id="player-hp-bar-${index}" class="hp-bar-foreground h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
+            <div class="w-full hp-bar-background rounded-full h-1 md:h-1.5 bg-gray-600">
+                <div id="player-hp-bar-${index}" class="hp-bar-foreground h-1 md:h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
             </div>
-            <p id="player-hp-text-${index}" class="text-[9px] text-center text-gray-400 mt-0.5 leading-none">${card.stats.hp}</p>
+            <p id="player-hp-text-${index}" class="text-[8px] text-center text-gray-400 mt-0.5 leading-none transform scale-90">${card.stats.hp}</p>
         `;
         combatPlayerDeck.appendChild(cardEl);
     });
 
-    // 몬스터 UI 그리기 (이미지 크기 조절)
+    // 몬스터 UI 그리기 (모바일에서 이미지 크기 최적화)
     combatMonsterArea.innerHTML = `
-        <h3 class="text-2xl md:text-3xl font-bold text-red-500 drop-shadow-md mb-4 text-center">${monsterData.name}</h3>
+        <h3 class="text-xl md:text-3xl font-bold text-red-500 drop-shadow-md mb-2 md:mb-4 text-center truncate w-full px-2">${monsterData.name}</h3>
         
-        <div class="relative w-full flex justify-center items-center flex-grow mb-4">
-             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-40 md:h-64 object-contain drop-shadow-2xl transition-transform">
-             <div id="monster-effect-icons" class="absolute top-0 right-4 flex flex-col gap-1"></div> 
+        <div class="relative w-full flex justify-center items-center flex-grow mb-2 md:mb-4">
+             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-28 md:h-56 object-contain drop-shadow-2xl transition-transform">
+             <div id="monster-effect-icons" class="absolute top-0 right-2 md:right-4 flex flex-col gap-1"></div> 
         </div>
         
-        <div class="w-full max-w-sm hp-bar-background rounded-full h-5 border border-gray-500 shadow-inner relative overflow-hidden">
+        <div class="w-full max-w-[200px] md:max-w-sm hp-bar-background rounded-full h-4 md:h-5 border border-gray-500 shadow-inner relative overflow-hidden">
             <div id="monster-hp-bar" class="hp-bar-foreground h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-300" style="width: 100%"></div>
-            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
+            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-[10px] md:text-xs font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
         </div>
     `;
     
