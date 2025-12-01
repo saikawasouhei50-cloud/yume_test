@@ -8900,7 +8900,7 @@ async function distributeRaidRewards(bossName) {
 }
 
 // ✅ [수정됨] 레이드 공격 함수 (새 보스면 점수 리셋)
-asasync function submitRaidDamage(damage) {
+async function submitRaidDamage(damage) {
     if (damage <= 0) return;
     if (!currentUser) return alert("로그인 상태를 확인해주세요.");
 
