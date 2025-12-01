@@ -788,11 +788,31 @@ body.pointer-events-none {
                 </div>
             </div>
 
-            <div id="combat-in-progress-view" class="hidden">
-                <div class="grid grid-cols-3 gap-4 items-center">
-                    <div id="combat-player-deck" class="col-span-1 space-y-2"></div>
-                    <div id="combat-monster-area" class="col-span-2 flex flex-col items-center"></div>
-                </div>
+            <div id="combat-in-progress-view" class="hidden flex flex-col h-full p-2 md:p-4 gap-4">
+    
+    <div class="flex justify-between items-center bg-gray-900/60 p-2 rounded-lg border border-gray-700 backdrop-blur-sm shrink-0">
+        <div id="combat-log" class="text-sm text-gray-200 h-12 overflow-y-auto flex-grow scrollbar-hide pr-2 font-mono" style="scroll-behavior: smooth;"></div>
+        
+        <div class="flex items-center gap-2 shrink-0 pl-2 border-l border-gray-700">
+            <button id="speed-toggle-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-xs md:text-sm border border-blue-400 transition-colors shadow-sm whitespace-nowrap">
+                1x 배속
+            </button>
+            <button onclick="surrenderCombat()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs md:text-sm border border-red-400 transition-colors shadow-sm flex items-center gap-1 whitespace-nowrap">
+                <span>🏳️</span> 항복
+            </button>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row flex-grow gap-4 items-stretch justify-center overflow-hidden">
+        
+        <div id="combat-player-deck" class="flex md:flex-col flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 w-full md:w-auto md:shrink-0 order-2 md:order-1 overflow-y-auto md:overflow-visible py-2 md:py-0 px-2 md:px-0 scrollbar-hide bg-black/20 md:bg-transparent rounded-xl">
+            </div>
+
+        <div id="combat-monster-area" class="flex flex-col items-center justify-center flex-grow w-full md:w-auto order-1 md:order-2 bg-black/30 rounded-xl p-4 border border-white/10 relative overflow-hidden">
+            </div>
+    </div>
+    
+    </div>
 
                 <div class="flex justify-end items-center gap-2 mt-4">
                     <button id="speed-1x" class="speed-button active bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">1x</button>
@@ -4373,6 +4393,7 @@ function startStageCombat(chapterIndex, stageIndex) {
 }
 
 				// ✅ [수정됨] 전투 시작 함수 (ID 불일치 수정 및 MaxHp 초기화 추가)
+// ✅ [수정됨] 전투 시작 함수 (레이아웃 강제 설정 코드 제거)
 async function startCombat(indices, type) {
     isCombatRunning = true;
     setCombatSpeed(1); 
@@ -4387,7 +4408,6 @@ async function startCombat(indices, type) {
                 hp: raidBossData.currentHp, 
                 atk: raidBossData.atk, 
                 def: raidBossData.def,
-                // ✨ [핵심 수정 1] 최대 체력 정보를 명시적으로 넣어줍니다.
                 maxHp: raidBossData.maxHp 
             },
             imageUrl: raidBossData.imageUrl,
@@ -4397,12 +4417,10 @@ async function startCombat(indices, type) {
     else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
-        // ✨ [핵심 수정 1] 일반 몬스터도 현재 체력을 최대 체력으로 설정해줍니다.
         monsterData.stats.maxHp = monsterData.stats.hp;
     } else if (type === 'event') {
         const combatData = eventDungeons[indices];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
-        // ✨ [핵심 수정 1] 이벤트 몬스터도 마찬가지입니다.
         monsterData.stats.maxHp = monsterData.stats.hp;
     }
     // ▲▲▲ 몬스터 데이터 설정 끝 ▲▲▲
@@ -4434,41 +4452,39 @@ async function startCombat(indices, type) {
     allViews.forEach(view => view.classList.add('hidden'));
     combatInProgressView.classList.remove('hidden');
     
-    // ✨ [핵심 변경] 전체 레이아웃을 'Grid(좌우)'에서 'Flex(상하)'로 변경하여 공간 확보
-    combatInProgressView.className = "flex flex-col items-center justify-between gap-6 min-h-[60vh] py-4";
+    // ❌❌❌ [삭제됨] HTML에 설정한 레이아웃(좌측 캐릭터/우측 몬스터)을 유지하기 위해
+    // className을 강제로 덮어쓰는 코드들을 모두 제거했습니다. ❌❌❌
 
     combatLog.innerHTML = '';
     
-    // 1. 몬스터 영역 설정 (화면 중앙 상단)
-    combatMonsterArea.className = "flex flex-col items-center justify-center flex-grow w-full";
+    // 1. 몬스터 영역 내용 채우기
     combatMonsterArea.innerHTML = `
-        <div class="relative">
-            <h3 class="text-3xl font-black text-white drop-shadow-lg mb-2 text-center" id="combat-monster-name" style="text-shadow: 0 0 10px red;">${monsterData.name}</h3>
+        <div class="relative w-full h-full flex flex-col items-center justify-center">
+             <h3 class="text-2xl md:text-3xl font-black text-white drop-shadow-lg mb-4 text-center z-10" id="combat-monster-name" style="text-shadow: 0 0 10px red;">${monsterData.name}</h3>
+            
             <div class="relative inline-block group">
                 <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="w-48 h-48 md:w-64 md:h-64 object-contain filter drop-shadow-2xl transition-transform duration-100">
                 
                 <div id="combat-monster-buffs" class="absolute top-0 right-[-20px] flex flex-col gap-1 z-10 pointer-events-none"></div>
             </div>
-        </div>
 
-        <div class="w-full max-w-md mt-4 relative">
-            <div class="w-full bg-gray-800 rounded-full h-6 border-2 border-gray-600 shadow-inner overflow-hidden">
-                <div id="combat-monster-hp-bar" class="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500" style="width: 100%"></div>
+            <div class="w-full max-w-md mt-6 relative z-10">
+                <div class="w-full bg-gray-800 rounded-full h-6 border-2 border-gray-600 shadow-inner overflow-hidden">
+                    <div id="combat-monster-hp-bar" class="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500" style="width: 100%"></div>
+                </div>
+                <p id="combat-monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+                    ${monsterData.stats.hp} / ${monsterData.stats.maxHp}
+                </p>
             </div>
-            <p id="combat-monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
-                ${monsterData.stats.hp} / ${monsterData.stats.maxHp}
-            </p>
         </div>
     `;
 
-    // 2. 플레이어 덱 영역 설정 (화면 하단 가로 정렬)
-    combatPlayerDeck.className = "flex flex-wrap justify-center items-end gap-2 md:gap-4 w-full px-2";
-    combatPlayerDeck.innerHTML = ''; // 초기화 (내용은 updateCombatUI에서 채움)
+    // 2. 플레이어 덱 영역 초기화 (내용은 updateCombatUI에서 채움)
+    combatPlayerDeck.innerHTML = '';
     
     // 4. 전투 루프 실행
-    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
-
-     }       
+    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type); 
+}     
             
 
             const delay = ms => new Promise(res => setTimeout(res, ms / combatSpeedMultiplier));
