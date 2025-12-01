@@ -792,8 +792,8 @@ body.pointer-events-none {
     
     <div class="flex-grow flex flex-col md:flex-row items-center justify-center w-full h-full overflow-hidden">
         
-        <div id="combat-player-deck" class="order-2 md:order-1 w-full md:w-1/2 h-full flex flex-wrap content-center justify-center gap-4 p-4 overflow-y-auto scrollbar-hide">
-            </div>
+        <div id="combat-player-deck" class="order-2 md:order-1 w-full md:w-1/2 md:max-w-[360px] h-full flex flex-wrap content-center justify-center gap-2 md:gap-4 p-4 overflow-y-auto scrollbar-hide">
+    </div>
 
         <div id="combat-monster-area" class="order-1 md:order-2 w-full md:w-1/2 h-full flex flex-col items-center justify-center p-4 relative">
             </div>
@@ -4815,9 +4815,9 @@ function createBuffIcon(type) {
     return el;
 }
 
-             // ✅ [수정됨] 카드 이미지와 버프 아이콘이 포함된 세련된 UI 업데이트 함수
+             // ✅ [수정됨] 카드 크기 클래스 적용 및 레이아웃 최적화
 function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs = []) {
-    // 1. 몬스터 정보 업데이트 (기존 유지)
+    // 1. 몬스터 정보 업데이트
     const monsterHpBar = document.getElementById('combat-monster-hp-bar');
     const monsterHpText = document.getElementById('combat-monster-hp-text');
     
@@ -4835,7 +4835,7 @@ function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs 
         myBuffs.forEach(buff => monsterBuffsContainer.appendChild(createBuffIcon(buff.type)));
     }
 
-    // 2. 플레이어 덱 (카드 이미지 렌더링) ✨✨✨
+    // 2. 플레이어 덱 (카드 이미지 렌더링)
     const combatDeckContainer = document.getElementById('combat-player-deck');
     if (combatDeckContainer) {
         let html = '';
@@ -4846,7 +4846,6 @@ function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs 
             const currentHp = Math.max(0, card.stats.hp);
             const hpPercent = (currentHp / maxHp) * 100;
             
-            // HP 상태에 따른 색상 및 스타일
             let hpColor = 'bg-green-500';
             if (hpPercent < 30) hpColor = 'bg-red-500';
             else if (hpPercent < 70) hpColor = 'bg-yellow-500';
@@ -4855,9 +4854,9 @@ function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs 
             const cardStyle = isDead ? 'filter: grayscale(100%) brightness(50%);' : '';
             const borderClass = card.rarity === 'SSR' ? 'border-yellow-400 shadow-[0_0_10px_gold]' : 'border-gray-500';
 
-            // 카드 HTML 생성
+            // ✨ [핵심 변경] style="..."을 제거하고 w-20 md:w-24 클래스 사용
             html += `
-                <div class="relative flex flex-col items-center group transition-transform duration-300 ${isDead ? '' : 'hover:-translate-y-2'}" style="width: 80px; md:width: 100px;">
+                <div class="relative flex flex-col items-center group transition-transform duration-300 w-20 md:w-24 ${isDead ? '' : 'hover:-translate-y-2'}">
                     
                     <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden border-2 ${borderClass} bg-gray-900 shadow-lg" style="${cardStyle}">
                         <img src="${card.cardImageUrl}" alt="${card.name}" class="w-full h-full object-cover">
@@ -4883,7 +4882,6 @@ function updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs 
         
         combatDeckContainer.innerHTML = html;
 
-        // 플레이어 버프 아이콘 채우기
         combatDeck.forEach((card, index) => {
             const container = combatDeckContainer.querySelector(`.player-buff-container[data-card-index="${index}"]`);
             if (container && activeBuffs.length > 0) {
