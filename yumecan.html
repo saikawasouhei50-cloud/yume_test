@@ -686,6 +686,11 @@ body.pointer-events-none {
                     </div>
                 </div>
                 <div id="event-gacha-view" class="hidden">
+				<div class="w-full flex justify-start mb-2 pl-1">
+        <button onclick="switchTab('event-home')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-1 px-3 rounded-full flex items-center gap-1 shadow-md border border-gray-500 transition-transform hover:scale-105">
+            <span>◀</span> 이벤트 홈
+        </button>
+    </div>
                     <div id="event-gacha-info" class="text-center p-2 mb-2 rounded-lg bg-yellow-500/20">
                         <p class="font-bold text-yellow-300"></p>
                     </div>
@@ -4367,7 +4372,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     startCombat({ chapter: chapterIndex, stage: stageIndex }, 'main_stage');
 }
 
-				// ✅ 기존 async function startCombat 함수 전체를 이 코드로 교체하세요.
+				// ✅ [수정됨] 전투 시작 함수 (ID 불일치 수정 및 MaxHp 초기화 추가)
 async function startCombat(indices, type) {
     isCombatRunning = true;
     setCombatSpeed(1); 
@@ -4381,7 +4386,9 @@ async function startCombat(indices, type) {
             stats: { 
                 hp: raidBossData.currentHp, 
                 atk: raidBossData.atk, 
-                def: raidBossData.def 
+                def: raidBossData.def,
+                // ✨ [핵심 수정 1] 최대 체력 정보를 명시적으로 넣어줍니다.
+                maxHp: raidBossData.maxHp 
             },
             imageUrl: raidBossData.imageUrl,
             isAoE: true 
@@ -4390,15 +4397,20 @@ async function startCombat(indices, type) {
     else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        // ✨ [핵심 수정 1] 일반 몬스터도 현재 체력을 최대 체력으로 설정해줍니다.
+        monsterData.stats.maxHp = monsterData.stats.hp;
     } else if (type === 'event') {
         const combatData = eventDungeons[indices];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        // ✨ [핵심 수정 1] 이벤트 몬스터도 마찬가지입니다.
+        monsterData.stats.maxHp = monsterData.stats.hp;
     }
     // ▲▲▲ 몬스터 데이터 설정 끝 ▲▲▲
-	window.currentCombatIndices = indices;
+    
+    window.currentCombatIndices = indices;
     window.currentCombatType = type;
 
-    // 1. 퇴고/개정 레벨 적용 (여기서 combatDeck 정의)
+    // 1. 퇴고/개정 레벨 적용
     let combatDeck = playerDeck.map(cardInstance => {
         const baseCard = findCharacter(cardInstance.name);
         const enhancedStats = getEnhancedStats(cardInstance);
@@ -4411,12 +4423,12 @@ async function startCombat(indices, type) {
     // 2. 인연 보너스 적용
     combatDeck = applySynergyBonusesToDeck(combatDeck);
 
-    // 3. 최대 HP 저장 (원본 보너스 덱 저장)
+    // 3. 최대 HP 저장
     const originalBonusDeck = JSON.parse(JSON.stringify(combatDeck)); 
 
     // --- UI 렌더링 ---
     const combatMonsterImage = document.getElementById('combat-monster-image');
-    if(combatMonsterImage) combatMonsterImage.classList.remove('shake-animation'); // 애니메이션 잔상 제거
+    if(combatMonsterImage) combatMonsterImage.classList.remove('shake-animation');
 
     // 뷰 전환
     allViews.forEach(view => view.classList.add('hidden'));
@@ -4438,22 +4450,21 @@ async function startCombat(indices, type) {
         combatPlayerDeck.appendChild(cardEl);
     });
 
-    // 몬스터 UI 그리기 (수정됨: 아이콘 컨테이너 추가)
+    // 몬스터 UI 그리기 (수정됨: ID 일치시킴 + 아이콘 컨테이너 유지)
     combatMonsterArea.innerHTML = `
         <h3 class="text-2xl font-bold" id="combat-monster-name">${monsterData.name}</h3>
         
         <div class="relative inline-block">
             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="my-4 h-48 w-48 object-contain">
-            
             <div id="combat-monster-buffs" class="absolute top-4 right-0 flex flex-col gap-1 z-10 pointer-events-none"></div>
         </div>
 
         <div class="w-full hp-bar-background rounded-full h-4">
-            <div id="monster-hp-bar" class="hp-bar-foreground h-4 rounded-full" style="width: 100%"></div>
+            <div id="combat-monster-hp-bar" class="hp-bar-foreground h-4 rounded-full" style="width: 100%"></div>
         </div>
-        <p id="monster-hp-text" class="text-sm mt-1">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
+        <p id="combat-monster-hp-text" class="text-sm mt-1">${monsterData.stats.hp} / ${monsterData.stats.maxHp}</p>
     `;
-	
+    
     // 4. 전투 루프 실행
     await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type); 
 }
