@@ -1864,33 +1864,33 @@ async function saveGameToFirebase() {
         playerCurrency = savedData.currency ?? 100;
         playerFountainPens = savedData.fountainPens ?? 500;
         playerInkwells = savedData.inkwells ?? 0;
-        const loadedInventory = savedData.inventory || [];
         
-        // 인벤토리 로드 (안전장치 포함)
+        // 인벤토리 로드
+        const loadedInventory = savedData.inventory || [];
         playerInventory = loadedInventory.map(card => ({
             ...card,
             revision: (card.revision !== undefined && card.revision !== null) ? card.revision : 0,
             level: (card.level !== undefined && card.level !== null) ? card.level : 0
         }));
 
-        // ✨ [핵심 수정] 수집 도감 데이터 로드 + 동기화
+        // 수집 도감 로드
         collectedCardNames = new Set(savedData.collectedCardNames || []);
-        
-        // 💡 기존에 카드를 가지고 있던 유저를 위해, 현재 인벤토리의 카드를 수집 목록에 강제 등록
         playerInventory.forEach(card => collectedCardNames.add(card.name));
 
         const savedDeckIds = savedData.deck || [];
         playerDeck = savedDeckIds.map(id => playerInventory.find(card => card.id === id)).filter(Boolean);
-        playerRoom = savedData.myRoom || { furniture: [], characters: [] };
         
+        // 마이룸 및 가구
+        playerRoom = savedData.myRoom || { furniture: [], characters: [] };
         if (!Array.isArray(playerRoom.furniture)) playerRoom.furniture = [];
         if (!Array.isArray(playerRoom.characters)) playerRoom.characters = [];
-        
         ownedFurniture = savedData.ownedFurniture || [];
+        
         inventoryCapacity = savedData.capacity ?? 100;
         if (savedData.representative) {
             representativeCharacter = findCharacter(savedData.representative) || null;
         }
+        
         clearedStages = savedData.clearedStages || [];
         playerBookmarks = savedData.bookmarks ?? MAX_BOOKMARKS;
         lastBookmarkUpdateTime = savedData.lastBookmarkUpdate ?? Date.now();
@@ -1898,66 +1898,58 @@ async function saveGameToFirebase() {
         playerStats = savedData.stats || { totalPulls: 0 };
         clearedStageStories = savedData.clearedStageStories || [];
         
-        // 이벤트 데이터 로드 (수정된 로그)
-        if (savedData.currentEventId === CURRENT_EVENT_ID) {
+        // ============================================================
+        // ✨ [수정됨] 이벤트 데이터 로드 (안전장치 + KST 날짜 체크)
+        // ============================================================
+        
+        // 1. 이벤트 ID 체크 (로딩 지연 시 초기화 방지)
+        if (CURRENT_EVENT_ID && savedData.currentEventId === CURRENT_EVENT_ID) {
             console.log("이전 이벤트를 이어서 진행합니다:", CURRENT_EVENT_ID);
             
             playerEventPoints = savedData.eventPoints !== undefined ? savedData.eventPoints : 0;
+            playerCumulativeEventPoints = savedData.cumulativeEventPoints !== undefined ? savedData.cumulativeEventPoints : playerEventPoints;
+            playerRaidDamage = savedData.raidCumulativeDamage !== undefined ? savedData.raidCumulativeDamage : 0;
             
-            playerCumulativeEventPoints = savedData.cumulativeEventPoints !== undefined 
-                ? savedData.cumulativeEventPoints 
-                : playerEventPoints;
-            
-            // ✨ [핵심 수정 1] playerRaidDamage 로드
-            playerRaidDamage = savedData.raidCumulativeDamage !== undefined 
-                ? savedData.raidCumulativeDamage 
-                : 0;
-
-            // ✨ [핵심 수정 2] 레이드 참여 횟수 로드 및 초기화 체크
+            // 레이드 참여 횟수 로드 (한국 시간 기준 체크)
+            const todayStr = getTodayDateString(new Date()); 
             const lastResetTimestamp = savedData.raidLastResetDate;
-            const today = new Date().toDateString(); 
+            let savedLastRaidDateStr = null;
             
-            // ⚠️ [수정된 안전 장치] Timestamp 객체인지 확인
-            const savedLastRaidDate = (lastResetTimestamp && typeof lastResetTimestamp.toDate === 'function')
-                ? lastResetTimestamp.toDate().toDateString() 
-                : null; // ✨ 유효하지 않으면 null로 처리
+            if (lastResetTimestamp && typeof lastResetTimestamp.toDate === 'function') {
+                savedLastRaidDateStr = getTodayDateString(lastResetTimestamp.toDate());
+            }
 
-            // 날짜가 바뀌었거나 (savedLastRaidDate가 null이 아닐 때) 
-            // 또는 아예 저장된 날짜가 없을 때 (savedLastRaidDate === null)
-            if (savedLastRaidDate !== today) { 
+            if (savedLastRaidDateStr !== todayStr) { 
                 playerRaidDailyCount = 0; 
-                // DB에 저장할 때 Timestamp가 들어가기 때문에, 
-                // 로컬 변수는 일단 null로 두어도 다음 트랜잭션에서 서버 타임스탬프를 기록합니다.
                 playerRaidLastResetDate = null; 
             } else {
-                // 날짜가 같으면 DB 카운트 로드
                 playerRaidDailyCount = savedData.raidDailyCount ?? 0;
                 playerRaidLastResetDate = savedData.raidLastResetDate;
             }
+
             clearedEventDungeons = savedData.clearedEventDungeons || [];
             purchasedEventItems = savedData.purchasedEventItems || {};
             playerChoices = savedData.playerChoices || {};
-			playerSystemMailHistory = savedData.systemMailHistory || [];
-        } else {
-            // ✨ ID가 다른 경우: 새 이벤트 시작 OR 이벤트 종료 (모든 이벤트 관련 데이터 초기화)
-            if (CURRENT_EVENT_ID) {
-                console.log(`새로운 이벤트[${CURRENT_EVENT_ID}]가 감지되어, 이전 기록을 초기화합니다.`);
-            } else {
-                console.log("현재 진행 중인 이벤트가 없어 기록을 초기화합니다.");
-            }
-            
+            playerSystemMailHistory = savedData.systemMailHistory || [];
+
+        } else if (CURRENT_EVENT_ID && savedData.currentEventId !== CURRENT_EVENT_ID) {
+            console.log(`새로운 이벤트[${CURRENT_EVENT_ID}]가 감지되어, 이전 기록을 초기화합니다.`);
             playerEventPoints = 0;
             playerCumulativeEventPoints = 0;
             playerRaidDamage = 0; 
-            playerRaidDailyCount = 0; // ✨ 레이드 횟수 초기화
+            playerRaidDailyCount = 0;
             clearedEventDungeons = [];
             purchasedEventItems = {};
             playerChoices = {};
+        } else {
+            console.warn("이벤트 정보를 불러오는 중이거나 이벤트가 없습니다. 데이터 초기화를 방지합니다.");
+            // 초기화하지 않고 기존 데이터를 임시 유지
+            playerRaidDamage = savedData.raidCumulativeDamage || 0;
+            playerEventPoints = savedData.eventPoints || 0;
         }
-		// ✨ [추가] 프로필 데이터 로드
+
+        // 프로필 데이터 로드
         playerProfile = savedData.profile || { repCardId: null, statusMessage: "" };
-        
-        // 닉네임 인풋창에도 현재 닉네임 미리 채우기
         const nickInput = document.getElementById('profile-nickname-edit');
         if(nickInput) nickInput.value = currentPlayerNickname;
 
@@ -1969,24 +1961,22 @@ async function saveGameToFirebase() {
 
     calculateOfflineRegen();
     playerInventory.forEach(card => {
-        if (!card.id) {
-            card.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
-            console.log("ID 없는 카드 복구됨:", card.name, card.id);
-        }
+        if (!card.id) card.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
     });
-	await checkAndProcessSystemMails(uid);
+    
+    await checkAndProcessSystemMails(uid);
     
     updateUI();
-	updateRaidDailyCountUI();
+    updateRaidDailyCountUI();
     checkEventStatus();
     switchTab('home');
     checkAchievements();
-	checkAndSpawnRaidBoss();
+    checkAndSpawnRaidBoss();
+    updateAchievementBadge(); 
 
-	updateAchievementBadge(); // ✨ 추가: 로드 시 배지 갱
     document.getElementById('loading-overlay').classList.add('hidden');
     document.body.classList.remove('loading');
-}	
+}
 
 
 
@@ -8910,7 +8900,7 @@ async function distributeRaidRewards(bossName) {
 }
 
 // ✅ [수정됨] 레이드 공격 함수 (새 보스면 점수 리셋)
-async function submitRaidDamage(damage) {
+asasync function submitRaidDamage(damage) {
     if (damage <= 0) return;
     if (!currentUser) return alert("로그인 상태를 확인해주세요.");
 
@@ -8936,31 +8926,38 @@ async function submitRaidDamage(damage) {
 
             const bossData = bossDoc.data();
             const userData = userDoc.data();
-            const today = new Date().toDateString();
+            
+            // ✨ [수정] 한국 시간(KST) 기준 오늘 날짜 구하기
+            const todayStr = getTodayDateString(new Date());
 
             // 1. 날짜 체크 (일일 횟수 초기화)
             let countBeforeIncrement = userData.raidDailyCount || 0; 
-            const lastDate = (userData.raidLastResetDate && userData.raidLastResetDate.toDate)
-                ? userData.raidLastResetDate.toDate().toDateString() : '';
             
-            if (lastDate !== today) countBeforeIncrement = 0;
+            // 저장된 날짜를 KST 문자열로 변환
+            let lastDateStr = '';
+            if (userData.raidLastResetDate && userData.raidLastResetDate.toDate) {
+                lastDateStr = getTodayDateString(userData.raidLastResetDate.toDate());
+            }
+            
+            // 날짜 문자열이 다르면 0으로 초기화
+            if (lastDateStr !== todayStr) countBeforeIncrement = 0;
+
             if (countBeforeIncrement >= DAILY_LIMIT) throw new Error("LIMIT_REACHED");
             if (bossData.currentHp <= 0) throw new Error("BOSS_DEAD");
 
-            // 2. ✨ [핵심] 기여도(데미지) 초기화 체크
-            // 내가 마지막으로 친 보스 ID와 현재 보스 ID가 다르면 -> 새 시즌이므로 0부터 시작
+            // 2. 기여도(데미지) 초기화 체크 (보스 시즌 변경 시)
             let myCurrentTotalDamage = userData.raidCumulativeDamage || 0;
-            const currentBossId = bossData.spawnId || 0; // 보스 고유 ID
-            const myLastBossId = userData.lastRaidSpawnId || 0; // 내가 마지막으로 친 보스 ID
+            const currentBossId = bossData.spawnId || 0; 
+            const myLastBossId = userData.lastRaidSpawnId || 0; 
 
             if (currentBossId !== myLastBossId) {
-                myCurrentTotalDamage = 0; // 리셋!
+                myCurrentTotalDamage = 0; // 새 보스면 리셋
             }
 
-            // 3. 데미지 계산 및 적용
+            // 3. 데미지 적용
             const countAfterIncrement = countBeforeIncrement + 1; 
             const newHp = Math.max(0, bossData.currentHp - damage);
-            const newTotalDamage = myCurrentTotalDamage + damage; // 리셋된 점수 + 이번 데미지
+            const newTotalDamage = myCurrentTotalDamage + damage;
             
             // 4. 막타 체크
             if (newHp <= 0 && !bossData.isRewardDistributed) {
@@ -8975,26 +8972,23 @@ async function submitRaidDamage(damage) {
                 t.update(bossRef, { currentHp: newHp });
             }
             
-            // 5. 유저 정보 업데이트 (데미지 누적 + 현재 보스 ID 기록)
+            // 5. 유저 정보 업데이트
             t.update(userRef, {
                 raidDailyCount: countAfterIncrement, 
                 raidLastResetDate: firebase.firestore.FieldValue.serverTimestamp(),
-                raidCumulativeDamage: newTotalDamage, // 갱신된 데미지
-                lastRaidSpawnId: currentBossId        // ✨ "나 이 보스 때렸음" 도장 찍기
+                raidCumulativeDamage: newTotalDamage,
+                lastRaidSpawnId: currentBossId
             });
 
             return countAfterIncrement; 
         });
         
-        // --- 트랜잭션 성공 후 ---
+        // --- 트랜잭션 성공 후 처리 ---
         if (triggerRewardDistribution) {
-            // 막타 보상 분배 (이전 함수 그대로 사용)
             distributeRaidRewards(bossNameForReward); 
             alert(`🎉 결정타!! [${bossNameForReward}] 처치!\n잠시 후 보상 우편이 발송됩니다.`);
-            
-            // ✨ [추가] 보스가 죽었으니 바로 다음 보스(또는 부활) 체크 로직 실행 가능
-            // setTimeout(() => checkAndSpawnRaidBoss(), 3000); 
         } else {
+            calculatedReward = Math.min(MAX_REWARD, Math.floor(damage * REWARD_PER_100_DAMAGE)); 
             const rewardMsg = calculatedReward > 0 ? `기여 보상: 💎${calculatedReward}` : `(보상 없음)`;
             alert(`🎉 ${damage} 피해를 입혔습니다! (오늘 ${finalCount}회)\n${rewardMsg}`);
         }
@@ -9002,18 +8996,13 @@ async function submitRaidDamage(damage) {
         playerRaidDailyCount = finalCount;
         updateRaidDailyCountUI();
         
-        calculatedReward = Math.min(MAX_REWARD, Math.floor(damage * REWARD_PER_100_DAMAGE)); 
         if (calculatedReward > 0) playerCurrency += calculatedReward;
-        
-        // 화면에 보이는 누적 데미지도 즉시 갱신 (리셋된 로직 반영)
-        // (트랜잭션 결과를 정확히 반영하려면 DB를 다시 읽는 게 좋지만, 여기선 약식으로 더함)
-        // 리셋 여부를 모르므로 UI에는 일단 더해주고, 다음 로딩 때 정확해짐
-        playerRaidDamage += damage; 
+        playerRaidDamage += damage; // UI용 임시 갱신
         
         updateUI(); 
 
     } catch (error) {
-        if (error.message === "LIMIT_REACHED") return;
+        if (error.message === "LIMIT_REACHED") return; // 횟수 제한 시 조용히 리턴 (UI에서 막힘)
         if (error.message === "BOSS_DEAD") {
             alert("이미 토벌된 보스입니다.");
             updateRaidUI();
@@ -9292,6 +9281,19 @@ window.openGachaPoolModal = openGachaPoolModal;
 let raidBossData = null;
 let raidUnsubscribe = null;
 
+function getTodayDateString(dateObj = new Date()) {
+    // dateObj가 null이거나 유효하지 않으면 오늘 날짜 사용
+    if (!dateObj) dateObj = new Date();
+    
+    // 한국 시간(Asia/Seoul) 기준으로 변환
+    return dateObj.toLocaleDateString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\. /g, '-').replace('.', ''); // "2025. 10. 19." -> "2025-10-19" 형태로 통일
+}
+
 // ✅ [신규] 항복/도주 로직 함수
 // ✅ [수정됨] 항복/도주 로직 함수 (확실한 종료 처리)
 function fleeCombat() {
@@ -9362,8 +9364,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
-
 
 
 
