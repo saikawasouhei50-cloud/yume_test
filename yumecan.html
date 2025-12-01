@@ -4435,14 +4435,13 @@ async function startCombat(indices, type) {
     // 1) 전체 컨테이너 설정
     const container = combatInProgressView.querySelector('.grid');
     if (container) {
-        // items-center: 수직 중앙 정렬 (몬스터와 덱의 높이 중심을 맞춤)
         container.className = "flex flex-col md:flex-row gap-4 items-center justify-center h-full max-h-[550px]"; 
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    // ✨ 핵심: display를 'flex'로 통일 (PC에서도 grid 대신 flex 사용)
-    // md:max-w-md: PC에서 덱 영역이 너무 퍼지지 않게 최대 너비 제한 (카드가 예쁘게 모임)
-    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto px-2 md:px-0 scrollbar-hide"; 
+    // ✨ 핵심 변경 1: 'p-2' (안쪽 여백) 추가
+    // 상하좌우에 약간의 공간을 줘서 카드가 커져도 잘리지 않게 합니다.
+    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto p-2 scrollbar-hide"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
@@ -4452,9 +4451,9 @@ async function startCombat(indices, type) {
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
         
-        // ✨ 카드 너비 31% 고정 (PC/모바일 공통)
-        // 31% * 3장 = 93% -> 한 줄에 3장이 들어가고, 남은 2장은 아랫줄 중앙으로 자동 이동
-        cardEl.className = 'relative w-[31%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
+        // ✨ 핵심 변경 2: 'hover:z-10' 추가
+        // 마우스를 올리거나 커질 때 다른 카드보다 위에 보이게 해서 가려짐을 방지합니다.
+        cardEl.className = 'relative w-[31%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
