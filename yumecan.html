@@ -4445,31 +4445,30 @@ async function startCombat(indices, type) {
     combatInProgressView.classList.remove('hidden');
     combatLog.innerHTML = '';
     
-    // ✨ [핵심 변경] 레이아웃 구조 재설정 (좌측 덱 / 우측 몬스터)
-    // 기존 HTML 구조를 무시하고 JS에서 클래스를 재조정합니다.
     // 1) 전체 컨테이너 설정
     const container = combatInProgressView.querySelector('.grid');
     if (container) {
-        container.className = "flex flex-col md:flex-row gap-4 items-center justify-center h-full max-h-[550px]"; 
+        container.className = "flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-center h-full max-h-[550px]"; 
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    // ✨ 핵심 변경 1: 'p-4' (상하좌우 여백) 추가
-    // 위아래에 넉넉한 공간(약 16px)을 줘서 카드가 스크롤 끝에 닿아도 잘리지 않게 합니다.
-    // ✨ px-2 -> p-4 (모바일에서도 안쪽 여백 확보)
-    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-start gap-2 order-2 md:order-1 overflow-y-auto p-4 scrollbar-hide"; 
+    // ✨ 핵심 변경 1: pb-8 (하단 패딩) 추가
+    // 스크롤 끝까지 내려도 카드 밑부분이 잘리지 않도록 아래쪽에 넉넉한 공간을 줍니다.
+    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto p-2 pb-8 scrollbar-hide"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
-    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 border border-white/10 min-h-[200px]";
+    // min-h-[200px] -> min-h-[180px] (모바일에서 몬스터 영역도 살짝 줄임)
+    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 border border-white/10 min-h-[180px]";
     
     // 플레이어 덱 UI 그리기
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
         
-        // ✨ 핵심 변경 2: 카드 너비 'w-[30%]'로 축소 (기존 31%)
-        // 아주 약간 작게 만들어서 가로 공간 여유를 확보합니다.
-        cardEl.className = 'relative w-[30%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
+        // ✨ 핵심 변경 2: 카드 너비 'w-[28%]'로 축소 (기존 30%)
+        // 너비가 줄면 높이도 비율대로 줄어들어 화면 세로 공간을 덜 차지합니다.
+        // p-1 -> p-0.5 (카드 내부 패딩도 줄여서 더 컴팩트하게 만듦)
+        cardEl.className = 'relative w-[28%] bg-gray-800 p-0.5 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
@@ -4492,16 +4491,16 @@ async function startCombat(indices, type) {
 
     // 몬스터 UI 그리기
     combatMonsterArea.innerHTML = `
-        <h3 class="text-xl md:text-3xl font-bold text-red-500 drop-shadow-md mb-2 md:mb-4 text-center truncate w-full px-2">${monsterData.name}</h3>
+        <h3 class="text-lg md:text-3xl font-bold text-red-500 drop-shadow-md mb-2 md:mb-4 text-center truncate w-full px-2">${monsterData.name}</h3>
         
         <div class="relative w-full flex justify-center items-center flex-grow mb-2 md:mb-4">
-             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-28 md:h-56 object-contain drop-shadow-2xl transition-transform">
+             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-24 md:h-56 object-contain drop-shadow-2xl transition-transform">
              <div id="monster-effect-icons" class="absolute top-0 right-2 md:right-4 flex flex-col gap-1"></div> 
         </div>
         
-        <div class="w-full max-w-[200px] md:max-w-sm hp-bar-background rounded-full h-4 md:h-5 border border-gray-500 shadow-inner relative overflow-hidden">
+        <div class="w-full max-w-[180px] md:max-w-sm hp-bar-background rounded-full h-3 md:h-5 border border-gray-500 shadow-inner relative overflow-hidden">
             <div id="monster-hp-bar" class="hp-bar-foreground h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-300" style="width: 100%"></div>
-            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-[10px] md:text-xs font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
+            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-[9px] md:text-xs font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
         </div>
     `;
     
