@@ -1904,8 +1904,10 @@ async function saveGameToFirebase() {
         // 일단 저장된 데이터를 무조건 불러옵니다. (섣불리 0으로 만들지 않음)
         playerEventPoints = savedData.eventPoints !== undefined ? savedData.eventPoints : 0;
         playerCumulativeEventPoints = savedData.cumulativeEventPoints !== undefined ? savedData.cumulativeEventPoints : playerEventPoints;
-        playerRaidDamage = savedData.raidCumulativeDamage !== undefined ? 
-		playerLastRaidSpawnId = savedData.lastRaidSpawnId || 0; savedData.raidCumulativeDamage : 0;
+        
+        // ✨ [수정] 아래 두 줄을 이렇게 깔끔하게 정리하세요.
+        playerRaidDamage = savedData.raidCumulativeDamage !== undefined ? savedData.raidCumulativeDamage : 0;
+        playerLastRaidSpawnId = savedData.lastRaidSpawnId || 0; 
         
         clearedEventDungeons = savedData.clearedEventDungeons || [];
         purchasedEventItems = savedData.purchasedEventItems || {};
