@@ -7806,6 +7806,7 @@ function exitVisitMode() {
 		
 
 // 1. 랭킹 모달 열기 함수
+// 1. 랭킹 모달 열기 (탭 기능 + 새로고침 버튼 추가)
 async function openRankingModal() {
     let modal = document.getElementById('ranking-modal');
     
@@ -7847,6 +7848,59 @@ async function openRankingModal() {
     // 기본적으로 '이벤트' 탭을 엽니다.
     switchRankingTab('event');
 }
+
+// 2. 랭킹 탭 전환 함수 (신규 추가)
+function switchRankingTab(type) {
+    const eventBtn = document.getElementById('rank-tab-event');
+    const raidBtn = document.getElementById('rank-tab-raid');
+    const myLabel = document.getElementById('my-ranking-label');
+    const myScore = document.getElementById('my-ranking-score');
+    
+    if (!eventBtn || !raidBtn) return;
+
+    // 스타일 및 데이터 변경
+    if (type === 'event') {
+        eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-indigo-600 shadow-lg";
+        raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
+        
+        if(myLabel) myLabel.textContent = "내 누적 포인트";
+        if(myScore) myScore.textContent = `${(playerCumulativeEventPoints || 0).toLocaleString()} P`;
+        
+        loadEventRankingData();
+        
+    } else if (type === 'raid') {
+        eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
+        raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-red-600 shadow-lg";
+        
+        if(myLabel) myLabel.textContent = "내 누적 데미지";
+        
+        // ✨ [핵심 수정] 내 점수 표시 로직 (보스 시즌 체크)
+        let displayDamage = playerRaidDamage || 0;
+        if (raidBossData && playerLastRaidSpawnId !== raidBossData.spawnId) {
+            displayDamage = 0;
+        }
+
+        if(myScore) myScore.textContent = `${displayDamage.toLocaleString()} Dmg`;
+        
+        loadRaidRankingData();
+    }
+}
+
+// 3. 랭킹 새로고침 함수 (신규 추가)
+function refreshCurrentRanking() {
+    const eventBtn = document.getElementById('rank-tab-event');
+    // 현재 활성화된 탭(파란색 버튼)이 무엇인지 확인하여 해당 랭킹을 다시 로드
+    if (eventBtn && eventBtn.classList.contains('bg-indigo-600')) {
+        loadEventRankingData(); 
+    } else {
+        loadRaidRankingData();
+    }
+}
+
+// 전역 스코프에 함수 등록 (HTML에서 onclick으로 찾을 수 있게 함)
+window.openRankingModal = openRankingModal;
+window.switchRankingTab = switchRankingTab;
+window.refreshCurrentRanking = refreshCurrentRanking;
 
 
 
@@ -9307,60 +9361,6 @@ function fleeCombat() {
     }, 0); 
 }
 
-ffunction switchRankingTab(type) {
-    const eventBtn = document.getElementById('rank-tab-event');
-    const raidBtn = document.getElementById('rank-tab-raid');
-    const myLabel = document.getElementById('my-ranking-label');
-    const myScore = document.getElementById('my-ranking-score');
-    
-    if (!eventBtn || !raidBtn) return;
-
-    // 스타일 및 데이터 변경
-    if (type === 'event') {
-        eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-indigo-600 shadow-lg";
-        raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
-        
-        if(myLabel) myLabel.textContent = "내 누적 포인트";
-        if(myScore) myScore.textContent = `${(playerCumulativeEventPoints || 0).toLocaleString()} P`;
-        
-        loadEventRankingData();
-        
-    } else if (type === 'raid') {
-        eventBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-gray-400 hover:bg-white/10";
-        raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-red-600 shadow-lg";
-        
-        if(myLabel) myLabel.textContent = "내 누적 데미지";
-        
-        // ✨ [핵심 수정] 내 점수 표시 로직 개선
-        let displayDamage = playerRaidDamage || 0;
-
-        // "현재 떠있는 보스 정보가 있고" && "내가 마지막으로 친 보스랑 ID가 다르면"
-        // -> 새 보스라는 뜻이므로 내 점수는 0점으로 보여준다. (실제 데이터는 공격 시 갱신됨)
-        if (raidBossData && playerLastRaidSpawnId !== raidBossData.spawnId) {
-            displayDamage = 0;
-        }
-
-        if(myScore) myScore.textContent = `${displayDamage.toLocaleString()} Dmg`;
-        
-        loadRaidRankingData();
-    }
-}
-
-// 3. 랭킹 새로고침 함수 (신규 추가)
-function refreshCurrentRanking() {
-    const eventBtn = document.getElementById('rank-tab-event');
-    // 현재 활성화된 탭(파란색 버튼)이 무엇인지 확인하여 해당 랭킹을 다시 로드
-    if (eventBtn && eventBtn.classList.contains('bg-indigo-600')) {
-        loadEventRankingData(); 
-    } else {
-        loadRaidRankingData();
-    }
-}
-
-// 전역 스코프에 함수 등록 (HTML에서 onclick으로 찾을 수 있게 함)
-window.openRankingModal = openRankingModal;
-window.switchRankingTab = switchRankingTab;
-window.refreshCurrentRanking = refreshCurrentRanking;
 
 // ... (다른 함수들)
 
