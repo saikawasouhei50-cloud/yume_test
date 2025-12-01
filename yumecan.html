@@ -788,40 +788,35 @@ body.pointer-events-none {
                 </div>
             </div>
 
-            <div id="combat-in-progress-view" class="hidden flex flex-col h-full p-2 md:p-4 gap-4">
+            <div id="combat-in-progress-view" class="hidden flex flex-col h-full relative">
     
-    <div class="flex justify-between items-center bg-gray-900/60 p-2 rounded-lg border border-gray-700 backdrop-blur-sm shrink-0">
-        <div id="combat-log" class="text-sm text-gray-200 h-12 overflow-y-auto flex-grow scrollbar-hide pr-2 font-mono" style="scroll-behavior: smooth;"></div>
+    <div class="flex-grow flex flex-col md:flex-row items-center justify-center w-full h-full overflow-hidden">
         
-        <div class="flex items-center gap-2 shrink-0 pl-2 border-l border-gray-700">
-            <button id="speed-toggle-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded text-xs md:text-sm border border-blue-400 transition-colors shadow-sm whitespace-nowrap">
-                1x 배속
-            </button>
-            <button onclick="surrenderCombat()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs md:text-sm border border-red-400 transition-colors shadow-sm flex items-center gap-1 whitespace-nowrap">
+        <div id="combat-player-deck" class="order-2 md:order-1 w-full md:w-1/2 h-full flex flex-wrap content-center justify-center gap-4 p-4 overflow-y-auto scrollbar-hide">
+            </div>
+
+        <div id="combat-monster-area" class="order-1 md:order-2 w-full md:w-1/2 h-full flex flex-col items-center justify-center p-4 relative">
+            </div>
+    </div>
+
+    <div class="shrink-0 bg-gray-900/80 border-t border-gray-700 p-2 flex flex-col md:flex-row justify-between items-center gap-2 z-20">
+        <div id="combat-log-container" class="w-full md:w-2/3 h-16 bg-black/40 rounded p-2 overflow-y-auto scrollbar-hide">
+            <div id="combat-log" class="text-xs text-gray-300 font-mono"></div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="flex bg-gray-800 rounded-lg p-1 gap-1">
+                <button id="speed-1x" class="speed-button active w-8 h-8 rounded bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1x</button>
+                <button id="speed-2x" class="speed-button w-8 h-8 rounded bg-gray-600 text-white font-bold text-xs flex items-center justify-center">2x</button>
+                <button id="speed-4x" class="speed-button w-8 h-8 rounded bg-gray-600 text-white font-bold text-xs flex items-center justify-center">4x</button>
+            </div>
+            
+            <button id="combat-run-button" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded-lg text-sm border border-red-400 shadow-md flex items-center gap-1 whitespace-nowrap transition-transform active:scale-95">
                 <span>🏳️</span> 항복
             </button>
         </div>
     </div>
-
-    <div class="flex flex-col md:flex-row flex-grow gap-4 items-stretch justify-center overflow-hidden">
-        
-        <div id="combat-player-deck" class="flex md:flex-col flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 w-full md:w-auto md:shrink-0 order-2 md:order-1 overflow-y-auto md:overflow-visible py-2 md:py-0 px-2 md:px-0 scrollbar-hide bg-black/20 md:bg-transparent rounded-xl">
-            </div>
-
-        <div id="combat-monster-area" class="flex flex-col items-center justify-center flex-grow w-full md:w-auto order-1 md:order-2 bg-black/30 rounded-xl p-4 border border-white/10 relative overflow-hidden">
-            </div>
-    </div>
-    
-    </div>
-
-                <div class="flex justify-end items-center gap-2 mt-4">
-                    <button id="speed-1x" class="speed-button active bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">1x</button>
-                    <button id="speed-2x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">2x</button>
-                    <button id="speed-4x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">4x</button>
-                </div>
-				<div class="flex justify-end items-center gap-2 mt-4">
-    <button id="combat-run-button" class="gacha-button bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-1 px-3 rounded-full text-sm">항복</button>
-    </div>
+</div>
                 <div id="combat-log-container" class="mt-2 bg-black/30 p-4 rounded-lg h-40 overflow-y-auto">
                     <div id="combat-log"></div>
                 </div>
@@ -4392,8 +4387,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     startCombat({ chapter: chapterIndex, stage: stageIndex }, 'main_stage');
 }
 
-				// ✅ [수정됨] 전투 시작 함수 (ID 불일치 수정 및 MaxHp 초기화 추가)
-// ✅ [수정됨] 전투 시작 함수 (레이아웃 강제 설정 코드 제거)
+				// ✅ [최종 수정] 전투 시작 함수 (좌우 레이아웃 유지)
 async function startCombat(indices, type) {
     isCombatRunning = true;
     setCombatSpeed(1); 
@@ -4428,23 +4422,16 @@ async function startCombat(indices, type) {
     window.currentCombatIndices = indices;
     window.currentCombatType = type;
 
-    // 1. 퇴고/개정 레벨 적용
+    // 덱 데이터 준비
     let combatDeck = playerDeck.map(cardInstance => {
         const baseCard = findCharacter(cardInstance.name);
         const enhancedStats = getEnhancedStats(cardInstance);
-        return {
-            ...baseCard,
-            stats: enhancedStats,
-        };
+        return { ...baseCard, stats: enhancedStats };
     });
-
-    // 2. 인연 보너스 적용
     combatDeck = applySynergyBonusesToDeck(combatDeck);
-
-    // 3. 최대 HP 저장
     const originalBonusDeck = JSON.parse(JSON.stringify(combatDeck)); 
 
-    // --- UI 렌더링 ---
+    // --- UI 초기화 ---
     const combatMonsterImage = document.getElementById('combat-monster-image');
     if(combatMonsterImage) combatMonsterImage.classList.remove('shake-animation');
 
@@ -4452,24 +4439,24 @@ async function startCombat(indices, type) {
     allViews.forEach(view => view.classList.add('hidden'));
     combatInProgressView.classList.remove('hidden');
     
-    // ❌❌❌ [삭제됨] HTML에 설정한 레이아웃(좌측 캐릭터/우측 몬스터)을 유지하기 위해
-    // className을 강제로 덮어쓰는 코드들을 모두 제거했습니다. ❌❌❌
+    // ❌ [중요] 여기에 있던 combatInProgressView.className = "..." 코드를 삭제했습니다.
+    // 이제 1단계에서 작성한 HTML 클래스가 그대로 적용됩니다.
 
     combatLog.innerHTML = '';
     
-    // 1. 몬스터 영역 내용 채우기
+    // 1. 몬스터 영역 내용 채우기 (우측 영역)
     combatMonsterArea.innerHTML = `
-        <div class="relative w-full h-full flex flex-col items-center justify-center">
-             <h3 class="text-2xl md:text-3xl font-black text-white drop-shadow-lg mb-4 text-center z-10" id="combat-monster-name" style="text-shadow: 0 0 10px red;">${monsterData.name}</h3>
+        <div class="relative w-full flex flex-col items-center justify-center">
+             <h3 class="text-3xl font-black text-white drop-shadow-lg mb-6 text-center z-10" id="combat-monster-name" style="text-shadow: 0 0 15px red;">${monsterData.name}</h3>
             
             <div class="relative inline-block group">
-                <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="w-48 h-48 md:w-64 md:h-64 object-contain filter drop-shadow-2xl transition-transform duration-100">
+                <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="w-64 h-64 md:w-80 md:h-80 object-contain filter drop-shadow-2xl transition-transform duration-100">
                 
-                <div id="combat-monster-buffs" class="absolute top-0 right-[-20px] flex flex-col gap-1 z-10 pointer-events-none"></div>
+                <div id="combat-monster-buffs" class="absolute top-0 right-[-30px] flex flex-col gap-1 z-10 pointer-events-none"></div>
             </div>
 
-            <div class="w-full max-w-md mt-6 relative z-10">
-                <div class="w-full bg-gray-800 rounded-full h-6 border-2 border-gray-600 shadow-inner overflow-hidden">
+            <div class="w-full max-w-sm mt-8 relative z-10">
+                <div class="w-full bg-gray-800 rounded-full h-6 border-2 border-gray-500 shadow-inner overflow-hidden">
                     <div id="combat-monster-hp-bar" class="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500" style="width: 100%"></div>
                 </div>
                 <p id="combat-monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
@@ -4479,12 +4466,13 @@ async function startCombat(indices, type) {
         </div>
     `;
 
-    // 2. 플레이어 덱 영역 초기화 (내용은 updateCombatUI에서 채움)
+    // 2. 플레이어 덱 영역 초기화 (좌측 영역)
+    // 내용은 updateCombatUI 함수가 채워줍니다.
     combatPlayerDeck.innerHTML = '';
     
     // 4. 전투 루프 실행
     await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type); 
-}     
+}
             
 
             const delay = ms => new Promise(res => setTimeout(res, ms / combatSpeedMultiplier));
@@ -9566,7 +9554,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
