@@ -4501,7 +4501,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 
                 // 목록에서 제거 및 UI 갱신
                 activeBuffs.splice(i, 1);
-                updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+                updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs);;
             }
         }
 
@@ -4613,7 +4613,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                         monsterImage.classList.add('shake-animation');
                         setTimeout(() => monsterImage.classList.remove('shake-animation'), 300 / combatSpeedMultiplier);
                     }
-                    updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+                    updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs);;
                 }
 
                 if (monsterData.stats.hp <= 0) break;
@@ -4663,7 +4663,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     }
                 }
             }
-            updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+            updateCombatUI(combatDeck, originalBonusDeck, monsterData, activeBuffs);;
         }
     } // while 루프 종료
     
