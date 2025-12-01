@@ -1904,7 +1904,8 @@ async function saveGameToFirebase() {
         // 일단 저장된 데이터를 무조건 불러옵니다. (섣불리 0으로 만들지 않음)
         playerEventPoints = savedData.eventPoints !== undefined ? savedData.eventPoints : 0;
         playerCumulativeEventPoints = savedData.cumulativeEventPoints !== undefined ? savedData.cumulativeEventPoints : playerEventPoints;
-        playerRaidDamage = savedData.raidCumulativeDamage !== undefined ? savedData.raidCumulativeDamage : 0;
+        playerRaidDamage = savedData.raidCumulativeDamage !== undefined ? 
+		playerLastRaidSpawnId = savedData.lastRaidSpawnId || 0; savedData.raidCumulativeDamage : 0;
         
         clearedEventDungeons = savedData.clearedEventDungeons || [];
         purchasedEventItems = savedData.purchasedEventItems || {};
@@ -3942,6 +3943,8 @@ window.buyFurniture = function(furnitureId) {
         alert('보석이 부족합니다.');
     }
 };
+
+let playerLastRaidSpawnId = 0;
 
 		// ================== 🔨 배치 모드(Edit Mode) 로직 시작 ==================
 
@@ -9302,7 +9305,7 @@ function fleeCombat() {
     }, 0); 
 }
 
-function switchRankingTab(type) {
+ffunction switchRankingTab(type) {
     const eventBtn = document.getElementById('rank-tab-event');
     const raidBtn = document.getElementById('rank-tab-raid');
     const myLabel = document.getElementById('my-ranking-label');
@@ -9325,8 +9328,17 @@ function switchRankingTab(type) {
         raidBtn.className = "flex-1 py-2 rounded-md text-sm font-bold transition-all text-white bg-red-600 shadow-lg";
         
         if(myLabel) myLabel.textContent = "내 누적 데미지";
-        // 보스가 변경되었을 때 0으로 보이는 것을 방지하기 위해 로컬 변수 사용
-        if(myScore) myScore.textContent = `${(playerRaidDamage || 0).toLocaleString()} Dmg`;
+        
+        // ✨ [핵심 수정] 내 점수 표시 로직 개선
+        let displayDamage = playerRaidDamage || 0;
+
+        // "현재 떠있는 보스 정보가 있고" && "내가 마지막으로 친 보스랑 ID가 다르면"
+        // -> 새 보스라는 뜻이므로 내 점수는 0점으로 보여준다. (실제 데이터는 공격 시 갱신됨)
+        if (raidBossData && playerLastRaidSpawnId !== raidBossData.spawnId) {
+            displayDamage = 0;
+        }
+
+        if(myScore) myScore.textContent = `${displayDamage.toLocaleString()} Dmg`;
         
         loadRaidRankingData();
     }
