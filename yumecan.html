@@ -86,7 +86,19 @@
     background-position: center bottom !important; /* 바닥 기준 정렬 */
     background-repeat: no-repeat !important;
 }
-		
+	
+/* 스크롤바 숨기기 (크롬, 사파리, 엣지 등) */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* 스크롤바 숨기기 (파이어폭스, IE) */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+	
 .iso-floor {
     position: absolute;
     
@@ -787,10 +799,9 @@ body.pointer-events-none {
                     <button id="speed-1x" class="speed-button active bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">1x</button>
                     <button id="speed-2x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">2x</button>
                     <button id="speed-4x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">4x</button>
+                    
+                    <button id="combat-run-button" class="gacha-button bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-1 px-3 rounded-full text-sm ml-2">항복</button>
                 </div>
-				<div class="flex justify-end items-center gap-2 mt-4">
-    <button id="combat-run-button" class="gacha-button bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-1 px-3 rounded-full text-sm">항복</button>
-    </div>
                 <div id="combat-log-container" class="mt-2 bg-black/30 p-4 rounded-lg h-40 overflow-y-auto">
                     <div id="combat-log"></div>
                 </div>
@@ -4428,9 +4439,9 @@ async function startCombat(indices, type) {
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    // ✨ 핵심 변경: 모바일 여백(px-12)을 대폭 늘려서 카드를 작게 만듭니다. 
-    // (기존 px-6 -> px-12)
-    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto pr-1 px-12 md:px-10 content-start"; 
+    // ✨ 핵심 변경: 맨 뒤에 'scrollbar-hide' 클래스를 추가했습니다.
+    // 이제 스크롤바가 생겨도 눈에 보이지 않고 공간을 차지하지 않아 화면이 떨리지 않습니다.
+    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto pr-1 px-12 md:px-10 content-start scrollbar-hide"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
