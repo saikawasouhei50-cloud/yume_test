@@ -4435,23 +4435,26 @@ async function startCombat(indices, type) {
     // 1) 전체 컨테이너 설정
     const container = combatInProgressView.querySelector('.grid');
     if (container) {
-        container.className = "flex flex-col md:flex-row gap-4 items-start justify-center h-full max-h-[550px]"; 
+        // items-center: 수직 중앙 정렬 (몬스터와 덱의 높이 중심을 맞춤)
+        container.className = "flex flex-col md:flex-row gap-4 items-center justify-center h-full max-h-[550px]"; 
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    // ✨ 핵심 변경: 맨 뒤에 'scrollbar-hide' 클래스를 추가했습니다.
-    // 이제 스크롤바가 생겨도 눈에 보이지 않고 공간을 차지하지 않아 화면이 떨리지 않습니다.
-    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto pr-1 px-12 md:px-10 content-start scrollbar-hide"; 
+    // ✨ 핵심: display를 'flex'로 통일 (PC에서도 grid 대신 flex 사용)
+    // md:max-w-md: PC에서 덱 영역이 너무 퍼지지 않게 최대 너비 제한 (카드가 예쁘게 모임)
+    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto px-2 md:px-0 scrollbar-hide"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
-    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 h-full border border-white/10 min-h-[200px]";
+    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 border border-white/10 min-h-[200px]";
     
     // 플레이어 덱 UI 그리기
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
         
-        cardEl.className = 'relative bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
+        // ✨ 카드 너비 31% 고정 (PC/모바일 공통)
+        // 31% * 3장 = 93% -> 한 줄에 3장이 들어가고, 남은 2장은 아랫줄 중앙으로 자동 이동
+        cardEl.className = 'relative w-[31%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
@@ -4472,7 +4475,7 @@ async function startCombat(indices, type) {
         combatPlayerDeck.appendChild(cardEl);
     });
 
-    // 몬스터 UI 그리기 (모바일에서 이미지 크기 최적화)
+    // 몬스터 UI 그리기
     combatMonsterArea.innerHTML = `
         <h3 class="text-xl md:text-3xl font-bold text-red-500 drop-shadow-md mb-2 md:mb-4 text-center truncate w-full px-2">${monsterData.name}</h3>
         
