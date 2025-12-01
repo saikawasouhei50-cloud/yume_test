@@ -4421,55 +4421,61 @@ async function startCombat(indices, type) {
     
     // ✨ [핵심 변경] 레이아웃 구조 재설정 (좌측 덱 / 우측 몬스터)
     // 기존 HTML 구조를 무시하고 JS에서 클래스를 재조정합니다.
+    // 1) 전체 컨테이너 설정 (Flex 유지, 높이 제한 추가)
     const container = combatInProgressView.querySelector('.grid');
     if (container) {
-        container.className = "flex flex-col md:flex-row gap-4 items-start h-full"; // 전체 컨테이너 Flex로 변경
+        // h-[600px] 등으로 높이를 강제하여 카드가 무한정 커지는 것 방지
+        container.className = "flex flex-col md:flex-row gap-4 items-start justify-center h-full max-h-[600px]"; 
     }
 
-    // 1) 플레이어 덱 영역 (좌측)
-    combatPlayerDeck.className = "w-full md:w-5/12 grid grid-cols-2 gap-2 order-2 md:order-1"; // 2열 그리드
+    // 2) 플레이어 덱 영역 (좌측) - 크기 축소 및 3열 그리드 적용
+    // md:w-5/12 -> md:w-1/2, grid-cols-2 -> grid-cols-3 (카드를 작게 만듦)
+    combatPlayerDeck.className = "w-full md:w-1/2 grid grid-cols-3 gap-2 order-2 md:order-1 overflow-y-auto pr-1"; 
     combatPlayerDeck.innerHTML = '';
 
-    // 2) 몬스터 영역 (우측)
-    combatMonsterArea.className = "w-full md:w-7/12 flex flex-col items-center justify-center bg-black/20 rounded-xl p-4 order-1 md:order-2 min-h-[300px]"; // 배경 추가
+    // 3) 몬스터 영역 (우측)
+    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 h-full border border-white/10";
     
-    // 플레이어 덱 UI 그리기 (카드 형태로 변경)
+    // 플레이어 덱 UI 그리기
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
-        // 카드 스타일: 이미지 포함
-        cardEl.className = 'relative bg-gray-800 p-2 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform';
+        // p-2 -> p-1.5 (패딩 축소), text-xs -> text-[10px] (글자 축소)
+        cardEl.className = 'relative bg-gray-800 p-1.5 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
 
         cardEl.innerHTML = `
             <div class="relative w-full aspect-[2/3] overflow-hidden rounded mb-1">
-                <img src="${card.cardImageUrl}" class="w-full h-full object-cover opacity-80">
-                <div id="effect-icons-${index}" class="absolute top-1 right-1 flex flex-col gap-1 items-end"></div> </div>
-            <p class="font-bold text-xs truncate w-full text-center ${rarityColor}">${card.name}</p>
-            
-            <div class="w-full hp-bar-background rounded-full h-2 mt-1 bg-gray-600">
-                <div id="player-hp-bar-${index}" class="hp-bar-foreground h-2 rounded-full transition-all duration-300" style="width: 100%"></div>
+                <img src="${card.cardImageUrl}" class="w-full h-full object-cover opacity-90">
+                <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-90 origin-top-right"></div> 
             </div>
-            <p id="player-hp-text-${index}" class="text-[10px] text-center text-gray-300 mt-0.5">${card.stats.hp} / ${originalBonusDeck[index].stats.hp}</p>
+            
+            <p class="font-bold text-[10px] md:text-xs truncate w-full text-center ${rarityColor} mb-1">${card.name}</p>
+            
+            <div class="w-full hp-bar-background rounded-full h-1.5 bg-gray-600">
+                <div id="player-hp-bar-${index}" class="hp-bar-foreground h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
+            </div>
+            <p id="player-hp-text-${index}" class="text-[9px] text-center text-gray-400 mt-0.5 leading-none">${card.stats.hp}</p>
         `;
         combatPlayerDeck.appendChild(cardEl);
     });
 
-    // 몬스터 UI 그리기
+    // 몬스터 UI 그리기 (이미지 크기 조절)
     combatMonsterArea.innerHTML = `
-        <h3 class="text-3xl font-bold text-red-500 drop-shadow-md mb-2">${monsterData.name}</h3>
-        <div class="relative w-full flex justify-center py-6">
-             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-64 object-contain drop-shadow-2xl transition-transform">
-             <div id="monster-effect-icons" class="absolute top-0 right-10 flex flex-col gap-1"></div> </div>
+        <h3 class="text-2xl md:text-3xl font-bold text-red-500 drop-shadow-md mb-4 text-center">${monsterData.name}</h3>
         
-        <div class="w-4/5 max-w-lg hp-bar-background rounded-full h-6 border-2 border-gray-600 shadow-inner relative overflow-hidden">
+        <div class="relative w-full flex justify-center items-center flex-grow mb-4">
+             <img id="combat-monster-image" src="${monsterData.imageUrl}" alt="${monsterData.name}" class="h-40 md:h-64 object-contain drop-shadow-2xl transition-transform">
+             <div id="monster-effect-icons" class="absolute top-0 right-4 flex flex-col gap-1"></div> 
+        </div>
+        
+        <div class="w-full max-w-sm hp-bar-background rounded-full h-5 border border-gray-500 shadow-inner relative overflow-hidden">
             <div id="monster-hp-bar" class="hp-bar-foreground h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-300" style="width: 100%"></div>
-            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-sm font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
+            <p id="monster-hp-text" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">${monsterData.stats.hp} / ${monsterData.stats.hp}</p>
         </div>
     `;
     
-    // 몬스터도 효과 추적용 배열 초기화 (데이터 구조에 없으므로 임시 속성 추가)
     monsterData.activeEffects = [];
 
     // 4. 전투 루프 실행
