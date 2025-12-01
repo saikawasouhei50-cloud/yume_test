@@ -600,6 +600,12 @@ body.pointer-events-none {
 
 <div id="event-view" class="hidden">
     
+    <div class="w-full flex justify-start mb-2 px-2">
+        <button onclick="switchTab('event-home')" class="gacha-button bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-4 rounded-full text-sm flex items-center gap-1 border border-gray-500">
+            <span>⬅</span> 이벤트 홈으로
+        </button>
+    </div>
+
     <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-lg mx-auto">
         <button id="event-sub-tab-battle" class="sub-tab-button active w-1/4 font-bold py-2 px-2 md:px-4 rounded-full text-sm md:text-base">전투</button>
         <button id="event-sub-tab-raid" class="sub-tab-button w-1/4 font-bold py-2 px-2 md:px-4 rounded-full text-sm md:text-base text-red-400">레이드</button>
@@ -692,17 +698,26 @@ body.pointer-events-none {
                     </div>
                 </div>
                 <div id="event-gacha-view" class="hidden">
-                    <div id="event-gacha-info" class="text-center p-2 mb-2 rounded-lg bg-yellow-500/20">
-                        <p class="font-bold text-yellow-300"></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
-                        <button id="pull-one-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥 1회 뽑기 (10)</button>
-                        <button id="pull-ten-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥🔥 10회 뽑기 (100)</button>
-						<button onclick="openGachaPoolModal('event')" class="gacha-button w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full shadow-lg text-sm mt-2">
-    등장인물 목록 (획득 가능)
-</button>
-                    </div>
-                </div>
+    
+    <div class="flex justify-end mb-2">
+        <button onclick="switchTab('event-home')" class="text-xs font-bold text-pink-300 hover:text-white bg-pink-900/30 px-3 py-1 rounded-full border border-pink-500/30 transition-colors">
+            🏠 이벤트 홈으로 이동
+        </button>
+    </div>
+
+    <div id="event-gacha-info" class="text-center p-2 mb-2 rounded-lg bg-yellow-500/20">
+        <p class="font-bold text-yellow-300"></p>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
+        <button id="pull-one-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥 1회 뽑기 (10)</button>
+        <button id="pull-ten-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥🔥 10회 뽑기 (100)</button>
+        
+        <button onclick="openGachaPoolModal('event')" class="gacha-button w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full shadow-lg text-sm mt-2">
+            등장인물 목록 (획득 가능)
+        </button>
+    </div>
+</div>
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
             </div>
 
@@ -4439,9 +4454,10 @@ async function startCombat(indices, type) {
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    // ✨ 핵심 변경 1: 'p-2' (안쪽 여백) 추가
-    // 상하좌우에 약간의 공간을 줘서 카드가 커져도 잘리지 않게 합니다.
-    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-y-auto p-2 scrollbar-hide"; 
+    // ✨ 핵심 변경 1: 'p-4' (상하좌우 여백) 추가
+    // 위아래에 넉넉한 공간(약 16px)을 줘서 카드가 스크롤 끝에 닿아도 잘리지 않게 합니다.
+    // ✨ px-2 -> p-4 (모바일에서도 안쪽 여백 확보)
+    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-start gap-2 order-2 md:order-1 overflow-y-auto p-4 scrollbar-hide"; 
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
@@ -4451,9 +4467,9 @@ async function startCombat(indices, type) {
     combatDeck.forEach((card, index) => {
         const cardEl = document.createElement('div');
         
-        // ✨ 핵심 변경 2: 'hover:z-10' 추가
-        // 마우스를 올리거나 커질 때 다른 카드보다 위에 보이게 해서 가려짐을 방지합니다.
-        cardEl.className = 'relative w-[31%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
+        // ✨ 핵심 변경 2: 카드 너비 'w-[30%]'로 축소 (기존 31%)
+        // 아주 약간 작게 만들어서 가로 공간 여유를 확보합니다.
+        cardEl.className = 'relative w-[30%] bg-gray-800 p-1 rounded-lg border border-gray-600 shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
         cardEl.id = `combat-card-${index}`;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
