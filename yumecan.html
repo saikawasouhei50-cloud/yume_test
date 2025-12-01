@@ -674,7 +674,7 @@ body.pointer-events-none {
     
     <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-sm mx-auto">
         <button id="gacha-tab-normal" class="sub-tab-button active w-1/2 font-bold py-2 px-6 rounded-full">일반 서가</button>
-        <button id="gacha-tab-event" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full hidden">이벤트 서가</button>
+        <button id="gacha-tab-event" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full">이벤트 서가</button>
     </div>
 
     <div id="normal-gacha-view">
@@ -685,7 +685,9 @@ body.pointer-events-none {
                 등장인물 목록 (획득 가능)
             </button>
         </div>
-    </div> <div id="event-gacha-view" class="hidden">
+    </div> 
+
+    <div id="event-gacha-view" class="hidden">
         <div class="w-full flex justify-start mb-2 pl-1">
             <button onclick="switchTab('event-home')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-1 px-3 rounded-full flex items-center gap-1 shadow-md border border-gray-500 transition-transform hover:scale-105">
                 <span>◀</span> 이벤트 홈
@@ -702,10 +704,14 @@ body.pointer-events-none {
             </button>
         </div>
     </div>
-</div>
-                
-                <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
-            </div>
+
+    <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
+
+</div> ```
+
+### 🛠️ 무엇을 고쳤나요?
+1.  **`</div>` 위치 이동:** 원래 코드에서는 `event-gacha-view`가 끝나자마자 `gacha-view` 전체를 닫아버리는 `</div>`가 있었습니다. 그것을 지우고, `results-container`가 끝난 뒤에 `gacha-view`가 닫히도록 수정했습니다.
+2.  **이벤트 버튼 보이기:** `gacha-tab-event` 버튼에 있던 `hidden` 클래스를 지워두었습니다. 이제 버튼이 항상 보입니다.
 
             <div id="inventory-view" class="hidden">
      <div class="text-center mb-4 relative">
