@@ -2716,18 +2716,84 @@ function displayEventHomeView() {
                     eventDungeonListContainer.appendChild(dungeonEl);
                 });
             }
+			
+			function purchaseEventItem(itemId) {
+    const item = eventShopItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    const purchasedCount = purchasedEventItems[item.id] || 0;
+    
+    // 1. 구매 제한 체크
+    if (purchasedCount >= item.limit) {
+        showMessage('이미 최대 수량을 구매했습니다.', 'text-red-400', messageArea);
+        return;
+    }
+    
+    // 2. 포인트 부족 체크
+    if (playerEventPoints < item.cost) {
+        showMessage('이벤트 포인트가 부족합니다.', 'text-red-400', messageArea);
+        return;
+    }
+
+    // 3. 포인트 차감 및 구매 횟수 증가
+    playerEventPoints -= item.cost;
+    purchasedEventItems[item.id] = purchasedCount + 1;
+
+    // 4. 아이템 지급 로직
+    if (item.type === 'card') {
+        playerInventory.push(item.itemData);
+        // 수집 도감 등록
+        if (typeof collectedCardNames !== 'undefined') collectedCardNames.add(item.itemData.name);
+        showMessage(`[${item.name}] 획득!`, 'text-green-300', messageArea);
+    } 
+    else if (item.type === 'currency') {
+        playerCurrency += item.itemData;
+        showMessage(`보석 ${item.itemData}개 획득!`, 'text-green-300', messageArea);
+    }
+    else if (item.type === 'fountainPen') {
+        playerFountainPens += item.itemData;
+        showMessage(`만년필 ${item.itemData}개 획득!`, 'text-gray-300', messageArea);
+    }
+    else if (item.type === 'inkwell') {
+        playerInkwells += item.itemData;
+        showMessage(`잉크병 ${item.itemData}개 획득!`, 'text-fuchsia-300', messageArea);
+    }
+    else if (item.type === 'bookmark') {
+        // 책갈피는 한도 체크
+        if (playerBookmarks >= HARD_MAX_BOOKMARKS) {
+            // 포인트 환불
+            playerEventPoints += item.cost;
+            purchasedEventItems[item.id]--; 
+            showMessage(`책갈피는 최대 ${HARD_MAX_BOOKMARKS}개까지만 소지할 수 있습니다.`, 'text-red-400', messageArea);
+            return; 
+        }
+        playerBookmarks = Math.min(HARD_MAX_BOOKMARKS, playerBookmarks + item.itemData);
+        showMessage(`책갈피 획득! (현재: ${playerBookmarks})`, 'text-cyan-300', messageArea);
+    }
+
+    // 5. UI 갱신 및 저장
+    updateUI(); // 상단 글로벌 바 갱신
+    displayEventShopView(); // ✨ 상점 UI 갱신 (이때 포인트 배너도 같이 갱신됨)
+    saveGame();
+}
 
             // [수정됨] 이벤트 상점 표시 함수 (포인트 배너 갱신 기능 추가)
 function displayEventShopView() {
-    // 1. 상단 포인트 배너 갱신
+    // 1. 상단 포인트 배너 숫자 갱신 (핵심 기능)
     const shopPointDisplay = document.getElementById('shop-event-point-display');
     if (shopPointDisplay) {
+        // 콤마(,)를 찍어서 보기 좋게 표시
         shopPointDisplay.textContent = (playerEventPoints || 0).toLocaleString();
     }
 
-    // 2. 기존 로직 (아이템 목록 생성)
-    eventPointsSpan.textContent = playerEventPoints; // (구버전 호환용)
-    eventShopContainer.innerHTML = '';
+    // 2. (구버전 호환) 기존 포인트 표시 갱신
+    if (typeof eventPointsSpan !== 'undefined' && eventPointsSpan) {
+        eventPointsSpan.textContent = playerEventPoints;
+    }
+    
+    // 3. 상점 목록 생성
+    const container = document.getElementById('event-shop-container');
+    container.innerHTML = '';
     
     eventShopItems.forEach(item => {
         const purchasedCount = purchasedEventItems[item.id] || 0;
@@ -2735,10 +2801,10 @@ function displayEventShopView() {
         const canAfford = playerEventPoints >= item.cost;
 
         const itemEl = document.createElement('div');
-        // 품절되면 약간 투명하게 처리
-        itemEl.className = `bg-black/20 p-4 rounded-lg flex justify-between items-center border border-white/5 ${isSoldOut ? 'opacity-50' : ''}`;
+        // 품절 시 투명도 조절
+        itemEl.className = `bg-black/20 p-4 rounded-lg flex justify-between items-center border border-white/5 transition-colors hover:bg-black/30 ${isSoldOut ? 'opacity-50' : ''}`;
         
-        // 아이템 타입에 따른 아이콘/텍스트 처리
+        // 아이템 타입별 아이콘
         let typeIcon = '';
         if (item.type === 'card') typeIcon = '🃏';
         else if (item.type === 'currency') typeIcon = '💎';
@@ -2746,19 +2812,34 @@ function displayEventShopView() {
         else if (item.type === 'inkwell') typeIcon = '💧';
         else if (item.type === 'bookmark') typeIcon = '🔖';
 
+        // 버튼 스타일 (구매 가능/불가/품절)
+        let btnClass = '';
+        let btnText = '구매';
+        
+        if (isSoldOut) {
+            btnClass = 'bg-gray-600 cursor-not-allowed';
+            btnText = '품절';
+        } else if (!canAfford) {
+            btnClass = 'bg-red-900/50 cursor-not-allowed opacity-70';
+            btnText = '구매';
+        } else {
+            btnClass = 'bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg cursor-pointer';
+            btnText = '구매';
+        }
+
         itemEl.innerHTML = `
             <div>
                 <h3 class="text-lg font-bold text-yellow-300 flex items-center gap-2">
                     <span>${typeIcon}</span> ${item.name}
                 </h3>
                 <p class="text-sm text-gray-300 font-bold mt-1">가격: <span class="text-pink-300">${item.cost.toLocaleString()} P</span></p>
-                <p class="text-xs text-gray-400 mt-0.5">남은 횟수: ${item.limit - purchasedCount} / ${item.limit}</p>
+                <p class="text-xs text-gray-400 mt-0.5">남은 횟수: <span class="text-white">${item.limit - purchasedCount}</span> / ${item.limit}</p>
             </div>
-            <button data-item-id="${item.id}" class="gacha-button transition-all duration-200 ${isSoldOut ? 'bg-gray-600 cursor-not-allowed' : (canAfford ? 'bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg' : 'bg-red-900/50 cursor-not-allowed opacity-70')} text-white font-bold py-2 px-5 rounded-full text-sm" ${isSoldOut || !canAfford ? 'disabled' : ''}>
-                ${isSoldOut ? '품절' : '구매'}
+            <button data-item-id="${item.id}" class="gacha-button transition-all duration-200 text-white font-bold py-2 px-5 rounded-full text-sm ${btnClass}" ${isSoldOut || !canAfford ? 'disabled' : ''}>
+                ${btnText}
             </button>
         `;
-        eventShopContainer.appendChild(itemEl);
+        container.appendChild(itemEl);
     });
 }
 
