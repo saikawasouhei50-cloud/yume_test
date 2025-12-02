@@ -177,7 +177,7 @@ async function loadGameData() {
                     type: row.type,
                     cost: Number(row.cost),
                     limit: Number(row.limit),
-                    itemData: itemData
+                    itemData: itemData,
 					eventId: row.eventId || 'ALL'
                 };
             });
