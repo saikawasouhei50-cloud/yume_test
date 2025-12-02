@@ -1817,7 +1817,7 @@ function removeUndefined(obj) {
 }
 
 // [수정] 기존 saveGameToFirebase 함수 수정
-asasync function saveGameToFirebase() {
+async function saveGameToFirebase() {
     if (!currentUser) return;
 
     const currentProfile = playerProfile || {};
