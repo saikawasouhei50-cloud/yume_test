@@ -178,6 +178,7 @@ async function loadGameData() {
                     cost: Number(row.cost),
                     limit: Number(row.limit),
                     itemData: itemData
+					eventId: row.eventId || 'ALL'
                 };
             });
         }
@@ -608,7 +609,6 @@ const genericInteractions = [
     ['안녕하세요!', '반갑습니다.'],
     ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
 ];
-
 
 
 
