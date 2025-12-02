@@ -2795,32 +2795,44 @@ function displayEventHomeView() {
 
             // [수정됨] 이벤트 상점 표시 함수 (포인트 배너 갱신 기능 추가)
 function displayEventShopView() {
-    // 1. 상단 포인트 배너 숫자 갱신 (핵심 기능)
+    // 1. 상단 포인트 배너 갱신
     const shopPointDisplay = document.getElementById('shop-event-point-display');
     if (shopPointDisplay) {
-        // 콤마(,)를 찍어서 보기 좋게 표시
         shopPointDisplay.textContent = (playerEventPoints || 0).toLocaleString();
     }
 
-    // 2. (구버전 호환) 기존 포인트 표시 갱신
     if (typeof eventPointsSpan !== 'undefined' && eventPointsSpan) {
         eventPointsSpan.textContent = playerEventPoints;
     }
     
-    // 3. 상점 목록 생성
     const container = document.getElementById('event-shop-container');
     container.innerHTML = '';
     
-    eventShopItems.forEach(item => {
+    // ✨ [핵심 추가] 현재 진행 중인 이벤트 물품만 필터링!
+    const currentItems = eventShopItems.filter(item => {
+        // 1. 'ALL' 이거나 빈칸이면 무조건 표시 (상시 판매)
+        if (!item.eventId || item.eventId === 'ALL') return true;
+        
+        // 2. 현재 이벤트 ID와 일치하면 표시
+        // (CURRENT_EVENT_ID는 yumecan_data.js에서 날짜 기준으로 자동 설정됨)
+        return item.eventId === CURRENT_EVENT_ID;
+    });
+
+    // 만약 팔 물건이 하나도 없다면?
+    if (currentItems.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">현재 판매 중인 이벤트 상품이 없습니다.</p>';
+        return;
+    }
+    
+    // 필터링된 목록(currentItems)으로 루프를 돌립니다.
+    currentItems.forEach(item => {
         const purchasedCount = purchasedEventItems[item.id] || 0;
         const isSoldOut = purchasedCount >= item.limit;
         const canAfford = playerEventPoints >= item.cost;
 
         const itemEl = document.createElement('div');
-        // 품절 시 투명도 조절
         itemEl.className = `bg-black/20 p-4 rounded-lg flex justify-between items-center border border-white/5 transition-colors hover:bg-black/30 ${isSoldOut ? 'opacity-50' : ''}`;
         
-        // 아이템 타입별 아이콘
         let typeIcon = '';
         if (item.type === 'card') typeIcon = '🃏';
         else if (item.type === 'currency') typeIcon = '💎';
@@ -2828,7 +2840,6 @@ function displayEventShopView() {
         else if (item.type === 'inkwell') typeIcon = '💧';
         else if (item.type === 'bookmark') typeIcon = '🔖';
 
-        // 버튼 스타일 (구매 가능/불가/품절)
         let btnClass = '';
         let btnText = '구매';
         
@@ -9557,7 +9568,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
