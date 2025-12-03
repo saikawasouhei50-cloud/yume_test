@@ -9208,7 +9208,7 @@ function renderBreedingSlots() {
 }
 
 // 인벤토리 렌더링 (교배용)
-function renderBreedingInventory() {
+ffunction renderBreedingInventory() {
     const container = document.getElementById('breeding-inventory-container');
     container.innerHTML = '';
 
@@ -9219,12 +9219,20 @@ function renderBreedingInventory() {
         return !inDeck && !isSelected;
     });
 
-    // 정렬 (등급 > 레벨)
+    // 정렬 (등급 > 레벨) + ✨[안전장치 추가]✨
     availableCards.sort((a, b) => {
         const charA = findCharacter(a.name);
         const charB = findCharacter(b.name);
-        const rA = RARITY_STATS_WEIGHT[charA.rarity] || 0;
-        const rB = RARITY_STATS_WEIGHT[charB.rarity] || 0;
+
+        // 🛡️ 데이터가 없는 유령 카드는 맨 뒤로 보냄 (에러 방지)
+        if (!charA && !charB) return 0;
+        if (!charA) return 1;
+        if (!charB) return -1;
+
+        // 등급 가중치가 없으면 0으로 처리
+        const rA = (RARITY_STATS_WEIGHT && RARITY_STATS_WEIGHT[charA.rarity]) ? RARITY_STATS_WEIGHT[charA.rarity] : 0;
+        const rB = (RARITY_STATS_WEIGHT && RARITY_STATS_WEIGHT[charB.rarity]) ? RARITY_STATS_WEIGHT[charB.rarity] : 0;
+        
         return (rB - rA) || (b.level - a.level);
     });
 
@@ -9235,6 +9243,10 @@ function renderBreedingInventory() {
 
     availableCards.forEach(cardInstance => {
         const charData = findCharacter(cardInstance.name);
+        
+        // 🛡️ 데이터 없는 카드는 화면에 그리지 않음
+        if (!charData) return;
+
         const cardEl = createCard(charData, { instance: cardInstance, mode: 'default' });
         
         // 클릭 시 빈 슬롯 등록
@@ -9440,6 +9452,11 @@ function executeBreeding() {
         switchTab('inventory');
     }
 }
+
+window.clearBreedingSlot = clearBreedingSlot;
+window.executeBreeding = executeBreeding;
+window.selectBreedingCard = selectBreedingCard;
+window.renderBreedingSlots = renderBreedingSlots; // 필요 시
 
 // ✅ [수정됨] 레이드 보상 분배 함수 (NaN 오류 수정 + 안전한 랭킹 계산)
 async function distributeRaidRewards(bossName, bossSpawnId) {
