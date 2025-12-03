@@ -5410,7 +5410,7 @@ function getSkillDescription(skill) {
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
     
-    // ✨ [수정 완료] 끊겨있던 코드를 복구했습니다.
+    // ✨ [수정됨] 끊겨있던 코드를 복구했습니다. (백틱과 변수가 정확히 닫혀야 합니다)
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
 
     // ▼▼▼ [부모 정보 표시 로직] ▼▼▼
@@ -5427,6 +5427,7 @@ function getSkillDescription(skill) {
             const imgUrl = parentChar ? parentChar.imageUrl : 'https://placehold.co/50x50/333/fff?text=?';
             const rarityColor = parentChar ? ({ 'N':'border-gray-500', 'R':'border-blue-500', 'SR':'border-purple-500', 'SSR':'border-yellow-400' }[parentChar.rarity]) : 'border-gray-600';
 
+            // HTML 문자열은 반드시 백틱(`)으로 감싸져 있어야 합니다.
             const parentHtml = `
                 <div class="flex flex-col items-center group relative cursor-pointer" onclick="showCollectionCardDetails('${parentName}')" title="도감에서 보기">
                     <div class="relative w-12 h-12">
