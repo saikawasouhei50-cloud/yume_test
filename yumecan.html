@@ -9566,6 +9566,45 @@ function executeBreeding() {
     }
 }
 
+		// [수정됨] 도감으로 이동하여 해당 캐릭터 정보를 보여주는 함수
+function showCollectionCardDetails(targetName) {
+    // 1. 캐릭터 데이터 찾기
+    const charData = findCharacter(targetName);
+    
+    if (!charData) {
+        console.error("캐릭터를 찾을 수 없습니다:", targetName);
+        return;
+    }
+
+    // 2. 도감 탭으로 화면 전환
+    switchTab('collection');
+
+    // 3. 해당 캐릭터의 그룹(기수)을 찾아서 탭 전환 (선택 사항)
+    // 캐릭터 프로필에 그룹 정보가 있다면 해당 그룹 탭을 먼저 엽니다.
+    const profile = characterProfiles[charData.baseName];
+    if (profile && profile.group && typeof currentCollectionGroup !== 'undefined') {
+        currentCollectionGroup = profile.group;
+        // 도감 목록 갱신 (그룹 탭 반영을 위해)
+        if (typeof displayCollectionView === 'function') {
+            displayCollectionView();
+        }
+    }
+
+    // 4. 도감 내부에서 해당 캐릭터의 상세 정보 열기
+    // (기존에 작성된 displayCharacterDetail 함수 활용)
+    if (typeof displayCharacterDetail === 'function') {
+        // 약간의 지연을 주어 탭 전환 후 부드럽게 열리도록 함
+        setTimeout(() => {
+            displayCharacterDetail(charData.baseName);
+        }, 100);
+    } else {
+        console.error("displayCharacterDetail 함수가 없습니다.");
+    }
+}
+
+// ✨ [핵심] HTML onclick에서 찾을 수 있도록 window 객체에 등록
+window.showCollectionCardDetails = showCollectionCardDetails;
+
 window.clearBreedingSlot = clearBreedingSlot;
 window.executeBreeding = executeBreeding;
 window.selectBreedingCard = selectBreedingCard;
@@ -10090,6 +10129,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
