@@ -5402,14 +5402,18 @@ function getSkillDescription(skill) {
         displayFaction = cardInstance.inherited.faction;
     }
     
-   const factionEl = document.getElementById('detail-card-faction');
+    const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = displayFaction;
     const factionColors = { 
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
-    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full // ▼▼▼ [이 코드가 있어야 화면에 나옵니다] ▼▼▼
+    
+    // ✨ [수정 완료] 끊겨있던 코드를 복구했습니다.
+    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
+
+    // ▼▼▼ [부모 정보 표시 로직] ▼▼▼
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
     const parentsContainer = document.getElementById('detail-parents-container');
     
@@ -5447,9 +5451,9 @@ function getSkillDescription(skill) {
             parentsContainer.appendChild(wrapper.firstElementChild);
         });
 
-        parentsWrapper.classList.remove('hidden'); // 숨김 해제
+        if (parentsWrapper) parentsWrapper.classList.remove('hidden'); 
     } else {
-        if(parentsWrapper) parentsWrapper.classList.add('hidden'); // 정보 없으면 숨김
+        if (parentsWrapper) parentsWrapper.classList.add('hidden'); 
     }
 
     // --- 2. 퇴고된 능력치 표시 ---
