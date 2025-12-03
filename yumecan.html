@@ -98,6 +98,21 @@
     scrollbar-width: none;  /* Firefox */
 }
 
+.breeding-slot {
+    transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.breeding-slot:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.breeding-pulse {
+    animation: breeding-pulse 2s infinite;
+}
+@keyframes breeding-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(234, 179, 8, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+}
 	
 .iso-floor {
     position: absolute;
@@ -417,6 +432,19 @@ body.pointer-events-none {
     <span class="transform skew-x-12 text-sm md:text-2xl leading-none">편찬</span>
 </button>
 
+<button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="pointer-events-auto 
+        w-24 flex-1 h-14 text-sm 
+        md:flex-none md:w-[90%] md:max-w-[280px] md:h-20 md:text-3xl 
+        bg-gradient-to-r from-gray-700 to-gray-800 text-white font-bold transform -skew-x-12 
+        hover:scale-105 hover:bg-gray-600 transition-all shadow-lg 
+        flex flex-col md:flex-row items-center justify-center 
+        border border-white/20 
+        border-b-2 md:border-b-0 md:border-l-4 border-yellow-400 
+        mb-1 md:mb-1 gap-0.5 md:gap-2"> 
+    <span class="transform skew-x-12 text-lg md:text-3xl mb-0.5 md:mb-0">💡</span>
+    <span class="transform skew-x-12 text-sm md:text-2xl leading-none">영감</span>
+</button>
+
 <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="pointer-events-auto 
         w-24 flex-1 h-14 text-sm 
         md:flex-none md:w-[90%] md:max-w-[280px] md:h-20 md:text-3xl 
@@ -720,6 +748,50 @@ body.pointer-events-none {
 </div>
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
             </div>
+
+<div id="breeding-view" class="hidden">
+    <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-yellow-300 mb-2">💡 영감의 방</h2>
+        <p class="text-gray-300">두 가지 <span class="text-white font-bold">모티브</span>를 조합하여 새로운 아이디어를 구상합니다.</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-center items-center gap-8 mb-8">
+        <div class="flex flex-col items-center">
+            <p class="text-blue-300 font-bold mb-2">📘 모티브 1 (외형/대사)</p>
+            <div id="breeding-slot-a" onclick="clearBreedingSlot('a')" class="breeding-slot w-32 h-48 border-2 border-dashed border-blue-400 rounded-lg flex items-center justify-center cursor-pointer relative">
+                <span class="text-gray-500 text-sm pointer-events-none">선택 대기</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center">
+            <div class="text-4xl animate-pulse text-yellow-200 mb-2">⚡</div>
+            <div class="text-xs text-gray-400">동일 등급만<br>가능</div>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <p class="text-pink-300 font-bold mb-2">📕 모티브 2 (진영)</p>
+            <div id="breeding-slot-b" onclick="clearBreedingSlot('b')" class="breeding-slot w-32 h-48 border-2 border-dashed border-pink-400 rounded-lg flex items-center justify-center cursor-pointer relative">
+                <span class="text-gray-500 text-sm pointer-events-none">선택 대기</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-black/40 p-4 rounded-xl max-w-lg mx-auto text-center border border-gray-600 mb-6">
+        <p class="text-gray-300 text-sm mb-2">필요한 영감: <span class="text-gray-500">등급별 상이</span></p>
+        <p id="breeding-prediction" class="text-green-400 text-sm font-bold mb-4">모티브를 선택하면 예상 결과가 분석됩니다.</p>
+        
+        <button id="btn-execute-breeding" onclick="executeBreeding()" class="gacha-button bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-10 rounded-full text-lg shadow-[0_0_15px_rgba(234,179,8,0.6)] disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            💡 구상 시작
+        </button>
+    </div>
+
+    <div class="bg-black/20 p-4 rounded-xl">
+        <h3 class="text-white font-bold mb-3 border-b border-gray-600 pb-2">📚 참고할 원고 목록 (클릭하여 등록)</h3>
+        <div id="breeding-inventory-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 max-h-[40vh] overflow-y-auto p-2">
+            </div>
+    </div>
+</div>
+
 
             <div id="inventory-view" class="hidden">
      <div class="text-center mb-4 relative">
@@ -1649,6 +1721,25 @@ let playerRaidLastResetDate = null;
             const PULL_TEN_COST = 100;
             const EXPAND_COST = 50;
             const EXPAND_AMOUNT = 10;
+			
+			let breedingSlots = { a: null, b: null }; // 슬롯 상태
+
+// 등급별 구상 비용
+const BREEDING_COSTS = {
+    'N':   { gem: 10,  pen: 30 },
+    'R':   { gem: 30,  pen: 100 },
+    'SR':  { gem: 100, pen: 300 },
+    'SSR': { gem: 300, pen: 1000 }
+};
+
+// 등급 순서 및 스탯 가중치 (등급 하락 시 스탯 페널티 계산용)
+const RARITY_ORDER = ['N', 'R', 'SR', 'SSR'];
+const RARITY_STATS_WEIGHT = {
+    'SSR': 100,
+    'SR': 70,
+    'R': 45,
+    'N': 25
+};
             
 
             // --- HTML 요소 가져오기 ---
@@ -2326,6 +2417,7 @@ let currentTab = 'home'; // ✨ 이 변수는 스크립트 전체에서 딱 한 
                 else if (tabName === 'event') displayEventHomeView();
                 else if (tabName === 'achievements') displayAchievements();
                 else if (tabName === 'myroom') displayMyRoom();
+				else if (tabName === 'breeding') displayBreedingView(); // 👈 [추가]
                 // ✨ 누락되었던 최신 기능 연결 (친구, 교환소, 프로필)
                 else if (tabName === 'friends' && typeof loadFriendList === 'function') loadFriendList();
                 else if (tabName === 'trade' && typeof loadTradeList === 'function') loadTradeList();
@@ -3016,19 +3108,24 @@ function addCardToInventory(cardName) {
                 checkAchievements(); // 이 줄 추가
             }
 			
-			function getEnhancedStats(cardInstance) {
+			funfunction getEnhancedStats(cardInstance) {
     const baseCard = findCharacter(cardInstance.name);
     if (!baseCard) return null;
 
-    // ✨ '개정'에 따른 기본 능력치 보너스를 먼저 계산
+    // ✨ [변경] 유전된 스탯이 있으면 그것을 '기본 스탯'으로 사용
+    const baseStats = (cardInstance.inherited && cardInstance.inherited.stats) 
+                      ? cardInstance.inherited.stats 
+                      : baseCard.stats;
+
+    // '개정' 보너스
     const revisionBonus = 1 + (cardInstance.revision * STAT_INCREASE_PER_REVISION);
     const revisedStats = {
-        hp: Math.floor(baseCard.stats.hp * revisionBonus),
-        atk: Math.floor(baseCard.stats.atk * revisionBonus),
-        def: Math.floor(baseCard.stats.def * revisionBonus),
+        hp: Math.floor(baseStats.hp * revisionBonus),
+        atk: Math.floor(baseStats.atk * revisionBonus),
+        def: Math.floor(baseStats.def * revisionBonus),
     };
 
-    // 그 다음 '퇴고'에 따른 보너스를 적용
+    // '퇴고' 보너스
     const enhancementBonus = 1 + (cardInstance.level * STAT_INCREASE_PER_LEVEL);
     return {
         hp: Math.floor(revisedStats.hp * enhancementBonus),
@@ -4439,12 +4536,19 @@ async function startCombat(indices, type) {
     let combatDeck = playerDeck.map(cardInstance => {
         const baseCard = findCharacter(cardInstance.name);
         const enhancedStats = getEnhancedStats(cardInstance);
+        
+        // ✨ [추가] 유전된 스킬이 있으면 그것을 사용
+        let activeSkills = baseCard.skills;
+        if (cardInstance.inherited && cardInstance.inherited.skills) {
+            activeSkills = cardInstance.inherited.skills;
+        }
+
         return {
             ...baseCard,
+            skills: activeSkills, // 덮어쓰기
             stats: enhancedStats,
-            // ✨ [신규] 활성 효과(버프/디버프) 추적용 배열 추가
             activeEffects: [], 
-            cardImageUrl: baseCard.cardImageUrl // 이미지 URL 유지
+            cardImageUrl: baseCard.cardImageUrl 
         };
     });
 
@@ -5107,24 +5211,34 @@ saveGame();
 }
 
             // ✅ [수정됨] createCard 함수 (등급별 글로우 적용)
-function createCard(character, options = {}) {
+ffunction createCard(character, options = {}) {
     const { animationIndex, mode = 'default', isCardInDeck, isDeckFull, isCollected } = options;
+    const cardInstance = options.instance; // 인스턴스 정보
+
+    // ✨ 1. 표시할 등급 결정 (유전된 등급 우선)
+    let displayRarity = character.rarity;
+    if (cardInstance && cardInstance.inherited && cardInstance.inherited.originalRarity) {
+        displayRarity = cardInstance.inherited.originalRarity;
+    }
+
+    // ✨ 2. 표시할 진영 결정 (유전된 진영 우선)
+    let displayFaction = character.faction;
+    if (cardInstance && cardInstance.inherited && cardInstance.inherited.faction) {
+        displayFaction = cardInstance.inherited.faction;
+    }
+
+    const glowClass = `rarity-glow-${displayRarity}`;
     
-    // 1. 글로우 클래스 설정
-    const glowClass = `rarity-glow-${character.rarity}`; // ✨ [핵심] 글로우 클래스 준비
-    
-    // 카드 외형 컨테이너
+    // 카드 생성
     const card = document.createElement('div');
-    card.className = `rarity-${character.rarity} relative text-center rounded-lg shadow-md p-2 transform transition-transform duration-300 hover:scale-105 cursor-pointer`;
+    card.className = `rarity-${displayRarity} relative text-center rounded-lg shadow-md p-2 transform transition-transform duration-300 hover:scale-105 cursor-pointer`;
     card.title = character.name;
     
-    // ... (나머지 변수 설정 로직은 유지) ...
-    const rarityColor = { 'N': 'text-gray-600', 'R': 'text-blue-800', 'SR': 'text-white', 'SSR': 'text-black' }[character.rarity];
+    const rarityColor = { 'N': 'text-gray-600', 'R': 'text-blue-800', 'SR': 'text-white', 'SSR': 'text-black' }[displayRarity];
     const factionColors = {
         '탐정': 'bg-blue-500 text-white',
         '조수': 'bg-green-500 text-white',
         '범인': 'bg-red-500 text-white',
-        // ... (나머지 진영 컬러 유지) ...
         '히어로': 'bg-indigo-600 text-white',
         '빌런': 'bg-gray-800 text-white',
         '마법사': 'bg-purple-600 text-white',
@@ -5133,52 +5247,44 @@ function createCard(character, options = {}) {
         '사제': 'bg-teal-500 text-white',
         '악마': 'bg-rose-900 text-white'
     };
-    const cardInstance = options.instance;
 
-    // 1. 레벨 배지
+    // 레벨 배지
     let levelBadgeHTML = '';
     if (cardInstance && cardInstance.level > 0) {
         levelBadgeHTML = `<div class="level-badge">+${cardInstance.level}</div>`;
     }
     
-    // 2. 개정(별) 표시
+    // 개정 별
     let revisionStarsHTML = '';
     if (cardInstance && cardInstance.revision > 0) {
         revisionStarsHTML = `<div class="revision-stars">${'⭐'.repeat(cardInstance.revision)}</div>`;
     }
     
-    // 3. 하단 액션 버튼 생성 (기존 로직 유지)
+    // 버튼 생성 로직 (기존 유지)
     let actionButtonsHTML = '';
-    
     if (mode === 'deckBuilder' && cardInstance) {
-        // ... (덱 빌더 로직 유지) ...
         const disabled = isDeckFull || isCardInDeck;
         const buttonText = isCardInDeck ? '편찬됨' : '추가';
         const buttonColor = isCardInDeck ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-600';
         actionButtonsHTML = `<button data-action="add-to-deck" data-card-id="${cardInstance.id}" class="w-full mt-2 py-1 rounded-md text-white font-bold text-sm ${buttonColor}" ${disabled ? 'disabled' : ''}>${buttonText}</button>`;
-        
     } else if (mode === 'inventory') {
-        // ... (인벤토리 로직 유지) ...
         const isRepresentative = representativeCharacter && representativeCharacter.name === character.name;
         const repButtonText = isRepresentative ? '대표' : '대표 설정';
         const repButtonColor = isRepresentative ? 'bg-yellow-500' : 'bg-gray-600 hover:bg-gray-700';
         actionButtonsHTML = `<button data-action="set-representative" data-card-name="${character.name}" class="w-full mt-2 py-1 rounded-md text-white font-bold text-sm ${repButtonColor}" ${isRepresentative ? 'disabled' : ''}>${repButtonText}</button>`;
-        
     } else if (mode === 'deckSlot' && cardInstance) {
-        // ... (덱 슬롯 로직 유지) ...
         actionButtonsHTML = `<button data-action="remove-from-deck" data-card-id="${cardInstance.id}" class="w-full mt-2 py-1 rounded-md text-white font-bold text-sm bg-red-600 hover:bg-red-700 shadow-md">해제</button>`;
     }
     
-    // 진영 배지
-    const factionBadge = `<span class="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full ${factionColors[character.faction]} z-10">${character.faction}</span>`;
+    // ✨ 진영 배지 (displayFaction 사용)
+    const factionBadge = `<span class="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'} z-10">${displayFaction}</span>`;
 
-    // 4. HTML 조립
     card.innerHTML = `
         ${factionBadge} ${levelBadgeHTML} ${revisionStarsHTML} 
         <div class="relative pointer-events-none">
             <img src="${character.cardImageUrl}" alt="${character.name}" class="w-full h-full object-cover rounded-md mb-2 border-2 border-white/50 ${glowClass}"> 
             <p class="font-bold text-sm ${rarityColor} truncate">${character.name}</p>
-            <p class="font-black text-lg ${rarityColor}" style="text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">${character.rarity}</p>
+            <p class="font-black text-lg ${rarityColor}" style="text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">${displayRarity}</p>
         </div>
         ${actionButtonsHTML}
     `;
@@ -9056,6 +9162,285 @@ function getUserRepInfo(userData) {
     return { imgUrl, cardName };
 }
 
+// ================== 💡 교배(영감) 시스템 로직 시작 ==================
+
+function displayBreedingView() {
+    renderBreedingSlots();
+    renderBreedingInventory();
+    updateBreedingUI();
+}
+
+// 슬롯 렌더링
+function renderBreedingSlots() {
+    ['a', 'b'].forEach(slot => {
+        const container = document.getElementById(`breeding-slot-${slot}`);
+        const cardId = breedingSlots[slot];
+        
+        container.innerHTML = '';
+        
+        if (cardId) {
+            const cardInstance = playerInventory.find(c => c.id === cardId);
+            if (!cardInstance) {
+                breedingSlots[slot] = null; // 없는 카드면 초기화
+                return renderBreedingSlots();
+            }
+            const charData = findCharacter(cardInstance.name);
+            
+            // 카드 생성 (버튼 없는 모드)
+            const cardEl = createCard(charData, { instance: cardInstance, mode: 'default' });
+            cardEl.style.pointerEvents = 'none'; // 클릭 이벤트 방지 (슬롯 클릭이 우선)
+            
+            container.appendChild(cardEl);
+            container.classList.remove('border-dashed');
+            container.classList.add('border-solid', 'bg-white/5');
+            
+            // 해제 안내
+            const tip = document.createElement('div');
+            tip.className = "absolute inset-0 flex items-center justify-center bg-black/60 text-red-400 font-bold opacity-0 hover:opacity-100 transition-opacity rounded-lg z-20";
+            tip.innerText = "클릭하여 해제";
+            container.appendChild(tip);
+        } else {
+            container.innerHTML = `<span class="text-gray-500 text-sm pointer-events-none">선택 대기</span>`;
+            container.classList.add('border-dashed');
+            container.classList.remove('border-solid', 'bg-white/5');
+        }
+    });
+}
+
+// 인벤토리 렌더링 (교배용)
+function renderBreedingInventory() {
+    const container = document.getElementById('breeding-inventory-container');
+    container.innerHTML = '';
+
+    // 필터링: 덱에 없고 & 이미 슬롯에 선택되지 않은 카드
+    const availableCards = playerInventory.filter(card => {
+        const inDeck = playerDeck.some(d => d.id === card.id);
+        const isSelected = (breedingSlots.a === card.id || breedingSlots.b === card.id);
+        return !inDeck && !isSelected;
+    });
+
+    // 정렬 (등급 > 레벨)
+    availableCards.sort((a, b) => {
+        const charA = findCharacter(a.name);
+        const charB = findCharacter(b.name);
+        const rA = RARITY_STATS_WEIGHT[charA.rarity] || 0;
+        const rB = RARITY_STATS_WEIGHT[charB.rarity] || 0;
+        return (rB - rA) || (b.level - a.level);
+    });
+
+    if (availableCards.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-4">사용 가능한 원고가 없습니다.<br>(편찬에 등록된 카드는 제외됩니다)</p>';
+        return;
+    }
+
+    availableCards.forEach(cardInstance => {
+        const charData = findCharacter(cardInstance.name);
+        const cardEl = createCard(charData, { instance: cardInstance, mode: 'default' });
+        
+        // 클릭 시 빈 슬롯 등록
+        cardEl.onclick = () => selectBreedingCard(cardInstance.id);
+        cardEl.classList.add('hover:scale-105', 'transition-transform');
+        
+        container.appendChild(cardEl);
+    });
+}
+
+// 카드 선택
+function selectBreedingCard(cardId) {
+    if (!breedingSlots.a) breedingSlots.a = cardId;
+    else if (!breedingSlots.b) breedingSlots.b = cardId;
+    else {
+        // 둘 다 찼으면 A를 밀어내고 B->A, New->B (큐 방식) 또는 A 교체
+        breedingSlots.a = breedingSlots.b;
+        breedingSlots.b = cardId;
+    }
+    displayBreedingView();
+}
+
+// 슬롯 비우기
+function clearBreedingSlot(slot) {
+    if (breedingSlots[slot]) {
+        breedingSlots[slot] = null;
+        displayBreedingView();
+    }
+}
+
+// UI 업데이트 (비용, 확률 표시)
+function updateBreedingUI() {
+    const btn = document.getElementById('btn-execute-breeding');
+    const predictionEl = document.getElementById('breeding-prediction');
+    // 비용 표시 요소 찾기 (HTML 구조에 맞춰 첫번째 p 태그 선택)
+    const costTextEl = document.querySelector('#breeding-view .bg-black\\/40 p:first-child');
+    
+    const isReady = breedingSlots.a && breedingSlots.b;
+    let costDisplayHtml = `필요한 영감: <span class="text-gray-500">등급별 상이</span>`;
+
+    if (isReady) {
+        const cardA = playerInventory.find(c => c.id === breedingSlots.a);
+        const cardB = playerInventory.find(c => c.id === breedingSlots.b);
+        const charA = findCharacter(cardA.name);
+        const charB = findCharacter(cardB.name);
+        
+        // [규칙] 등급 체크
+        if (charA.rarity !== charB.rarity) {
+            predictionEl.textContent = "⚠️ 등급이 서로 다릅니다. 같은 등급만 가능합니다.";
+            predictionEl.className = "text-red-400 text-sm font-bold mb-4";
+            btn.disabled = true;
+            btn.textContent = "조건 불충족";
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            if(costTextEl) costTextEl.innerHTML = costDisplayHtml;
+            return;
+        }
+
+        // 비용 계산
+        const cost = BREEDING_COSTS[charA.rarity];
+        costDisplayHtml = `필요한 영감 (${charA.rarity}): <span class="text-yellow-300 font-bold">💎 ${cost.gem}</span> + <span class="text-gray-300 font-bold">🖋️ ${cost.pen}</span>`;
+        if(costTextEl) costTextEl.innerHTML = costDisplayHtml;
+
+        // 확률 메시지
+        const rarityIdx = RARITY_ORDER.indexOf(charA.rarity);
+        let nextMsg = "";
+        if (charA.rarity === 'N') {
+            nextMsg = "100% 확률로 [N] 등급 유지";
+        } else {
+            const lowerRarity = RARITY_ORDER[rarityIdx - 1];
+            nextMsg = `50% [${charA.rarity}] 유지 / 50% [${lowerRarity}] 하락`;
+        }
+
+        predictionEl.textContent = `📊 예상 결과: ${nextMsg}`;
+        predictionEl.className = "text-green-400 text-sm font-bold mb-4";
+        
+        // 재화 체크
+        const canAfford = playerCurrency >= cost.gem && playerFountainPens >= cost.pen;
+
+        if (canAfford) {
+            btn.disabled = false;
+            btn.textContent = "💡 구상 시작";
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = true;
+            btn.textContent = "재화 부족";
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    } else {
+        predictionEl.textContent = "같은 등급의 모티브 두 가지를 선택해주세요.";
+        predictionEl.className = "text-gray-500 text-sm mb-4";
+        btn.disabled = true;
+        btn.textContent = "모티브 선택 필요";
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        if(costTextEl) costTextEl.innerHTML = costDisplayHtml;
+    }
+}
+
+// [핵심] 교배 실행 함수
+function executeBreeding() {
+    if (!breedingSlots.a || !breedingSlots.b) return;
+
+    const instanceA = playerInventory.find(c => c.id === breedingSlots.a);
+    const instanceB = playerInventory.find(c => c.id === breedingSlots.b);
+    const charA = findCharacter(instanceA.name);
+    const charB = findCharacter(instanceB.name);
+
+    // 등급 체크
+    if (charA.rarity !== charB.rarity) return alert("같은 등급끼리만 가능합니다.");
+
+    // 비용 체크
+    const cost = BREEDING_COSTS[charA.rarity];
+    if (playerCurrency < cost.gem || playerFountainPens < cost.pen) {
+        return alert(`재화가 부족합니다.\n(필요: 💎${cost.gem}, 🖋️${cost.pen})`);
+    }
+
+    if (!confirm(`[${charA.rarity} 등급 구상]\n💎${cost.gem}, 🖋️${cost.pen}을 소모하여 진행하시겠습니까?`)) return;
+
+    // 1. 재화 소모
+    playerCurrency -= cost.gem;
+    playerFountainPens -= cost.pen;
+
+    // 2. 결과 등급 결정 (50% 확률로 하락)
+    const parentRarity = charA.rarity;
+    let childRarity = parentRarity;
+    let statMultiplier = 1.0; 
+    let rarityChangeMsg = "(등급 유지)";
+
+    const rarityIdx = RARITY_ORDER.indexOf(parentRarity);
+    if (rarityIdx > 0) { // N등급은 하락 없음
+        if (Math.random() < 0.5) {
+            childRarity = RARITY_ORDER[rarityIdx - 1];
+            
+            const parentWeight = RARITY_STATS_WEIGHT[parentRarity];
+            const childWeight = RARITY_STATS_WEIGHT[childRarity];
+            statMultiplier = childWeight / parentWeight; // 예: 45/70 = 0.64
+            
+            rarityChangeMsg = "📉 등급 하락 (능력치 조정됨)";
+        }
+    }
+
+    // 3. 유전 적용
+    // 법칙 1: 캐릭터(외형/대사)는 교배원1(A)
+    const childName = charA.name;   
+    
+    // 법칙 2: 진영은 교배원2(B)
+    const childFaction = charB.faction; 
+
+    // 법칙 3: 스탯 유전 (HP/DEF: A우세, ATK: B우세)
+    const HIGH_CHANCE = 0.7;
+    const baseStatsA = charA.stats;
+    const baseStatsB = charB.stats;
+
+    let rawHp = (Math.random() < HIGH_CHANCE) ? baseStatsA.hp : baseStatsB.hp;
+    let rawDef = (Math.random() < HIGH_CHANCE) ? baseStatsA.def : baseStatsB.def;
+    let rawAtk = (Math.random() < HIGH_CHANCE) ? baseStatsB.atk : baseStatsA.atk;
+
+    // 등급 하락 시 스탯 페널티 적용
+    const childHp = Math.floor(rawHp * statMultiplier);
+    const childDef = Math.floor(rawDef * statMultiplier);
+    const childAtk = Math.floor(rawAtk * statMultiplier);
+
+    // 법칙 4: 스킬 섞기
+    const allSkills = [...charA.skills, ...charB.skills];
+    const uniqueSkillsMap = new Map();
+    allSkills.forEach(s => uniqueSkillsMap.set(s.name, s));
+    const uniqueSkills = Array.from(uniqueSkillsMap.values());
+    
+    // 셔플
+    for (let i = uniqueSkills.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [uniqueSkills[i], uniqueSkills[j]] = [uniqueSkills[j], uniqueSkills[i]];
+    }
+    const childSkills = uniqueSkills.slice(0, 2);
+
+    // 4. 자식 카드 생성 (inherited 속성 추가)
+    const newCard = {
+        id: generateUniqueId(),
+        name: childName,
+        level: 0,
+        revision: 0,
+        inherited: {
+            faction: childFaction,
+            stats: { hp: childHp, atk: childAtk, def: childDef },
+            skills: childSkills,
+            originalRarity: childRarity // *중요* 등급 하락 시 UI 표시용
+        }
+    };
+
+    // 5. 저장
+    playerInventory.push(newCard);
+    if(typeof collectedCardNames !== 'undefined') collectedCardNames.add(childName);
+
+    saveGame();
+    updateUI();
+    
+    breedingSlots = { a: null, b: null };
+    displayBreedingView();
+
+    // 6. 결과 알림
+    alert(`💡 구상 완료! ${rarityChangeMsg}\n\n[${childRarity}] ${childName}\n진영: ${childFaction}\nHP: ${childHp} / ATK: ${childAtk} / DEF: ${childDef}`);
+    
+    if(confirm("서고에서 확인하시겠습니까?")) {
+        switchTab('inventory');
+    }
+}
+
 // ✅ [수정됨] 레이드 보상 분배 함수 (NaN 오류 수정 + 안전한 랭킹 계산)
 async function distributeRaidRewards(bossName, bossSpawnId) {
     console.log(`🎁 [${bossName}] (ID: ${bossSpawnId}) 보상 분배 시작...`);
@@ -9575,7 +9960,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
