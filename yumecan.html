@@ -1227,18 +1227,7 @@ body.pointer-events-none {
                 </div>
 
                 <div id="enhancement-container" class="bg-black/20 p-4 rounded-lg">
-				<h2 id="detail-card-name" class="text-3xl font-bold text-center"></h2>
-<div class="flex items-center justify-center gap-4 my-4">
-    <p id="detail-card-rarity" class="font-bold text-2xl"></p>
-    <p id="detail-card-faction" class="font-bold text-lg px-3 py-1 rounded-full"></p>
-</div>
-
-<div id="detail-parents-wrapper" class="hidden text-center mb-4 bg-white/5 p-2 rounded-lg mx-2">
-    <p class="text-xs text-gray-400 mb-2">🧬 영감의 원천 (모티브)</p>
-    <div id="detail-parents-container" class="flex justify-center items-center gap-6">
-        </div>
-</div>
-<div id="enhancement-container" class="bg-black/20 p-4 rounded-lg">
+				
                     <h3 class="font-bold text-lg mb-2 text-yellow-300">등장인물 퇴고</h3>
                     <div class="flex items-center justify-between">
                         <div>
@@ -5420,21 +5409,17 @@ function getSkillDescription(skill) {
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
-    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
-
-    // ▼▼▼ [신규] 부모(모티브) 정보 표시 로직 시작 ▼▼▼
+    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full // ▼▼▼ [이 코드가 있어야 화면에 나옵니다] ▼▼▼
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
     const parentsContainer = document.getElementById('detail-parents-container');
     
-    // 1. 자식 카드이고, 부모 정보가 있는지 확인
+    // 1. 자식 카드이고, 부모 정보(parents)가 있는지 확인
     if (cardInstance.inherited && cardInstance.inherited.parents && Array.isArray(cardInstance.inherited.parents)) {
         parentsContainer.innerHTML = '';
         
-        // 2. 부모 배열 순회
+        // 2. 부모 정보 그리기
         cardInstance.inherited.parents.forEach((parentName, idx) => {
             const parentChar = findCharacter(parentName);
-            
-            // 데이터가 있으면 이미지 표시, 없으면 이름만 표시
             const imgUrl = parentChar ? parentChar.imageUrl : 'https://placehold.co/50x50/333/fff?text=?';
             const rarityColor = parentChar ? ({ 'N':'border-gray-500', 'R':'border-blue-500', 'SR':'border-purple-500', 'SSR':'border-yellow-400' }[parentChar.rarity]) : 'border-gray-600';
 
@@ -5450,7 +5435,6 @@ function getSkillDescription(skill) {
                 </div>
             `;
             
-            // 중앙에 + 기호 추가 (첫 번째 부모 뒤에)
             if (idx > 0) {
                 const plusSign = document.createElement('div');
                 plusSign.className = "text-gray-500 text-xl font-bold";
@@ -5458,16 +5442,14 @@ function getSkillDescription(skill) {
                 parentsContainer.appendChild(plusSign);
             }
             
-            // HTML 삽입
             const wrapper = document.createElement('div');
             wrapper.innerHTML = parentHtml;
             parentsContainer.appendChild(wrapper.firstElementChild);
         });
 
-        parentsWrapper.classList.remove('hidden');
+        parentsWrapper.classList.remove('hidden'); // 숨김 해제
     } else {
-        // 부모 정보가 없으면 숨김 (일반 카드)
-        parentsWrapper.classList.add('hidden');
+        if(parentsWrapper) parentsWrapper.classList.add('hidden'); // 정보 없으면 숨김
     }
 
     // --- 2. 퇴고된 능력치 표시 ---
@@ -9550,7 +9532,9 @@ function executeBreeding() {
             faction: childFaction,
             stats: { hp: childHp, atk: childAtk, def: childDef },
             skills: childSkills,
-            originalRarity: childRarity // *중요* 등급 하락 시 UI 표시용
+            originalRarity: childRarity,
+            // ✨ [핵심 추가] 부모(모티브)의 이름을 족보에 기록합니다!
+            parents: [charA.name, charB.name] 
         }
     };
 
