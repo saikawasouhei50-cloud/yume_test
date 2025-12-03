@@ -1740,6 +1740,14 @@ const RARITY_STATS_WEIGHT = {
     'R': 45,
     'N': 25
 };
+// [신규] 등급 간 스탯 상승 배율 (N -> R -> SR -> SSR 순)
+// 예: SR(70점)에서 SSR(100점)로 가면 약 1.42배 강해짐
+const RARITY_MULTIPLIER = {
+    'N': 1.0,
+    'R': 1.8,   // N 대비 1.8배
+    'SR': 2.8,  // N 대비 2.8배 (R 대비 약 1.5배)
+    'SSR': 4.0  // N 대비 4.0배 (SR 대비 약 1.4배)
+};
             
 
             // --- HTML 요소 가져오기 ---
@@ -5509,104 +5517,130 @@ revisionPreviewDisplay.textContent = `다음 개정 시 기본 능력치 +${next
                 const pubButton = document.getElementById('publish-card-button');
                 const pubTargetText = document.getElementById('publication-target-name');
                 
-                // 1. 등급 순서 정의
-                const rarityOrder = ['N', 'R', 'SR', 'SSR'];
-                const currentRarityIndex = rarityOrder.indexOf(character.rarity);
+                // 1. 등급 순서
+const rarityOrder = ['N', 'R', 'SR', 'SSR'];
+// 자식 카드는 inherited.originalRarity를, 일반 카드는 character.rarity를 확인
+const currentRarity = cardInstance.inherited ? cardInstance.inherited.originalRarity : character.rarity;
+const currentRarityIndex = rarityOrder.indexOf(currentRarity);
 
-                // 2. 출판 조건 확인
-                // (MAX_ENHANCEMENT_LEVEL 등이 정의되어 있어야 함)
-                const isMaxLevel = cardInstance.level >= (typeof MAX_ENHANCEMENT_LEVEL !== 'undefined' ? MAX_ENHANCEMENT_LEVEL : 9);
-                const isMaxRevision = cardInstance.revision >= (typeof MAX_REVISION_LEVEL !== 'undefined' ? MAX_REVISION_LEVEL : 5);
-                const hasNextRarity = currentRarityIndex !== -1 && currentRarityIndex < rarityOrder.length - 1;
+// 2. 만렙 조건
+const isMaxLevel = cardInstance.level >= (typeof MAX_ENHANCEMENT_LEVEL !== 'undefined' ? MAX_ENHANCEMENT_LEVEL : 9);
+const isMaxRevision = cardInstance.revision >= (typeof MAX_REVISION_LEVEL !== 'undefined' ? MAX_REVISION_LEVEL : 5);
+const hasNextRarity = currentRarityIndex !== -1 && currentRarityIndex < rarityOrder.length - 1;
 
-                // yumecan.html 의 showCardDetails 함수 내부
-
-// ... (이전 코드: isMaxLevel, isMaxRevision 등 확인하는 곳)
-
-let nextRarityChar = null;
+// 3. 버튼 표시 결정
+let showPublishBtn = false;
+let targetNameDisplay = "";
 
 if (isMaxLevel && isMaxRevision && hasNextRarity) {
-    const nextRarity = rarityOrder[currentRarityIndex + 1];
+    if (cardInstance.inherited) {
+        // [자식 카드] 독립 출판 가능
+        showPublishBtn = true;
+        const nextRarity = rarityOrder[currentRarityIndex + 1];
+        targetNameDisplay = `대상: [${nextRarity}] 독립 개정판 (특성 유지)`;
+        // 버튼 클릭 시 targetCharacterData는 null로 보냄 (함수 내부에서 처리)
+        pubButton.onclick = () => publishCard(currentDetailCardId, null);
 
-    // ✨ [수정] 1순위: 엑셀에 정해둔 'publish_target'이 있으면 무조건 그걸로 진화!
-    if (character.publishTarget) {
-        nextRarityChar = characters.find(c => c.name === character.publishTarget);
-    }
-    
-    // 2순위: 만약 정해둔 게 없으면, 기존 방식대로 (같은 이름 + 다음 등급) 찾기
-    if (!nextRarityChar) {
-        nextRarityChar = characters.find(c => 
-            c.baseName === character.baseName && c.rarity === nextRarity
-        );
+    } else {
+        // [일반 카드] 정식 출판 대상 찾기
+        let nextRarityChar = null;
+        const nextRarity = rarityOrder[currentRarityIndex + 1];
+
+        if (character.publishTarget) {
+            nextRarityChar = characters.find(c => c.name === character.publishTarget);
+        }
+        if (!nextRarityChar) {
+            nextRarityChar = characters.find(c => c.baseName === character.baseName && c.rarity === nextRarity);
+        }
+
+        if (nextRarityChar) {
+            showPublishBtn = true;
+            targetNameDisplay = `대상: [${nextRarityChar.rarity}] ${nextRarityChar.name}`;
+            pubButton.onclick = () => publishCard(currentDetailCardId, nextRarityChar);
+        }
     }
 }
 
-// ... (이후 코드: UI 표시 로직 등 그대로 유지)
-
-                // 3. UI 표시/숨김 처리
-                if (nextRarityChar) {
-                    // 조건 만족 & 상위 등급 캐릭터 데이터 존재함 -> 버튼 보이기
-                    if (pubContainer) pubContainer.classList.remove('hidden');
-                    
-                    // 퇴고/개정 UI는 숨김
-                    const enhanceContainer = document.getElementById('enhancement-container');
-                    const revContainer = document.getElementById('revision-container');
-                    if (enhanceContainer) enhanceContainer.classList.add('hidden');
-                    if (revContainer) revContainer.classList.add('hidden');
-
-                    if (pubTargetText) pubTargetText.textContent = `대상: [${nextRarityChar.rarity}] ${nextRarityChar.name}`;
-                    
-                    // ▼▼▼ [핵심] 괄호가 빠지기 쉬운 부분입니다. 정확히 복사하세요! ▼▼▼
-                    if (pubButton) {
-                        pubButton.onclick = () => publishCard(currentDetailCardId, nextRarityChar);
-                    }
-                } else {
-                    // 조건 불만족 -> 숨기기
-                    if (pubContainer) pubContainer.classList.add('hidden');
-                }
-
-                // 모달 띄우기 (여기도 괄호 확인!)
-                cardDetailModal.classList.remove('hidden');
-            }
+// 4. UI 갱신
+if (showPublishBtn) {
+    if (pubContainer) pubContainer.classList.remove('hidden');
+    document.getElementById('enhancement-container').classList.add('hidden');
+    document.getElementById('revision-container').classList.add('hidden');
+    if (pubTargetText) pubTargetText.textContent = targetNameDisplay;
+} else {
+    if (pubContainer) pubContainer.classList.add('hidden');
+}
 
                 
 
 			// ✅ showCardDetails 함수 바로 다음에 이 새로운 함수를 추가하세요.
 
 function publishCard(cardId, targetCharacterData) {
-    // ▼▼▼ [주의] 여기 따옴표는 숫자 1 옆에 있는 `(백틱) 이어야 합니다! ▼▼▼
-    const confirmMsg = `축하합니다! 이 원고를 [${targetCharacterData.name}]으로 정식 출판하시겠습니까?\n\n(주의: 레벨과 개정 수치가 초기화됩니다.)`;
-    
-    if (!confirm(confirmMsg)) {
-        return;
-    }
-
-    // 1. 인벤토리에서 내 카드 찾기
     const myCard = playerInventory.find(c => c.id === cardId);
     if (!myCard) return;
 
-    // 2. 데이터 변환
-    const oldName = myCard.name;
+    // 1. 자식 카드(영감)인지 확인
+    const isChild = !!myCard.inherited;
     
-    myCard.name = targetCharacterData.name; // 이름 변경 (등급/이미지 변경됨)
-    myCard.level = 0;      // +0 초기화
-    myCard.revision = 0;   // 0성 초기화
-    
-    // 3. 수집 도감에 등록
-    collectedCardNames.add(targetCharacterData.name);
+    // 메시지 분기
+    let confirmMsg = "";
+    if (isChild) {
+        confirmMsg = `[독립 출판]\n이 원고의 고유한 특성을 유지하며 상위 등급으로 출판하시겠습니까?\n\n(등급 상승, 기본 능력치 대폭 상승, 레벨/개정 초기화)`;
+    } else {
+        confirmMsg = `[정식 출판]\n이 원고를 [${targetCharacterData.name}]으로 정식 출판하시겠습니까?\n\n(주의: 레벨/개정 초기화)`;
+    }
 
-    // 4. 저장 및 UI 갱신
+    if (!confirm(confirmMsg)) return;
+
+    // 2. 공통: 레벨 및 개정 초기화
+    const oldRarity = myCard.inherited ? myCard.inherited.originalRarity : findCharacter(myCard.name).rarity;
+    myCard.level = 0;
+    myCard.revision = 0;
+
+    if (isChild) {
+        // ================== 🌟 자식 카드: 독립 출판 로직 ==================
+        
+        // (1) 등급 상승 처리
+        const rarityOrder = ['N', 'R', 'SR', 'SSR'];
+        const currentIdx = rarityOrder.indexOf(myCard.inherited.originalRarity);
+        
+        if (currentIdx >= 3) return alert("이미 최고 등급입니다."); // 안전장치
+        
+        const nextRarity = rarityOrder[currentIdx + 1];
+        myCard.inherited.originalRarity = nextRarity; // 등급 변경
+
+        // (2) 스탯 재계산 (비율 유지하며 뻥튀기)
+        // 현재 등급 계수 vs 다음 등급 계수 비교
+        const currentMult = RARITY_STATS_WEIGHT[oldRarity] || 25;
+        const nextMult = RARITY_STATS_WEIGHT[nextRarity] || 100;
+        const growFactor = nextMult / currentMult; // 예: 70 -> 100이면 1.42배
+
+        myCard.inherited.stats.hp = Math.floor(myCard.inherited.stats.hp * growFactor);
+        myCard.inherited.stats.atk = Math.floor(myCard.inherited.stats.atk * growFactor);
+        myCard.inherited.stats.def = Math.floor(myCard.inherited.stats.def * growFactor);
+
+        alert(`💡 독립 출판 성공!\n[${nextRarity}] 등급으로 승격되었습니다!\n능력치가 대폭 상승했습니다.`);
+
+    } else {
+        // ================== 📘 일반 카드: 정식 출판 로직 ==================
+        
+        const oldName = myCard.name;
+        myCard.name = targetCharacterData.name; // 다른 캐릭터로 변신
+        
+        // 도감 등록
+        if (typeof collectedCardNames !== 'undefined') {
+            collectedCardNames.add(targetCharacterData.name);
+        }
+        
+        alert(`[${oldName}] 원고가 [${targetCharacterData.name}]으로 훌륭하게 출판되었습니다!`);
+    }
+
+    // 3. 저장 및 갱신
     saveGame();
     updateUI();
+    showCardDetails(cardId); // 상세창 갱신
     
-    // ▼▼▼ [주의] 여기도 `(백틱) 입니다! ▼▼▼
-    alert(`[${oldName}] 원고가 [${targetCharacterData.name}]으로 훌륭하게 출판되었습니다!`);
-    
-    showCardDetails(cardId); // 상세창 새로고침
-    
-    // 인벤토리 화면이면 갱신
-    const inventoryView = document.getElementById('inventory-view');
-    if (inventoryView && !inventoryView.classList.contains('hidden')) {
+    if (!document.getElementById('inventory-view').classList.contains('hidden')) {
         displayInventory();
     }
 }
