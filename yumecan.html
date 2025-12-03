@@ -5732,61 +5732,97 @@ function publishCard(cardId, targetCharacterData) {
     }
 }
 		
+// [수정됨] 도감 카드 상세 보기 함수 (안전장치 및 UI 정리 강화)
 function showCollectionCardDetails(cardBaseName) {
-	if (typeof hideCardDetails === 'function') {
+    // 1. 기존 상세창 닫기 (겹침 방지)
+    if (typeof hideCardDetails === 'function') {
         hideCardDetails(); 
-    } else {
-        // 만약 함수가 없다면 강제로 닫기
-        const modal = document.getElementById('card-detail-modal');
-        if (modal) modal.classList.add('hidden');
     }
+
+    // 2. 캐릭터 데이터 찾기
     const character = findCharacter(cardBaseName);
     if (!character) {
         console.error("도감 카드를 찾을 수 없습니다:", cardBaseName);
         return;
     }
 
-    currentDetailCardId = null; // 도감에서는 인스턴스 ID가 없음
+    currentDetailCardId = null; // 도감은 인스턴스 ID가 없음
 
-    // --- 1. 기본 정보 표시 (showCardDetails와 거의 동일) ---
-    document.getElementById('detail-card-image').src = character.imageUrl;
+    // 3. 기본 정보 표시
+    const imgEl = document.getElementById('detail-card-image');
+    if(imgEl) imgEl.src = character.imageUrl;
+    
     document.getElementById('detail-card-name').textContent = character.name;
+    
     const rarityEl = document.getElementById('detail-card-rarity');
     rarityEl.textContent = character.rarity;
     const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[character.rarity];
     rarityEl.className = `font-bold text-2xl ${rarityColor}`;
+    
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = character.faction;
-    const factionColors = { '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white' };
-    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[character.faction]}`;
+    const factionColors = { 
+        '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
+        '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
+        '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
+    };
+    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[character.faction] || 'bg-gray-500'}`;
 
-    // --- 2. ✨ 기본 능력치 표시 (퇴고/개정 없는 기본 스탯) ✨ ---
+    // 4. 기본 스탯 표시
     document.getElementById('detail-stat-hp').textContent = character.stats.hp;
     document.getElementById('detail-stat-atk').textContent = character.stats.atk;
     document.getElementById('detail-stat-def').textContent = character.stats.def;
 
-    // --- 3. 스킬 및 스토리 표시 (showCardDetails와 동일) ---
+    // 5. 스킬 표시
     const skillsContainer = document.getElementById('detail-skills-container');
     skillsContainer.innerHTML = '';
     character.skills.forEach((skill, index) => {
         const isUltimate = character.rarity === 'SSR' && index === 1;
         const skillEl = document.createElement('div');
         skillEl.className = 'bg-black/20 p-3 rounded-lg';
-        skillEl.innerHTML = `<h4 class="font-bold ${isUltimate ? 'text-yellow-300' : 'text-white'}">${isUltimate ? '궁극기' : '일반 스킬'}: ${skill.name}</h4><p class="text-gray-300 italic">"${skill.dialogue}"</p><p class="text-sm mt-1">${getSkillDescription(skill)}</p>`;
+        
+        const description = skill.desc ? skill.desc : getSkillDescription(skill);
+
+        skillEl.innerHTML = `
+            <h4 class="font-bold ${isUltimate ? 'text-yellow-300' : 'text-white'}">
+                ${isUltimate ? '궁극기' : '일반 스킬'}: ${skill.name}
+            </h4>
+            <p class="text-gray-300 italic">"${skill.dialogue || '...'}"</p>
+            <p class="text-sm mt-1 text-green-300">${description}</p>
+        `;
         skillsContainer.appendChild(skillEl);
     });
-    currentStoryPages = character.story.split('[PAGE_BREAK]');
+
+    // 6. 스토리 표시 (✨안전장치 추가✨)
+    // story 데이터가 없거나 비어있을 경우 에러가 나지 않도록 처리
+    const storyText = character.story || "스토리가 없습니다.";
+    currentStoryPages = storyText.split('[PAGE_BREAK]');
     currentStoryPageIndex = 0;
     displayCardStoryPage();
+    
+    const storyContainer = document.getElementById('detail-card-story-container');
+    if(storyContainer) storyContainer.classList.remove('hidden');
 
-    // --- 4. ✨ 퇴고, 개정, 파쇄 UI 숨기기 ✨ ---
-    document.getElementById('enhancement-container').classList.add('hidden');
-    document.getElementById('revision-container').classList.add('hidden');
-    document.getElementById('dismantle-container').classList.add('hidden');
+    // 7. 불필요한 UI 숨기기 (도감 모드에서는 안 보여야 할 것들)
+    const idsToHide = [
+        'enhancement-container',  // 퇴고
+        'revision-container',     // 개정
+        'dismantle-container',    // 파쇄
+        'publication-container',  // 출판
+        'detail-parents-wrapper'  // 영감의 원천 (도감 카드는 부모가 없음)
+    ];
+    
+    idsToHide.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
 
-    // 모달 표시
-    cardDetailModal.classList.remove('hidden');
+    // 8. 모달 열기
+    document.getElementById('card-detail-modal').classList.remove('hidden');
 }
+
+// 전역 등록 (필수)
+window.showCollectionCardDetails = showCollectionCardDetails;
 			
 
 			function enterMultiSelectMode() {
@@ -10364,6 +10400,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
