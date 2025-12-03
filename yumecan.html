@@ -7411,71 +7411,87 @@ if(marketTabBtn) marketTabBtn.click();
 
         // 6. 거래 목록 로드 함수 (내 거래도 표시됨)
         async function loadTradeList() {
-            const container = document.getElementById('trade-list-container');
-            if (!container) return;
-            container.innerHTML = '<p class="text-white">로딩 중...</p>';
+    const container = document.getElementById('trade-list-container');
+    if (!container) return;
+    container.innerHTML = '<p class="text-white">로딩 중...</p>';
 
-            try {
-                const snapshot = await db.collection('trades')
-                    .where('status', '==', 'active')
-                    .orderBy('createdAt', 'desc')
-                    .limit(20)
-                    .get();
+    // ✨ [중요] 상세 보기를 위해 현재 불러온 거래 데이터를 임시 저장할 공간 초기화
+    window.currentMarketTrades = {}; 
 
-                container.innerHTML = '';
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 거래가 없습니다.</p>';
-                    return;
-                }
+    try {
+        const snapshot = await db.collection('trades')
+            .where('status', '==', 'active')
+            .orderBy('createdAt', 'desc')
+            .limit(20)
+            .get();
 
-                snapshot.forEach(doc => {
-    const trade = doc.data();
-    const isMyTrade = currentUser && trade.senderUid === currentUser.uid;
-    const charData = findCharacter(trade.offeredCard.name);
-    const imgUrl = charData ? charData.imageUrl : '';
-
-    // ✨ 내 거래일 경우 테두리 색상과 배경색을 다르게 표시
-    const bgClass = isMyTrade ? 'bg-blue-900/40 border-blue-500' : 'bg-gray-800 border-gray-600';
-
-    // ✨ [추가] 희망 등급 뱃지 생성 로직
-    let rarityBadge = '';
-    if (trade.targetRarity && trade.targetRarity !== 'ALL') {
-        const rColors = { 'N': 'bg-gray-500', 'R': 'bg-blue-600', 'SR': 'bg-purple-600', 'SSR': 'bg-yellow-500 text-black' };
-        rarityBadge = `<span class="${rColors[trade.targetRarity]} text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">${trade.targetRarity}</span>`;
-    } else {
-        rarityBadge = `<span class="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1">모든 등급</span>`;
-    }
-
-    const el = document.createElement('div');
-    el.className = `${bgClass} p-3 rounded-lg border flex gap-3 items-center`;
-    el.innerHTML = `
-        <div class="w-16 h-16 flex-shrink-0 relative">
-            <img src="${imgUrl}" class="w-full h-full object-cover rounded border border-white/20">
-            ${isMyTrade ? '<span class="absolute top-0 left-0 bg-blue-600 text-white text-[10px] px-1 font-bold">ME</span>' : ''}
-        </div>
-        <div class="flex-grow">
-            <p class="text-yellow-300 font-bold text-sm">${trade.offeredCard.name} <span class="text-xs text-gray-400">(Lv.${trade.offeredCard.level})</span></p>
-            <p class="text-xs text-gray-400">From: ${trade.senderName}</p>
-            <div class="mt-1 text-white text-sm bg-black/30 p-1 rounded text-center">
-                구함: <span class="font-bold text-green-400">${trade.targetName}</span> ${rarityBadge}
-            </div>
-        </div>
-        <div class="flex flex-col gap-1">
-            ${isMyTrade 
-                ? `<button onclick="cancelTrade('${doc.id}')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-2 rounded">회수</button>`
-                // ✨ [수정] executeTrade 함수에 등급 정보(targetRarity) 추가 전달
-                : `<button onclick="executeTrade('${doc.id}', '${trade.targetName}', '${trade.targetRarity || 'ALL'}')" class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">교환</button>`
-            }
-        </div>
-    `;
-    container.appendChild(el);
-});
-            } catch (e) {
-                console.error(e);
-                container.innerHTML = '<p class="text-red-400">목록 로드 실패</p>';
-            }
+        container.innerHTML = '';
+        if (snapshot.empty) {
+            container.innerHTML = '<p class="col-span-full text-center text-gray-500">등록된 거래가 없습니다.</p>';
+            return;
         }
 
+        snapshot.forEach(doc => {
+            const trade = doc.data();
+            const tradeId = doc.id;
+            
+            // ✨ 상세 보기를 위해 데이터 저장
+            window.currentMarketTrades[tradeId] = trade.offeredCard;
+
+            const isMe = currentUser && trade.senderUid === currentUser.uid;
+            const charData = findCharacter(trade.offeredCard.name);
+            const imgUrl = charData ? charData.imageUrl : '';
+
+            // 스타일 설정
+            const bgClass = isMe ? 'bg-blue-900/40 border-blue-500' : 'bg-gray-800 border-gray-600';
+
+            // 희망 등급 뱃지
+            let rarityBadge = '';
+            if (trade.targetRarity && trade.targetRarity !== 'ALL') {
+                const rColors = { 'N': 'bg-gray-500', 'R': 'bg-blue-600', 'SR': 'bg-purple-600', 'SSR': 'bg-yellow-500 text-black' };
+                rarityBadge = `<span class="${rColors[trade.targetRarity]} text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">${trade.targetRarity}</span>`;
+            } else {
+                rarityBadge = `<span class="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1">모든 등급</span>`;
+            }
+
+            // ✨ [신규] 자식 카드 유전자(🧬) 뱃지 로직
+            const isChild = trade.offeredCard.inherited ? true : false;
+            const childBadge = isChild ? '<span class="absolute top-0 left-0 bg-pink-600 text-white text-[10px] font-bold px-1 py-0.5 rounded-br shadow-md z-20">🧬</span>' : '';
+
+            const el = document.createElement('div');
+            el.className = `${bgClass} p-3 rounded-lg border flex gap-3 items-center`;
+            
+            // ✨ 이미지 영역에 클릭 이벤트(openTradeCardDetail) 추가
+            el.innerHTML = `
+                <div class="w-16 h-16 flex-shrink-0 relative cursor-pointer hover:scale-105 transition-transform" 
+                     onclick="openTradeCardDetail('${tradeId}')" title="상세 정보 보기">
+                    <img src="${imgUrl}" class="w-full h-full object-cover rounded border border-white/20">
+                    ${isMyTrade ? '<span class="absolute top-0 left-0 bg-blue-600 text-white text-[10px] px-1 font-bold z-10">ME</span>' : ''}
+                    ${childBadge} </div>
+                <div class="flex-grow">
+                    <p class="text-yellow-300 font-bold text-sm">
+                        ${trade.offeredCard.name} 
+                        <span class="text-xs text-gray-400">(Lv.${trade.offeredCard.level})</span>
+                    </p>
+                    <p class="text-xs text-gray-400">From: ${trade.senderName}</p>
+                    <div class="mt-1 text-white text-sm bg-black/30 p-1 rounded text-center">
+                        구함: <span class="font-bold text-green-400">${trade.targetName}</span> ${rarityBadge}
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    ${isMe 
+                        ? `<button onclick="cancelTrade('${tradeId}')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-2 rounded">회수</button>`
+                        : `<button onclick="executeTrade('${tradeId}', '${trade.targetName}', '${trade.targetRarity || 'ALL'}')" class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">교환</button>`
+                    }
+                </div>
+            `;
+            container.appendChild(el);
+        });
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p class="text-red-400">목록 로드 실패</p>';
+    }
+}
         // 7. 내 거래 목록 (취소용)
         // [수정된 loadMyTrades 함수]
         async function loadMyTrades() {
@@ -9615,6 +9631,132 @@ function executeBreeding() {
     }
 }
 
+		// [신규] 거래소 카드 상세 정보 보기 (미리보기 모드)
+function openTradeCardDetail(tradeId) {
+    // 1. 임시 저장된 데이터에서 카드 정보 가져오기
+    const cardInstance = window.currentMarketTrades[tradeId];
+    if (!cardInstance) {
+        console.error("카드 정보를 찾을 수 없습니다.");
+        return;
+    }
+
+    const character = findCharacter(cardInstance.name);
+    // getEnhancedStats 함수는 원래 인벤토리에 있는 카드용이지만, 객체 구조가 같으므로 재사용 가능
+    const currentStats = getEnhancedStats(cardInstance);
+
+    // --- 기본 정보 표시 ---
+    document.getElementById('detail-card-image').src = character.imageUrl;
+    document.getElementById('detail-card-name').textContent = character.name;
+    const rarityEl = document.getElementById('detail-card-rarity');
+    
+    // 등급 결정 (유전된 등급 우선)
+    let displayRarity = character.rarity;
+    if (cardInstance.inherited && cardInstance.inherited.originalRarity) {
+        displayRarity = cardInstance.inherited.originalRarity;
+    }
+    
+    rarityEl.textContent = displayRarity;
+    const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[displayRarity];
+    rarityEl.className = `font-bold text-2xl ${rarityColor}`;
+    
+    // 진영 표시
+    let displayFaction = character.faction;
+    if (cardInstance.inherited && cardInstance.inherited.faction) {
+        displayFaction = cardInstance.inherited.faction;
+    }
+    
+    const factionEl = document.getElementById('detail-card-faction');
+    factionEl.textContent = displayFaction;
+    const factionColors = { 
+        '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
+        '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
+        '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
+    };
+    factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
+
+    // --- 부모 정보 표시 (자식 카드일 경우) ---
+    const parentsWrapper = document.getElementById('detail-parents-wrapper');
+    const parentsContainer = document.getElementById('detail-parents-container');
+    
+    if (cardInstance.inherited && cardInstance.inherited.parents && Array.isArray(cardInstance.inherited.parents)) {
+        parentsContainer.innerHTML = '';
+        cardInstance.inherited.parents.forEach((parentName, idx) => {
+            const parentChar = findCharacter(parentName);
+            const imgUrl = parentChar ? parentChar.imageUrl : 'https://placehold.co/50x50/333/fff?text=?';
+            const rColor = parentChar ? ({ 'N':'border-gray-500', 'R':'border-blue-500', 'SR':'border-purple-500', 'SSR':'border-yellow-400' }[parentChar.rarity]) : 'border-gray-600';
+
+            const parentHtml = `
+                <div class="flex flex-col items-center group relative" title="부모 정보">
+                    <div class="relative w-12 h-12">
+                        <img src="${imgUrl}" class="w-full h-full rounded-full border-2 ${rColor} object-cover shadow-md">
+                    </div>
+                    <span class="text-[10px] text-gray-300 mt-1 font-bold">${parentName}</span>
+                </div>
+            `;
+            
+            if (idx > 0) {
+                const plusSign = document.createElement('div');
+                plusSign.className = "text-gray-500 text-xl font-bold";
+                plusSign.innerText = "+";
+                parentsContainer.appendChild(plusSign);
+            }
+            
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = parentHtml;
+            parentsContainer.appendChild(wrapper.firstElementChild);
+        });
+        if(parentsWrapper) parentsWrapper.classList.remove('hidden');
+    } else {
+        if(parentsWrapper) parentsWrapper.classList.add('hidden');
+    }
+
+    // --- 능력치 표시 ---
+    document.getElementById('detail-stat-hp').textContent = currentStats.hp;
+    document.getElementById('detail-stat-atk').textContent = currentStats.atk;
+    document.getElementById('detail-stat-def').textContent = currentStats.def;
+
+    // --- 스킬 표시 (유전 스킬 포함) ---
+    const skillsContainer = document.getElementById('detail-skills-container');
+    skillsContainer.innerHTML = '';
+    const displaySkills = (cardInstance.inherited && cardInstance.inherited.skills) ? cardInstance.inherited.skills : character.skills;
+
+    displaySkills.forEach((skill, index) => {
+        const isUltimate = displayRarity === 'SSR' && index === 1;
+        const skillEl = document.createElement('div');
+        skillEl.className = 'bg-black/20 p-3 rounded-lg';
+        
+        const description = skill.desc ? skill.desc : getSkillDescription(skill);
+
+        skillEl.innerHTML = `
+            <h4 class="font-bold ${isUltimate ? 'text-yellow-300' : 'text-white'}">
+                ${isUltimate ? '궁극기' : '일반 스킬'}: ${skill.name}
+            </h4>
+            <p class="text-gray-300 italic">"${skill.dialogue || '...'}"</p>
+            <p class="text-sm mt-1 text-green-300">${description}</p>
+        `;
+        skillsContainer.appendChild(skillEl);
+    });
+
+    // --- ✨ 거래소 미리보기 전용 UI 처리 (버튼 숨기기) ---
+    // 내 카드가 아니므로 수정/강화 불가능하게 UI를 조정합니다.
+    document.getElementById('enhancement-container').classList.add('hidden');
+    document.getElementById('revision-container').classList.add('hidden');
+    document.getElementById('publication-container').classList.add('hidden');
+    document.getElementById('dismantle-container').classList.add('hidden');
+    
+    // 스토리 영역도 필요하다면 채워줍니다 (선택 사항)
+    currentStoryPages = character.story ? character.story.split('[PAGE_BREAK]') : ['스토리가 없습니다.'];
+    currentStoryPageIndex = 0;
+    displayCardStoryPage();
+    document.getElementById('detail-card-story-container').classList.remove('hidden');
+
+    // 모달 열기
+    document.getElementById('card-detail-modal').classList.remove('hidden');
+}
+
+// 전역 등록
+window.openTradeCardDetail = openTradeCardDetail;
+
 		// [수정됨] 도감으로 이동하여 해당 캐릭터 정보를 보여주는 함수
 function showCollectionCardDetails(targetName) {
     // 1. 캐릭터 데이터 찾기
@@ -10178,6 +10320,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
