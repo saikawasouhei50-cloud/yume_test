@@ -7415,7 +7415,7 @@ if(marketTabBtn) marketTabBtn.click();
     if (!container) return;
     container.innerHTML = '<p class="text-white">로딩 중...</p>';
 
-    // ✨ [중요] 상세 보기를 위해 현재 불러온 거래 데이터를 임시 저장할 공간 초기화
+    // 상세 보기를 위해 현재 거래 데이터를 임시 저장
     window.currentMarketTrades = {}; 
 
     try {
@@ -7435,14 +7435,16 @@ if(marketTabBtn) marketTabBtn.click();
             const trade = doc.data();
             const tradeId = doc.id;
             
-            // ✨ 상세 보기를 위해 데이터 저장
+            // 데이터 저장
             window.currentMarketTrades[tradeId] = trade.offeredCard;
 
+            // ✨ [변수 정의] 여기서 'isMe'로 정의했습니다.
             const isMe = currentUser && trade.senderUid === currentUser.uid;
+            
             const charData = findCharacter(trade.offeredCard.name);
             const imgUrl = charData ? charData.imageUrl : '';
 
-            // 스타일 설정
+            // 스타일 설정 (isMe 사용)
             const bgClass = isMe ? 'bg-blue-900/40 border-blue-500' : 'bg-gray-800 border-gray-600';
 
             // 희망 등급 뱃지
@@ -7454,20 +7456,21 @@ if(marketTabBtn) marketTabBtn.click();
                 rarityBadge = `<span class="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1">모든 등급</span>`;
             }
 
-            // ✨ [신규] 자식 카드 유전자(🧬) 뱃지 로직
+            // 자식 카드 유전자(🧬) 뱃지
             const isChild = trade.offeredCard.inherited ? true : false;
             const childBadge = isChild ? '<span class="absolute top-0 left-0 bg-pink-600 text-white text-[10px] font-bold px-1 py-0.5 rounded-br shadow-md z-20">🧬</span>' : '';
 
             const el = document.createElement('div');
             el.className = `${bgClass} p-3 rounded-lg border flex gap-3 items-center`;
             
-            // ✨ 이미지 영역에 클릭 이벤트(openTradeCardDetail) 추가
+            // ✨ [수정 완료] 아래쪽에서도 'isMyTrade' 대신 'isMe'를 사용하도록 고쳤습니다.
             el.innerHTML = `
                 <div class="w-16 h-16 flex-shrink-0 relative cursor-pointer hover:scale-105 transition-transform" 
                      onclick="openTradeCardDetail('${tradeId}')" title="상세 정보 보기">
                     <img src="${imgUrl}" class="w-full h-full object-cover rounded border border-white/20">
-                    ${isMyTrade ? '<span class="absolute top-0 left-0 bg-blue-600 text-white text-[10px] px-1 font-bold z-10">ME</span>' : ''}
-                    ${childBadge} </div>
+                    ${isMe ? '<span class="absolute top-0 left-0 bg-blue-600 text-white text-[10px] px-1 font-bold z-10">ME</span>' : ''}
+                    ${childBadge}
+                </div>
                 <div class="flex-grow">
                     <p class="text-yellow-300 font-bold text-sm">
                         ${trade.offeredCard.name} 
@@ -10320,6 +10323,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
