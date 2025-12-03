@@ -5873,9 +5873,16 @@ function displayStageStories() {
     if (!character || cardInstance.level >= MAX_ENHANCEMENT_LEVEL) return null;
 
     const baseCost = ENHANCEMENT_BASE_COSTS[cardInstance.level];
-    const multiplier = RARITY_COST_MULTIPLIER[character.rarity] || 1.0;
     
-    // 최종 비용은 소수점 올림 또는 반올림 처리하여 정수로 반환합니다.
+    // ✨ [핵심 수정] 자식 카드라면 유전된 등급을 사용
+    let rarity = character.rarity;
+    if (cardInstance.inherited && cardInstance.inherited.originalRarity) {
+        rarity = cardInstance.inherited.originalRarity;
+    }
+
+    const multiplier = RARITY_COST_MULTIPLIER[rarity] || 1.0;
+    
+    // 최종 비용 반올림
     return Math.ceil(baseCost * multiplier);
 }
 			
@@ -6136,9 +6143,16 @@ function reviseCardWithInkwell() {
     const cardInstance = playerInventory.find(c => c.id === currentDetailCardId);
     if (!cardInstance) return;
 
-    // 1. 비용 계산
     const character = findCharacter(cardInstance.name);
-    const cost = INKWELL_REVISION_COSTS[character.rarity] || 999;
+
+    // ✨ [핵심 수정] 자식 카드라면 유전된 등급을 사용
+    let rarity = character.rarity;
+    if (cardInstance.inherited && cardInstance.inherited.originalRarity) {
+        rarity = cardInstance.inherited.originalRarity;
+    }
+
+    // 1. 비용 계산 (수정된 rarity 기준)
+    const cost = INKWELL_REVISION_COSTS[rarity] || 999;
 
     // 2. 유효성 검사
     if (cardInstance.revision >= MAX_REVISION_LEVEL) {
