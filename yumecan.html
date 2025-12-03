@@ -5708,6 +5708,13 @@ function publishCard(cardId, targetCharacterData) {
 }
 		
 function showCollectionCardDetails(cardBaseName) {
+	if (typeof hideCardDetails === 'function') {
+        hideCardDetails(); 
+    } else {
+        // 만약 함수가 없다면 강제로 닫기
+        const modal = document.getElementById('card-detail-modal');
+        if (modal) modal.classList.add('hidden');
+    }
     const character = findCharacter(cardBaseName);
     if (!character) {
         console.error("도감 카드를 찾을 수 없습니다:", cardBaseName);
@@ -10129,6 +10136,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
