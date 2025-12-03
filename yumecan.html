@@ -3255,11 +3255,22 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
     inventoryStatus.textContent = `${playerInventory.length} / ${inventoryCapacity}`;
     inventoryContainer.innerHTML = '';
 
-    // --- 1. 필터링 로직 ---
+    // ✨ [핵심 헬퍼] 카드의 '진짜 등급'을 판별하는 함수
+    // 자식 카드라면 inherited.originalRarity를, 일반 카드라면 원본 데이터의 rarity를 반환
+    const getRealRarity = (card) => {
+        if (card.inherited && card.inherited.originalRarity) {
+            return card.inherited.originalRarity;
+        }
+        const char = findCharacter(card.name);
+        return char ? char.rarity : 'N'; // 데이터 없으면 N 처리
+    };
+
+    // --- 1. 필터링 로직 (수정됨) ---
     const filteredInventory = playerInventory.filter(cardInstance => {
         if (currentRarityFilter === 'All') return true;
-        const character = findCharacter(cardInstance.name);
-        return character && character.rarity === currentRarityFilter;
+        // 기존: findCharacter(cardInstance.name).rarity (X) -> 이름만 보고 판단함
+        // 수정: getRealRarity(cardInstance) (O) -> 유전 정보까지 확인
+        return getRealRarity(cardInstance) === currentRarityFilter;
     });
 
     if (filteredInventory.length === 0) {
@@ -3273,47 +3284,45 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
         return;
     }
 
-    // --- 2. 🔽 정렬 로직 (핵심 수정 부분) 🔽 ---
+    // --- 2. 정렬 로직 (수정됨) ---
     const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
     const sortedInventory = [...filteredInventory].sort((a, b) => {
         const charA = findCharacter(a.name);
         const charB = findCharacter(b.name);
 
-        // 🛡️ [안전장치] 캐릭터 데이터가 없는 유령 카드는 맨 뒤로 보냄 (에러 방지)
+        // 안전장치
         if (!charA && !charB) return 0;
         if (!charA) return 1;
         if (!charB) return -1;
 
-        let comparison = 0;
-        
-        // 안전장치 2: 혹시 데이터는 있는데 등급(rarity)이 비어있을 경우 대비
-        const rarityA = (charA.rarity && rarityOrder[charA.rarity]) ? rarityOrder[charA.rarity] : 0;
-        const rarityB = (charB.rarity && rarityOrder[charB.rarity]) ? rarityOrder[charB.rarity] : 0;
+        // ✨ [수정] 정렬 시에도 '진짜 등급'을 기준으로 점수 매기기
+        const rA = rarityOrder[getRealRarity(a)] || 0;
+        const rB = rarityOrder[getRealRarity(b)] || 0;
 
+        let comparison = 0;
         switch (currentSortOrder) {
             case 'level':
-                // 퇴고 순: 레벨 높은 순 > 등급 높은 순 > 이름 가나다 순
-                comparison = (b.level - a.level) || (rarityB - rarityA) || charA.baseName.localeCompare(charB.baseName);
+                // 퇴고 순: 레벨 > 등급 > 이름
+                comparison = (b.level - a.level) || (rB - rA) || charA.baseName.localeCompare(charB.baseName);
                 break;
             case 'revision':
-                // 개정 순: 개정 높은 순 > 등급 높은 순 > 이름 가나다 순
-                comparison = (b.revision - a.revision) || (rarityB - rarityA) || charA.baseName.localeCompare(charB.baseName);
+                // 개정 순: 개정 > 등급 > 이름
+                comparison = (b.revision - a.revision) || (rB - rA) || charA.baseName.localeCompare(charB.baseName);
                 break;
             case 'name':
-                // 이름 순: 이름 가나다 순 > 등급 높은 순 > 레벨 높은 순
-                comparison = charA.baseName.localeCompare(charB.baseName) || (rarityB - rarityA) || (b.level - a.level);
+                // 이름 순: 이름 > 등급 > 레벨
+                comparison = charA.baseName.localeCompare(charB.baseName) || (rB - rA) || (b.level - a.level);
                 break;
             case 'rarity':
             default:
-                // ✨ 등급 순: 등급 높은 순 > 이름 가나다 순 > 레벨 높은 순
-                comparison = (rarityB - rarityA) || charA.baseName.localeCompare(charB.baseName) || (b.level - a.level);
+                // 등급 순: 등급 > 이름 > 레벨
+                comparison = (rB - rA) || charA.baseName.localeCompare(charB.baseName) || (b.level - a.level);
                 break;
         }
         return isSortAscending ? comparison * -1 : comparison;
     });
-    // --- 🔼 정렬 로직 끝 🔼 ---
 
-    // --- 3. 화면 표시 로직 (기존과 동일) ---
+    // --- 3. 화면 표시 (기존 유지) ---
     sortedInventory.forEach((cardInstance, index) => {
         const character = findCharacter(cardInstance.name);
         if (character) {
@@ -3339,7 +3348,7 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
         }
     });
 
-    // --- 4. 버튼 UI 업데이트 (기존과 동일) ---
+    // --- 4. 버튼 UI 업데이트 ---
     document.querySelectorAll('.sort-button').forEach(btn => {
         btn.classList.remove('active', 'bg-blue-500');
         btn.querySelector('.sort-indicator').textContent = '';
