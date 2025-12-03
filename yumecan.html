@@ -5524,7 +5524,7 @@ function getSkillDescription(skill) {
         enhanceButton.disabled = playerFountainPens < cost;
     }
 
-    // --- 5. 개정 UI 업데이트 ---
+    // --- 5. 개정 UI 업데이트 (수정됨: 등급 일치 여부 확인) ---
     const revisionLevelDisplay = document.getElementById('detail-card-revision');
     const revisionPreviewDisplay = document.getElementById('revision-preview');
     const revisionMaterialSelect = document.getElementById('revision-material-select');
@@ -5546,27 +5546,52 @@ function getSkillDescription(skill) {
         const nextRevisionBonus = Math.round((cardInstance.revision + 1) * STAT_INCREASE_PER_REVISION * 100);
         revisionPreviewDisplay.textContent = `다음 개정 시 기본 능력치 +${nextRevisionBonus}%`;
 
-        // 카드 사용
-        const materialCards = playerInventory.filter(c => c.name === cardInstance.name && c.id !== cardInstance.id);
+        // ✨ [핵심 수정] 재료 카드 필터링 로직 강화
+        const materialCards = playerInventory.filter(c => {
+            // 1. 이름이 같아야 함
+            if (c.name !== cardInstance.name) return false;
+            // 2. 자기 자신은 제외
+            if (c.id === cardInstance.id) return false;
+            
+            // 3. ✨ [신규] '실제 등급'이 일치해야 함
+            // 타겟 카드의 등급
+            const myRarity = (cardInstance.inherited && cardInstance.inherited.originalRarity) 
+                             ? cardInstance.inherited.originalRarity 
+                             : character.rarity;
+            
+            // 재료 카드의 등급
+            const matChar = findCharacter(c.name);
+            const matRarity = (c.inherited && c.inherited.originalRarity) 
+                              ? c.inherited.originalRarity 
+                              : (matChar ? matChar.rarity : 'N');
+
+            return myRarity === matRarity;
+        });
+
         if (materialCards.length > 0) {
             materialCards.forEach(mat => {
+                // 옵션 텍스트에도 등급 표시 (확인용)
+                const matRarity = (mat.inherited && mat.inherited.originalRarity) 
+                                  ? mat.inherited.originalRarity 
+                                  : findCharacter(mat.name).rarity;
+                                  
                 const option = document.createElement('option');
                 option.value = mat.id;
-                option.textContent = `Lv.${mat.level} ${mat.name}`;
+                option.textContent = `[${matRarity}] ${mat.name} (Lv.${mat.level})`;
                 revisionMaterialSelect.appendChild(option);
             });
             reviseButton.disabled = false;
             revisionMaterialSelect.disabled = false;
         } else {
             const option = document.createElement('option');
-            option.textContent = '사용할 수 있는 원본이 없습니다.';
+            option.textContent = '조건(등급/이름)이 맞는 원본이 없습니다.';
             option.disabled = true;
             revisionMaterialSelect.appendChild(option);
             reviseButton.disabled = true;
             revisionMaterialSelect.disabled = true;
         }
 
-        // 잉크병 사용
+        // 잉크병 사용 (기존 로직 유지)
         const inkCost = INKWELL_REVISION_COSTS[displayRarity] || 999;
         const canAffordInk = playerInkwells >= inkCost;
         
@@ -6255,52 +6280,68 @@ function reviseCardWithInkwell() {
             function reviseCard() {
     if (!currentDetailCardId) return;
 
-    // ✨ 확인창 로직 추가 시작 ✨
     if (!confirm('선택한 카드를 원본으로 사용해 개정판을 제작하시겠습니까? 원본 카드는 사라집니다.')) {
-        return; // '취소'를 누르면 함수 종료
+        return; 
     }
-    // ✨ 확인창 로직 추가 끝 ✨
 
     const baseCard = playerInventory.find(c => c.id === currentDetailCardId);
-                const materialSelect = document.getElementById('revision-material-select');
-                const materialId = materialSelect.value;
+    const materialSelect = document.getElementById('revision-material-select');
+    const materialId = materialSelect.value;
 
-                if (!baseCard || !materialId || materialId === "") { // "" 값 체크 추가
-                    alert('개정에 사용할 원본 카드를 선택해주세요.');
-                    return;
-                }
-                if (baseCard.revision >= MAX_REVISION_LEVEL) return;
+    if (!baseCard || !materialId || materialId === "") { 
+        alert('개정에 사용할 원본 카드를 선택해주세요.');
+        return;
+    }
+    if (baseCard.revision >= MAX_REVISION_LEVEL) return;
 
-                // 재료 카드를 인벤토리에서 제거합니다.
-                const materialIndex = playerInventory.findIndex(c => c.id === materialId);
-                if (materialIndex > -1) {
-                    // 덱에 포함된 카드는 재료로 사용할 수 없도록 막습니다.
-                    const isMaterialInDeck = playerDeck.some(deckCard => deckCard.id === materialId);
-                    if(isMaterialInDeck) {
-                        alert('편찬에 포함된 카드는 원본으로 사용할 수 없습니다.');
-                        return;
-                    }
-                    playerInventory.splice(materialIndex, 1);
-                } else {
-                    alert('오류: 재료 카드를 찾을 수 없습니다.');
-                    return;
-                }
+    // 재료 카드를 인벤토리에서 찾음
+    const materialIndex = playerInventory.findIndex(c => c.id === materialId);
+    if (materialIndex > -1) {
+        const materialCard = playerInventory[materialIndex];
 
-                // 기본 카드의 개정 레벨을 올립니다.
-                baseCard.revision++;
+        // 1. 덱 포함 여부 확인
+        const isMaterialInDeck = playerDeck.some(deckCard => deckCard.id === materialId);
+        if(isMaterialInDeck) {
+            alert('편찬에 포함된 카드는 원본으로 사용할 수 없습니다.');
+            return;
+        }
 
-                // 성공 메시지 및 UI 갱신
-                const successDialogue = findCharacter(baseCard.name).enhancementSuccessDialogue || `${baseCard.name}의 새로운 가능성이 발견되었다!`;
-                alert(successDialogue);
+        // ✨ 2. [신규] 등급 일치 여부 2차 검증 (보안)
+        const getRealRarity = (c) => {
+            if (c.inherited && c.inherited.originalRarity) return c.inherited.originalRarity;
+            return findCharacter(c.name).rarity;
+        };
 
-                updateUI();
-                saveGame();
-                showCardDetails(currentDetailCardId); // 모달 정보 새로고침
-                // 만약 인벤토리가 열려있었다면, 인벤토리도 새로고침
-                if (!document.getElementById('inventory-view').classList.contains('hidden')) {
-                    displayInventory();
-                }
-            }
+        const baseRarity = getRealRarity(baseCard);
+        const matRarity = getRealRarity(materialCard);
+
+        if (baseRarity !== matRarity) {
+            alert(`등급이 서로 다릅니다.\n(대상: ${baseRarity} / 재료: ${matRarity})\n같은 등급끼리만 개정이 가능합니다.`);
+            return;
+        }
+
+        // 검증 통과 -> 재료 삭제
+        playerInventory.splice(materialIndex, 1);
+    } else {
+        alert('오류: 재료 카드를 찾을 수 없습니다.');
+        return;
+    }
+
+    // 기본 카드의 개정 레벨을 올립니다.
+    baseCard.revision++;
+
+    // 성공 메시지 및 UI 갱신
+    const successDialogue = findCharacter(baseCard.name).enhancementSuccessDialogue || `${baseCard.name}의 새로운 가능성이 발견되었다!`;
+    alert(successDialogue);
+
+    updateUI();
+    saveGame();
+    showCardDetails(currentDetailCardId); 
+    
+    if (!document.getElementById('inventory-view').classList.contains('hidden')) {
+        displayInventory();
+    }
+}
 			
 			async function recordAndShowStats(statId, userChoiceText) {
     const choiceRef = db.collection('choices').doc(statId);
@@ -10323,6 +10364,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
