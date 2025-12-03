@@ -9298,6 +9298,7 @@ function renderBreedingSlots() {
             
             // 카드 생성 (버튼 없는 모드)
             const cardEl = createCard(charData, { instance: cardInstance, mode: 'default' });
+			cardEl.classList.add('w-full', 'h-full', 'overflow-hidden');
             cardEl.style.pointerEvents = 'none'; // 클릭 이벤트 방지 (슬롯 클릭이 우선)
             
             container.appendChild(cardEl);
@@ -10089,6 +10090,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
