@@ -7174,32 +7174,42 @@ function loadTradeInventory() {
     container.innerHTML = '';
 
     if (!playerInventory) {
-            container.innerHTML = '<p class="col-span-full text-center text-gray-400">데이터 로딩 중...</p>';
-            return;
+        container.innerHTML = '<p class="col-span-full text-center text-gray-400">데이터 로딩 중...</p>';
+        return;
     }
+
+    // ✨ 헬퍼: 실제 등급 확인
+    const getRealRarity = (card) => {
+        if (card.inherited && card.inherited.originalRarity) {
+            return card.inherited.originalRarity;
+        }
+        const char = findCharacter(card.name);
+        return char ? char.rarity : 'N';
+    };
 
     // 1. 필터링 (덱 제외 & 등급 필터 적용)
     let tradableCards = playerInventory.filter(card => {
         // 덱에 있는 카드는 제외
         if (playerDeck.some(d => d.id === card.id)) return false;
         
-        // ✨ 등급 필터 적용
+        // ✨ 등급 필터 적용 (실제 등급 기준)
         if (currentTradeRarityFilter !== 'All') {
-            const charData = findCharacter(card.name);
-            if (!charData || charData.rarity !== currentTradeRarityFilter) return false;
+            const realRarity = getRealRarity(card);
+            if (realRarity !== currentTradeRarityFilter) return false;
         }
         return true;
     });
 
-    // ✨ 2. 정렬 (등급 높은 순 -> 레벨 높은 순 -> 이름순)
+    // 2. 정렬
     const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
     tradableCards.sort((a, b) => {
         const charA = findCharacter(a.name);
         const charB = findCharacter(b.name);
-        const rA = charA ? rarityOrder[charA.rarity] : 0;
-        const rB = charB ? rarityOrder[charB.rarity] : 0;
+        
+        // 실제 등급 기준으로 정렬
+        const rA = rarityOrder[getRealRarity(a)] || 0;
+        const rB = rarityOrder[getRealRarity(b)] || 0;
 
-        // 등급 비교 -> 레벨 비교 -> 이름 비교
         return (rB - rA) || (b.level - a.level) || a.name.localeCompare(b.name);
     });
 
@@ -7211,7 +7221,7 @@ function loadTradeInventory() {
         return;
     }
 
-    // 3. 카드 생성 (기존 로직 + 등급 뱃지 유지)
+    // 3. 카드 생성
     tradableCards.forEach(cardInstance => {
         const charData = findCharacter(cardInstance.name);
         const isSelected = (selectedTradeCardId === cardInstance.id);
@@ -7223,7 +7233,8 @@ function loadTradeInventory() {
         const imageUrl = charData ? charData.imageUrl : '';
         const displayName = charData ? charData.name : cardInstance.name;
         
-        const rarity = charData ? charData.rarity : '?';
+        // ✨ 실제 등급 및 색상 결정
+        const rarity = getRealRarity(cardInstance);
         const rarityColors = {
             'N': 'bg-gray-500 text-white',
             'R': 'bg-blue-600 text-white',
@@ -7232,11 +7243,18 @@ function loadTradeInventory() {
         };
         const badgeClass = rarityColors[rarity] || 'bg-gray-600 text-white';
 
+        // ✨ 자식 카드 표시 (유전자 아이콘)
+        let childBadge = '';
+        if (cardInstance.inherited) {
+            childBadge = `<span class="absolute top-0 left-0 bg-pink-600 text-white text-[10px] font-bold px-1 py-0.5 rounded-br shadow-md z-20">🧬</span>`;
+        }
+
         cardEl.innerHTML = `
             <div class="pointer-events-none">
                 <div class="aspect-[2/3] overflow-hidden rounded mb-1 relative">
                         <img src="${imageUrl}" class="w-full h-full object-cover">
-                        <span class="absolute top-0 right-0 ${badgeClass} text-[10px] font-bold px-1.5 py-0.5 rounded-bl shadow-md">
+                        ${childBadge}
+                        <span class="absolute top-0 right-0 ${badgeClass} text-[10px] font-bold px-1.5 py-0.5 rounded-bl shadow-md z-10">
                         ${rarity}
                         </span>
                 </div>
@@ -7523,85 +7541,109 @@ if(marketTabBtn) marketTabBtn.click();
 
         // 1. 거래 버튼 클릭 시 실행 (카드 검색 및 분기 처리)
         window.executeTrade = function(tradeId, targetName, targetRarity) {
-            // 내가 가진 카드 중 조건에 맞는 것들을 모두 찾습니다.
-            const candidates = playerInventory.filter(c => {
-                const charData = findCharacter(c.name);
-                if (!charData) return false;
-                
-                // 이름 확인 (풀네임이 같거나, 베이스 이름이 같거나)
-                const isNameMatch = (c.name === targetName) || (charData.baseName === targetName);
-                if (!isNameMatch) return false;
+    // 헬퍼: 실제 등급 확인
+    const getRealRarity = (card) => {
+        if (card.inherited && card.inherited.originalRarity) {
+            return card.inherited.originalRarity;
+        }
+        const char = findCharacter(card.name);
+        return char ? char.rarity : 'N';
+    };
 
-                // 덱에 있는 카드는 제외
-                if (playerDeck.some(d => d.id === c.id)) return false;
+    // 내가 가진 카드 중 조건에 맞는 것들을 모두 찾습니다.
+    const candidates = playerInventory.filter(c => {
+        const charData = findCharacter(c.name);
+        if (!charData) return false;
+        
+        // 1. 이름 확인 (풀네임이 같거나, 베이스 이름이 같거나)
+        const isNameMatch = (c.name === targetName) || (charData.baseName === targetName);
+        if (!isNameMatch) return false;
 
-                // 등급 조건 확인
-                if (targetRarity && targetRarity !== 'ALL') {
-                    if (charData.rarity !== targetRarity) return false;
-                }
-                
-                return true;
-            });
+        // 2. 덱에 있는 카드는 제외
+        if (playerDeck.some(d => d.id === c.id)) return false;
 
-            // 경우의 수 처리
-            if (candidates.length === 0) {
-                return alert(`조건에 맞는 카드가 없습니다.\n(덱에 장착 중인 카드는 거래할 수 없습니다.)`);
-            }
-            
-            if (candidates.length === 1) {
-                // 1장뿐이면 바로 거래 진행
-                confirmTradeTransaction(tradeId, candidates[0], targetName, targetRarity);
-            } else {
-                // ✨ 여러 장이면 선택 모달 띄우기
-                openTradeSelectModal(tradeId, candidates, targetName, targetRarity);
-            }
-        };
+        // 3. ✨ 등급 조건 확인 (실제 등급 사용)
+        if (targetRarity && targetRarity !== 'ALL') {
+            const myRarity = getRealRarity(c);
+            if (myRarity !== targetRarity) return false;
+        }
+        
+        return true;
+    });
+
+    // 경우의 수 처리
+    if (candidates.length === 0) {
+        return alert(`조건에 맞는 카드가 없습니다.\n(덱에 장착 중인 카드는 거래할 수 없습니다.)`);
+    }
+    
+    if (candidates.length === 1) {
+        // 1장뿐이면 바로 거래 진행
+        confirmTradeTransaction(tradeId, candidates[0], targetName, targetRarity);
+    } else {
+        // 여러 장이면 선택 모달 띄우기
+        openTradeSelectModal(tradeId, candidates, targetName, targetRarity);
+    }
+};
 
         // 2. 카드 선택 모달 열기 (개정 단계 표시 추가됨)
         function openTradeSelectModal(tradeId, candidates, targetName, targetRarity) {
-            const modal = document.getElementById('trade-select-card-modal');
-            const list = document.getElementById('trade-select-list');
-            
-            list.innerHTML = ''; 
+    const modal = document.getElementById('trade-select-card-modal');
+    const list = document.getElementById('trade-select-list');
+    
+    list.innerHTML = ''; 
 
-            candidates.forEach(cardInstance => {
-                const charData = findCharacter(cardInstance.name);
-                const revision = cardInstance.revision || 0; // 개정 수치 (없으면 0)
-                const stars = '⭐'.repeat(revision); // 별 문자열 생성
+    candidates.forEach(cardInstance => {
+        const charData = findCharacter(cardInstance.name);
+        const revision = cardInstance.revision || 0; 
+        const stars = '⭐'.repeat(revision); 
 
-                const cardEl = document.createElement('div');
-                cardEl.className = 'relative bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 border border-gray-500 transition-transform hover:scale-105';
-                
-                // 클릭하면 이 카드로 거래 실행
-                cardEl.onclick = () => {
-                    document.getElementById('trade-select-card-modal').classList.add('hidden');
-                    confirmTradeTransaction(tradeId, cardInstance, targetName, targetRarity);
-                };
-
-                cardEl.innerHTML = `
-                    <div class="aspect-[2/3] overflow-hidden rounded mb-2 relative">
-                        <img src="${charData.imageUrl}" class="w-full h-full object-cover">
-                        
-                        <span class="absolute bottom-0 right-0 bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-tl shadow-md z-10">
-                            Lv.${cardInstance.level}
-                        </span>
-                        
-                        <div class="absolute bottom-0 left-0 p-1 text-[10px] text-yellow-300 font-bold z-10" style="text-shadow: 1px 1px 2px black;">
-                            ${stars}
-                        </div>
-                    </div>
-                    
-                    <p class="text-xs font-bold text-center text-white truncate">${cardInstance.name}</p>
-                    <p class="text-[10px] text-center text-gray-400">
-                        Lv.${cardInstance.level} 
-                        <span class="text-yellow-400">${revision > 0 ? `(+${revision}개정)` : ''}</span>
-                    </p>
-                `;
-                list.appendChild(cardEl);
-            });
-
-            modal.classList.remove('hidden');
+        // ✨ 실제 등급 및 자식 여부 확인
+        let displayRarity = charData.rarity;
+        let isChild = false;
+        if (cardInstance.inherited) {
+            isChild = true;
+            if (cardInstance.inherited.originalRarity) {
+                displayRarity = cardInstance.inherited.originalRarity;
+            }
         }
+
+        const rarityColors = { 'N': 'bg-gray-500', 'R': 'bg-blue-600', 'SR': 'bg-purple-600', 'SSR': 'bg-yellow-500 text-black' };
+        const badgeClass = rarityColors[displayRarity] || 'bg-gray-600';
+
+        const cardEl = document.createElement('div');
+        cardEl.className = 'relative bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 border border-gray-500 transition-transform hover:scale-105';
+        
+        cardEl.onclick = () => {
+            document.getElementById('trade-select-card-modal').classList.add('hidden');
+            confirmTradeTransaction(tradeId, cardInstance, targetName, targetRarity);
+        };
+
+        cardEl.innerHTML = `
+            <div class="aspect-[2/3] overflow-hidden rounded mb-2 relative">
+                <img src="${charData.imageUrl}" class="w-full h-full object-cover">
+                
+                ${isChild ? '<span class="absolute top-0 left-0 bg-pink-600 text-white text-[10px] font-bold px-1 py-0.5 rounded-br shadow-md z-10">🧬</span>' : ''}
+
+                <span class="absolute bottom-0 right-0 bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-tl shadow-md z-10">
+                    Lv.${cardInstance.level}
+                </span>
+                
+                <span class="absolute top-0 right-0 ${badgeClass} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl shadow-md z-10">
+                    ${displayRarity}
+                </span>
+
+                <div class="absolute bottom-0 left-0 p-1 text-[10px] text-yellow-300 font-bold z-10" style="text-shadow: 1px 1px 2px black;">
+                    ${stars}
+                </div>
+            </div>
+            
+            <p class="text-xs font-bold text-center text-white truncate">${cardInstance.name}</p>
+        `;
+        list.appendChild(cardEl);
+    });
+
+    modal.classList.remove('hidden');
+}
 
         // 3. 실제 거래 트랜잭션 실행
         window.confirmTradeTransaction = async function(tradeId, myOfferCard, targetName, targetRarity) {
@@ -10136,6 +10178,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
