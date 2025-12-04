@@ -5733,7 +5733,7 @@ function publishCard(cardId, targetCharacterData) {
 }
 		
 // [수정됨] 도감 카드 상세 보기 함수 (안전장치 및 UI 정리 강화)
-function showCollectionCardDetails(cardBaseName) {
+function openCollectionCardModal(cardBaseName) {
     // 1. 기존 상세창 닫기 (겹침 방지)
     if (typeof hideCardDetails === 'function') {
         hideCardDetails(); 
@@ -6966,7 +6966,7 @@ cardClickableContainers.forEach(container => {
             // 수집된 카드인지 다시 한번 확인 (회색 카드 클릭 방지)
             const isCollected = cardElement.dataset.isCollected === "true";
             if (cardBaseName && isCollected) {
-                showCollectionCardDetails(cardBaseName); // ✨ 새 함수 호출 ✨
+                openCollectionCardModal(cardBaseName); // ✨ 변경된 함수 이름으로 호출
             }
         }
 
