@@ -10365,22 +10365,30 @@ function fleeCombat() {
 }
 
 function startIntroTutorial() {
-    console.log("튜토리얼(메인스토리 0장)을 시작합니다.");
+    console.log("🎬 튜토리얼(메인스토리 0장) 시작 시도...");
     
-    // 로드된 메인 스토리에서 ID가 0인 챕터를 찾습니다. (datatest.js 수정 필수)
-    const introIndex = mainStories.findIndex(story => story.id === 0);
-    
-    if (introIndex === -1) {
-        // 0장이 없으면 그냥 튜토리얼 끝난 걸로 치고 홈으로 보냅니다.
-        console.warn("메인 스토리 0장 데이터를 찾을 수 없습니다.");
-        finishIntroTutorial(); 
+    // 1. 데이터가 아예 없는 경우 방어
+    if (!mainStories || mainStories.length === 0) {
+        alert("❌ 메인 스토리 데이터가 로드되지 않았습니다.\n잠시 후 다시 시도해주세요.");
+        finishIntroTutorial();
         return;
     }
 
-    // 0장이 끝나면 실행할 함수(finishIntroTutorial)를 등록
+    // 2. ID가 0인 챕터 찾기
+    let introIndex = mainStories.findIndex(story => story.id === 0);
+    
+    // 3. [안전장치] 만약 ID 0을 못 찾았다면? -> 그냥 목록의 맨 처음(0번 인덱스) 스토리를 실행!
+    if (introIndex === -1) {
+        console.warn("⚠️ ID가 0인 스토리를 못 찾았습니다. 자동으로 첫 번째 스토리를 재생합니다.");
+        introIndex = 0; 
+    }
+
+    console.log(`▶ 스토리 인덱스 [${introIndex}]번 실행`);
+
+    // 4. 스토리 모달의 콜백을 '튜토리얼 종료 함수'로 설정
     document.getElementById('interactive-story-modal').dataset.callback = "finishIntroTutorial()";
     
-    // 0장 스토리 실행
+    // 5. 스토리 실행
     startInteractiveStory(introIndex, 'main');
 }
 
