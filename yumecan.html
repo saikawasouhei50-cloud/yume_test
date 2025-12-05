@@ -507,7 +507,7 @@ body.pointer-events-none {
             shadow-[2px_2px_0px_rgba(0,0,0,0.5)] md:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] border-2 border-yellow-300 
             flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-2">
         <span class="transform skew-x-12 inline-block text-xl md:text-5xl">⚔️</span>
-        <span class="transform skew-x-12 inline-block text-xs md:text-4xl">독서</span>
+        <span class="transform skew-x-12 inline-block text-xs md:text-4xl">안정화</span>
         <span class="absolute -bottom-2 -right-2 text-6xl opacity-20 transform skew-x-12 text-black hidden md:block">COMBAT</span>
     </button>
 
@@ -843,7 +843,7 @@ body.pointer-events-none {
 
             <div id="deck-view" class="hidden">
                 <div class="text-center mb-4 relative">
-    <p class="text-gray-200">등장인물들과 함께 독서를 준비하세요. (5장 필수)</p>
+    <p class="text-gray-200">등장인물들과 함께 안정화를 준비하세요. (5장 필수)</p>
     
     <button onclick="switchTab('inventory')" class="absolute right-0 top-0 gacha-button bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded-full border border-gray-500 flex items-center gap-1">
         <span>📚</span> 서고로 이동
@@ -865,7 +865,7 @@ body.pointer-events-none {
             
             <div id="combat-view" class="hidden">
                 <div class="text-center mb-4">
-                    <p class="text-gray-200">편찬한 책으로 독서에 도전하여 보상을 획득하세요!</p>
+                    <p class="text-gray-200">편찬한 책으로 안정화에 도전하여 보상을 획득하세요!</p>
                     <p class="text-xl font-bold">현재 책 전투력: <span id="deck-power-display" class="text-yellow-300">0</span></p>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4">
@@ -946,7 +946,7 @@ body.pointer-events-none {
             
             <div id="story-view" class="hidden">
                 <div class="text-center mb-4">
-                    <p class="text-gray-200">독서를 통해 해금한 스토리를 열람합니다.</p>
+                    <p class="text-gray-200">안정화를 통해 해금한 스토리를 열람합니다.</p>
                 </div>
 			
                 
@@ -1476,7 +1476,7 @@ const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '사제와 악마:
         const eventSubTabShop = document.getElementById('event-sub-tab-shop'); // ✨ 이제 shop 버튼을 찾을 수 있습니다.
 		// ✨ [신규] 전투 항복 버튼 리스너
 document.getElementById('combat-run-button').addEventListener('click', () => {
-    if (confirm("정말로 항복하고 독서를 중단하시겠습니까? (패배 처리됩니다)")) {
+    if (confirm("정말로 항복하고 안정화를 중단하시겠습니까? (패배 처리됩니다)")) {
         fleeCombat();
     }
 });
@@ -5983,7 +5983,7 @@ function displayStageStories() {
     });
 
     if (sortedStageStories.length === 0) {
-        stageStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">열람한 스테이지 스토리가 없습니다. 독서를 진행해주세요.</p>`;
+        stageStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">열람한 스테이지 스토리가 없습니다. 안정화를 진행해주세요.</p>`;
         return;
     }
 
