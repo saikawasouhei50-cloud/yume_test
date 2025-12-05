@@ -10353,6 +10353,56 @@ function fleeCombat() {
     }, 0); 
 }
 
+function startIntroTutorial() {
+    console.log("튜토리얼(메인스토리 0장)을 시작합니다.");
+    
+    // 1. 로드된 메인 스토리 목록에서 ID가 0인 챕터의 '인덱스'를 찾습니다.
+    // (시트 순서가 뒤죽박죽이어도 정확히 0장을 찾아냅니다)
+    const introIndex = mainStories.findIndex(story => story.id === 0);
+    
+    if (introIndex === -1) {
+        alert("데이터 오류: 메인 스토리 0장을 찾을 수 없습니다.\n구글 시트의 'chapter_id'가 0인 행이 있는지 확인해주세요.");
+        // 0장이 없으면 그냥 홈으로 보냅니다.
+        finishIntroTutorial();
+        return;
+    }
+
+    // 2. 스토리 모달의 콜백을 '튜토리얼 종료 함수'로 설정
+    document.getElementById('interactive-story-modal').dataset.callback = "finishIntroTutorial()";
+    
+    // 3. 메인 스토리 모드로 0장 실행
+    // (startInteractiveStory는 인덱스를 받아서 실행합니다)
+    startInteractiveStory(introIndex, 'main');
+}
+
+function finishIntroTutorial() {
+    // (1) 튜토리얼 완료 상태로 변경 및 저장
+    playerTutorialFinished = true;
+    
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).update({
+            tutorialFinished: true
+        });
+    }
+    
+    // (2) '소환(Gacha)' 탭으로 강제 이동
+    switchTab('gacha');
+    
+    // (3) 10회 뽑기 유도
+    setTimeout(() => {
+        alert("메인 스토리 0장 완료!\n신규 탐정님을 위해 [보석 100개]가 지급되었습니다.\n\n지금 바로 '10회 뽑기'를 진행하여 동료를 모아보세요!");
+        
+        const tenPullBtn = document.getElementById('pull-ten');
+        if (tenPullBtn) {
+            tenPullBtn.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+            tenPullBtn.onclick = (e) => {
+                tenPullBtn.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+                handlePull(10, PULL_TEN_COST, 'normal');
+            };
+        }
+    }, 500);
+}
+
 
 // ... (다른 함수들)
 
@@ -10400,7 +10450,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
