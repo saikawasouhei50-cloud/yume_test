@@ -195,10 +195,11 @@ async function loadGameData() {
                 if (chapterId !== currentMainChapterId) {
                     currentMainChapterId = chapterId;
                     currentMainChapter = {
-                        title: row.title,
-                        dungeonToUnlock: (row.dungeonToUnlock && row.dungeonToUnlock !== "") ? row.dungeonToUnlock : null,
-                        content: []
-                    };
+    id: chapterId, // ✨ 이 줄을 추가해서 0장인지 1장인지 구분할 수 있게 합니다.
+    title: row.title,
+    dungeonToUnlock: (row.dungeonToUnlock && row.dungeonToUnlock !== "") ? row.dungeonToUnlock : null,
+    content: []
+};
                     mainStories.push(currentMainChapter);
                 }
                 currentMainChapter.content.push({
@@ -609,7 +610,6 @@ const genericInteractions = [
     ['안녕하세요!', '반갑습니다.'],
     ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
 ];
-
 
 
 
