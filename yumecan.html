@@ -1685,6 +1685,7 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
             let selectedCardsToDismantle = new Set(); // ✨ 선택된 카드 ID Set 추가
             let playerInventory = [];
+			let playerTutorialFinished = true;
 			let collectedCardNames = new Set(); // 👈 이 줄을 추가하세요.
 		let playerRoom = { furniture: [], characters: [] }; // 마이룸 데이터 (가구 배치, 캐릭터)
 let ownedFurniture = []; // 보유한 가구 목록
@@ -2089,6 +2090,7 @@ async function loadGameFromFirebase(uid) {
         playerProfile = savedData.profile || { repCardId: null, statusMessage: "" };
         const nickInput = document.getElementById('profile-nickname-edit');
         if(nickInput) nickInput.value = currentPlayerNickname;
+		 playerTutorialFinished = (savedData.tutorialFinished !== undefined) ? savedData.tutorialFinished : true;
 
     } else {
         console.log("새로운 유저입니다. 초기 데이터로 시작합니다.");
@@ -2113,6 +2115,13 @@ async function loadGameFromFirebase(uid) {
 
     document.getElementById('loading-overlay').classList.add('hidden');
     document.body.classList.remove('loading');
+	if (playerTutorialFinished === false) {
+        // 튜토리얼 안 끝났으면 0장 시작
+        startIntroTutorial();
+    } else {
+        // 끝났으면 홈으로 이동
+        switchTab('home');
+    }
 }
 
 
@@ -2132,6 +2141,7 @@ function saveGame() {
     playerFountainPens = 500; // 🖋️ 초기 펜 수량도 명시적으로 지정
     playerBookmarks = MAX_BOOKMARKS;
     lastBookmarkUpdateTime = Date.now();
+	playerTutorialFinished = false; 
 }
 
 
@@ -7875,6 +7885,7 @@ async function sendFriendRequest(targetUid, targetNickname) {
         batch.set(theirRef, {
             nickname: currentPlayerNickname, 
             status: 'received',
+			tutorialFinished: playerTutorialFinished, 
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -10356,48 +10367,45 @@ function fleeCombat() {
 function startIntroTutorial() {
     console.log("튜토리얼(메인스토리 0장)을 시작합니다.");
     
-    // 1. 로드된 메인 스토리 목록에서 ID가 0인 챕터의 '인덱스'를 찾습니다.
-    // (시트 순서가 뒤죽박죽이어도 정확히 0장을 찾아냅니다)
+    // 로드된 메인 스토리에서 ID가 0인 챕터를 찾습니다. (datatest.js 수정 필수)
     const introIndex = mainStories.findIndex(story => story.id === 0);
     
     if (introIndex === -1) {
-        alert("데이터 오류: 메인 스토리 0장을 찾을 수 없습니다.\n구글 시트의 'chapter_id'가 0인 행이 있는지 확인해주세요.");
-        // 0장이 없으면 그냥 홈으로 보냅니다.
-        finishIntroTutorial();
+        // 0장이 없으면 그냥 튜토리얼 끝난 걸로 치고 홈으로 보냅니다.
+        console.warn("메인 스토리 0장 데이터를 찾을 수 없습니다.");
+        finishIntroTutorial(); 
         return;
     }
 
-    // 2. 스토리 모달의 콜백을 '튜토리얼 종료 함수'로 설정
+    // 0장이 끝나면 실행할 함수(finishIntroTutorial)를 등록
     document.getElementById('interactive-story-modal').dataset.callback = "finishIntroTutorial()";
     
-    // 3. 메인 스토리 모드로 0장 실행
-    // (startInteractiveStory는 인덱스를 받아서 실행합니다)
+    // 0장 스토리 실행
     startInteractiveStory(introIndex, 'main');
 }
 
+// 2. 튜토리얼 종료 후 처리 함수 (10회 뽑기 유도)
 function finishIntroTutorial() {
-    // (1) 튜토리얼 완료 상태로 변경 및 저장
+    // 상태 변경 및 저장
     playerTutorialFinished = true;
-    
-    if (currentUser) {
-        db.collection('users').doc(currentUser.uid).update({
-            tutorialFinished: true
-        });
-    }
-    
-    // (2) '소환(Gacha)' 탭으로 강제 이동
+    saveGame(); // Firebase에 저장
+
+    // '소환(Gacha)' 탭으로 강제 이동
     switchTab('gacha');
     
-    // (3) 10회 뽑기 유도
+    // 알림 메시지 띄우기
     setTimeout(() => {
-        alert("메인 스토리 0장 완료!\n신규 탐정님을 위해 [보석 100개]가 지급되었습니다.\n\n지금 바로 '10회 뽑기'를 진행하여 동료를 모아보세요!");
+        alert("📖 프롤로그 완료!\n신규 탐정님을 위해 [보석 100개]가 지급되었습니다.\n\n지금 바로 '10회 뽑기'를 진행하여 동료를 모아보세요!");
         
+        // 10회 뽑기 버튼 강조 효과
         const tenPullBtn = document.getElementById('pull-ten');
         if (tenPullBtn) {
             tenPullBtn.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+            // 한번 클릭하면 효과 제거
+            const originalOnClick = tenPullBtn.onclick;
             tenPullBtn.onclick = (e) => {
                 tenPullBtn.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
-                handlePull(10, PULL_TEN_COST, 'normal');
+                handlePull(10, PULL_TEN_COST, 'normal'); // 원래 기능 실행
             };
         }
     }, 500);
