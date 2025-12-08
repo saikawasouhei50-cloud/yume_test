@@ -2930,13 +2930,13 @@ function displayEventShopView() {
     const container = document.getElementById('event-shop-container');
     container.innerHTML = '';
     
-    // ✨ [핵심 추가] 현재 진행 중인 이벤트 물품만 필터링!
+    // ✨ [핵심 필터링] 현재 진행 중인 이벤트 물품만 필터링!
     const currentItems = eventShopItems.filter(item => {
-        // 1. 'ALL' 이거나 빈칸이면 무조건 표시 (상시 판매)
+        // 1. 시트에 eventId가 비어있거나 'ALL'이면 상시 판매
         if (!item.eventId || item.eventId === 'ALL') return true;
         
-        // 2. 현재 이벤트 ID와 일치하면 표시
-        // (CURRENT_EVENT_ID는 yumecan_data.js에서 날짜 기준으로 자동 설정됨)
+        // 2. 아이템의 eventId가 현재 시스템의 CURRENT_EVENT_ID와 정확히 일치해야 함
+        // (CURRENT_EVENT_ID는 datatest.js에서 날짜 기준으로 자동 계산됨)
         return item.eventId === CURRENT_EVENT_ID;
     });
 
@@ -3192,19 +3192,35 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
 
     // 2. 결정된 등급에 맞는 캐릭터들 중 "현재 가챠 타입에 등장하는 애들"만 필터링
     let possibleCharacters = characters.filter(char => {
-        // (1) 등급이 맞아야 함
-        if (char.rarity !== selectedRarity) return false;
+    // (1) 등급이 맞아야 함
+    if (char.rarity !== selectedRarity) return false;
 
-        // (2) 가챠 풀 데이터 확인
-        const poolInfo = gachaPool[char.name];
-        if (!poolInfo) return false; // 시트에 이름 없으면 절대 안 나옴
+    // (2) 가챠 풀 데이터 확인
+    const poolInfo = gachaPool[char.name];
+    if (!poolInfo) return false; // 시트에 이름 없으면 절대 안 나옴
 
-        // (3) 타입(일반/이벤트)에 따라 등장 여부 확인
-        if (gachaType === 'normal') return poolInfo.normal;
-        if (gachaType === 'event') return poolInfo.event;
-        
+    // (3) 타입(일반/이벤트)에 따라 등장 여부 확인
+    if (gachaType === 'normal') {
+        return poolInfo.normal;
+    }
+    
+    if (gachaType === 'event') {
+        // ✨ [핵심 로직] 
+        // 1. 현재 픽업 주인공인 경우 (yumecan_data.js 등에서 설정된 이름)
+        if (char.name === EVENT_CHARACTER_NAME) return true;
+
+        // 2. 이 캐릭터의 targetEventId가 '현재 진행중인 이벤트 ID'와 일치하는 경우
+        if (poolInfo.targetEventId && poolInfo.targetEventId === CURRENT_EVENT_ID) return true;
+
+        // 3. (옵션) targetEventId가 'ALL'이면 모든 이벤트 가챠에 등장
+        if (poolInfo.targetEventId === 'ALL') return true;
+
+        // 위 조건에 안 맞으면 등장 안 함
         return false;
-    });
+    }
+    
+    return false;
+});
 
     // 만약 설정 실수로 해당 등급에 뽑을 캐릭터가 하나도 없다면? (안전장치)
     if (possibleCharacters.length === 0) {
@@ -10267,12 +10283,24 @@ function openGachaPoolModal(gachaType) {
     });
 
     // 3. 등급별 그룹화
-    const grouped = obtainableCharacters.reduce((acc, char) => {
-        const rarity = char.rarity || 'N';
-        if (!acc[rarity]) acc[rarity] = [];
-        acc[rarity].push(char);
-        return acc;
-    }, {});
+    const obtainableCharacters = characters.filter(char => {
+    const poolInfo = gachaPool[char.name];
+    if (!poolInfo) return false; 
+    
+    if (gachaType === 'normal') return poolInfo.normal;
+    
+    // 이벤트 가챠 목록 필터링
+    if (gachaType === 'event') {
+        // 픽업 캐릭터
+        if (char.name === EVENT_CHARACTER_NAME) return true;
+        // 현재 이벤트 ID와 일치하는 캐릭터
+        if (poolInfo.targetEventId === CURRENT_EVENT_ID) return true;
+        // 모든 이벤트 공통 캐릭터
+        if (poolInfo.targetEventId === 'ALL') return true;
+        
+        return false;
+    }
+});
     
     // 4. 화면 렌더링 (SSR > SR > R > N 순서)
     const rarityOrder = ['SSR', 'SR', 'R', 'N'];
@@ -10466,7 +10494,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
