@@ -5922,15 +5922,23 @@ function updateMultiSelectUI() {
 }
             
             function displayCardStoryPage() {
-                const storyContent = document.getElementById('detail-card-story');
-                const pageIndicator = document.getElementById('detail-story-page-indicator');
-                
-                storyContent.textContent = currentStoryPages[currentStoryPageIndex];
-                pageIndicator.textContent = `${currentStoryPageIndex + 1} / ${currentStoryPages.length}`;
-                
-                detailStoryPrevButton.disabled = currentStoryPageIndex === 0;
-                detailStoryNextButton.disabled = currentStoryPageIndex === currentStoryPages.length - 1;
-            }
+    const storyContent = document.getElementById('detail-card-story');
+    const pageIndicator = document.getElementById('detail-story-page-indicator');
+    
+    // [수정된 부분] -------------------------------------------------
+    let rawText = currentStoryPages[currentStoryPageIndex];
+    
+    // {nickname}을 실제 닉네임으로 변경
+    let processedText = rawText.replace(/{nickname}/g, currentPlayerNickname);
+    
+    storyContent.textContent = processedText;
+    // --------------------------------------------------------------
+
+    pageIndicator.textContent = `${currentStoryPageIndex + 1} / ${currentStoryPages.length}`;
+    
+    detailStoryPrevButton.disabled = currentStoryPageIndex === 0;
+    detailStoryNextButton.disabled = currentStoryPageIndex === currentStoryPages.length - 1;
+}
 
             function hideCardDetails() {
                 cardDetailModal.classList.add('hidden');
@@ -6082,6 +6090,7 @@ function startInteractiveStory(storyOrIndex, type) {
 
     // 대화 내용 및 화자 이름 업데이트
     speakerName.textContent = scene.character || ' ';
+	let textToShow = scene.dialogue.replace(/{nickname}/g, currentPlayerNickname);
     dialogueText.textContent = scene.dialogue;
 
     // ✨ 선택지 처리 로직 ✨
