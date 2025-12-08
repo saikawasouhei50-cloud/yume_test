@@ -295,14 +295,19 @@ async function loadGameData() {
 
         // 10. 가챠 등장 목록(Pool) 설정
         if (data.gachaPool) {
-            gachaPool = {};
-            data.gachaPool.forEach(row => {
-                gachaPool[row.name] = {
-                    normal: (row.in_normal === true || row.in_normal === 'TRUE' || row.in_normal === 1),
-                    event: (row.in_event === true || row.in_event === 'TRUE' || row.in_event === 1)
-                };
-            });
-        }
+    gachaPool = {};
+    data.gachaPool.forEach(row => {
+        gachaPool[row.name] = {
+            // 일반 서가 등장 여부 (기존 유지)
+            normal: (row.in_normal === true || row.in_normal === 'TRUE' || row.in_normal === 1),
+            
+            // ✨ [핵심 수정] 단순 TRUE/FALSE가 아니라 '이벤트 ID'를 저장합니다.
+            // 시트 컬럼명이 target_event_id 라고 가정합니다. (시트 헤더와 일치시켜주세요)
+            // 만약 해당 이벤트 때만 등장하게 하려면 여기에 'event_title' 등을 적습니다.
+            targetEventId: row.target_event_id || row.eventId || null 
+        };
+    });
+}
 
         // 11. 스테이지 및 스테이지 스토리 조립
         if (data.stages && data.stageStories) {
