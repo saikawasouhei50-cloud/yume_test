@@ -1176,18 +1176,18 @@ body.pointer-events-none {
 
                 <div class="room-wrapper">
     <div id="room-container">
-    
-    <div class="absolute inset-0 bg-center bg-no-repeat" style="background-image: url('https://i.imgur.com/aOL46H8.png');"></div>
-    
-    <div class="iso-floor"></div>
-    
-    <div id="room-layer" class="relative w-full h-full z-10 pointer-events-none">
-        <style> #room-layer > * { pointer-events: auto; } </style>
-    </div>
+        
+        <div class="absolute inset-0 bg-center bg-no-repeat" 
+             style="background-image: url('https://i.imgur.com/aOL46H8.png'); background-size: 140% !important; background-position: center 60% !important;">
+        </div>
+        
+        <div class="iso-floor"></div>
+        
+        <div id="room-layer" class="relative w-full h-full z-10 pointer-events-none">
+            <style> #room-layer > * { pointer-events: auto; } </style>
+        </div>
 
-</div>
-
-                <div class="flex justify-center gap-4 mt-6">
+    </div> </div> <div class="flex justify-center gap-4 mt-6">
     <button onclick="openMyRoomCharacterSelector()" class="gacha-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full">👥 방문객 관리</button>
     
     <button id="open-furniture-shop" onclick="openFurnitureShop()" class="gacha-button bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-full">🪑 가구 상점</button>
@@ -10515,6 +10515,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
