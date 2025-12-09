@@ -87,11 +87,12 @@
 
 /* 배경 이미지 스타일 강제 지정 */
 #room-container > div.absolute.inset-0 {
-    /* [수정] 120%로 확대 (contain은 지우세요!) */
-    background-size: 120% !important; 
+    /* 크기는 큼직하게 유지 */
+    background-size: 115% !important; 
     
-    /* [수정] 아래로 끌어내리기 (숫자가 클수록 내려갑니다. 85~95% 추천) */
-    background-position: center 90% !important; 
+    /* ✨ [핵심 수정] 90% -> 35%로 변경! */
+    /* 숫자가 작을수록 이미지가 아래로 내려옵니다 (역설적이지만 확대됐을 땐 그렇습니다) */
+    background-position: center 35% !important; 
     
     background-repeat: no-repeat !important;
 }
@@ -126,21 +127,21 @@
 .iso-floor {
     position: absolute;
     
-    /* [수정] 배경 위치에 맞춰 바닥도 내립니다 */
-    top: 70%;       
+    /* ✨ [수정] 배경이 내려왔으니 바닥도 따라 내립니다 (60~65% 추천) */
+    top: 65%;       
     
     left: 50%;      
     
-    /* [수정] 배경 확대(120%)에 맞춰 바닥도 키웁니다 */
-    width: 55%;     
-    height: 100%;    
+    /* ✨ [수정] 배경 크기(115%)에 맞춰 바닥 너비 조정 */
+    width: 50%;     
+    height: 90%;    
     
     transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
     
-    /* 확인용 테두리 (위치 맞춘 후에는 지우거나 transparent로 변경) */
-   /* border: 2px dashed red; */
-    background-color: transparent; 
+    /* (테스트용) 위치가 헷갈리면 아래 주석을 풀어 빨간 테두리를 보고 맞추세요 */
+    /* border: 2px dashed red; */
     
+    background-color: transparent; 
     pointer-events: none;
     z-index: 0;
 }
@@ -10518,6 +10519,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
