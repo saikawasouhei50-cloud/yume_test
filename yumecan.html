@@ -3581,6 +3581,30 @@ img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? c
             bubble.style.opacity = 1;
             setTimeout(() => bubble.style.opacity = 0, 3000);
         });
+		el.appendChild(bubble);
+
+        // ✨✨ [여기서부터 추가] Favor(하트) 아이콘 생성 로직 ✨✨
+        // 1. 남의 방이고(currentVisitTargetUid 존재)
+        // 2. 오늘 아직 페이버를 안 했으며(!hasDoneFavorToday)
+        // 3. 첫 번째 캐릭터에게만 띄우거나, 혹은 전체에게 띄우기 (여기선 0번 인덱스 캐릭터에게만 띄워서 중복 방지)
+        if (currentVisitTargetUid && !hasDoneFavorToday && index === 0) {
+            const heartBtn = document.createElement('div');
+            heartBtn.className = 'absolute -top-16 left-1/2 -translate-x-1/2 cursor-pointer z-50 animate-bounce';
+            heartBtn.innerHTML = `
+                <div class="bg-white/90 border-2 border-pink-400 rounded-full p-2 shadow-lg hover:scale-110 transition-transform">
+                    <span class="text-xl">💖</span>
+                </div>
+                <div class="text-[10px] text-white bg-pink-600 px-1 rounded text-center mt-1 font-bold shadow">Favor</div>
+            `;
+            
+            // 하트 클릭 이벤트
+            heartBtn.onclick = (e) => {
+                e.stopPropagation(); // 캐릭터 클릭이나 이동 간섭 방지
+                sendFavorToFriend(currentVisitTargetUid, card.name, heartBtn);
+            };
+            
+            el.appendChild(heartBtn);
+        }
 
         roomLayer.appendChild(el);
         
@@ -3641,6 +3665,58 @@ function initInteractionSystem() {
             }
         }
     }, 1000);
+}
+
+async function sendFavorToFriend(friendUid, charName, btnElement) {
+    if (hasDoneFavorToday) return; // 중복 방지
+    
+    // UI 즉시 반응 (버튼 숨기기 & 클릭 방지)
+    btnElement.style.display = 'none';
+    hasDoneFavorToday = true; // 임시 락
+
+    const batch = db.batch();
+    const todayStr = new Date().toDateString();
+
+    try {
+        // 1. 내 기록 업데이트 (오늘 이 친구에게 했다고 기록)
+        const myHistoryRef = db.collection('users').doc(currentUser.uid)
+                               .collection('favorHistory').doc(friendUid);
+        batch.set(myHistoryRef, { lastFavorDate: todayStr });
+
+        // 2. 나에게 보상 우편 발송
+        const myMailRef = db.collection('users').doc(currentUser.uid).collection('mailbox').doc();
+        batch.set(myMailRef, {
+            title: '💖 페이버 보상 (방문)',
+            content: `친구의 객실을 방문하여 [${charName}]와(과) 교감했습니다.`,
+            rewards: { currency: 10 }, // 보석 10개
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+
+        // 3. 친구에게 보상 우편 발송
+        const friendMailRef = db.collection('users').doc(friendUid).collection('mailbox').doc();
+        batch.set(friendMailRef, {
+            title: `💖 페이버 도착 (${currentPlayerNickname})`,
+            content: `${currentPlayerNickname}님이 방문하여 [${charName}]에게 인사를 건넸습니다!`,
+            rewards: { currency: 10 }, // 보석 10개
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+
+        await batch.commit();
+
+        // 성공 효과
+        showMessage(`💖 교감 완료! 보상이 우편으로 지급되었습니다.`, 'text-pink-300', messageArea);
+        
+        // 화면 갱신 (하트 완전히 없애기 위해)
+        displayMyRoom();
+
+    } catch (error) {
+        console.error("페이버 전송 실패:", error);
+        alert("오류가 발생했습니다.");
+        hasDoneFavorToday = false; // 실패 시 락 해제
+        btnElement.style.display = 'block'; // 버튼 복구
+    }
 }
 
 // 2. 대화 발생 및 안전장치 (수정된 함수)
@@ -4483,6 +4559,11 @@ if (!document.getElementById('visit-mode-overlay').classList.contains('hidden'))
                 }
                 // 'main' 타입은 이제 사용되지 않습니다. challengeStage를 통해 호출됩니다.
             }
+			
+			// 방문 중인 친구의 UID를 저장 (내 방이면 null)
+let currentVisitTargetUid = null;
+// 오늘 해당 친구에게 페이버를 했는지 여부 (캐싱)
+let hasDoneFavorToday = false;
             
             // gacha3.html - challengeStage 함수 (기존 함수 전체 교체)
 
@@ -8262,7 +8343,6 @@ async function searchUserByName() {
 let originalMyRoomData = null; // 내 방 데이터를 임시 저장할 변수
 
 async function visitFriendRoom(targetUid, targetNickname) {
-    // 1. 배치 모드 중이라면 강제로 끄고 저장
     if (typeof isEditMode !== 'undefined' && isEditMode) {
         toggleEditMode();
     }
@@ -8270,10 +8350,27 @@ async function visitFriendRoom(targetUid, targetNickname) {
     try {
         console.log(`[방문 시작] ${targetNickname} (${targetUid})`);
 
-        // 2. 친구 데이터 가져오기
+        // ✨ [추가 1] 방문 상태 설정
+        currentVisitTargetUid = targetUid; 
+        
+        // ✨ [추가 2] 오늘 이 친구에게 이미 페이버를 했는지 DB에서 확인
+        // (users/{내UID}/favorHistory/{친구UID} 문서를 확인)
+        const todayStr = new Date().toDateString(); // 예: "Wed Dec 10 2025"
+        const favorRef = db.collection('users').doc(currentUser.uid)
+                           .collection('favorHistory').doc(targetUid);
+        const favorDoc = await favorRef.get();
+        
+        if (favorDoc.exists && favorDoc.data().lastFavorDate === todayStr) {
+            hasDoneFavorToday = true;
+        } else {
+            hasDoneFavorToday = false;
+        }
+
+        // --- (이 아래는 기존 로직과 동일) ---
         const doc = await db.collection('users').doc(targetUid).get();
         if (!doc.exists) {
             alert("존재하지 않는 유저입니다.");
+            currentVisitTargetUid = null; // 실패 시 초기화
             return;
         }
 
@@ -8334,23 +8431,25 @@ async function visitFriendRoom(targetUid, targetNickname) {
         const roomLayer = document.getElementById('room-layer');
         if (roomLayer) roomLayer.innerHTML = ''; 
         
-        displayMyRoom();
+        displayMyRoom(); // 여기서 UI가 갱신될 때 하트가 뜰지 말지 결정됨
         
         showMessage(`${targetNickname}님의 객실에 방문했습니다.`, 'text-indigo-300', messageArea);
 
     } catch (e) {
         console.error("방문 중 오류 발생:", e);
         alert(`방문에 실패했습니다. 오류: ${e.message}`);
-        
-        // 오류 나면 내 방으로 복구 시도
         if (originalMyRoomData) exitVisitMode();
     }
 }
 
 // 5. 방문 종료 (내 방으로 돌아오기)
 function exitVisitMode() {
+    // ✨ [추가] 방문 변수 초기화
+    currentVisitTargetUid = null;
+    hasDoneFavorToday = false;
+
     if (originalMyRoomData) {
-        playerRoom = originalMyRoomData; // 내 데이터 복구
+        playerRoom = originalMyRoomData; 
         originalMyRoomData = null;
     }
     
@@ -8366,7 +8465,7 @@ function exitVisitMode() {
 
     // 내 방 다시 그리기
     displayMyRoom();
-    showMessage("나의 탐정 객실로 돌아왔습니다.", 'text-green-300', messageArea);
+    showMessage("나의 객실로 돌아왔습니다.", 'text-green-300', messageArea);
 }
 
 		
@@ -10517,7 +10616,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
