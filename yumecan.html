@@ -6020,22 +6020,58 @@ function updateMultiSelectUI() {
     }
 }
 
-// [신규] 지난 이벤트 스토리 목록 표시 함수 (기존 displayStageStories 대체)
+// 2. [복구됨] 메인 스토리 목록 표시 함수
+function displayMainStories() {
+    // 컨테이너 표시/숨김 관리
+    if (mainStoryContainer) mainStoryContainer.classList.remove('hidden');
+    if (eventArchiveContainer) eventArchiveContainer.classList.add('hidden'); // 스테이지 컨테이너 대신 아카이브 숨김
+    
+    mainStoryContainer.innerHTML = '';
+    
+    // 메인 스토리 데이터가 없으면 중단
+    if (!mainStories) return;
+
+    mainStories.forEach((story, index) => {
+        // 해금 조건 확인 (던전 클리어 여부)
+        const isUnlocked = story.dungeonToUnlock === null || clearedStages.includes(story.dungeonToUnlock);
+        
+        const storyEl = document.createElement('div');
+        storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
+        
+        if (isUnlocked) {
+            storyEl.dataset.storyIndex = index;
+            storyEl.dataset.storyType = 'main';
+        }
+
+        let unlockText = '클릭하여 스토리 읽기';
+        if (!isUnlocked) {
+            // "1-1" 같은 문자열을 파싱해서 "1-1" 형태로 표시
+            unlockText = `${story.dungeonToUnlock} 클리어 시 해금`;
+        }
+
+        storyEl.innerHTML = `
+            <h3 class="text-xl font-bold ${isUnlocked ? 'text-yellow-300' : ''}">[메인] ${story.title}</h3>
+            <p class="text-sm">${unlockText}</p>
+        `;
+        mainStoryContainer.appendChild(storyEl);
+    });
+}
+
+// 3. [신규] 지난 이벤트 스토리 목록 표시 함수
 function displayEventArchive() {
-    mainStoryContainer.classList.add('hidden');
-    eventArchiveContainer.classList.remove('hidden');
+    // 컨테이너 표시/숨김 관리
+    if (mainStoryContainer) mainStoryContainer.classList.add('hidden');
+    if (eventArchiveContainer) eventArchiveContainer.classList.remove('hidden');
+    
     eventArchiveContainer.innerHTML = '';
 
-    // 데이터가 없는 경우 예외 처리
     if (!eventStories || eventStories.length === 0) {
         eventArchiveContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">지난 이벤트 스토리가 없습니다.</p>`;
         return;
     }
 
-    // eventStories 배열을 순회하며 목록 생성
     eventStories.forEach((story, index) => {
-        // 해금 조건: 일단은 모든 유저에게 보이게 설정 (필요시 조건 추가 가능)
-        // 예: const isUnlocked = true; 
+        // 지난 이벤트는 기본적으로 모두 해금된 상태로 보여줍니다.
         const isUnlocked = true; 
 
         const storyEl = document.createElement('div');
@@ -6043,7 +6079,7 @@ function displayEventArchive() {
         
         if (isUnlocked) {
             storyEl.dataset.storyIndex = index;
-            storyEl.dataset.storyType = 'event'; // 타입을 'event'로 설정하여 클릭 시 이벤트 스토리 재생
+            storyEl.dataset.storyType = 'event'; // 클릭 시 이벤트 스토리 재생
         }
 
         storyEl.innerHTML = `
