@@ -6058,11 +6058,9 @@ function displayMainStories() {
 }
 
 // 3. [신규] 지난 이벤트 스토리 목록 표시 함수
-function displayEventArchive() {
-    // 컨테이너 표시/숨김 관리
-    if (mainStoryContainer) mainStoryContainer.classList.add('hidden');
-    if (eventArchiveContainer) eventArchiveContainer.classList.remove('hidden');
-    
+function displayEventArchive(selectedEventId = null) {
+    mainStoryContainer.classList.add('hidden');
+    eventArchiveContainer.classList.remove('hidden');
     eventArchiveContainer.innerHTML = '';
 
     if (!eventStories || eventStories.length === 0) {
@@ -6070,61 +6068,67 @@ function displayEventArchive() {
         return;
     }
 
-    eventStories.forEach((story, index) => {
-        // 지난 이벤트는 기본적으로 모두 해금된 상태로 보여줍니다.
-        const isUnlocked = true; 
+    // 1. 이벤트 목록 보기 (초기 화면)
+    if (!selectedEventId) {
+        const uniqueEventIds = new Set();
+        eventStories.forEach(s => uniqueEventIds.add(s.eventId));
 
-        const storyEl = document.createElement('div');
-        storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
+        eventArchiveContainer.innerHTML = `<h3 class="text-yellow-300 font-bold mb-4 px-2">📂 다시 볼 이벤트를 선택하세요</h3>`;
         
-        if (isUnlocked) {
-            storyEl.dataset.storyIndex = index;
-            storyEl.dataset.storyType = 'event'; // 클릭 시 이벤트 스토리 재생
-        }
+        uniqueEventIds.forEach(id => {
+            // ✨ [핵심] eventId로 전체 이벤트 정보(allEventInfos)에서 제목 찾기
+            const eventInfo = allEventInfos.find(info => info.id === id);
+            
+            // 정보가 있으면 제목 사용, 없으면 ID를 그대로 출력 (안전장치)
+            const title = eventInfo ? eventInfo.title : `알 수 없는 이벤트 (${id})`;
 
-        storyEl.innerHTML = `
-            <h3 class="text-xl font-bold ${isUnlocked ? 'text-pink-300' : ''}">[이벤트] ${story.title}</h3>
-            <p class="text-sm text-gray-300">다시 보기</p>
+            const btn = document.createElement('div');
+            btn.className = 'p-4 bg-indigo-900/60 hover:bg-indigo-800 border border-indigo-500 rounded-lg mb-3 cursor-pointer flex justify-between items-center transition-all';
+            
+            btn.innerHTML = `
+                <span class="font-bold text-lg text-white">${title}</span>
+                <span class="text-sm text-gray-400">▶</span>
+            `;
+            
+            btn.onclick = () => displayEventArchive(id);
+            eventArchiveContainer.appendChild(btn);
+        });
+    } 
+    // 2. 스토리 목록 보기 (특정 이벤트 선택 시)
+    else {
+        // 제목 표시를 위해 정보 찾기
+        const eventInfo = allEventInfos.find(info => info.id === selectedEventId);
+        const eventTitle = eventInfo ? eventInfo.title : selectedEventId;
+
+        // 헤더 및 뒤로가기 버튼
+        eventArchiveContainer.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="displayEventArchive(null)" class="text-sm bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded">⬅ 목록으로</button>
+                <span class="text-yellow-300 font-bold text-sm border border-yellow-500 px-2 py-0.5 rounded">${eventTitle}</span>
+            </div>
         `;
-        eventArchiveContainer.appendChild(storyEl);
-    });
-}
 
-// 새로운 함수: 스테이지 스토리 목록을 표시
-function displayStageStories() {
-    mainStoryContainer.classList.add('hidden');
-    stageStoryContainer.classList.remove('hidden');
-    stageStoryContainer.innerHTML = '';
+        // 해당 이벤트의 스토리만 필터링
+        const targetStories = eventStories.filter(s => s.eventId === selectedEventId);
 
-    // 스테이지 스토리를 스테이지 ID(1-1, 1-2 등) 순서대로 정렬합니다.
-    const sortedStageStories = [...clearedStageStories].sort((a, b) => {
-        const [chapA, stgA] = a.split('-').map(Number);
-        const [chapB, stgB] = b.split('-').map(Number);
-        return (chapA - chapB) || (stgA - stgB);
-    });
-
-    if (sortedStageStories.length === 0) {
-        stageStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">열람한 스테이지 스토리가 없습니다. 안정화를 진행해주세요.</p>`;
-        return;
-    }
-
-    sortedStageStories.forEach(stageId => {
-        const [chapIdx, stgIdx] = stageId.split('-').map(s => parseInt(s) - 1);
-        const stage = mainChapters[chapIdx]?.stages[stgIdx];
-
-        if (stage && stage.stageStory) {
+        targetStories.forEach((story) => {
+            // 재생을 위한 전체 인덱스 찾기
+            const realIndex = eventStories.indexOf(story);
+            
             const storyEl = document.createElement('div');
-            storyEl.className = 'p-4 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer transition-colors duration-300';
-            storyEl.dataset.stageId = stageId;
-            storyEl.dataset.storyType = 'stage';
+            storyEl.className = `p-4 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer mb-2 transition-colors border-l-4 border-pink-500`;
+            
+            storyEl.onclick = () => {
+                startInteractiveStory(realIndex, 'event');
+            };
 
             storyEl.innerHTML = `
-                <h3 class="text-lg font-bold text-cyan-300">[스테이지] ${stage.stageName}</h3>
-                <p class="text-sm">클릭하여 다시 읽기</p>
+                <h3 class="text-lg font-bold text-pink-300">${story.title}</h3>
+                <p class="text-xs text-gray-400">Click to Play</p>
             `;
-            stageStoryContainer.appendChild(storyEl);
-        }
-    });
+            eventArchiveContainer.appendChild(storyEl);
+        });
+    }
 }
 
 			function getEnhancementCost(cardInstance) {
