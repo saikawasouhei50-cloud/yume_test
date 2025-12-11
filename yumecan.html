@@ -957,15 +957,13 @@ body.pointer-events-none {
 			
                 
                  <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-sm mx-auto">
-                    <button id="story-sub-tab-main" class="sub-tab-button active w-1/2 font-bold py-2 px-6 rounded-full">메인 스토리</button>
-                    <button id="story-sub-tab-stage" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full">스테이지 스토리</button>
-                </div>
+    <button id="story-sub-tab-main" class="sub-tab-button active w-1/2 font-bold py-2 px-6 rounded-full">메인 스토리</button>
+    <button id="story-sub-tab-archive" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full">지난 이벤트</button>
+</div>
 
-                <div id="main-story-container" class="space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl">
-                    </div>
-                
-                 <div id="stage-story-container" class="hidden space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl">
-                     </div>
+<div id="main-story-container" class="space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl"></div>
+
+<div id="event-archive-container" class="hidden space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl"></div>
             </div>
 			
 			<div id="trade-view" class="hidden">
@@ -1879,10 +1877,10 @@ const closeDismantleResultButton = document.getElementById('close-dismantle-resu
 			// ✨ 파일 업로드 요소 추가 ✨
 			const uploadFile = document.getElementById('upload-file'); // ✅ 이 라인을 추가하세요.
 			
-			// ✨ 스토리 탭 관련 변수들 ✨
-			const stageStoryContainer = document.getElementById('stage-story-container');
-            const storySubTabMain = document.getElementById('story-sub-tab-main');
-            const storySubTabStage = document.getElementById('story-sub-tab-stage');
+			// [수정] 스테이지 컨테이너 변수를 이벤트 아카이브 변수로 교체
+const eventArchiveContainer = document.getElementById('event-archive-container'); // stageStoryContainer 대신 사용
+const storySubTabMain = document.getElementById('story-sub-tab-main');
+const storySubTabArchive = document.getElementById('story-sub-tab-archive'); // storySubTabStage 대신 사용
 			const interactiveStoryModal = document.getElementById('interactive-story-modal');
 			const storyCharLeft = document.getElementById('story-char-left');
 			const storyCharRight = document.getElementById('story-char-right');
@@ -6012,43 +6010,47 @@ function updateMultiSelectUI() {
             }
 
             function displayStoryView() {
-    // 탭 상태 확인 및 초기화 (메인 탭이 기본)
     const activeTab = document.querySelector('#story-view .sub-tab-button.active');
     
-    if (activeTab && activeTab.id === 'story-sub-tab-stage') {
-        displayStageStories();
+    // 현재 활성화된 탭이 '지난 이벤트(archive)'라면 해당 함수 호출
+    if (activeTab && activeTab.id === 'story-sub-tab-archive') {
+        displayEventArchive();
     } else {
         displayMainStories();
     }
 }
 
-// 새로운 함수: 메인 스토리 목록을 표시
-function displayMainStories() {
-    mainStoryContainer.classList.remove('hidden');
-    stageStoryContainer.classList.add('hidden');
-    mainStoryContainer.innerHTML = '';
-    
-    mainStories.forEach((story, index) => {
-        const isUnlocked = story.dungeonToUnlock === null || clearedStages.includes(story.dungeonToUnlock);
+// [신규] 지난 이벤트 스토리 목록 표시 함수 (기존 displayStageStories 대체)
+function displayEventArchive() {
+    mainStoryContainer.classList.add('hidden');
+    eventArchiveContainer.classList.remove('hidden');
+    eventArchiveContainer.innerHTML = '';
+
+    // 데이터가 없는 경우 예외 처리
+    if (!eventStories || eventStories.length === 0) {
+        eventArchiveContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">지난 이벤트 스토리가 없습니다.</p>`;
+        return;
+    }
+
+    // eventStories 배열을 순회하며 목록 생성
+    eventStories.forEach((story, index) => {
+        // 해금 조건: 일단은 모든 유저에게 보이게 설정 (필요시 조건 추가 가능)
+        // 예: const isUnlocked = true; 
+        const isUnlocked = true; 
+
         const storyEl = document.createElement('div');
         storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
         
         if (isUnlocked) {
             storyEl.dataset.storyIndex = index;
-            storyEl.dataset.storyType = 'main';
-        }
-
-        let unlockText = '클릭하여 스토리 읽기';
-        if (!isUnlocked) {
-            const [chap, stg] = story.dungeonToUnlock.split('-');
-            unlockText = `챕터 ${chap}-${stg} 클리어 시 해금`;
+            storyEl.dataset.storyType = 'event'; // 타입을 'event'로 설정하여 클릭 시 이벤트 스토리 재생
         }
 
         storyEl.innerHTML = `
-            <h3 class="text-xl font-bold ${isUnlocked ? 'text-yellow-300' : ''}">[메인] ${story.title}</h3>
-            <p class="text-sm">${unlockText}</p>
+            <h3 class="text-xl font-bold ${isUnlocked ? 'text-pink-300' : ''}">[이벤트] ${story.title}</h3>
+            <p class="text-sm text-gray-300">다시 보기</p>
         `;
-        mainStoryContainer.appendChild(storyEl);
+        eventArchiveContainer.appendChild(storyEl);
     });
 }
 
@@ -6925,14 +6927,16 @@ if (uploadFile) {
     });
 }
 
-// ✨ 스토리 뷰의 서브 탭
+// 1. 메인 스토리 탭 클릭
 storySubTabMain.addEventListener('click', () => {
     storySubTabMain.classList.add('active');
-    storySubTabStage.classList.remove('active');
+    storySubTabArchive.classList.remove('active'); // archive 탭 비활성화
     displayStoryView();
 });
-storySubTabStage.addEventListener('click', () => {
-    storySubTabStage.classList.add('active');
+
+// 2. 지난 이벤트(Archive) 탭 클릭 (기존 Stage 탭 리스너 대체)
+storySubTabArchive.addEventListener('click', () => {
+    storySubTabArchive.classList.add('active');
     storySubTabMain.classList.remove('active');
     displayStoryView();
 });
@@ -10589,7 +10593,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
