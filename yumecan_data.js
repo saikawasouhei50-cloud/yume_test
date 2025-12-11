@@ -213,29 +213,41 @@ async function loadGameData() {
 
         // 7. 이벤트 스토리 조립
         if (data.eventStories) {
-            const rawEventStories = data.eventStories;
-            eventStories = [];
-            let currentEventChapter = null;
-            let currentEventChapterId = -1;
+    const rawEventStories = data.eventStories;
+    eventStories = [];
+    let currentEventChapter = null;
+    
+    // 이전 행의 키를 기억하기 위한 변수
+    let lastKey = ""; 
 
-            rawEventStories.forEach(row => {
-                const chapterId = Number(row.chapter_id);
-                if (chapterId !== currentEventChapterId) {
-                    currentEventChapterId = chapterId;
-                    currentEventChapter = {
-                        title: row.title,
-                        content: []
-                    };
-                    eventStories.push(currentEventChapter);
-                }
-                currentEventChapter.content.push({
-                    character: (row.character && row.character !== "") ? row.character : null,
-                    expression: row.expression,
-                    position: row.position,
-                    dialogue: row.dialogue
-                });
-            });
+    rawEventStories.forEach(row => {
+        const eventId = row.eventId || "unknown"; // ✨ 시트의 eventId 컬럼 읽기
+        const chapterId = Number(row.chapter_id);
+        
+        // ✨ [핵심] 이벤트ID와 챕터ID가 모두 같아야 같은 스토리로 인식
+        const uniqueKey = `${eventId}_${chapterId}`;
+
+        if (uniqueKey !== lastKey) {
+            lastKey = uniqueKey;
+            
+            currentEventChapter = {
+                eventId: eventId, // ✨ 여기에 ID 저장 (제목은 저장 안 함)
+                chapterId: chapterId,
+                title: row.title,
+                content: []
+            };
+            eventStories.push(currentEventChapter);
         }
+        
+        // 대사 내용 추가
+        currentEventChapter.content.push({
+            character: (row.character && row.character !== "") ? row.character : null,
+            expression: row.expression,
+            position: row.position,
+            dialogue: row.dialogue
+        });
+    });
+}
 
         // 8. 이벤트 정보 설정 (디버깅 로그 추가 버전)
         if (data.eventInfo && data.eventInfo.length > 0) {
@@ -615,7 +627,6 @@ const genericInteractions = [
     ['안녕하세요!', '반갑습니다.'],
     ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
 ];
-
 
 
 
