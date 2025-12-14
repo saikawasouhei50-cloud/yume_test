@@ -61,296 +61,102 @@
     }
 }
 
-/* --- ✨ 등급별 이미지 글로우 효과 (filter: drop-shadow) ✨ --- */
-/* N 등급: 흰색/회색 은은한 빛 */
-.rarity-glow-N { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); }
-/* R 등급: 하늘색 빛 */
-.rarity-glow-R { filter: drop-shadow(0 0 7px rgba(0, 180, 255, 0.8)); }
-/* SR 등급: 보라색/자주색 빛 */
-.rarity-glow-SR { filter: drop-shadow(0 0 9px rgba(200, 0, 255, 0.9)); }
-/* SSR 등급: 금색/노란색 강한 빛 */
-.rarity-glow-SSR { filter: drop-shadow(0 0 14px rgba(255, 220, 0, 1.0)); }
-/* ------------------------------------- */
+/* ==========================================================================
+   🎨 YUMECAN! Gothic Theme (Dark & Serious)
+   ========================================================================== */
 
+/* 1. 폰트 변경: 귀여운 'Jua' -> 진지하고 고딕한 'Noto Serif KR' (명조체) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;500;700;900&display=swap');
+
+/* 2. 전체 배경 및 기본 설정 */
+body {
+    font-family: 'Noto Serif KR', serif; /* 명조체 적용 */
+    
+    /* 배경: 깊은 밤하늘과 붉은 기운이 감도는 어두운 그라데이션 */
+    background: radial-gradient(circle at 50% 10%, #2b1010 0%, #000000 100%);
+    background-attachment: fixed; /* 스크롤해도 배경 고정 */
+    color: #d1d5db; /* 기본 글자색: 밝은 회색 */
+}
+
+body.loading {
+    pointer-events: none;
+}
+
+/* 3. UI 창 디자인 변경 (Glassmorphism -> Dark Gothic) */
+/* 기존의 밝은 투명창들을 아주 진한 검정+회색 테두리로 강제 변환 */
+.bg-white\/10, .bg-black\/20, .bg-black\/30, .bg-black\/40, .bg-gray-800, .bg-gray-900 {
+    background-color: rgba(10, 10, 15, 0.9) !important; /* 거의 불투명한 검정 */
+    border: 1px solid #3f3f46 !important; /* 차가운 회색 테두리 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 4. 버튼 스타일 재정의 (동글동글함 제거 & 어두운 톤) */
+.gacha-button, .sub-tab-button, button, .tab-button {
+    border-radius: 4px !important; /* 둥근 모서리 -> 살짝 각진 모서리 */
+    font-family: 'Noto Serif KR', serif;
+    letter-spacing: 0.05em; /* 자간 넓힘 */
+    transition: all 0.3s ease;
+}
+
+/* 버튼 호버 효과 */
+.gacha-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(100, 0, 0, 0.6); /* 붉은 그림자 */
+    filter: brightness(1.2);
+}
+
+/* 탭 버튼 활성화 스타일 (보라/파랑 -> 검붉은색) */
+.tab-button.active, .sub-tab-button.active {
+    background: linear-gradient(to bottom, #7f1d1d, #450a0a) !important; /* 붉은색 그라데이션 */
+    border: 1px solid #fca5a5 !important; /* 연한 붉은 테두리 */
+    color: #fca5a5 !important; /* 텍스트: 연한 붉은색 */
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.6) !important;
+    font-weight: 700;
+    transform: scale(1.02);
+}
+
+/* 정렬/필터 버튼 활성화 */
+.sort-button.active, .filter-button.active {
+    background-color: #9f1239 !important; /* Rose-800 */
+    color: white !important;
+    border: 1px solid #fda4af !important;
+}
+
+/* 5. 텍스트 색상 테마 변경 (강제 적용) */
+.text-yellow-300 { color: #fbbf24 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.8); } /* 앰버 골드 */
+.text-pink-300 { color: #fda4af !important; } /* 채도 낮춘 핑크 */
+.text-blue-300 { color: #94a3b8 !important; } /* 차가운 블루그레이 */
+.text-green-400 { color: #84cc16 !important; } /* 올리브 그린 */
+
+/* 타이틀 스타일 */
+#global-header h1 {
+    color: #9f1239; /* 핏빛 붉은색 */
+    text-shadow: 2px 2px 0px #000, 0 0 20px rgba(255, 0, 0, 0.5);
+    font-weight: 900;
+    font-style: italic;
+    font-family: 'Noto Serif KR', serif;
+}
+
+/* --- ✨ 등급별 이미지 글로우 효과 (유지) ✨ --- */
+.rarity-glow-N { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); }
+.rarity-glow-R { filter: drop-shadow(0 0 7px rgba(0, 180, 255, 0.8)); }
+.rarity-glow-SR { filter: drop-shadow(0 0 9px rgba(200, 0, 255, 0.9)); }
+.rarity-glow-SSR { filter: drop-shadow(0 0 14px rgba(255, 220, 0, 1.0)); }
+
+/* 등급별 카드 배경 (채도 낮춤) */
+.rarity-N { background: linear-gradient(to top, #374151, #4b5563) !important; color: #d1d5db; }
+.rarity-R { background: linear-gradient(to top, #1e3a8a, #1e40af) !important; color: #bfdbfe; }
+.rarity-SR { background: linear-gradient(to right, #4c1d95, #5b21b6) !important; color: #e9d5ff; }
+.rarity-SSR { background: linear-gradient(to right, #78350f, #92400e) !important; color: #fde68a; border: 1px solid #fbbf24; }
+
+/* --- 🏠 마이룸 스타일 (유지 및 보완) --- */
 #room-container {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #111827; /* bg-gray-900 색상 */
-    border-radius: 0.75rem;    /* rounded-xl */
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #0f0f10; /* 더 어두운 배경 */
+    border-radius: 0.5rem; /* 덜 둥글게 */
     overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
-    border: 4px solid #374151; /* border-gray-700 */
-}
-
-/* 배경 이미지 스타일 강제 지정 */
-#room-container > div.absolute.inset-0 {
-    /* 크기는 115% 유지 */
-    background-size: 115% !important; 
-    
-    /* ✨ [핵심 수정] 위아래 헷갈리지 않게 '정중앙(center)'으로 고정합니다 */
-    background-position: center center !important; 
-    
-    background-repeat: no-repeat !important;
-}
-	
-/* 스크롤바 숨기기 (크롬, 사파리, 엣지 등) */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-
-/* 스크롤바 숨기기 (파이어폭스, IE) */
-.scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-
-.breeding-slot {
-    transition: all 0.3s ease;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-.breeding-slot:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-.breeding-pulse {
-    animation: breeding-pulse 2s infinite;
-}
-@keyframes breeding-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(234, 179, 8, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
-}
-	
-.iso-floor {
-    position: absolute;
-    
-    /* ✨ [수정] 배경이 중앙에 왔으니, 바닥은 중앙보다 살짝 아래인 58%가 적당합니다 */
-    top: 58%;       
-    
-    left: 50%;      
-    
-    /* 크기 유지 */
-    width: 50%;     
-    height: 90%;    
-    
-    transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
-    
-    /* (팁) 위치가 안 맞으면 아래 border 주석을 풀고 빨간 네모를 보며 top 숫자를 1%씩 조절하세요 */
-    /* border: 2px dashed red; */
-    
-    background-color: transparent; 
-    pointer-events: none;
-    z-index: 0;
-}
-body.pointer-events-none {
-    pointer-events: none;
-}
-
-		
-		
-        /* 사용자 정의 애니메이션 및 스타일 */
-        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
-        body {
-            font-family: 'Jua', sans-serif;
-            background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
-        }
-		
-		body.loading {
-            pointer-events: none; /* 'loading' 클래스가 있을 때 모든 클릭을 막습니다. */
-        }
-
-        /* 카드가 나타날 때의 애니메이션 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        
-        .card-animation { animation: fadeIn 0.5s ease-out forwards; }
-
-        /* 등급별 카드 배경 그라데이션 */
-        .rarity-N { background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%); }
-        .rarity-R { background-image: linear-gradient(to top, #a1c4fd 0%, #c2ebf0 100%); }
-        .rarity-SR { background-image: linear-gradient(to right, #f83292, #7122fa); }
-        .rarity-SSR { background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%); }
-
-        /* 버튼 호버 효과 */
-        .gacha-button { transition: all 0.3s ease; }
-        .gacha-button:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
-        
-        /* 탭 버튼 스타일 */
-        .tab-button { transition: all 0.2s ease-in-out; }
-        /* 탭 버튼 활성화 스타일 개선 */
-.tab-button.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 보라빛 그라데이션 */
-    color: white !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    font-weight: bold;
-    transform: scale(1.05); /* 살짝 커지는 효과 */
-}
-        
-        /* 카드 개수 뱃지 스타일 */
-        .count-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #e53e3e;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-        }
-		
-		.level-badge {
-    position: absolute;
-    bottom: -8px;
-    left: -8px;
-    background-color: #4299e1; /* blue-500 */
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
-}
-
-/* .level-badge 바로 아래에 추가 */
-        .revision-stars {
-            position: absolute;
-            bottom: -2px;
-            right: 4px;
-            display: flex;
-            gap: 1px;
-        }
-        .revision-star {
-            color: #FFD700; /* Gold color */
-            font-size: 14px;
-            text-shadow: 0px 1px 2px rgba(0,0,0,0.7);
-        }
-        /* 덱 슬롯 스타일 */
-        .deck-slot {
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.5);
-        }
-        /* 홈 화면 캐릭터 이미지 */
-        #home-character-image {
-            max-height: 60vh;
-            object-fit: contain;
-            filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.5));
-            transition: transform 0.3s ease-in-out;
-        }
-        #home-character-image:hover {
-            transform: scale(1.03);
-        }
-        /* 이벤트 배너 애니메이션 */
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 100, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(255, 255, 100, 0.8); }
-        }
-        #event-banner {
-            animation: pulse-glow 2.5s infinite ease-in-out;
-        }
-
-		.sort-button.active {
-    background-color: #4299e1; /* 파란색 */
-    color: white;
-}
-
-.filter-button.active {
-    background-color: #4299e1; /* 파란색 */
-    color: white;
-}
-        /* 뽑기 탭 버튼 스타일 */
-        .sub-tab-button { transition: all 0.2s ease-in-out; }
-        .sub-tab-button.active { background-color: rgba(246, 224, 94, 0.8); color: #330867; }
-        
-        /* 전투 화면 스타일 */
-        #combat-log { scroll-behavior: smooth; }
-        .hp-bar-background { background-color: #4a5568; }
-        .hp-bar-foreground { background-color: #48bb78; transition: width 0.5s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .shake-animation { animation: shake 0.3s 1; }
-        .speed-button.active {
-            background-color: #4299e1; /* blue-500 */
-            box-shadow: 0 0 10px rgba(66, 153, 225, 0.7);
-        }
-        .story-content {
-            white-space: pre-wrap;
-            word-break: keep-all;
-        }
-		
-		/* --- 📜 스토리 대화창 스크롤바 디자인 --- */
-#dialogue-text::-webkit-scrollbar {
-    width: 6px; /* 스크롤바 너비 */
-}
-#dialogue-text::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2); /* 스크롤바 배경 (어둡게) */
-    border-radius: 4px;
-}
-#dialogue-text::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3); /* 손잡이 색상 (반투명 흰색) */
-    border-radius: 4px;
-}
-#dialogue-text::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5); /* 마우스 올렸을 때 조금 더 밝게 */
-}
-
-/* 마이룸 캐릭터 애니메이션 */
-.chibi-character {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    transition: all 2s linear; /* 부드러운 이동 */
-    z-index: 10;
-    cursor: pointer;
-}
-.chibi-character:hover {
-    transform: scale(1.1);
-}
-/* 말풍선 스타일 */
-.chibi-bubble {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    color: black;
-    padding: 4px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 20;
-}
-.chibi-character:hover .chibi-bubble {
-    opacity: 1;
-}
-/* 배치된 가구 */
-.placed-furniture {
-    position: absolute;
-    transition: all 0.2s;
-}
-		
-		/* [추가] 구버전 UI를 강제로 숨깁니다. */
-        #event-point-display { display: none !important; }
+    box-shadow: 0
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -10698,7 +10504,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
