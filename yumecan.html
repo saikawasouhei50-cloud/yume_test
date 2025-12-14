@@ -6254,17 +6254,21 @@ function renderCurrentScene() {
     const choiceContainer = document.getElementById('choice-buttons-container');
     choiceContainer.innerHTML = ''; 
 
-    // ✨ [핵심 변경] 화자 이름 깔끔하게 만들기
+    // [수정] 대화 화자 이름 표시 로직 (강력한 괄호 제거 적용)
     let displaySpeaker = scene.character;
+
     if (scene.character) {
         const charData = findCharacter(scene.character);
+        // 1. 데이터가 있으면 baseName 사용, 없으면 원래 이름 사용
         if (charData && charData.baseName) {
-            displaySpeaker = charData.baseName; // 데이터가 있으면 baseName 사용
-        } else {
-            // 데이터가 없으면 괄호(...) 부분을 지워버림
-            displaySpeaker = scene.character.replace(/\s*\(.*?\)/g, '').trim();
+            displaySpeaker = charData.baseName;
         }
+        
+        // 2. [핵심] baseName이든 원래 이름이든, 괄호가 있다면 무조건 삭제
+        // 일반 괄호()와 전각 괄호（）를 모두 감지하여 제거합니다.
+        displaySpeaker = displaySpeaker.replace(/\s*[\(\（].*?[\)\）]/g, '').trim();
     }
+
     speakerName.textContent = displaySpeaker || ' ';
     
     // {nickname} 치환 기능
@@ -10714,6 +10718,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
