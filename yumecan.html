@@ -6056,7 +6056,7 @@ function displayMainStories() {
     });
 }
 
-// 3. 지난 이벤트 스토리 보기 (제목 자동 검색 기능 포함)
+// [수정] 지난 이벤트 스토리 보기 (미래 이벤트 숨김 처리 추가)
 function displayEventArchive(selectedEventId = null) {
     // 컨테이너 표시/숨김 관리
     if (mainStoryContainer) mainStoryContainer.classList.add('hidden');
@@ -6071,17 +6071,44 @@ function displayEventArchive(selectedEventId = null) {
 
     // [화면 1] 이벤트 목록 보기 (초기 화면)
     if (!selectedEventId) {
-        // 중복 제거하여 이벤트 ID 목록 추출
         const uniqueEventIds = new Set();
         eventStories.forEach(s => uniqueEventIds.add(s.eventId));
 
         eventArchiveContainer.innerHTML = `<h3 class="text-yellow-300 font-bold mb-4 px-2">📂 다시 볼 이벤트를 선택하세요</h3>`;
         
-        uniqueEventIds.forEach(id => {
-            // ✨ eventId로 전체 이벤트 정보(allEventInfos)에서 제목 찾기
+        // ✨ [핵심 수정] 현재 시간 가져오기
+        const now = new Date();
+
+        // ID들을 배열로 바꾼 뒤 '필터링(미래 이벤트 숨김)' 하고 '정렬'
+        const sortedIds = Array.from(uniqueEventIds)
+            .filter(id => {
+                const info = allEventInfos.find(info => info.id === id);
+                
+                // 정보가 없거나, 시작 날짜가 현재보다 미래라면 목록에서 제외(false)
+                if (!info || !info.startDate) return false;
+                
+                // 시작 날짜가 지났거나 오늘인 경우만 표시(true)
+                return info.startDate <= now;
+            })
+            .sort((a, b) => {
+                const infoA = allEventInfos.find(info => info.id === a);
+                const infoB = allEventInfos.find(info => info.id === b);
+
+                if (!infoA) return 1;
+                if (!infoB) return -1;
+
+                // 최신순 정렬 (내림차순)
+                return new Date(infoB.startDate) - new Date(infoA.startDate);
+            });
+
+        if (sortedIds.length === 0) {
+            eventArchiveContainer.innerHTML += `<p class="text-center text-gray-500 mt-4">공개된 이벤트 스토리가 없습니다.</p>`;
+            return;
+        }
+
+        // 필터링된 목록으로 버튼 생성
+        sortedIds.forEach(id => {
             const eventInfo = allEventInfos.find(info => info.id === id);
-            
-            // 정보가 있으면 제목 사용, 없으면 ID를 그대로 출력 (안전장치)
             const title = eventInfo ? eventInfo.title : `알 수 없는 이벤트 (${id})`;
 
             const btn = document.createElement('div');
@@ -6092,18 +6119,16 @@ function displayEventArchive(selectedEventId = null) {
                 <span class="text-sm text-gray-400">▶</span>
             `;
             
-            // 클릭 시 자기 자신을 재호출 (ID 전달)
             btn.onclick = () => displayEventArchive(id);
             eventArchiveContainer.appendChild(btn);
         });
     } 
     // [화면 2] 스토리 목록 보기 (특정 이벤트 선택 시)
     else {
-        // 제목 표시를 위해 정보 찾기
+        // ... (이 아래 코드는 기존과 동일합니다) ...
         const eventInfo = allEventInfos.find(info => info.id === selectedEventId);
         const eventTitle = eventInfo ? eventInfo.title : selectedEventId;
 
-        // 헤더 및 뒤로가기 버튼
         eventArchiveContainer.innerHTML = `
             <div class="flex items-center justify-between mb-4">
                 <button id="archive-back-btn" class="text-sm bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded">⬅ 목록으로</button>
@@ -6111,14 +6136,11 @@ function displayEventArchive(selectedEventId = null) {
             </div>
         `;
         
-        // 뒤로가기 버튼 이벤트 연결
         document.getElementById('archive-back-btn').onclick = () => displayEventArchive(null);
 
-        // 해당 이벤트의 스토리만 필터링
         const targetStories = eventStories.filter(s => s.eventId === selectedEventId);
 
         targetStories.forEach((story) => {
-            // 재생을 위한 전체 인덱스 찾기 (원본 배열 기준)
             const realIndex = eventStories.indexOf(story);
             
             const storyEl = document.createElement('div');
@@ -10639,7 +10661,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
