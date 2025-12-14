@@ -6207,7 +6207,8 @@ function startInteractiveStory(storyOrIndex, type) {
     interactiveStoryModal.classList.remove('hidden');
     renderCurrentScene();
 }
-            function renderCurrentScene() {
+            // [수정] 스토리 장면 렌더링 (구글 시트 이미지 연동 추가)
+function renderCurrentScene() {
     const scene = currentInteractiveStory.content[currentSceneIndex];
     if (!scene) {
         closeInteractiveStory();
@@ -6219,17 +6220,18 @@ function startInteractiveStory(storyOrIndex, type) {
 
     // 대화 내용 및 화자 이름 업데이트
     speakerName.textContent = scene.character || ' ';
-	let textToShow = scene.dialogue.replace(/{nickname}/g, currentPlayerNickname);
+    
+    // {nickname} 치환 기능
+    let textToShow = scene.dialogue ? scene.dialogue.replace(/{nickname}/g, currentPlayerNickname) : "...";
     dialogueText.textContent = textToShow;
 
-    // ✨ 선택지 처리 로직 ✨
+    // 선택지 처리 로직
     if (scene.choices && scene.choices.length > 0) {
-        storyNextButton.classList.add('hidden'); // '다음' 버튼 숨기기
+        storyNextButton.classList.add('hidden'); 
         scene.choices.forEach(choice => {
             const button = document.createElement('button');
             button.className = 'gacha-button bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-5 rounded-lg w-full max-w-xs';
             button.textContent = choice.text;
-            // 버튼에 데이터 속성으로 정보 저장
             if (choice.nextScene !== undefined) {
                 button.dataset.nextScene = choice.nextScene;
             }
@@ -6240,26 +6242,51 @@ function startInteractiveStory(storyOrIndex, type) {
             choiceContainer.appendChild(button);
         });
     } else {
-        storyNextButton.classList.remove('hidden'); // '다음' 버튼 보이기
+        storyNextButton.classList.remove('hidden'); 
     }
 
-    // 캐릭터 이미지 처리 (기존 코드 유지)
+    // ✨ [핵심 수정] 캐릭터 이미지 처리 로직 개선 ✨
     if (scene.character) {
-        const portraitUrl = characterPortraits[scene.character]?.[scene.expression] || '';
+        let portraitUrl = '';
+
+        // 1단계: 하드코딩된 표정 데이터(characterPortraits)가 있는지 확인
+        // (예: '웃음', '화남' 등 특정 표정을 지정했을 때 우선 사용)
+        if (characterPortraits[scene.character] && characterPortraits[scene.character][scene.expression]) {
+            portraitUrl = characterPortraits[scene.character][scene.expression];
+        }
+        // 2단계: 없다면 구글 시트에서 로드된 캐릭터 데이터(characters 배열) 확인
+        else {
+            // findCharacter는 스크립트 하단에 정의된 전역 함수입니다.
+            const charData = findCharacter(scene.character);
+            if (charData) {
+                // 시트에 있는 cardImageUrl 또는 imageUrl을 사용
+                portraitUrl = charData.imageUrl || charData.cardImageUrl || '';
+            } else {
+                // 이름은 있는데 데이터가 없는 경우 (오타 등)
+                console.warn(`이미지를 찾을 수 없는 캐릭터: ${scene.character}`);
+            }
+        }
+
+        // 이미지 적용 (좌/우 위치)
         if (scene.position === 'left') {
             storyCharLeft.src = portraitUrl;
             storyCharLeft.classList.remove('opacity-0');
             storyCharLeft.classList.add('opacity-100');
+            
+            // 반대쪽은 흐리게 처리하거나 숨김 (원하는 연출에 따라 조정 가능)
             storyCharRight.classList.remove('opacity-100');
-            storyCharRight.classList.add('opacity-0');
+            storyCharRight.classList.add('opacity-0'); // 일단은 안 말하는 쪽을 숨김
+            
         } else if (scene.position === 'right') {
             storyCharRight.src = portraitUrl;
             storyCharRight.classList.remove('opacity-0');
             storyCharRight.classList.add('opacity-100');
+            
             storyCharLeft.classList.remove('opacity-100');
             storyCharLeft.classList.add('opacity-0');
         }
     } else {
+        // 화자가 없는 경우 (지문만 나올 때) 둘 다 숨김
         storyCharLeft.classList.add('opacity-0');
         storyCharRight.classList.add('opacity-0');
     }
