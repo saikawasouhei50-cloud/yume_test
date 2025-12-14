@@ -60,7 +60,11 @@ async function loadGameData() {
 
         // 1. 캐릭터 데이터 조립
         chibiImages = {}; 
+const rawCharacterData = data.characters || data.Characters || []; 
 
+if (!rawCharacterData || rawCharacterData.length === 0) {
+    console.error("❌ 캐릭터 데이터를 찾을 수 없습니다. (시트 이름 확인 필요)");
+}
         characters = data.characters.map(row => {
             // [수정] baseName 처리: 시트에 값이 없으면 이름에서 [ ]를 떼고 생성
             let rawBase = row.baseName || row.basename || row['baseName ']; 
@@ -627,7 +631,6 @@ const genericInteractions = [
     ['안녕하세요!', '반갑습니다.'],
     ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
 ];
-
 
 
 
