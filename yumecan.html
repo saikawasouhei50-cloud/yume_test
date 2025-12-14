@@ -294,6 +294,22 @@ body.pointer-events-none {
             white-space: pre-wrap;
             word-break: keep-all;
         }
+		
+		/* --- 📜 스토리 대화창 스크롤바 디자인 --- */
+#dialogue-text::-webkit-scrollbar {
+    width: 6px; /* 스크롤바 너비 */
+}
+#dialogue-text::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2); /* 스크롤바 배경 (어둡게) */
+    border-radius: 4px;
+}
+#dialogue-text::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3); /* 손잡이 색상 (반투명 흰색) */
+    border-radius: 4px;
+}
+#dialogue-text::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5); /* 마우스 올렸을 때 조금 더 밝게 */
+}
 
 /* 마이룸 캐릭터 애니메이션 */
 .chibi-character {
@@ -1384,7 +1400,7 @@ body.pointer-events-none {
                 
                 <div id="dialogue-box" class="relative bg-black/70 backdrop-blur-sm m-4 p-5 rounded-xl border border-white/20 text-white z-10">
                     <h3 id="speaker-name" class="font-bold text-2xl text-yellow-300 mb-2"></h3>
-                    <p id="dialogue-text" class="text-lg leading-relaxed h-24"></p>
+                    <p id="dialogue-text" class="text-lg leading-relaxed h-24 overflow-y-auto pr-2 custom-scrollbar"></p>
                     <div id="choice-buttons-container" class="mt-4 flex flex-col items-center gap-2"></div>
                     <button id="story-next-button" class="absolute bottom-4 right-5 text-xl animate-pulse">▼ 다음</button>
                 </div>
