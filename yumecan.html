@@ -5148,20 +5148,36 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
 }
 
 
-			function displayEventStories() {
-    const eventStoryContainer = document.getElementById('event-story-part1-container'); // 👈 이 줄을 추가하세요.
+			// [수정] 현재 진행 중인 이벤트 스토리만 표시하도록 필터링 적용
+function displayEventStories() {
+    const eventStoryContainer = document.getElementById('event-story-part1-container');
     eventStoryContainer.innerHTML = '';
     
-    // 이벤트 스토리가 준비되지 않았을 경우 (데이터가 비어있는 경우)
+    // 데이터 없음 체크
     if (!eventStories || eventStories.length === 0) {
         eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">이벤트 스토리는 현재 준비 중입니다.</p>`;
         return;
     }
 
-    // 이벤트 스토리를 순회하며 버튼 생성
+    // ✨ 진행 중인 이벤트가 없는 경우 예외 처리
+    if (!CURRENT_EVENT_ID) {
+        eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">현재 진행 중인 이벤트가 없습니다.</p>`;
+        return;
+    }
+
+    let hasStoryToShow = false;
+
+    // 전체 리스트를 순회하되, ID가 안 맞으면 건너뜀 (Index 유지를 위해 filter 대신 forEach 내부 체크 사용)
     eventStories.forEach((story, index) => {
-        // 이벤트 던전 클리어 상태를 스토리 해금 조건으로 사용
-        // 예: eventDungeons[index]가 clearedEventDungeons에 포함되어야 해금
+        // ✨ [핵심] 현재 진행 중인 이벤트의 스토리인지 확인
+        // (eventId가 없거나, 현재 이벤트 ID와 다르면 숨김)
+        if (!story.eventId || story.eventId !== CURRENT_EVENT_ID) {
+            return; 
+        }
+
+        hasStoryToShow = true;
+
+        // 해금 조건 확인 (해당 순서의 던전 클리어 여부)
         const dungeonName = eventDungeons[index]?.name;
         const isUnlocked = dungeonName && clearedEventDungeons.includes(dungeonName);
         
@@ -5169,13 +5185,13 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
         storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
         
         if (isUnlocked) {
-            storyEl.dataset.storyIndex = index;
+            storyEl.dataset.storyIndex = index; // 전체 배열 기준 인덱스 (재생 시 필요)
             storyEl.dataset.storyType = 'event';
         }
 
         let unlockText = '클릭하여 스토리 읽기';
         if (!isUnlocked) {
-            unlockText = `${dungeonName} 클리어 시 해금`;
+            unlockText = `${dungeonName ? dungeonName : (index + 1) + ' 스테이지'} 클리어 시 해금`;
         }
 
         storyEl.innerHTML = `
@@ -5184,47 +5200,11 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
         `;
         eventStoryContainer.appendChild(storyEl);
     });
-}
-			
-			// [이 코드로 gacha.html의 function displayEventStoryPart2() 함수 전체를 교체하세요]
-function displayEventStoryPart2() {
-    const container = document.getElementById('event-story-part2-container');
-    container.innerHTML = '';
 
-    // 후반부 스토리가 없으면 안내 메시지 표시
-    if (!eventStoryPart2.secondHalf || eventStoryPart2.secondHalf.length === 0) {
-        // [수정된 부분] 
-        // "아직 공개되지 않았습니다" 대신 요청하신 메시지로 변경합니다.
-        container.innerHTML = `<p class="text-center text-gray-400 mt-10">미니 이벤트에는 후반부 스토리가 없습니다</p>`;
-        return;
+    // 현재 이벤트 ID에 맞는 스토리가 하나도 없을 때
+    if (!hasStoryToShow) {
+        eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">현재 공개된 스토리가 없습니다.</p>`;
     }
-
-    // (기존 후반부 스토리 해금 로직은 그대로 둡니다)
-    // 전반부 마지막 스토리를 클리어했는지 확인
-    const isPart1Finished = playerChoices['event_part2_final_choice'];
-
-    eventStoryPart2.secondHalf.forEach((story, index) => {
-        const isUnlocked = (index === 0) ? isPart1Finished : playerChoices[`event_part2_story_${index - 1}`];
-
-        const storyEl = document.createElement('div');
-        storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
-        
-        if (isUnlocked) {
-            storyEl.dataset.storyIndex = index;
-            storyEl.dataset.storyType = 'event_part2'; 
-        }
-
-        let unlockText = '클릭하여 스토리 읽기';
-        if (!isUnlocked) {
-            unlockText = (index === 0) ? `전반부 마지막 선택을 완료하면 해금` : `이전 스토리를 완료하면 해금`;
-        }
-        
-        storyEl.innerHTML = `
-            <h3 class="text-xl font-bold ${isUnlocked ? 'text-pink-300' : ''}">[이벤트] ${story.title}</h3>
-            <p class="text-sm">${unlockText}</p>
-        `;
-        container.appendChild(storyEl);
-    });
 }
 			
            // ✅ [최종 수정] endCombat (레이드 종료 시 모달 잔상 해결)
@@ -10718,6 +10698,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
