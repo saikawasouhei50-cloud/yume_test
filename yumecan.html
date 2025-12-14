@@ -6021,9 +6021,24 @@ function updateMultiSelectUI() {
                 document.getElementById('dismantle-container').classList.remove('hidden');
             }
             
-            function findCharacter(name) {
-                return characters.find(c => c.name === name);
-            }
+            // [수정] 캐릭터 검색 함수 (이름으로 못 찾으면 baseName으로 재검색)
+function findCharacter(name) {
+    if (!name) return undefined;
+    
+    const targetName = name.trim(); // 앞뒤 공백 제거 안전장치
+
+    // 1. 전체 이름(name)으로 먼저 찾기 
+    // 예: "[히어로] 아카이 츠키토" vs "[히어로] 아카이 츠키토" (일치)
+    let found = characters.find(c => c.name === targetName);
+
+    // 2. 없으면 기본 이름(baseName)으로 찾기 
+    // 예: "아카이 츠키토" vs "[히어로] 아카이 츠키토" (불일치) -> baseName 확인 -> (일치!)
+    if (!found) {
+        found = characters.find(c => c.baseName === targetName);
+    }
+
+    return found;
+}
 
             function displayStoryView() {
     const activeTab = document.querySelector('#story-view .sub-tab-button.active');
