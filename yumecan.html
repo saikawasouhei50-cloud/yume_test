@@ -700,17 +700,11 @@ body.pointer-events-none {
     </div> 
 
     <div id="event-story-view" class="hidden">
-        <p class="text-center text-gray-200 mb-4">이벤트 스테이지를 클리어하고 스토리를 해금하세요.</p>
-        <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-sm mx-auto">
-            <button id="event-story-sub-tab-part1" class="sub-tab-button active w-1/2 font-bold py-2 px-6 rounded-full">전반부</button>
-            <button id="event-story-sub-tab-part2" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full">후반부</button>
-        </div>
-        <div id="event-story-part1-container" class="space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl"></div>
-        <div id="event-story-part2-container" class="hidden space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl">
-            <p class="text-center text-gray-400 mt-10">후반부 스토리는 준비 중입니다.</p>
-        </div>
+    <p class="text-center text-gray-200 mb-4">이벤트 스테이지를 클리어하고 스토리를 해금하세요.</p>
+    
+    <div id="event-story-part1-container" class="space-y-3 max-h-[60vh] overflow-y-auto bg-black/20 p-4 rounded-xl"></div>
+    
     </div>
-
     <div id="event-shop-view" class="hidden">
     <div class="sticky top-0 z-10 bg-gradient-to-r from-gray-900 to-gray-800 p-4 rounded-xl mb-4 border border-pink-500/50 shadow-lg flex justify-between items-center">
         <div class="flex items-center gap-2">
@@ -6825,58 +6819,35 @@ document.getElementById('logout-button').addEventListener('click', logoutUser);
 
 
 
-// ✨ 이벤트 스토리 뷰의 새 서브 탭 리스너
-document.getElementById('event-story-sub-tab-part1').addEventListener('click', () => {
+// ❌ [삭제 대상] 이 부분 전체 삭제
+/* document.getElementById('event-story-sub-tab-part1').addEventListener('click', () => {
     document.getElementById('event-story-part1-container').classList.remove('hidden');
     document.getElementById('event-story-part2-container').classList.add('hidden');
     document.getElementById('event-story-sub-tab-part1').classList.add('active');
     document.getElementById('event-story-sub-tab-part2').classList.remove('active');
-	
 });
 document.getElementById('event-story-sub-tab-part2').addEventListener('click', () => {
     document.getElementById('event-story-part1-container').classList.add('hidden');
     document.getElementById('event-story-part2-container').classList.remove('hidden');
     document.getElementById('event-story-sub-tab-part1').classList.remove('active');
     document.getElementById('event-story-sub-tab-part2').classList.add('active');
-	displayEventStoryPart2(); // 👈 이 줄을 추가하세요.
+    displayEventStoryPart2(); 
 });
+*/
 
 document.getElementById('event-view').addEventListener('click', (e) => {
     const storyEl = e.target.closest('[data-story-type]');
-    if (!storyEl || !storyEl.dataset.storyIndex) return; // 유효한 스토리 버튼이 아니면 종료
+    if (!storyEl || !storyEl.dataset.storyIndex) return; 
 
     const storyType = storyEl.dataset.storyType;
     const storyIndex = parseInt(storyEl.dataset.storyIndex, 10);
 
     if (storyType === 'event') {
-        // --- 전반부 스토리 클릭 ---
+        // --- 전반부(이제는 유일한 스토리) 클릭 ---
         startInteractiveStory(storyIndex, 'event');
-
-    } else if (storyType === 'event_part2') {
-        // --- 후반부 스토리 클릭 ---
-        const storyData = eventStoryPart2.secondHalf[storyIndex];
-
-        // 분기 스토리 처리
-        if (storyData.isBranching) {
-            const userChoice = playerChoices['event_part2_final_choice'];
-            if (userChoice && storyData.branches[userChoice]) {
-                startInteractiveStory({ content: storyData.branches[userChoice] });
-            } else {
-                // 혹시 모를 오류 방지용 기본값
-                startInteractiveStory({ content: storyData.branches['결정적인 지문을 믿는다.'] });
-            }
-        } else {
-            // 일반 후반부 스토리
-            startInteractiveStory(storyIndex, 'event_part2');
-        }
-
-        // 후반부 스토리를 "클릭"했다는 사실을 기록 (이것이 다음 스토리의 해금 조건)
-        playerChoices[`event_part2_story_${storyIndex}`] = true;
-        saveGame();
-        
-        // 스토리가 끝난 후 UI를 새로고침하여 다음 스토리가 해금된 것을 바로 보여주기 위한 설정
-        document.getElementById('interactive-story-modal').dataset.callback = 'displayEventStoryPart2()';
     }
+
+    
 });
 
 // ✨ 인벤토리 다중 파쇄 모드 관련
@@ -10698,6 +10669,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
