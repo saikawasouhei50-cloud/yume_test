@@ -6100,15 +6100,15 @@ function displayEventArchive(selectedEventId = null) {
                 return info.startDate <= now;
             })
             .sort((a, b) => {
-                const infoA = allEventInfos.find(info => info.id === a);
-                const infoB = allEventInfos.find(info => info.id === b);
-
-                if (!infoA) return 1;
-                if (!infoB) return -1;
-
-                // 최신순 정렬 (내림차순)
-                return new Date(infoB.startDate) - new Date(infoA.startDate);
-            });
+    const infoA = allEventInfos.find(info => info.id === a);
+    const infoB = allEventInfos.find(info => info.id === b);
+    if (!infoA) return 1;
+    if (!infoB) return -1;
+    
+    // ▼ [수정됨] 과거순 정렬 (오름차순: A - B)
+    // 3월 이벤트가 4월보다 위에 오게 됩니다.
+    return new Date(infoA.startDate) - new Date(infoB.startDate); 
+});
 
         if (sortedIds.length === 0) {
             eventArchiveContainer.innerHTML += `<p class="text-center text-gray-500 mt-4">공개된 이벤트 스토리가 없습니다.</p>`;
@@ -10669,7 +10669,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
