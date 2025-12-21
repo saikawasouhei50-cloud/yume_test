@@ -10570,39 +10570,33 @@ document.getElementById('close-combat-result').onclick = () => {
     const resultModal = document.getElementById('combat-result-modal');
     if (resultModal) {
         resultModal.classList.add('hidden');
-        resultModal.style.display = 'none'; // 확실하게 화면에서 제거
+        resultModal.style.display = 'none';
     }
 
-    // 2. 마지막 전투 타입 확인
+    // 2. 마지막 전투 타입 확인 및 화면 이동
     if (typeof lastCombatType !== 'undefined' && lastCombatType === 'event') {
-        // ✨ [핵심 수정] 이벤트 홈(배너)을 거치지 않고 바로 전투 목록으로 점프
-        
-        // 일단 큰 틀인 '이벤트' 화면을 켭니다.
+        // 큰 틀인 '이벤트' 탭을 먼저 켭니다 (배경 등 기본 레이아웃 설정)
         switchTab('event'); 
-        
-        // switchTab이 내부적으로 '홈'을 띄우는 성질이 있으므로, 
-        // 0.05초 뒤에 '전투' 화면으로 강제 덮어씌우기를 실행합니다.
+
+        // switchTab 함수가 실행된 직후(0.05초 뒤)에 서브 탭을 강제 전환합니다.
         setTimeout(() => {
+            // [중요] 안내창인 event-home-view는 숨기고, 리스트가 있는 event-view를 보여줍니다.
+            const eventHome = document.getElementById('event-home-view');
+            const eventMainView = document.getElementById('event-view');
+            
+            if (eventHome) eventHome.classList.add('hidden');
+            if (eventMainView) eventMainView.classList.remove('hidden');
+
+            // 이벤트 뷰 데이터 갱신 및 '전투' 서브 탭 활성화
             if (typeof displayEventView === 'function') displayEventView();
-            
-            // 모든 서브 탭 컨텐츠 숨기기
-            document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
-            
-            // '전투 목록' 화면 보이기
-            const battleView = document.getElementById('event-battle-view');
-            if (battleView) battleView.classList.remove('hidden');
-            
-            // 하단 탭 메뉴에서 '전투' 버튼에 불 들어오게 하기
-            const battleBtn = document.getElementById('event-sub-tab-battle');
-            if (battleBtn) {
-                document.querySelectorAll('.event-sub-tab').forEach(b => b.classList.remove('active'));
-                battleBtn.classList.add('active');
+            if (typeof switchEventSubTab === 'function') {
+                switchEventSubTab('battle'); // 전투 리스트 탭으로 직접 이동
             }
+            
             console.log("전투 종료 후 이벤트 전투 목록으로 복귀 완료");
         }, 50);
-
     } else {
-        // 일반 전투(메인 스테이지 등)일 경우 기존대로 '전투' 탭으로 이동
+        // 이벤트 전투가 아닐 경우(메인 스테이지 등) 일반 전투 선택 화면으로 이동
         switchTab('combat');
     }
 };
