@@ -7187,19 +7187,34 @@ closeCombatResultButton.addEventListener('click', () => {
 
     // 화면 이동 로직 (원래대로)
     if (lastCombatType === 'event') {
-        // 1. 먼저 대분류인 '이벤트' 화면으로 전환 (배경 및 레이아웃 처리)
-        switchTab('event'); 
-        
-        // 2. 그 후 이벤트 화면 내의 '전투' 서브 탭을 활성화
-        switchEventSubTab('battle'); 
-        
-        // 3. 만약 위 함수들로 해결이 안 될 경우를 대비한 강제 화면 표시 (보조)
-        const eventBattleView = document.getElementById('event-battle-view');
-        if (eventBattleView) {
-            // 모든 이벤트 서브 뷰를 숨기고 전투 뷰만 표시
-            document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
-            eventBattleView.classList.remove('hidden');
-        }
+    // 1. 대분류인 '이벤트' 화면을 활성화 (이게 되어야 배경과 틀이 생깁니다)
+    switchTab('event'); 
+    
+    // 2. 이벤트 홈을 건너뛰고 바로 '전투' 서브 탭을 활성화
+    // switchEventSubTab 함수가 있다면 호출, 없다면 아래 수동 코드가 처리합니다.
+    if (typeof switchEventSubTab === 'function') {
+        switchEventSubTab('battle');
+    }
+
+    // 3. [확실한 처리] 모든 이벤트 서브 화면을 숨기고 전투 화면만 강제로 표시
+    document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
+    const eventBattleView = document.getElementById('event-battle-view');
+    if (eventBattleView) {
+        eventBattleView.classList.remove('hidden');
+    }
+
+    // 4. [탭 버튼 상태 업데이트] 전투 버튼을 '활성화(active)' 상태로 변경
+    document.querySelectorAll('.event-sub-tab').forEach(btn => btn.classList.remove('active'));
+    const battleTabBtn = document.getElementById('event-sub-tab-battle');
+    if (battleTabBtn) {
+        battleTabBtn.classList.add('active');
+    }
+
+    // 5. 이벤트 데이터 새로고침 (클리어 기록 등 반영)
+    if (typeof displayEventView === 'function') {
+        displayEventView();
+    }
+}
     } else {
         switchTab('combat');
     }
