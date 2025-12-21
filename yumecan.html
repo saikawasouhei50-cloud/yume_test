@@ -10564,42 +10564,50 @@ function getTodayDateString(dateObj = new Date()) {
     }).replace(/\. /g, '-').replace('.', ''); // "2025. 10. 19." -> "2025-10-19" 형태로 통일
 }
 
+// [확인] 버튼 클릭 시 동작 정의 (기존 리스너를 이 내용으로 교체하세요)
 document.getElementById('close-combat-result').onclick = () => {
     // 1. 결과창 모달 숨기기
     const resultModal = document.getElementById('combat-result-modal');
     if (resultModal) {
-        resultModal.style.display = 'none';
+        resultModal.style.display = 'none'; // flex로 켜진 것을 확실히 끕니다.
         resultModal.classList.add('hidden');
     }
 
-    // [중요] 모든 이벤트 관련 서브 뷰들을 먼저 숨겨서 겹침을 방지합니다.
+    // 2. 이벤트 관련 뷰 요소들 가져오기
     const eventHome = document.getElementById('event-home-view');
     const eventMainView = document.getElementById('event-view');
-    
-    if (eventHome) eventHome.classList.add('hidden');
-    if (eventMainView) {
-        eventMainView.classList.add('hidden');
-        eventMainView.style.display = 'none'; // style 속성까지 확실히 제거
-    }
 
-    // 2. 전투 타입에 따른 화면 전환
+    // 3. 전투 타입에 따른 화면 이동 처리
     if (typeof lastCombatType !== 'undefined' && lastCombatType === 'event') {
         // --- 이벤트 전투 종료 시 ---
+        
+        // (1) 전체 탭 배경 설정을 위해 switchTab 호출
         switchTab('event'); 
 
-        // 이벤트 리스트 화면만 즉시 활성화
-        if (eventMainView) {
-            eventMainView.classList.remove('hidden');
-            eventMainView.style.display = 'block';
-        }
+        // (2) inline style로 인한 먹통 현상 방지 (중요!)
+        if (eventHome) eventHome.style.display = ''; 
+        if (eventMainView) eventMainView.style.display = '';
 
+        // (3) 찰나의 순간에 화면 갈아치우기 (깜빡임 방지)
+        if (eventHome) eventHome.classList.add('hidden');
+        if (eventMainView) eventMainView.classList.remove('hidden');
+
+        // (4) 데이터 갱신 및 전투 리스트 탭 활성화
         if (typeof displayEventView === 'function') displayEventView();
+        
+        // 기존 정의된 switchEventSubTab 함수를 사용하여 '전투' 탭을 활성화합니다.
         if (typeof switchEventSubTab === 'function') {
             switchEventSubTab('battle'); 
         }
+
     } else {
         // --- 일반 전투 종료 시 ---
-        // 이미 위에서 이벤트 뷰들을 숨겼으므로, 깨끗한 상태에서 일반 전투 탭만 엽니다.
+        
+        // 다른 곳에서 display = 'none'이 되었을지 모르니 초기화해둡니다.
+        if (eventHome) eventHome.style.display = '';
+        if (eventMainView) eventMainView.style.display = '';
+        
+        // 일반 전투 선택 화면으로 이동
         switchTab('combat');
     }
 };
