@@ -5142,50 +5142,46 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
 }
 
 
-			// [수정] 현재 진행 중인 이벤트 스토리만 표시하도록 필터링 적용
-function displayEventStories() {
+			function displayEventStories() {
     const eventStoryContainer = document.getElementById('event-story-part1-container');
     eventStoryContainer.innerHTML = '';
     
-    // 1. 데이터 없음 체크
     if (!eventStories || eventStories.length === 0) {
         eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">이벤트 스토리는 현재 준비 중입니다.</p>`;
         return;
     }
 
-    // 2. 진행 중인 이벤트가 없는 경우 예외 처리
     if (!CURRENT_EVENT_ID) {
         eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">현재 진행 중인 이벤트가 없습니다.</p>`;
         return;
     }
 
     let hasStoryToShow = false;
+    // ✨ 현재 이벤트 내에서 몇 번째 스토리인지 따로 세기 위한 변수
+    let eventStoryOrder = 0; 
 
-    // 3. 한 번의 루프로 ID 체크와 포인트 체크를 동시에 수행
     eventStories.forEach((story, index) => {
-        // ✨ [ID 체크] 현재 진행 중인 이벤트의 스토리만 표시
+        // 현재 진행 중인 이벤트의 스토리만 필터링
         if (!story.eventId || story.eventId !== CURRENT_EVENT_ID) {
             return; 
         }
 
         hasStoryToShow = true;
 
-        // ✨ [포인트 체크] 해금 조건 확인
-        // 데이터에 unlockPoints가 있으면 사용, 없으면 인덱스당 1,000점씩 증가
-        const reqPoints = story.unlockPoints || (index * 1000); 
+        // ✨ [수정 핵심] index 대신 eventStoryOrder를 사용하여 포인트 계산
+        // 첫 번째 스토리는 0 * 1000 = 0pt, 두 번째는 1 * 1000 = 1000pt...
+        const reqPoints = story.unlockPoints || (eventStoryOrder * 1000); 
         
-        // 현재 플레이어의 포인트(playerEventPoints)와 비교
         const isUnlocked = (typeof playerEventPoints !== 'undefined' ? playerEventPoints : 0) >= reqPoints;
         
         const storyEl = document.createElement('div');
         storyEl.className = `p-4 rounded-lg transition-colors duration-300 ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500'}`;
         
         if (isUnlocked) {
-            storyEl.dataset.storyIndex = index; 
+            storyEl.dataset.storyIndex = index; // 재생을 위한 원본 인덱스는 유지
             storyEl.dataset.storyType = 'event';
         }
 
-        // 안내 문구 생성
         let unlockText = '클릭하여 스토리 읽기';
         if (!isUnlocked) {
             const currentP = (typeof playerEventPoints !== 'undefined' ? playerEventPoints : 0);
@@ -5198,9 +5194,11 @@ function displayEventStories() {
             <p class="text-sm">${unlockText}</p>
         `;
         eventStoryContainer.appendChild(storyEl);
+
+        // ✨ 현재 이벤트의 스토리를 하나 처리했으므로 순번을 1 올림
+        eventStoryOrder++;
     });
 
-    // 4. 현재 이벤트 ID에 맞는 스토리가 하나도 없을 때
     if (!hasStoryToShow) {
         eventStoryContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">현재 공개된 스토리가 없습니다.</p>`;
     }
