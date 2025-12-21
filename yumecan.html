@@ -2852,24 +2852,45 @@ function displayEventHomeView() {
             }
 
             function displayEventBattleView() {
-                eventDungeonListContainer.innerHTML = '';
-                eventDungeons.forEach((dungeon, index) => {
-                    const isUnlocked = index === 0 || clearedEventDungeons.includes(eventDungeons[index - 1].name);
-                    const isCleared = clearedEventDungeons.includes(dungeon.name);
-                    const dungeonEl = document.createElement('button');
-                    dungeonEl.className = `p-4 rounded-lg transition-colors duration-300 text-center ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500 cursor-not-allowed'}`;
-                    dungeonEl.disabled = !isUnlocked;
-                    
-                    dungeonEl.innerHTML = `
-                        <h3 class="text-xl font-bold ${isUnlocked ? 'text-yellow-300' : ''}">${dungeon.name}</h3>
-                        <p class="text-sm">보상: ${dungeon.eventPointReward} P ${isCleared ? '<span class="text-green-400">(클리어)</span>' : ''}</p>
-                    `;
-                    if(isUnlocked){
-                        dungeonEl.onclick = () => challengeDungeon(index, 'event');
-                    }
-                    eventDungeonListContainer.appendChild(dungeonEl);
-                });
-            }
+    eventDungeonListContainer.innerHTML = '';
+
+    // ✨ [핵심 수정] 현재 진행 중인 이벤트 ID와 일치하는 던전만 골라냅니다.
+    const currentDungeons = eventDungeons.filter(d => 
+        d.eventId === 'ALL' || d.eventId === CURRENT_EVENT_ID
+    );
+
+    if (currentDungeons.length === 0) {
+        eventDungeonListContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">진행 가능한 이벤트 전투가 없습니다.</p>';
+        return;
+    }
+
+    currentDungeons.forEach((dungeon, index) => {
+        // 해금 조건: 첫 스테이지이거나 이전 스테이지를 클리어했는지 확인
+        const isUnlocked = index === 0 || clearedEventDungeons.includes(currentDungeons[index - 1].name);
+        const isCleared = clearedEventDungeons.includes(dungeon.name);
+        
+        const dungeonEl = document.createElement('button');
+        dungeonEl.className = `p-4 rounded-lg transition-colors duration-300 text-center ${isUnlocked ? 'bg-white/20 hover:bg-white/30 cursor-pointer' : 'bg-black/30 text-gray-500 cursor-not-allowed'}`;
+        dungeonEl.disabled = !isUnlocked;
+        
+        dungeonEl.innerHTML = `
+            <h3 class="text-xl font-bold ${isUnlocked ? 'text-yellow-300' : ''}">${dungeon.name}</h3>
+            <p class="text-sm">보상: ${dungeon.eventPointReward} P ${isCleared ? '<span class="text-green-400">(클리어)</span>' : ''}</p>
+        `;
+
+        if (isUnlocked) {
+            // challengeDungeon 호출 시 전체 리스트에서의 인덱스가 아닌, 
+            // 필터링된 리스트의 몬스터 이름을 직접 찾도록 로직을 보완하는 것이 좋습니다.
+            dungeonEl.onclick = () => {
+                // startCombat에서 필터링된 currentDungeons를 쓰도록 challengeDungeon을 호출
+                // (기존 challengeDungeon 함수도 인덱스 대신 객체를 받게 수정하면 더 안전합니다)
+                const globalIndex = eventDungeons.findIndex(ed => ed === dungeon);
+                challengeDungeon(globalIndex, 'event');
+            };
+        }
+        eventDungeonListContainer.appendChild(dungeonEl);
+    });
+}
 			
 			function purchaseEventItem(itemId) {
     const item = eventShopItems.find(i => i.id === itemId);
