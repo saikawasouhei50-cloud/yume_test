@@ -7187,8 +7187,9 @@ closeCombatResultButton.addEventListener('click', () => {
 
     // 화면 이동 로직 (원래대로)
     if (lastCombatType === 'event') {
-        switchTab('event');
-        displayEventView();
+    // ✨ [수정] 이벤트 홈 대신 '전투 목록'으로 바로 이동
+    displayEventView();          // 이벤트 관련 데이터와 뷰를 준비합니다.
+    switchEventSubTab('battle'); // '전투' 서브 탭을 강제로 활성화합니다.
         
         const eventView = document.getElementById('event-view');
         const btnBattle = document.getElementById('event-sub-tab-battle');
