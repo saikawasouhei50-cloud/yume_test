@@ -5097,31 +5097,22 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
         const currentHp = card.stats.hp;
         const hpPercent = maxHp > 0 ? (currentHp / maxHp) * 100 : 0;
         
-        // 2. 몬스터 HP 업데이트 (수정된 섹션)
-    // startCombat에서 저장해둔 maxHp를 우선적으로 사용합니다.
-    let monsterMaxHp = monster.maxHp; 
-
-    // 만약 monster.maxHp가 없다면(예: 레이드나 예외 상황) 기존 로직으로 보강
-    if (!monsterMaxHp) {
-        if (typeof raidBossDataSheet !== 'undefined' && monster.name === raidBossDataSheet.name) {
-            monsterMaxHp = raidBossDataSheet.maxHp;
-        } else {
-            // 이 부분은 key와 name이 다를 때 에러가 날 수 있으므로 
-            // 현재 체력보다 최대 체력이 낮게 잡히지 않도록 안전장치를 둡니다.
-            monsterMaxHp = monsters[monster.name]?.stats.hp || monster.stats.hp; 
-        }
-    }
+        // 2. 몬스터 HP 업데이트
+    // monsterData에 maxHp를 미리 넣어두었다면 그것을 사용, 아니면 현재 체력을 최대치로 간주
+    let monsterMaxHp = monster.maxHp || monsters[monster.name]?.stats.hp || monster.stats.hp;
 
     if (monsterMaxHp) {
         const monsterHpPercent = (monster.stats.hp / monsterMaxHp) * 100;
         const monsterHpBar = document.getElementById('monster-hp-bar');
         const monsterHpText = document.getElementById('monster-hp-text');
 
-        if (monsterHpBar) monsterHpBar.style.width = `${monsterHpPercent}%`;
-        // 텍스트는 "현재 HP / 최대 HP" 형식으로 표시
-        if (monsterHpText) monsterHpText.textContent = `${monster.stats.hp} / ${monsterMaxHp}`;
+        if (monsterHpBar) {
+            monsterHpBar.style.width = `${monsterHpPercent}%`;
+        }
+        if (monsterHpText) {
+            monsterHpText.textContent = `${monster.stats.hp} / ${monsterMaxHp}`;
+        }
     }
-}
 
         // ✨ [신규] 플레이어 상태 아이콘 렌더링
         const iconContainer = document.getElementById(`effect-icons-${index}`);
