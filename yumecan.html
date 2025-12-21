@@ -7187,33 +7187,32 @@ closeCombatResultButton.addEventListener('click', () => {
 
     // 화면 이동 로직 (원래대로)
     if (lastCombatType === 'event') {
-    // 1. 대분류인 '이벤트' 화면을 활성화 (이게 되어야 배경과 틀이 생깁니다)
+    // 1. 먼저 이벤트 대분류 화면을 켭니다.
+    // (이 함수가 내부적으로 '홈'을 띄우더라도 일단 실행해야 배경이 잡힙니다.)
     switchTab('event'); 
     
-    // 2. 이벤트 홈을 건너뛰고 바로 '전투' 서브 탭을 활성화
-    // switchEventSubTab 함수가 있다면 호출, 없다면 아래 수동 코드가 처리합니다.
-    if (typeof switchEventSubTab === 'function') {
-        switchEventSubTab('battle');
-    }
-
-    // 3. [확실한 처리] 모든 이벤트 서브 화면을 숨기고 전투 화면만 강제로 표시
-    document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
-    const eventBattleView = document.getElementById('event-battle-view');
-    if (eventBattleView) {
-        eventBattleView.classList.remove('hidden');
-    }
-
-    // 4. [탭 버튼 상태 업데이트] 전투 버튼을 '활성화(active)' 상태로 변경
-    document.querySelectorAll('.event-sub-tab').forEach(btn => btn.classList.remove('active'));
-    const battleTabBtn = document.getElementById('event-sub-tab-battle');
-    if (battleTabBtn) {
-        battleTabBtn.classList.add('active');
-    }
-
-    // 5. 이벤트 데이터 새로고침 (클리어 기록 등 반영)
-    if (typeof displayEventView === 'function') {
-        displayEventView();
-    }
+    // 2. 0.05초(50ms)의 아주 짧은 지연 시간을 줍니다. 
+    // switchTab이 완료된 직후에 실행되도록 하여 '홈'으로 가는 로직을 덮어씁니다.
+    setTimeout(() => {
+        // 전투 서브탭 데이터 로드 및 화면 전환
+        if (typeof displayEventView === 'function') displayEventView();
+        
+        // 전투 탭 강제 활성화
+        const eventBattleView = document.getElementById('event-battle-view');
+        const battleTabBtn = document.getElementById('event-sub-tab-battle');
+        
+        // 모든 서브 컨텐츠 숨기기
+        document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
+        
+        // 전투 컨텐츠 보이기
+        if (eventBattleView) eventBattleView.classList.remove('hidden');
+        
+        // 하단 탭 버튼 불 들어오게 하기
+        document.querySelectorAll('.event-sub-tab').forEach(btn => btn.classList.remove('active'));
+        if (battleTabBtn) battleTabBtn.classList.add('active');
+        
+        console.log("이벤트 전투 탭으로 강제 이동 완료");
+    }, 50);
     } else {
         switchTab('combat');
     }
