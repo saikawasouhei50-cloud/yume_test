@@ -157,12 +157,13 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
 
         // 4. 이벤트 던전 조립
         if (data.eventDungeons) {
-            eventDungeons = data.eventDungeons.map(row => ({
-                name: row.name,
-                monsterName: row.monsterName,
-                eventPointReward: Number(row.eventPointReward)
-            }));
-        }
+    eventDungeons = data.eventDungeons.map(row => ({
+        eventId: row.eventId || 'ALL', // ✨ eventId 추가 (없으면 ALL)
+        name: row.name,
+        monsterName: row.monsterName,
+        eventPointReward: Number(row.eventPointReward)
+    }));
+}
 
         // 5. 이벤트 상점 조립
         if (data.eventShop) {
@@ -631,6 +632,5 @@ const genericInteractions = [
     ['안녕하세요!', '반갑습니다.'],
     ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
 ];
-
 
 
