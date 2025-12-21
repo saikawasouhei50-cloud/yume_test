@@ -10565,38 +10565,41 @@ function getTodayDateString(dateObj = new Date()) {
 }
 
 document.getElementById('close-combat-result').onclick = () => {
-    // 1. 결과창 모달 즉시 숨기기
+    // 1. 결과창 모달 숨기기
     const resultModal = document.getElementById('combat-result-modal');
     if (resultModal) {
         resultModal.style.display = 'none';
         resultModal.classList.add('hidden');
     }
 
-    // 2. 이벤트 전투였을 경우 처리
+    // [중요] 모든 이벤트 관련 서브 뷰들을 먼저 숨겨서 겹침을 방지합니다.
+    const eventHome = document.getElementById('event-home-view');
+    const eventMainView = document.getElementById('event-view');
+    
+    if (eventHome) eventHome.classList.add('hidden');
+    if (eventMainView) {
+        eventMainView.classList.add('hidden');
+        eventMainView.style.display = 'none'; // style 속성까지 확실히 제거
+    }
+
+    // 2. 전투 타입에 따른 화면 전환
     if (typeof lastCombatType !== 'undefined' && lastCombatType === 'event') {
-        
-        // [핵심] switchTab을 실행하면 기본적으로 홈이 보이므로, 
-        // 실행 직후에 '찰나의 순간'보다 빠르게 화면을 갈아치웁니다.
+        // --- 이벤트 전투 종료 시 ---
         switchTab('event'); 
 
-        const eventHome = document.getElementById('event-home-view');
-        const eventMainView = document.getElementById('event-view');
-        
-        // 즉시 가시성 변경 (setTimeout 제거)
-        if (eventHome) eventHome.classList.add('hidden');
+        // 이벤트 리스트 화면만 즉시 활성화
         if (eventMainView) {
             eventMainView.classList.remove('hidden');
-            eventMainView.style.display = 'block'; // 확실하게 보이도록 설정
+            eventMainView.style.display = 'block';
         }
 
-        // 데이터 갱신 및 서브 탭 이동
         if (typeof displayEventView === 'function') displayEventView();
         if (typeof switchEventSubTab === 'function') {
             switchEventSubTab('battle'); 
         }
-
     } else {
-        // 일반 전투일 경우
+        // --- 일반 전투 종료 시 ---
+        // 이미 위에서 이벤트 뷰들을 숨겼으므로, 깨끗한 상태에서 일반 전투 탭만 엽니다.
         switchTab('combat');
     }
 };
