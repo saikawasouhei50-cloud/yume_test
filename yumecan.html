@@ -7187,14 +7187,18 @@ closeCombatResultButton.addEventListener('click', () => {
 
     // 화면 이동 로직 (원래대로)
     if (lastCombatType === 'event') {
-    // ✨ [수정] 이벤트 홈 대신 '전투 목록'으로 바로 이동
-    displayEventView();          // 이벤트 관련 데이터와 뷰를 준비합니다.
-    switchEventSubTab('battle'); // '전투' 서브 탭을 강제로 활성화합니다.
+        // 1. 먼저 대분류인 '이벤트' 화면으로 전환 (배경 및 레이아웃 처리)
+        switchTab('event'); 
         
-        const eventView = document.getElementById('event-view');
-        const btnBattle = document.getElementById('event-sub-tab-battle');
-        if (eventView && btnBattle) {
-            switchSubTab(eventView, btnBattle);
+        // 2. 그 후 이벤트 화면 내의 '전투' 서브 탭을 활성화
+        switchEventSubTab('battle'); 
+        
+        // 3. 만약 위 함수들로 해결이 안 될 경우를 대비한 강제 화면 표시 (보조)
+        const eventBattleView = document.getElementById('event-battle-view');
+        if (eventBattleView) {
+            // 모든 이벤트 서브 뷰를 숨기고 전투 뷰만 표시
+            document.querySelectorAll('.event-sub-content').forEach(el => el.classList.add('hidden'));
+            eventBattleView.classList.remove('hidden');
         }
     } else {
         switchTab('combat');
