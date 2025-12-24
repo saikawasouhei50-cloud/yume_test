@@ -3577,33 +3577,35 @@ function displayMyRoom() {
                     hitbox.style.border = 'none';
                 };
 
-                // ✨ 수동 더블클릭 감지 및 드래그 강제 해제
+               // ✨ 더블클릭 반전 및 드래그 강제 차단 로직
                 let lastClick = 0;
-                hitbox.addEventListener('mouseup', (e) => {
+                hitbox.addEventListener('mousedown', (e) => {
                     if (!isEditMode) return;
                     
                     const now = Date.now();
-                    // 0.35초 이내에 다시 떼었을 때 (더블 클릭 성공)
+                    // 0.35초 이내에 다시 눌렀을 때 (더블 클릭 발생 시점)
                     if (now - lastClick < 350) {
-                        e.stopPropagation();
+                        // 1. 드래그 로직이 실행되지 않도록 즉시 차단
+                        e.preventDefault();
+                        e.stopPropagation(); 
                         
-                        // 1. 데이터 반전
+                        // 2. 가구 반전 데이터 처리
                         item.isFlipped = !item.isFlipped;
                         
-                        // 2. 시각적 반영
+                        // 3. 시각적 반영
                         img.style.transform = getTransformStr(item.isFlipped);
                         
-                        // 3. ⭐ [핵심 추가] 드래그 상태 강제 종료
-                        // 가구가 커서에서 즉시 떨어지도록 합니다.
-                        isDragging = false; 
-                        draggedElement = null; 
+                        // 4. 드래그 관련 전역 변수 강제 초기화 (혹시 모르니 한 번 더)
+                        isDragging = false;
+                        draggedElement = null;
                         
-                        // 4. 저장
+                        // 5. 저장
                         if (typeof saveGame === 'function') saveGame();
                         
-                        console.log("가구 반전 및 드래그 해제 완료");
-                        lastClick = 0; // 초기화
+                        console.log("반전 완료 및 드래그 원천 차단");
+                        lastClick = 0; // 타이머 초기화
                     } else {
+                        // 첫 클릭 시 시간만 기록 (이때는 e.stopPropagation을 안 해서 드래그가 정상 시작됨)
                         lastClick = now;
                     }
                 });
