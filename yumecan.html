@@ -3496,36 +3496,36 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
-    const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
-        const dataA = furnitureItems.find(f => f.id === a.id);
-        const dataB = furnitureItems.find(f => f.id === b.id);
+    // 1. [중요] 원본 인덱스를 유지하면서 렌더링용 리스트 생성 (인덱스 꼬임 방지)
+    const renderList = playerRoom.furniture.map((item, originalIndex) => ({ item, originalIndex }));
+
+    // 2. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
+    renderList.sort((a, b) => {
+        const dataA = furnitureItems.find(f => f.id === a.item.id);
+        const dataB = furnitureItems.find(f => f.id === b.item.id);
         const priority = { 'floor': 1, 'rug': 1, 'wall': 2, 'furniture': 3, 'prop': 4 };
         return (priority[dataA?.type] || 0) - (priority[dataB?.type] || 0);
     });
 
     const isEdit = (typeof isEditMode !== 'undefined' && isEditMode);
 
-    sortedFurniture.forEach((item, index) => {
+    renderList.forEach(({ item, originalIndex }) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
-            // [1] 컨테이너 생성
             const container = document.createElement('div');
             container.className = `placed-furniture absolute pointer-events-none transition-all duration-200`;
-            container.dataset.key = index;
+            container.dataset.key = originalIndex; // ✨ 원본 데이터의 인덱스를 저장
             
             const iso = getIsoPos(item.x, item.y);
             container.style.left = `${iso.left}%`;
             container.style.top = `${iso.top}%`;
 
-            // 레이어(Z-Index) 설정
             let zOffset = 0;
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
             else if (furnitureData.type === 'wall') zOffset = -500;
             else if (furnitureData.type === 'prop') zOffset = 500;
             container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-            // [2] 이미지 생성
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
             img.className = 'absolute pointer-events-none transition-transform duration-200';
@@ -3533,63 +3533,59 @@ function displayMyRoom() {
             img.style.width = `${baseScale * 12 * 8}px`;
             img.style.maxWidth = 'none';
 
-            // 반전 상태 적용 함수 (내부 선언)
-            const applyFlip = (isFlipped) => {
-                const flip = isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-                if (furnitureData.type === 'rug' || furnitureData.type === 'floor') 
-                    img.style.transform = `translate(-50%, -50%) ${flip}`;
-                else if (furnitureData.type === 'wall') 
-                    img.style.transform = `translate(-50%, -100%) ${flip}`;
-                else 
-                    img.style.transform = `translate(-50%, -95%) ${flip}`;
+            // 반전 및 위치 변환 문자열 생성 함수
+            const getTransformStr = (flipped) => {
+                const flip = flipped ? 'scaleX(-1)' : 'scaleX(1)';
+                const yOffset = (furnitureData.type === 'wall') ? '-100%' : 
+                               (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? '-50%' : '-95%';
+                return `translate(-50%, ${yOffset}) ${flip}`;
             };
 
-            // 초기 상태 적용
-            item.isFlipped = item.isFlipped || false; // 데이터가 없으면 false로 초기화
-            applyFlip(item.isFlipped);
+            img.style.transform = getTransformStr(item.isFlipped);
             
             if (furnitureData.type === 'prop') img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
             else if (furnitureData.type === 'furniture') img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
 
             container.appendChild(img);
 
-            // [3] 히트박스 생성 (노란 원)
             const hitbox = document.createElement('div');
             hitbox.className = `furniture-hitbox absolute pointer-events-auto ${isEdit ? 'cursor-pointer' : ''}`;
-            hitbox.style.width = '32px'; 
-            hitbox.style.height = '32px';
+            hitbox.style.width = '35px'; 
+            hitbox.style.height = '35px';
             hitbox.style.left = '0px';
             hitbox.style.transform = 'translate(-50%, -50%)';
             
-            // 타입별 히트박스 위치 보정
             if (furnitureData.type === 'wall') hitbox.style.top = '-60px';
             else if (furnitureData.type === 'floor' || furnitureData.type === 'rug') hitbox.style.top = '0px';
             else hitbox.style.top = '-40px'; 
-
+            
             if (isEdit) {
                 hitbox.style.border = '2px dashed #fbbf24';
                 hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
                 hitbox.style.borderRadius = '50%';
 
-                // ✨ [핵심] 수동 더블클릭 감지 로직
-                let lastClickTime = 0;
-                hitbox.addEventListener('mousedown', (e) => {
+                // ✨ [해결책] mouseup 이벤트를 사용하여 드래그 방해를 우회하고 수동으로 더블 클릭 감지
+                let lastClick = 0;
+                hitbox.addEventListener('mouseup', (e) => {
+                    if (!isEditMode) return;
+                    
                     const now = Date.now();
-                    if (now - lastClickTime < 300) { // 0.3초 이내 재클릭 시
-                        e.preventDefault();
-                        e.stopPropagation(); // 드래그 이벤트로 번지는 것 차단
-
-                        // 1. 데이터 반전
-                        item.isFlipped = !item.isFlipped;
-                        // 2. 즉시 화면 반영
-                        applyFlip(item.isFlipped);
-                        // 3. 데이터 저장
-                        if (typeof saveGame === 'function') saveGame();
+                    // 0.35초 이내에 다시 떼었을 때 (더블 클릭)
+                    if (now - lastClick < 350) {
+                        e.stopPropagation();
                         
-                        console.log("반전 성공!", item.isFlipped);
-                        lastClickTime = 0;
+                        // 데이터 반전
+                        item.isFlipped = !item.isFlipped;
+                        // 즉시 시각적 반영
+                        img.style.transform = getTransformStr(item.isFlipped);
+                        
+                        // 저장
+                        if (typeof saveGame === 'function') saveGame();
+                        console.log("가구 반전 성공!", item.isFlipped);
+                        
+                        lastClick = 0; // 초기화
                     } else {
-                        lastClickTime = now;
+                        lastClick = now;
                     }
                 });
             }
@@ -3599,7 +3595,7 @@ function displayMyRoom() {
         }
     });
 
-    // --- (2) 캐릭터 렌더링 시작 (동일) ---
+    // 캐릭터 렌더링 부분 (기존 유지)
     let activeCharacters = [];
     if (playerRoom.characters && playerRoom.characters.length > 0) {
         activeCharacters = (typeof playerRoom.characters[0] === 'string')
@@ -3608,45 +3604,37 @@ function displayMyRoom() {
     }
     if (activeCharacters.length === 0) activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
 
-    activeCharacters.forEach((card, index) => {
+    activeCharacters.forEach((card) => {
         const charData = findCharacter(card.name);
         if (!charData) return;
-
         const el = document.createElement('div');
         el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
         el.dataset.charName = card.name;
-        
         const gridX = Math.random() * 90;
         const gridY = Math.random() * 90;
         const iso = getIsoPos(gridX, gridY);
-
         el.style.left = `${iso.left}%`;
         el.style.top = `${iso.top}%`;
         el.style.transform = 'translate(-50%, -90%)'; 
-        el.style.zIndex = iso.zIndex + 1000; // 캐릭터를 가구/소품보다 위로
+        el.style.zIndex = iso.zIndex + 1000;
         el.style.width = '100px'; 
-
-        const img = document.createElement('img');
-        img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
-        img.className = 'w-full h-auto object-contain drop-shadow-lg';
-        el.appendChild(img);
-
+        const cImg = document.createElement('img');
+        cImg.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
+        cImg.className = 'w-full h-auto object-contain drop-shadow-lg';
+        el.appendChild(cImg);
         const bubble = document.createElement('div');
         bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
         bubble.innerText = charData.dialogues[0];
         el.appendChild(bubble);
-
         el.onclick = (e) => {
             e.stopPropagation();
             bubble.innerText = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
             bubble.style.opacity = 1;
             setTimeout(() => bubble.style.opacity = 0, 3000);
         };
-
         roomLayer.appendChild(el);
         startChibiMovement(el);
     });
-    
     initInteractionSystem();
 }
 
