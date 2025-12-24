@@ -3599,18 +3599,20 @@ function displayMyRoom() {
         }
     });
 
-    // 캐릭터 렌더링 부분 (기존 유지)
-    let activeCharacters = [];
-    if (playerRoom.characters && playerRoom.characters.length > 0) {
-        activeCharacters = (typeof playerRoom.characters[0] === 'string')
-            ? playerRoom.characters.map(id => playerInventory.find(c => c.id === id)).filter(Boolean)
-            : playerRoom.characters;
-    }
-    if (activeCharacters.length === 0) activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
+    // --- (2) 캐릭터 렌더링 시작 ---
+    // ✨ 편집 모드가 아닐 때(!isEdit)만 캐릭터를 화면에 추가합니다.
+    if (!isEdit) {
+        let activeCharacters = [];
+        if (playerRoom.characters && playerRoom.characters.length > 0) {
+            activeCharacters = (typeof playerRoom.characters[0] === 'string')
+                ? playerRoom.characters.map(id => playerInventory.find(c => c.id === id)).filter(Boolean)
+                : playerRoom.characters;
+        }
+        if (activeCharacters.length === 0) activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
 
-    activeCharacters.forEach((card) => {
-        const charData = findCharacter(card.name);
-        if (!charData) return;
+        activeCharacters.forEach((card, index) => {
+            const charData = findCharacter(card.name);
+            if (!charData) return;
         const el = document.createElement('div');
         el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
         el.dataset.charName = card.name;
