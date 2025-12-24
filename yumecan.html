@@ -3513,27 +3513,29 @@ function displayMyRoom() {
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
             let zOffset = 0;
 
-            // ✨ 레이어 우선순위 설정
+            // --- 타입별 레이어 및 스타일 설정 ---
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                // 바닥재는 가장 밑에 깔리도록 설정
+                // [바닥/카페트] 가장 뒤에 배치
                 el.style.transform = `translate(-50%, -50%) rotate(45deg) scaleY(0.58) ${flipTransform}`;
                 el.style.width = `${furnitureData.size.w * 7}%`; 
                 el.style.opacity = '0.95';
-                zOffset = -100; // 가장 뒤쪽
+                zOffset = -100; 
             } else if (furnitureData.type === 'wall') {
+                // [벽 가구] 바닥보다는 위, 일반 가구보다는 뒤
                 el.style.transform = `translate(-50%, -200%) ${flipTransform}`;
                 el.style.width = `${furnitureData.size.w * 10}%`; 
-                zOffset = -50; // 바닥재보다는 앞, 가구보다는 뒤
+                zOffset = -50; 
             } else if (furnitureData.type === 'prop') {
-                // ✨ [핵심 추가] '소품' 타입은 일반 가구보다도 살짝 앞에 오도록 설정
+                // ✨ [소품 추가] 일반 가구보다 살짝 앞에 배치 (zOffset 사용)
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
                 let baseWidth = 12; 
                 if (furnitureData.scale) baseWidth = baseWidth * furnitureData.scale;
-                el.style.width = `${baseWidth}%`;
-                el.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.4))'; // 소품 전용 그림자
-                zOffset = 10; // 일반 가구(0)보다 앞에 배치
+                el.style.width = `${baseWidth}%`; 
+                // 소품은 조금 더 가벼운 그림자를 적용하여 밀착된 느낌을 줍니다.
+                el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))'; 
+                zOffset = 10; // 일반 가구(0)보다 10만큼 더 앞으로 나옴
             } else {
-                // 일반 가구
+                // [일반 가구] 기본 레이어
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
                 let baseWidth = 12; 
                 if (furnitureData.scale) baseWidth = baseWidth * furnitureData.scale;
@@ -3542,11 +3544,15 @@ function displayMyRoom() {
                 zOffset = 0; 
             }
 
-            // 최종 zIndex 적용 (y좌표 기반 zIndex + 보정치)
+            // 최종 zIndex 적용
             el.style.zIndex = iso.zIndex + zOffset; 
             roomLayer.appendChild(el);
         }
     });
+
+    // (2) 캐릭터 렌더링 로직은 기존과 동일하게 유지...
+    // (이하 생략)
+}
 
     // (2) 캐릭터 렌더링
     let activeCharacters = [];
