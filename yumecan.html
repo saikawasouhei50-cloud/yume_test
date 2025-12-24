@@ -3510,7 +3510,7 @@ function displayMyRoom() {
     sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
-            // [컨테이너 생성] - 실제 좌표와 z-index를 담당
+            // [컨테이너] 그리드 좌표 기준점
             const container = document.createElement('div');
             container.className = `placed-furniture absolute pointer-events-none transition-all duration-200 ${isEdit ? 'cursor-pointer' : ''}`;
             container.dataset.key = index;
@@ -3523,42 +3523,51 @@ function displayMyRoom() {
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
             const baseScale = furnitureData.scale || 1; 
 
-            // 레이어 오프셋 설정 (prop이 항상 위에 오도록 조정)
+            // 레이어 우선순위 설정
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                 zOffset = -1000; 
             } else if (furnitureData.type === 'wall') {
                 zOffset = -500; 
             } else if (furnitureData.type === 'prop') {
-                zOffset = 500; // 가구보다 앞에 위치
+                zOffset = 500; 
             } else {
                 zOffset = 0; 
             }
             container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-            // [히트박스 생성] - 실제로 클릭/드래그가 발생하는 영역
+            // [히트박스 생성]
             const hitbox = document.createElement('div');
-            // 히트박스만 클릭 가능하도록 설정
             hitbox.className = 'furniture-hitbox absolute pointer-events-auto';
             hitbox.style.width = '30px'; 
             hitbox.style.height = '30px';
-            hitbox.style.transform = 'translate(-50%, -50%)'; // 정확히 중앙 정렬
             
-            // 배치 모드일 때만 히트박스를 시각적으로 표시
+            // ✨ 핵심: 타입별 히트박스 위치 보정 (이미지 중앙으로 이동)
+            if (furnitureData.type === 'wall') {
+                hitbox.style.top = '-60px'; // 벽은 높이가 높으므로 많이 올림
+            } else if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
+                hitbox.style.top = '0px';   // 바닥은 그리드 포인트가 이미 중앙임
+            } else {
+                hitbox.style.top = '-40px'; // 일반 가구 및 소품(prop) 중간 높이
+            }
+            
+            hitbox.style.left = '0px';
+            hitbox.style.transform = 'translate(-50%, -50%)'; // 중심점 정렬
+            
             if (isEdit) {
-                hitbox.style.border = '2px solid #fbbf24'; // 노란색 테두리
-                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.4)'; // 반투명 노란색
+                hitbox.style.border = '2px solid #fbbf24';
+                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.4)';
                 hitbox.style.borderRadius = '50%';
             }
             container.appendChild(hitbox);
 
-            // [이미지 생성] - 시각적 요소 (클릭 무시)
+            // [이미지 생성]
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
             img.className = 'absolute pointer-events-none transition-transform duration-200';
-            img.style.width = `${baseScale * 12 * 8}px`; // 컨테이너 기준이 아닌 절대 크기 유지용
+            img.style.width = `${baseScale * 12 * 8}px`;
             img.style.maxWidth = 'none';
 
-            // 이미지 위치 보정
+            // 이미지 배치 로직 (기존 유지)
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                 img.style.transform = `translate(-50%, -50%) ${flipTransform}`;
             } else if (furnitureData.type === 'wall') {
@@ -3575,12 +3584,12 @@ function displayMyRoom() {
 
             container.appendChild(img);
 
-            // 더블클릭 이벤트 (히트박스에서 발생)
+            // 이벤트 바인딩 (히트박스 기준)
             hitbox.addEventListener('dblclick', (e) => {
                 if (!isEdit) return;
                 e.stopPropagation();
                 item.isFlipped = !item.isFlipped;
-                displayMyRoom(); // 반전 반영을 위해 리렌더링
+                displayMyRoom();
                 saveGame();
             });
 
