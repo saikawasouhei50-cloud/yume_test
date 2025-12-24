@@ -3496,7 +3496,7 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
+    // 레이어 우선순위 정렬
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
@@ -3509,25 +3509,24 @@ function displayMyRoom() {
     sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
-            // [컨테이너]
             const container = document.createElement('div');
-            container.className = `placed-furniture absolute pointer-events-none transition-all duration-200`;
+            // container에 pointer-events-none을 제거하고, 내부 요소에서 관리합니다.
+            container.className = `placed-furniture absolute`;
             container.dataset.key = index;
             
             const iso = getIsoPos(item.x, item.y);
             container.style.left = `${iso.left}%`;
             container.style.top = `${iso.top}%`;
 
-            // 레이어 설정 (Prop이 Floor보다 위에 오도록)
+            // Z-Index 설정: Prop(500) > Floor(-1000)
             let zOffset = 0;
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
             else if (furnitureData.type === 'wall') zOffset = -500;
             else if (furnitureData.type === 'prop') zOffset = 500;
-            else zOffset = 0;
             
             container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-            // [이미지] - 시각적 요소
+            // 이미지 생성
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
             img.className = 'absolute pointer-events-none transition-transform duration-200';
@@ -3535,64 +3534,65 @@ function displayMyRoom() {
             img.style.width = `${baseScale * 12 * 8}px`;
             img.style.maxWidth = 'none';
 
-            // 초기 반전 상태 적용 함수
-            const getTransformStr = (isFlipped) => {
-                const flip = isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-                if (furnitureData.type === 'rug' || furnitureData.type === 'floor') return `translate(-50%, -50%) ${flip}`;
-                if (furnitureData.type === 'wall') return `translate(-50%, -100%) ${flip}`;
-                return `translate(-50%, -95%) ${flip}`;
+            // 반전 및 위치 계산 함수
+            const updateTransform = (flipped) => {
+                const flip = flipped ? 'scaleX(-1)' : 'scaleX(1)';
+                if (furnitureData.type === 'rug' || furnitureData.type === 'floor') 
+                    img.style.transform = `translate(-50%, -50%) ${flip}`;
+                else if (furnitureData.type === 'wall') 
+                    img.style.transform = `translate(-50%, -100%) ${flip}`;
+                else 
+                    img.style.transform = `translate(-50%, -95%) ${flip}`;
             };
 
-            img.style.transform = getTransformStr(item.isFlipped);
+            updateTransform(item.isFlipped);
             
             if (furnitureData.type === 'prop') img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
             else if (furnitureData.type === 'furniture') img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
 
             container.appendChild(img);
 
-            // [히트박스] - 클릭/드래그 전용 (이미지 중앙 위치)
+            // [히트박스] 중앙 정렬 및 클릭 이벤트 담당
             const hitbox = document.createElement('div');
-            hitbox.className = `furniture-hitbox absolute pointer-events-auto ${isEdit ? 'cursor-pointer' : ''}`;
-            hitbox.style.width = '32px'; 
-            hitbox.style.height = '32px';
+            hitbox.className = 'furniture-hitbox absolute pointer-events-auto';
+            hitbox.style.width = '35px'; 
+            hitbox.style.height = '35px';
             hitbox.style.left = '0px';
             hitbox.style.transform = 'translate(-50%, -50%)';
             
-            // 타입별 히트박스 중앙 위치 보정
+            // 모든 아이템의 히트박스를 이미지의 시각적 중앙(또는 발치 중심)으로 강제 고정
             if (furnitureData.type === 'wall') hitbox.style.top = '-60px';
             else if (furnitureData.type === 'floor' || furnitureData.type === 'rug') hitbox.style.top = '0px';
             else hitbox.style.top = '-40px'; 
             
             if (isEdit) {
-                hitbox.style.border = '2px dashed #fbbf24';
-                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
+                hitbox.style.cursor = 'move';
+                hitbox.style.border = '2px solid #fbbf24';
+                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.4)';
                 hitbox.style.borderRadius = '50%';
+                hitbox.title = "드래그하여 이동 / 더블클릭하여 반전";
             }
-            
-            // ✨ 더블클릭 반전 로직 개선
+
+            // ✨ 더블클릭 이벤트 (반전)
             hitbox.addEventListener('dblclick', (e) => {
                 if (!isEdit) return;
                 e.stopPropagation();
+                e.preventDefault(); // 브라우저 기본 동작 방지
                 
-                // 1. 데이터 변경
                 item.isFlipped = !item.isFlipped;
-                
-                // 2. 이미지 즉시 업데이트 (리렌더링 없이 즉각 반응)
-                img.style.transform = getTransformStr(item.isFlipped);
-                
-                // 3. 효과음이나 진동 등 추가 피드백 (선택 사항)
-                console.log(`${furnitureData.name} 반전됨: ${item.isFlipped}`);
-                
-                // 4. 게임 저장
+                updateTransform(item.isFlipped);
                 if (typeof saveGame === 'function') saveGame();
+                console.log("반전 완료:", item.isFlipped);
             });
 
             container.appendChild(hitbox);
             roomLayer.appendChild(container);
         }
     });
-if (!isEdit) renderChibiCharacters(roomLayer);
+
+    if (!isEdit) renderChibiCharacters(roomLayer);
     if (typeof initInteractionSystem === 'function') initInteractionSystem();
+}
 
     // --- (2) 캐릭터 렌더링 시작 (동일) ---
     let activeCharacters = [];
@@ -3946,29 +3946,37 @@ const isBlocked = playerRoom.furniture.some(f => {
 // ================== ✨ 수정된 initDragEvents (배치 모드) ✨ ==================
 function initDragEvents() {
     const container = document.getElementById('room-container');
+    let dragOccurred = false;
 
     const handleStart = (e) => {
         if (!isEditMode) return;
-        let target = e.target;
         
+        let target = e.target;
         if (e.type === 'touchstart') {
             const touch = e.touches[0];
             target = document.elementFromPoint(touch.clientX, touch.clientY);
         }
 
-        // 히트박스를 클릭했을 때 부모 컨테이너(placed-furniture)를 찾음
         const furnitureElement = target.closest('.placed-furniture');
+        const isHitbox = target.classList.contains('furniture-hitbox');
 
-        if (furnitureElement) {
-            if (e.cancelable) e.preventDefault();
-            draggedFurniture = furnitureElement; // 이미지가 포함된 컨테이너 선택
-            draggedFurniture.style.zIndex = 9999;
+        if (furnitureElement && isHitbox) {
+            // ✨ dblclick을 허용하기 위해 mousedown에서는 preventDefault를 신중하게 사용하거나 생략합니다.
+            // 대신 터치 환경에서만 스크롤 방지를 위해 사용합니다.
+            if (e.type === 'touchstart' && e.cancelable) e.preventDefault();
+            
+            draggedFurniture = furnitureElement;
+            draggedFurniture.style.zIndex = 9999; // 드래그 중엔 최상단
             draggedFurniture.style.transition = 'none';
+            dragOccurred = false; 
         }
     };
 
     const handleMove = (e) => {
         if (!isEditMode || !draggedFurniture) return;
+        
+        // 이동이 발생하면 드래그 중임을 표시
+        dragOccurred = true;
         if (e.cancelable) e.preventDefault();
 
         const containerRect = container.getBoundingClientRect();
@@ -3996,13 +4004,14 @@ function initDragEvents() {
         }
 
         const newIso = getIsoPos(gridPos.x, gridPos.y);
-        // z-index 재계산 (타입별 오프셋 유지 필요)
+        
+        // Z-Index 복구 (타입별 가중치 재계산)
         const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
         let zOffset = 0;
         if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
         else if (furnitureData.type === 'wall') zOffset = -500;
         else if (furnitureData.type === 'prop') zOffset = 500;
-        
+
         draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
         draggedFurniture.style.transition = '';
         draggedFurniture.style.left = `${newIso.left}%`;
@@ -4011,7 +4020,7 @@ function initDragEvents() {
         draggedFurniture = null;
     };
 
-    // 이벤트 리스너 등록
+    // 이벤트 리스너 재등록
     container.addEventListener('mousedown', handleStart);
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
@@ -4019,23 +4028,23 @@ function initDragEvents() {
     window.addEventListener('touchmove', handleMove, { passive: false });
     window.addEventListener('touchend', handleEnd);
 
-    // 우클릭 회수 로직 수정 (부모 컨테이너 기준)
-    container.addEventListener('contextmenu', (e) => {
+    // 우클릭 회수
+    container.oncontextmenu = (e) => {
         if (!isEditMode) return;
         const furnitureElement = e.target.closest('.placed-furniture');
         if (furnitureElement) {
             e.preventDefault();
-            if(confirm('이 가구를 회수하시겠습니까?')) {
-                const uniqueKey = furnitureElement.dataset.key;
-                if (uniqueKey !== undefined) {
+            const uniqueKey = furnitureElement.dataset.key;
+            if (uniqueKey !== undefined) {
+                if(confirm('이 가구를 회수하시겠습니까?')) {
                     playerRoom.furniture.splice(uniqueKey, 1);
                     displayMyRoom();
                     saveGame();
                 }
             }
         }
-    });
-} // initDragEvents 끝
+    };
+}
 
 
 // ================== ✨ [신규] 가구 보관함 기능 시작 ✨ ==================
@@ -10743,8 +10752,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
-
 
 
 
