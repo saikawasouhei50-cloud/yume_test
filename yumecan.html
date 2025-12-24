@@ -3447,23 +3447,15 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
 // 1. 그리드 좌표 변환 함수 (벽 안쪽으로 범위 축소)
 function getIsoPos(gridX, gridY) {
     const centerX = 50; 
-    
-    // ✨ [수정 1] 바닥 중심점 높이 (30 -> 35)
-    // 전체적으로 살짝 내려서 위쪽 벽에 닿지 않게 합니다.
     const centerY = 45; 
-    
-    // ✨ [수정 2] 너비 계수 축소 (0.46 -> 0.38)
-    // 좌우 벽 두께만큼 안쪽으로 들여옵니다.
     const widthFactor = 0.38;  
-    
-    // ✨ [수정 3] 높이 계수 축소 (0.30 -> 0.24)
-    // 아래쪽 벽에 닿지 않게 상하 폭을 줄입니다.
     const heightFactor = 0.24; 
     
     const screenX = centerX + (gridX - gridY) * widthFactor;
     const screenY = centerY + (gridX + gridY) * heightFactor;
     
-    const zIndex = Math.floor(gridX + gridY);
+    // ✨ 수정: 정밀도를 높이기 위해 100을 곱한 정수값을 사용합니다.
+    const zIndex = Math.floor((gridX + gridY) * 100);
     
     return { left: screenX, top: screenY, zIndex: zIndex };
 }
@@ -3521,10 +3513,12 @@ function displayMyRoom() {
             container.style.top = `${iso.top}%`;
 
             let zOffset = 0;
-            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
-            else if (furnitureData.type === 'wall') zOffset = -500;
-            else if (furnitureData.type === 'prop') zOffset = 500;
-            container.style.zIndex = (iso.zIndex || 0) + zOffset;
+if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -20000; // 바닥은 무조건 뒤
+else if (furnitureData.type === 'wall') zOffset = -10000; // 벽도 캐릭터보다 뒤
+else if (furnitureData.type === 'prop') zOffset = 10; // 소품은 가구보다 아주 살짝 위
+else zOffset = 0; // 일반 가구
+
+container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
@@ -3946,22 +3940,22 @@ const isBlocked = playerRoom.furniture.some(f => {
         const duration = 2000; // 캐릭터 이동 시간(2s)과 일치시켜주세요.
 
         const updateZIndexRealtime = () => {
-            const elapsed = Date.now() - startTime;
-            
-            // 현재 엘리먼트의 실시간 위치(px)를 가져와서 %로 변환
-            const style = window.getComputedStyle(element);
-            const currentTopPx = parseFloat(style.top);
-            const parentHeight = element.parentElement.offsetHeight;
-            const currentTopPercent = (currentTopPx / parentHeight) * 100;
+    const elapsed = Date.now() - startTime;
+    const style = window.getComputedStyle(element);
+    const currentTopPx = parseFloat(style.top);
+    const parentHeight = element.parentElement.offsetHeight;
+    const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
-            // 가구와 동일한 공식으로 zIndex 계산 (캐릭터가 살짝 앞에 보이게 +0.1)
-            element.style.zIndex = Math.floor((currentTopPercent - 45) / 0.24) + 0.1;
+    // ✨ 중요: 가구 배치 공식(getIsoPos)의 역산을 사용하여 실시간 zIndex를 계산합니다.
+    // (currentTopPercent - 45) / 0.24 가 gridX + gridY 값입니다.
+    // 여기에 100을 곱해 가구와 단위를 맞추고, 캐릭터가 동점일 때만 앞에 보이게 +1을 더합니다.
+    const logicalY = (currentTopPercent - 45) / 0.24;
+    element.style.zIndex = Math.floor(logicalY * 100) + 1;
 
-            // 이동 시간(2초) 동안만 매 프레임 실행
-            if (elapsed < duration) {
-                requestAnimationFrame(updateZIndexRealtime);
-            }
-        };
+    if (elapsed < duration) {
+        requestAnimationFrame(updateZIndexRealtime);
+    }
+};
 
         // 실시간 업데이트 시작
         requestAnimationFrame(updateZIndexRealtime);
