@@ -3536,7 +3536,7 @@ function displayMyRoom() {
 
             // 바닥재/러그 처리
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                el.style.transform = `translate(-50%, -50%) rotate(45deg) scaleY(0.58) ${flipTransform}`;
+                el.style.transform = `translate(-50%, -50%) ${flipTransform}`;
                 const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
                 el.style.width = `${sizeW * 7}%`; 
                 el.style.opacity = '0.95';
