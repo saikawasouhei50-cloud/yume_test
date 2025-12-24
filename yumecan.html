@@ -3613,36 +3613,47 @@ function displayMyRoom() {
         activeCharacters.forEach((card, index) => {
             const charData = findCharacter(card.name);
             if (!charData) return;
-        const el = document.createElement('div');
-        el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
-        el.dataset.charName = card.name;
-        const gridX = Math.random() * 90;
-        const gridY = Math.random() * 90;
-        const iso = getIsoPos(gridX, gridY);
-        el.style.left = `${iso.left}%`;
-        el.style.top = `${iso.top}%`;
-        el.style.transform = 'translate(-50%, -90%)'; 
-        el.style.zIndex = iso.zIndex + 1000;
-        el.style.width = '100px'; 
-        const cImg = document.createElement('img');
-        cImg.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
-        cImg.className = 'w-full h-auto object-contain drop-shadow-lg';
-        el.appendChild(cImg);
-        const bubble = document.createElement('div');
-        bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
-        bubble.innerText = charData.dialogues[0];
-        el.appendChild(bubble);
-        el.onclick = (e) => {
-            e.stopPropagation();
-            bubble.innerText = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
-            bubble.style.opacity = 1;
-            setTimeout(() => bubble.style.opacity = 0, 3000);
-        };
-        roomLayer.appendChild(el);
-        startChibiMovement(el);
-    });
-    initInteractionSystem();
-}
+
+            const el = document.createElement('div');
+            el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
+            el.dataset.charName = card.name;
+            
+            const gridX = Math.random() * 90;
+            const gridY = Math.random() * 90;
+            const iso = getIsoPos(gridX, gridY);
+            
+            el.style.left = `${iso.left}%`;
+            el.style.top = `${iso.top}%`;
+            el.style.transform = 'translate(-50%, -90%)'; 
+            el.style.zIndex = iso.zIndex + 1000;
+            el.style.width = '100px'; 
+
+            const cImg = document.createElement('img');
+            cImg.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
+            cImg.className = 'w-full h-auto object-contain drop-shadow-lg';
+            el.appendChild(cImg);
+
+            const bubble = document.createElement('div');
+            bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
+            bubble.innerText = charData.dialogues[0];
+            el.appendChild(bubble);
+
+            el.onclick = (e) => {
+                e.stopPropagation();
+                bubble.innerText = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
+                bubble.style.opacity = 1;
+                setTimeout(() => bubble.style.opacity = 0, 3000);
+            };
+
+            roomLayer.appendChild(el);
+            startChibiMovement(el);
+        });
+
+        // ✨ 캐릭터 간 상호작용 시스템도 캐릭터가 있을 때만 실행되도록 안으로 이동
+        initInteractionSystem();
+    } // <--- 괄호 중요! 여기서 if (!isEdit) 블록이 끝납니다.
+
+} // <--- 여기서 displayMyRoom() 함수 전체가 끝납니다.
 
 		// ================== ✨ 캐릭터 상호작용 시스템 ✨ ==================
 
