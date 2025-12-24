@@ -3570,21 +3570,32 @@ function displayMyRoom() {
                 hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
                 hitbox.style.borderRadius = '50%';
                 
-                // ✨ 더블클릭 반전 기능 추가
-                hitbox.addEventListener('dblclick', (e) => {
-                    e.stopPropagation(); // 방의 다른 클릭 이벤트 방지
-                    
-                    // 1. 데이터 값 반전 (true -> false, false -> true)
-                    item.isFlipped = !item.isFlipped;
-                    
-                    // 2. CSS 즉시 적용 (미리 정의된 getTransformStr 함수 사용)
-                    img.style.transform = getTransformStr(item.isFlipped);
-                    
-                    // 3. 변경 사항 저장
-                    if (typeof saveGame === 'function') {
-                        saveGame();
+                // ✅ [교체] 수동 더블클릭 반전 로직 (드래그 충돌 방지)
+                let lastFlipClick = 0; 
+                hitbox.addEventListener('mousedown', (e) => {
+                    const currentTime = Date.now();
+                    const gap = currentTime - lastFlipClick;
+
+                    // 0.3초 이내에 다시 클릭하면 반전 실행
+                    if (gap > 0 && gap < 300) {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        // 1. 데이터 값 반전
+                        item.isFlipped = !item.isFlipped;
+                        
+                        // 2. 시각적 즉시 반영
+                        img.style.transform = getTransformStr(item.isFlipped);
+                        
+                        // 3. 저장
+                        if (typeof saveGame === 'function') saveGame();
+                        
+                        console.log(`${furnitureData.name} 반전 성공: ${item.isFlipped}`);
+                        lastFlipClick = 0; // 판정 후 초기화
+                    } else {
+                        // 첫 번째 클릭 시간 기록
+                        lastFlipClick = currentTime;
                     }
-                    console.log(`${furnitureData.name} 반전됨: ${item.isFlipped}`);
                 });
             }
 
