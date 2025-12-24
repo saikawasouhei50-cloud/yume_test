@@ -3496,7 +3496,29 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    playerRoom.furniture.forEach((item, index) => {
+    // 1. 타입별 우선순위 정의 (숫자가 높을수록 앞에 나옴)
+    const typePriority = {
+        'floor': 1,
+        'rug': 1,
+        'wall': 2,
+        'furniture': 3,
+        'prop': 4 // prop이 가장 앞에 오도록 설정
+    };
+
+    // 2. 가구들을 우선순위에 따라 정렬 (원본 배열을 건드리지 않기 위해 복사본 사용)
+    const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
+        const dataA = furnitureItems.find(f => f.id === a.id);
+        const dataB = furnitureItems.find(f => f.id === b.id);
+        
+        const priorityA = dataA ? typePriority[dataA.type] || 0 : 0;
+        const priorityB = dataB ? typePriority[dataB.type] || 0 : 0;
+
+        // 우선순위가 같으면 iso depth(y좌표 등)에 따라 정렬하도록 할 수도 있습니다.
+        return priorityA - priorityB;
+    });
+
+    // 3. 정렬된 배열로 그리기
+    sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
             const el = document.createElement('img');
@@ -3512,22 +3534,22 @@ function displayMyRoom() {
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
             let zOffset = 0;
 
-            // 1. 바닥재 처리 (rug와 floor 통합)
+            // 바닥재/러그 처리
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                 el.style.transform = `translate(-50%, -50%) rotate(45deg) scaleY(0.58) ${flipTransform}`;
-                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1; // 안전장치
+                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
                 el.style.width = `${sizeW * 7}%`; 
                 el.style.opacity = '0.95';
                 zOffset = -100; 
             } 
-            // 2. 벽 가구 처리
+            // 벽 가구 처리
             else if (furnitureData.type === 'wall') {
                 el.style.transform = `translate(-50%, -200%) ${flipTransform}`;
                 const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
                 el.style.width = `${sizeW * 10}%`; 
                 zOffset = -50; 
             } 
-            // 3. 일반 가구 및 소품(prop) 처리 (공통 로직 통합)
+            // 일반 가구 및 소품(prop) 처리
             else {
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
                 let baseWidth = 12; 
@@ -3536,17 +3558,18 @@ function displayMyRoom() {
 
                 if (furnitureData.type === 'prop') {
                     el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))'; 
-                    zOffset = 10; 
+                    zOffset = 50; // prop의 zOffset을 더 높게 설정
                 } else {
                     el.style.filter = 'drop-shadow(0px 5px 5px rgba(0,0,0,0.5))'; 
                     zOffset = 0; 
                 }
             }
 
-            el.style.zIndex = iso.zIndex + zOffset; 
+            el.style.zIndex = (iso.zIndex || 0) + zOffset; 
             roomLayer.appendChild(el);
         }
     });
+
 
     // (2) 캐릭터 렌더링
     let activeCharacters = [];
