@@ -3880,62 +3880,74 @@ function startChibiMovement(element) {
         if (!myRoomView || myRoomView.classList.contains('hidden')) return;
         if (element.dataset.isInteracting === 'true') return;
 
-        let finalTarget = null;
+        let targetGridX, targetGridY;
         let attempts = 0;
+        let finalTarget = null; // 최종 목적지
 
-        // 1. 빈 자리 찾기 (기존 로직 유지)
+        // ✨ [핵심 로직] 빈 자리를 찾기 위해 10번 시도합니다.
         while (attempts < 10) {
-            const margin = 10;
-            const testX = Math.floor(Math.random() * (100 - margin * 2)) + margin;
-            const testY = Math.floor(Math.random() * (100 - margin * 2)) + margin;
+            // 0~9 사이 랜덤 좌표 생성
+            // 1. 가장자리(0과 100 근처)에 너무 붙지 않도록 10 ~ 90 사이의 좌표를 생성합니다.
+const margin = 10;
+const effectiveSize = GRID_SIZE - (margin * 2); // 100 - 20 = 80
+const testX = Math.floor(Math.random() * effectiveSize) + margin;
+const testY = Math.floor(Math.random() * effectiveSize) + margin;
 
-            const isBlocked = playerRoom.furniture.some(f => {
-                const itemData = furnitureItems.find(i => i.id === f.id);
-                if (!itemData || itemData.type === 'wall' || itemData.type === 'rug' || itemData.type === 'floor') return false;
-                return Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2)) < 7;
-            });
+// 2. 가구 충돌 체크 범위 수정 (좌표가 0~100이 되었으므로 범위도 넓혀야 함)
+const isBlocked = playerRoom.furniture.some(f => {
+    const itemData = furnitureItems.find(i => i.id === f.id);
+    if (!itemData || itemData.type === 'wall' || itemData.type === 'rug') return false;
+    
+    // 가구 중심점(f.x, f.y)과 목표 지점(testX, testY)의 거리를 계산
+    // 거리가 6 이내면 부딪힌 것으로 간주 (가구 크기에 따라 조절 가능)
+    const dist = Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2));
+    return dist < 6; 
+});
+           
 
+            // 빈 자리라면? -> 여기로 결정하고 반복 종료!
             if (!isBlocked) {
                 finalTarget = { x: testX, y: testY };
                 break;
             }
+            
+            // 막힌 자리라면? -> 일단 후보지로 저장해두고 다시 시도 (정 갈 데 없으면 여기라도 가야 하니까)
+            if (!finalTarget) {
+                finalTarget = { x: testX, y: testY };
+            }
+
             attempts++;
         }
+
+        // (안전장치) 혹시라도 타겟이 없으면 현재 위치 유지
         if (!finalTarget) return;
 
+        // --- 이동 실행 ---
         const iso = getIsoPos(finalTarget.x, finalTarget.y);
+        
+        const currentLeft = parseFloat(element.style.left) || iso.left;
         const img = element.querySelector('img');
-
-        // 2. 방향 전환 및 이동 시작
-        const currentLeft = parseFloat(element.style.left);
-        img.style.transform = iso.left < currentLeft ? 'scaleX(1)' : 'scaleX(-1)';
+        
+        if (iso.left < currentLeft) {
+            img.style.transform = 'scaleX(1)'; 
+            element.dataset.facing = 'left';
+        } else {
+            img.style.transform = 'scaleX(-1)'; 
+            element.dataset.facing = 'right';
+        }
 
         element.style.left = `${iso.left}%`;
         element.style.top = `${iso.top}%`;
-
-        // 🔥 [중요] 실시간 zIndex 업데이트 (이동 시간 2000ms 동안 실행)
-        const startTime = Date.now();
-        const updateZ = () => {
-            const elapsed = Date.now() - startTime;
-            
-            // window.getComputedStyle를 써야 '실시간' 위치를 가져옵니다.
-            const computedStyle = window.getComputedStyle(element);
-            const currentTop = parseFloat(computedStyle.top);
-            const parentHeight = element.parentElement.offsetHeight;
-            const topPercent = (currentTop / parentHeight) * 100;
-
-            // 룸 시스템의 zIndex 공식: (top - 45) / 0.24 = x + y
-            // 가구보다 아주 살짝(0.1) 앞에 있게 설정
-            element.style.zIndex = Math.floor((topPercent - 45) / 0.24) + 0.1;
-
-            if (elapsed < 2000) { // transition 시간 동안 반복
-                requestAnimationFrame(updateZ);
-            }
-        };
-        requestAnimationFrame(updateZ);
+        
+        // 가구보다 살짝 앞에 서기
+        element.style.zIndex = iso.zIndex + 5;
+        
+        element.dataset.gridX = finalTarget.x;
+        element.dataset.gridY = finalTarget.y;
     };
 
-    const interval = setInterval(move, 3000 + Math.random() * 2000);
+    // 2.5초 ~ 4.5초 간격으로 이동 (너무 정신없지 않게)
+    const interval = setInterval(move, Math.random() * 2000 + 2500);
     element.dataset.moveInterval = interval;
 }
 
