@@ -3506,7 +3506,7 @@ function displayMyRoom() {
         return pA - pB;
     });
 
-    // --- (1) 가구 렌더링 시작 (히트박스 방식 적용) ---
+    // --- (1) 가구 렌더링 시작 (중앙 히트박스 적용) ---
 sortedFurniture.forEach((item, index) => {
     const furnitureData = furnitureItems.find(f => f.id === item.id);
     if (furnitureData) {
@@ -3524,35 +3524,36 @@ sortedFurniture.forEach((item, index) => {
         // 실제 이미지 생성
         const img = document.createElement('img');
         img.src = furnitureData.imageUrl;
-        img.className = 'pointer-events-none'; // 이미지는 클릭 무시
+        img.className = 'pointer-events-none'; 
         
-        // ⭐ [크기 설정] 시트 데이터 기준 너비 계산
+        // ⭐ [크기 설정] 시트 데이터 너비 계산 (기존 수치 20% 유지)
         let visualWidthStr = furnitureData.width ? 
             (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
             `${(furnitureData.scale || 1) * 20}%`;
 
-        // ⭐ [핵심] 히트박스 비율 설정 (수치를 낮출수록 히트박스가 작아짐)
-        const hRatio = 0.4; // 가로: 원래 크기의 40% 영역만 클릭 가능
-        const vRatio = 0.2; // 세로: 원래 크기의 20% 영역만 클릭 가능 (바닥에 납작하게)
+        // ⭐ [히트박스 설정] 가로/세로 비율 (원하는 만큼 줄이세요)
+        const hRatio = 0.4; // 가로 40%
+        const vRatio = 0.4; // 세로 40%
 
-        // ⭐ [히트박스 크기 축소] 컨테이너에 가로와 세로를 모두 적용
+        // ⭐ [중앙 정렬 레이아웃]
         container.style.width = `calc(${visualWidthStr} * ${hRatio})`;
         container.style.height = `calc(${visualWidthStr} * ${vRatio})`; 
-        container.style.overflow = 'visible'; // 이미지가 컨테이너 밖으로 나가도 보이게 설정
+        container.style.overflow = 'visible'; 
         container.style.display = 'flex';
-        container.style.justifyContent = 'center'; // 가로 중앙 정렬
-        container.style.alignItems = 'flex-end';    // 세로 하단 정렬 (가구 발치에 히트박스 고정)
+        container.style.justifyContent = 'center'; // 가로 중앙
+        container.style.alignItems = 'center';     // ⭐ 세로 중앙 (하단에서 중앙으로 변경)
 
-        // ⭐ [이미지 크기 보존] 컨테이너가 줄어든 만큼 이미지 크기를 역으로 키움
-        // 예: 컨테이너가 0.4배면 이미지는 1/0.4 = 2.5배(250%)가 되어야 원래 크기로 보임
+        // ⭐ [이미지 크기 보존] 컨테이너 크기에 상관없이 이미지는 원래 크기대로
         img.style.width = `${(1 / hRatio) * 100}%`;
-        img.style.maxWidth = 'none'; // 부모(컨테이너) 크기에 맞춰 이미지가 줄어드는 것 방지
+        img.style.maxWidth = 'none'; 
         img.style.flexShrink = '0';
+        // 이미지가 컨테이너의 높이 때문에 찌그러지지 않게 설정
+        img.style.height = 'auto'; 
 
         const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
         let zOffset = 0;
 
-        // 타입별 transform 및 그림자 (컨테이너 기준)
+        // 타입별 위치(translate) 설정
         if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
             container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
             zOffset = -100; 
@@ -3560,26 +3561,30 @@ sortedFurniture.forEach((item, index) => {
             container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
             zOffset = -50; 
         } else {
-            container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-            if (furnitureData.type === 'prop') {
-                img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
-                zOffset = 10; 
-            } else {
-                img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-                zOffset = 0; 
-            }
+            // 일반 가구 및 소품: 기준점을 중앙에 맞추기 위해 translate 조정 가능
+            container.style.transform = `translate(-50%, -50%) ${flipTransform}`; 
+            zOffset = (furnitureData.type === 'prop') ? 10 : 0;
+            
+            // 그림자 효과
+            img.style.filter = furnitureData.type === 'prop' ? 
+                'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))' : 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
         }
+        
         container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-        // 더블클릭 반전 이벤트
+        // 더블클릭 반전 이벤트 (현재 transform 유지하며 flip)
         container.addEventListener('dblclick', (e) => {
             if (typeof isEditMode !== 'undefined' && !isEditMode) return;
             e.stopPropagation();
             item.isFlipped = !item.isFlipped;
             const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-            const baseTrans = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? '-50%, -50%' :
-                              (furnitureData.type === 'wall') ? '-50%, -100%' : '-50%, -95%';
-            container.style.transform = `translate(${baseTrans}) ${currentFlip}`;
+            
+            // 타입별 translate 유지 (중앙 배치를 위해 -50%, -50% 사용 권장)
+            const transX = "-50%";
+            const transY = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? "-50%" : 
+                          (furnitureData.type === 'wall') ? "-100%" : "-50%";
+            
+            container.style.transform = `translate(${transX}, ${transY}) ${currentFlip}`;
         });
 
         container.appendChild(img);
