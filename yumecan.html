@@ -3544,7 +3544,9 @@ function displayMyRoom() {
             // 2. 더블클릭 이벤트 추가
             // ==========================================
             el.addEventListener('dblclick', (e) => {
-                // 배치 모드일 때만 작동하게 하려면 여기에 if(isEditMode) 조건을 추가하세요.
+                if (typeof isEditMode !== 'undefined' && !isEditMode) {
+        return; 
+    }
                 e.stopPropagation(); // 부모 엘리먼트로 이벤트 전달 방지
                 
                 // 데이터 상태 반전
