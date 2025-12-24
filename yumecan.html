@@ -3638,12 +3638,14 @@ function displayMyRoom() {
             const gridX = Math.random() * 90;
             const gridY = Math.random() * 90;
             const iso = getIsoPos(gridX, gridY);
-            
-            el.style.left = `${iso.left}%`;
-            el.style.top = `${iso.top}%`;
-            el.style.transform = 'translate(-50%, -90%)'; 
-            el.style.zIndex = iso.zIndex + 1000;
-            el.style.width = '100px'; 
+
+el.style.left = `${iso.left}%`;
+el.style.top = `${iso.top}%`;
+el.style.transform = 'translate(-50%, -90%)'; 
+
+// ✨ 수정: +1000을 제거하여 가구와 동일한 선상에서 비교되게 합니다.
+el.style.zIndex = iso.zIndex; 
+el.style.width = '100px';
 
             const cImg = document.createElement('img');
             cImg.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
@@ -3877,54 +3879,36 @@ function startChibiMovement(element) {
         if (!myRoomView || myRoomView.classList.contains('hidden')) return;
         if (element.dataset.isInteracting === 'true') return;
 
-        let targetGridX, targetGridY;
         let attempts = 0;
-        let finalTarget = null; // 최종 목적지
+        let finalTarget = null;
 
-        // ✨ [핵심 로직] 빈 자리를 찾기 위해 10번 시도합니다.
         while (attempts < 10) {
-            // 0~9 사이 랜덤 좌표 생성
-            // 1. 가장자리(0과 100 근처)에 너무 붙지 않도록 10 ~ 90 사이의 좌표를 생성합니다.
-const margin = 10;
-const effectiveSize = GRID_SIZE - (margin * 2); // 100 - 20 = 80
-const testX = Math.floor(Math.random() * effectiveSize) + margin;
-const testY = Math.floor(Math.random() * effectiveSize) + margin;
+            const margin = 10;
+            const effectiveSize = 100 - (margin * 2);
+            const testX = Math.floor(Math.random() * effectiveSize) + margin;
+            const testY = Math.floor(Math.random() * effectiveSize) + margin;
 
-// 2. 가구 충돌 체크 범위 수정 (좌표가 0~100이 되었으므로 범위도 넓혀야 함)
-const isBlocked = playerRoom.furniture.some(f => {
-    const itemData = furnitureItems.find(i => i.id === f.id);
-    if (!itemData || itemData.type === 'wall' || itemData.type === 'rug') return false;
-    
-    // 가구 중심점(f.x, f.y)과 목표 지점(testX, testY)의 거리를 계산
-    // 거리가 6 이내면 부딪힌 것으로 간주 (가구 크기에 따라 조절 가능)
-    const dist = Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2));
-    return dist < 6; 
-});
-           
+            const isBlocked = playerRoom.furniture.some(f => {
+                const itemData = furnitureItems.find(i => i.id === f.id);
+                if (!itemData || itemData.type === 'wall' || itemData.type === 'rug' || itemData.type === 'floor') return false;
+                const dist = Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2));
+                return dist < 8; // 충돌 범위를 살짝 넓혔습니다.
+            });
 
-            // 빈 자리라면? -> 여기로 결정하고 반복 종료!
             if (!isBlocked) {
                 finalTarget = { x: testX, y: testY };
                 break;
             }
-            
-            // 막힌 자리라면? -> 일단 후보지로 저장해두고 다시 시도 (정 갈 데 없으면 여기라도 가야 하니까)
-            if (!finalTarget) {
-                finalTarget = { x: testX, y: testY };
-            }
-
             attempts++;
         }
 
-        // (안전장치) 혹시라도 타겟이 없으면 현재 위치 유지
         if (!finalTarget) return;
 
-        // --- 이동 실행 ---
         const iso = getIsoPos(finalTarget.x, finalTarget.y);
-        
-        const currentLeft = parseFloat(element.style.left) || iso.left;
         const img = element.querySelector('img');
-        
+        const currentLeft = parseFloat(element.style.left) || iso.left;
+
+        // 좌우 반전 처리
         if (iso.left < currentLeft) {
             img.style.transform = 'scaleX(1)'; 
             element.dataset.facing = 'left';
@@ -3933,18 +3917,39 @@ const isBlocked = playerRoom.furniture.some(f => {
             element.dataset.facing = 'right';
         }
 
+        // 목적지 좌표 설정 (CSS transition 2000ms 작동)
         element.style.left = `${iso.left}%`;
         element.style.top = `${iso.top}%`;
-        
-        // 가구보다 살짝 앞에 서기
-        element.style.zIndex = iso.zIndex + 5;
-        
+
+        // ✨ [핵심] 실시간 레이어(zIndex) 업데이트 시작
+        const startTime = Date.now();
+        const duration = 2000; // 캐릭터 이동 시간과 동일하게 설정
+
+        const updateZIndex = () => {
+            const elapsed = Date.now() - startTime;
+            
+            // 현재 엘리먼트의 실시간 위치(top)를 가져와서 zIndex를 재계산
+            // 캐릭터의 발 위치가 기준이 되도록 offset을 활용합니다.
+            const currentTop = element.offsetTop;
+            const parentHeight = element.parentElement.offsetHeight;
+            const topPercent = (currentTop / parentHeight) * 100;
+            
+            // Y좌표(top)가 클수록(아래쪽에 있을수록) zIndex를 높게 줍니다.
+            // 100을 곱하는 이유는 소수점 차이를 정수 단계로 만들기 위함입니다.
+            element.style.zIndex = Math.floor(topPercent * 100);
+
+            if (elapsed < duration) {
+                requestAnimationFrame(updateZIndex);
+            }
+        };
+
+        requestAnimationFrame(updateZIndex);
+
         element.dataset.gridX = finalTarget.x;
         element.dataset.gridY = finalTarget.y;
     };
 
-    // 2.5초 ~ 4.5초 간격으로 이동 (너무 정신없지 않게)
-    const interval = setInterval(move, Math.random() * 2000 + 2500);
+    const interval = setInterval(move, Math.random() * 2000 + 3000);
     element.dataset.moveInterval = interval;
 }
 
