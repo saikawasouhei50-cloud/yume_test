@@ -3618,7 +3618,7 @@ function displayMyRoom() {
     // ⭐ [수정] 크기 조절: % 대신 px를 넣어보세요.
     // 100%로 해도 안된다면 아래처럼 150px 정도로 넣어보세요.
     // ==========================================
-    el.style.width = '150px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
+    el.style.width = '50px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
     el.style.height = 'auto'; 
 
     const img = document.createElement('img');
@@ -3630,23 +3630,55 @@ function displayMyRoom() {
     
     el.appendChild(img);
 
-        // 말풍선 등 나머지 캐릭터 로직...
         const bubble = document.createElement('div');
-        bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
-        bubble.innerText = charData.dialogues[0];
-        el.appendChild(bubble);
+    bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
+    bubble.innerText = charData.dialogues[0];
+    el.appendChild(bubble);
 
-        el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const randomDialogue = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
-            bubble.innerText = randomDialogue;
-            bubble.style.opacity = 1;
-            setTimeout(() => bubble.style.opacity = 0, 3000);
-        });
+    // ==========================================
+    // ⭐ [추가] 자동 대사 출력 로직
+    // ==========================================
+    
+    // 1. 생성 직후 한 번 보여주기 (선택 사항)
+    setTimeout(() => {
+        bubble.style.opacity = 1;
+        setTimeout(() => bubble.style.opacity = 0, 3000); // 3초 뒤 다시 숨김
+    }, 1000 + (index * 500)); // 캐릭터마다 순차적으로 나타나게 지연 시간 조절
 
-        roomLayer.appendChild(el);
-        startChibiMovement(el);
+    // 2. 일정한 시간(예: 10~20초)마다 무작위로 혼잣말하기
+    const startRandomTalk = () => {
+        const nextTalkTime = Math.random() * 10000 + 10000; // 10초 ~ 20초 사이 무작위
+        setTimeout(() => {
+            // 배치 모드가 아닐 때만 대사 출력
+            if (typeof isEditMode === 'undefined' || !isEditMode) {
+                const randomDialogue = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
+                bubble.innerText = randomDialogue;
+                bubble.style.opacity = 1;
+                setTimeout(() => {
+                    bubble.style.opacity = 0;
+                    startRandomTalk(); // 대사가 사라진 후 다음 대사 예약
+                }, 3000);
+            } else {
+                startRandomTalk(); // 배치 모드라면 그냥 다음 기회로 넘김
+            }
+        }, nextTalkTime);
+    };
+    
+    startRandomTalk(); // 혼잣말 루프 시작
+    // ==========================================
+
+    // 기존 클릭 이벤트는 그대로 유지 (클릭 시 즉시 대사 확인용)
+    el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const randomDialogue = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
+        bubble.innerText = randomDialogue;
+        bubble.style.opacity = 1;
+        setTimeout(() => bubble.style.opacity = 0, 3000);
     });
+
+    roomLayer.appendChild(el);
+    startChibiMovement(el);
+});
     
     initInteractionSystem();
 }
