@@ -3454,7 +3454,7 @@ function getIsoPos(gridX, gridY) {
     const screenX = centerX + (gridX - gridY) * widthFactor;
     const screenY = centerY + (gridX + gridY) * heightFactor;
     
-    // ✨ 수정: 정밀도를 높이기 위해 100을 곱한 정수값을 사용합니다.
+    // ✨ 수정: 100을 곱해 정수 범위를 넓혀 정밀한 레이어링이 가능하게 합니다.
     const zIndex = Math.floor((gridX + gridY) * 100);
     
     return { left: screenX, top: screenY, zIndex: zIndex };
@@ -3502,9 +3502,9 @@ function displayMyRoom() {
     const isEdit = (typeof isEditMode !== 'undefined' && isEditMode);
 
     renderList.forEach(({ item, originalIndex }) => {
-        const furnitureData = furnitureItems.find(f => f.id === item.id);
-        if (furnitureData) {
-            const container = document.createElement('div');
+    const furnitureData = furnitureItems.find(f => f.id === item.id);
+    if (furnitureData) {
+        const container = document.createElement('div');
             container.className = `placed-furniture absolute pointer-events-none transition-all duration-200`;
             container.dataset.key = originalIndex; // ✨ 원본 데이터의 인덱스를 저장
             
@@ -3512,11 +3512,18 @@ function displayMyRoom() {
             container.style.left = `${iso.left}%`;
             container.style.top = `${iso.top}%`;
 
-            let zOffset = 0;
-if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -20000; // 바닥은 무조건 뒤
-else if (furnitureData.type === 'wall') zOffset = -10000; // 벽도 캐릭터보다 뒤
-else if (furnitureData.type === 'prop') zOffset = 10; // 소품은 가구보다 아주 살짝 위
-else zOffset = 0; // 일반 가구
+           let zOffset = 0;
+        if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
+            zOffset = -20000; // 바닥과 카페트는 항상 최하단
+        } else if (furnitureData.type === 'wall') {
+            zOffset = -10000; // 벽은 가구/캐릭터보다 항상 뒤
+        } else if (furnitureData.type === 'prop') {
+            zOffset = 10;     // 소품은 가구보다 아주 살짝만 위 (캐릭터와는 위치 경쟁)
+        } else {
+            zOffset = 0;      // 일반 가구
+        }
+
+        container.style.zIndex = iso.zIndex + zOffset;
 
 container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
@@ -3946,9 +3953,8 @@ const isBlocked = playerRoom.furniture.some(f => {
     const parentHeight = element.parentElement.offsetHeight;
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
-    // ✨ 중요: 가구 배치 공식(getIsoPos)의 역산을 사용하여 실시간 zIndex를 계산합니다.
-    // (currentTopPercent - 45) / 0.24 가 gridX + gridY 값입니다.
-    // 여기에 100을 곱해 가구와 단위를 맞추고, 캐릭터가 동점일 때만 앞에 보이게 +1을 더합니다.
+    // ✨ 중요: getIsoPos의 역산을 사용하여 gridX + gridY 값을 추출한 뒤 100을 곱합니다.
+    // 캐릭터는 가구와 동점일 때 살짝 앞에 보이도록 +1을 더해줍니다.
     const logicalY = (currentTopPercent - 45) / 0.24;
     element.style.zIndex = Math.floor(logicalY * 100) + 1;
 
@@ -4044,6 +4050,15 @@ function initDragEvents() {
         }
 
        const newIso = getIsoPos(gridPos.x, gridPos.y);
+const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
+
+let zOffset = 0;
+if (furnitureData.type === 'floor' || furnitureData.type === 'rug') zOffset = -20000;
+else if (furnitureData.type === 'wall') zOffset = -10000;
+else if (furnitureData.type === 'prop') zOffset = 10;
+else zOffset = 0;
+
+draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
 
 // 가구 데이터 가져오기
 const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
