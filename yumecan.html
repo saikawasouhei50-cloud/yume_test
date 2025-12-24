@@ -3513,17 +3513,12 @@ function displayMyRoom() {
             container.style.top = `${iso.top}%`;
 
            let zOffset = 0;
-        if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
-            zOffset = -20000; // 바닥과 카페트는 항상 최하단
-        } else if (furnitureData.type === 'wall') {
-            zOffset = -10000; // 벽은 가구/캐릭터보다 항상 뒤
-        } else if (furnitureData.type === 'prop') {
-            zOffset = 10;     // 소품은 가구보다 아주 살짝만 위 (캐릭터와는 위치 경쟁)
-        } else {
-            zOffset = 0;      // 일반 가구
-        }
+if (furnitureData.type === 'floor' || furnitureData.type === 'rug') zOffset = -10000;
+else if (furnitureData.type === 'wall') zOffset = -5000;
+else if (furnitureData.type === 'prop') zOffset = 10; // 캐릭터(+5)보다 소품이 더 앞에 오게 하려면 10
+else zOffset = 0; // 일반 가구
 
-        container.style.zIndex = iso.zIndex + zOffset;
+container.style.zIndex = iso.zIndex + zOffset;
 
 
 
@@ -3953,10 +3948,11 @@ const isBlocked = playerRoom.furniture.some(f => {
     const parentHeight = element.parentElement.offsetHeight;
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
-    // ✨ 중요: getIsoPos의 역산을 사용하여 gridX + gridY 값을 추출한 뒤 100을 곱합니다.
-    // 캐릭터는 가구와 동점일 때 살짝 앞에 보이도록 +1을 더해줍니다.
-    const logicalY = (currentTopPercent - 45) / 0.24;
-    element.style.zIndex = Math.floor(logicalY * 100) + 5;
+    // ✨ 중요: 가구 배치 공식(screenY = 45 + (gridX + gridY) * 0.24)을 역산합니다.
+    const gridSum = (currentTopPercent - 45) / 0.24;
+    
+    // 가구와 같은 단위를 사용하고, 캐릭터가 가구와 같은 줄에 있을 때 살짝 앞에 보이게 +5만 더합니다.
+    element.style.zIndex = Math.floor(gridSum * 100) + 5;
 
     if (elapsed < duration) {
         requestAnimationFrame(updateZIndexRealtime);
@@ -4050,21 +4046,16 @@ function initDragEvents() {
         }
 
         const newIso = getIsoPos(gridPos.x, gridPos.y);
+const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
 
-        // ✨ 1. 가구 데이터 가져오기 (중복 선언 주의!)
-        const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
+let zOffset = 0;
+if (furnitureData.type === 'floor' || furnitureData.type === 'rug') zOffset = -10000;
+else if (furnitureData.type === 'wall') zOffset = -5000;
+else if (furnitureData.type === 'prop') zOffset = 10;
+else zOffset = 0;
 
-        // ✨ 2. 레이어 오프셋 계산 (여기서 let zOffset은 딱 한 번만 나와야 합니다)
-        let zOffset = 0;
-        if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
-            zOffset = -20000; 
-        } else if (furnitureData.type === 'wall') {
-            zOffset = -10000; 
-        } else if (furnitureData.type === 'prop') {
-            zOffset = 10;     
-        } else {
-            zOffset = 0;      
-        }
+// ✨ newIso.zIndex는 이미 getIsoPos에서 100이 곱해져서 나옵니다.
+draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
 
         // ✨ 3. 최종 zIndex 및 위치 적용
         draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
