@@ -3528,14 +3528,17 @@ function displayMyRoom() {
             img.src = furnitureData.imageUrl;
             // 이미지는 클릭을 무시하고 뒤의 컨테이너가 클릭을 받게 함
             img.className = 'w-full h-auto object-contain pointer-events-none'; 
+			
+			
             
             // ⭐ [크기 설정] 시트 데이터 정직하게 반영
-            let visualWidthStr = "auto";
-            if (furnitureData.width) {
-                visualWidthStr = typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width;
-            } else if (furnitureData.scale) {
-                visualWidthStr = `${furnitureData.scale * 12}%`;
-            }
+            let visualWidthStr = furnitureData.width ? 
+            (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
+            `${(furnitureData.scale || 1) * 20}%`;
+
+        // ⭐ [핵심] 가로/세로 히트박스 비율 설정
+        const hRatio = 0.6; // 가로 60%
+        const vRatio = 0.4; // 세로 40% (더 납작하게 줄임)
 
             // ⭐ [히트박스] 컨테이너 너비는 시각적 크기의 60%로 좁게 설정
             container.style.width = `calc(${visualWidthStr} * 0.6)`;
