@@ -3591,7 +3591,9 @@ function displayMyRoom() {
             roomLayer.appendChild(container);
         }
     });
-
+if (!isEdit) renderChibiCharacters(roomLayer);
+    if (typeof initInteractionSystem === 'function') initInteractionSystem();
+}
     // --- (2) 캐릭터 렌더링 시작 (동일) ---
     let activeCharacters = [];
     if (playerRoom.characters && playerRoom.characters.length > 0) {
@@ -10741,6 +10743,7 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
+
 
 
 
