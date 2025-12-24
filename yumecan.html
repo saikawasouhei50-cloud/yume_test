@@ -3496,24 +3496,22 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (floor/rug -> wall -> furniture -> prop)
+    // 1. 레이어 우선순위 정렬 (floor -> rug -> wall -> furniture -> prop)
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
         const priority = { 'floor': 1, 'rug': 1, 'wall': 2, 'furniture': 3, 'prop': 4 };
-        const priorityA = dataA ? priority[dataA.type] || 0 : 0;
-        const priorityB = dataB ? priority[dataB.type] || 0 : 0;
-        return priorityA - priorityB;
+        return (priority[dataA?.type] || 0) - (priority[dataB?.type] || 0);
     });
 
-    // --- [가구 및 소품 렌더링 영역] ---
+    // --- (1) 가구 렌더링 시작 ---
     sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
             const el = document.createElement('img');
             el.src = furnitureData.imageUrl;
             
-            // 배치 모드 여부에 따른 커서 스타일
+            // 배치 모드 여부에 따라 커서 변경
             const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
             el.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
             
@@ -3521,21 +3519,13 @@ function displayMyRoom() {
             el.style.left = `${iso.left}%`;
             el.style.top = `${iso.top}%`;
             
-            // 2. 시트 데이터 크기 반영 (임의 배수 제거)
-            if (furnitureData.width) {
-                // 숫자인 경우 px, 문자열(예: '50%')인 경우 그대로 적용
-                el.style.width = typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width;
-            } else if (furnitureData.scale) {
-                // scale 값이 1이면 100%, 0.5면 50%로 적용
-                el.style.width = `${furnitureData.scale * 100}%`;
-            } else {
-                el.style.width = 'auto'; // 지정된 값 없으면 이미지 원본 크기
-            }
-
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            const baseScale = furnitureData.scale || 1; 
+            el.style.width = `${baseScale * 10}%`; 
+
             let zOffset = 0;
 
-            // 타입별 위치(translate) 및 그림자(filter) 설정
+            // 가구 타입별 transform 및 그림자 설정
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                 el.style.transform = `translate(-50%, -50%) ${flipTransform}`;
                 zOffset = -100; 
@@ -3545,22 +3535,20 @@ function displayMyRoom() {
                 zOffset = -50; 
             } 
             else {
-                // 일반 가구 및 소품
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-                
-                // 시트 데이터 처리를 위한 그림자 추가
+                // 일반 가구 및 소품에 그림자(shadow) 추가
                 if (furnitureData.type === 'prop') {
-                    el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.3))'; 
+                    el.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
                     zOffset = 10; 
                 } else {
-                    el.style.filter = 'drop-shadow(0px 5px 5px rgba(0,0,0,0.4))'; 
+                    el.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
                     zOffset = 0; 
                 }
             }
 
             el.style.zIndex = (iso.zIndex || 0) + zOffset; 
 
-            // 3. 더블클릭 좌우 반전 이벤트
+            // 가구 더블클릭 이벤트 (좌우 반전)
             el.addEventListener('dblclick', (e) => {
                 if (typeof isEditMode !== 'undefined' && !isEditMode) return;
                 e.stopPropagation();
@@ -3568,7 +3556,7 @@ function displayMyRoom() {
                 // 데이터 값 변경
                 item.isFlipped = !item.isFlipped;
 
-                // 스타일 즉시 업데이트 (전체 리렌더링 방지로 배치모드 유지)
+                // DOM 요소 직접 수정 (전체 리렌더링 방지하여 배치 모드 및 캐릭터 상태 유지)
                 const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
                 if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                     el.style.transform = `translate(-50%, -50%) ${currentFlip}`;
@@ -3583,12 +3571,15 @@ function displayMyRoom() {
         }
     });
 
-    // 4. 배치 모드일 때는 캐릭터 렌더링을 하지 않고 종료
+    // ==========================================
+    // ⭐ 핵심 수정: 배치 모드일 때는 캐릭터 렌더링을 하지 않음
+    // ==========================================
     if (typeof isEditMode !== 'undefined' && isEditMode) {
-        return; 
+        console.log("배치 모드 활성화: 캐릭터 렌더링을 생략합니다.");
+        return; // 가구 배치 중에는 여기서 함수 종료
     }
 
-    // --- [캐릭터 렌더링 영역 (배치 모드 아닐 때만 실행)] ---
+    // --- (2) 캐릭터 렌더링 시작 (배치 모드가 아닐 때만 실행됨) ---
     let activeCharacters = [];
 
     if (playerRoom.characters && playerRoom.characters.length > 0) {
@@ -3612,7 +3603,6 @@ function displayMyRoom() {
         const el = document.createElement('div');
         el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
         el.id = `chibi-${index}`;
-        el.dataset.charName = charData.name;
         
         const gridX = Math.random() * 90;
         const gridY = Math.random() * 90;
@@ -3622,7 +3612,6 @@ function displayMyRoom() {
         el.style.top = `${iso.top}%`;
         el.style.transform = 'translate(-50%, -90%)'; 
         el.style.width = `${TILE_WIDTH_PERCENT * 1.3}%`; 
-        el.style.height = 'auto'; 
         el.style.zIndex = iso.zIndex + 50;
 
         const img = document.createElement('img');
@@ -3630,26 +3619,11 @@ function displayMyRoom() {
         img.className = 'w-full h-full object-contain drop-shadow-lg';
         el.appendChild(img);
 
+        // 말풍선 등 나머지 캐릭터 로직...
         const bubble = document.createElement('div');
         bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
         bubble.innerText = charData.dialogues[0];
         el.appendChild(bubble);
-
-        // 하트 버튼 (방문 시)
-        if (typeof currentVisitTargetUid !== 'undefined' && currentVisitTargetUid && !hasDoneFavorToday) {
-            const heartBtn = document.createElement('div');
-            heartBtn.className = 'absolute -top-14 left-1/2 -translate-x-1/2 cursor-pointer z-50';
-            heartBtn.innerHTML = `
-                <div class="bg-white/90 border-2 border-pink-400 rounded-full p-2 shadow-lg hover:scale-110 transition-transform">
-                    <span class="text-xl">💖</span>
-                </div>
-            `;
-            heartBtn.onclick = (e) => {
-                e.stopPropagation(); 
-                sendFavorToFriend(currentVisitTargetUid, card.name, heartBtn);
-            };
-            el.appendChild(heartBtn);
-        }
 
         el.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -3660,12 +3634,6 @@ function displayMyRoom() {
         });
 
         roomLayer.appendChild(el);
-        
-        if (!el.dataset.gridX) {
-             el.dataset.gridX = gridX;
-             el.dataset.gridY = gridY;
-        }
-        
         startChibiMovement(el);
     });
     
