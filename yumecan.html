@@ -3496,7 +3496,6 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // (1) 가구 렌더링 (기존과 동일)
     playerRoom.furniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
@@ -3513,31 +3512,37 @@ function displayMyRoom() {
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
             let zOffset = 0;
 
-            if (furnitureData.type === 'rug') {
+            // 1. 바닥재 처리 (rug와 floor 통합)
+            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
                 el.style.transform = `translate(-50%, -50%) rotate(45deg) scaleY(0.58) ${flipTransform}`;
-                el.style.width = `${furnitureData.size.w * 7}%`; 
+                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1; // 안전장치
+                el.style.width = `${sizeW * 7}%`; 
                 el.style.opacity = '0.95';
                 zOffset = -100; 
-            } else if (furnitureData.type === 'wall') {
+            } 
+            // 2. 벽 가구 처리
+            else if (furnitureData.type === 'wall') {
                 el.style.transform = `translate(-50%, -200%) ${flipTransform}`;
-                el.style.width = `${furnitureData.size.w * 10}%`; 
+                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
+                el.style.width = `${sizeW * 10}%`; 
                 zOffset = -50; 
-			} else if (furnitureData.type === 'prop') {
-                // ✨ [소품 추가] 일반 가구보다 살짝 앞에 배치 (zOffset 사용)
+            } 
+            // 3. 일반 가구 및 소품(prop) 처리 (공통 로직 통합)
+            else {
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
                 let baseWidth = 12; 
                 if (furnitureData.scale) baseWidth = baseWidth * furnitureData.scale;
                 el.style.width = `${baseWidth}%`; 
-                el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))'; 
-                zOffset = 10; // 일반 가구(0)보다 10만큼 더 앞으로 나옴
-            } else {
-                el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-                let baseWidth = 12; 
-                if (furnitureData.scale) baseWidth = baseWidth * furnitureData.scale;
-                el.style.width = `${baseWidth}%`; 
-                el.style.filter = 'drop-shadow(0px 5px 5px rgba(0,0,0,0.5))'; 
-                zOffset = 0; 
+
+                if (furnitureData.type === 'prop') {
+                    el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))'; 
+                    zOffset = 10; 
+                } else {
+                    el.style.filter = 'drop-shadow(0px 5px 5px rgba(0,0,0,0.5))'; 
+                    zOffset = 0; 
+                }
             }
+
             el.style.zIndex = iso.zIndex + zOffset; 
             roomLayer.appendChild(el);
         }
