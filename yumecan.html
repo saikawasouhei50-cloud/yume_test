@@ -3597,27 +3597,38 @@ function displayMyRoom() {
     }
 
     activeCharacters.forEach((card, index) => {
-        const charData = findCharacter(card.name);
-        if (!charData) return;
+    const charData = findCharacter(card.name);
+    if (!charData) return;
 
-        const el = document.createElement('div');
-        el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
-        el.id = `chibi-${index}`;
-        
-        const gridX = Math.random() * 90;
-        const gridY = Math.random() * 90;
-        const iso = getIsoPos(gridX, gridY);
+    const el = document.createElement('div');
+    // 'h-full'을 이미지에서 제어하기 위해 div의 설정을 변경합니다.
+    el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
+    el.id = `chibi-${index}`;
+    
+    const gridX = Math.random() * 90;
+    const gridY = Math.random() * 90;
+    const iso = getIsoPos(gridX, gridY);
 
-        el.style.left = `${iso.left}%`;
-        el.style.top = `${iso.top}%`;
-        el.style.transform = 'translate(-50%, -90%)'; 
-        el.style.width = `100%`;
-        el.style.zIndex = iso.zIndex + 50;
+    el.style.left = `${iso.left}%`;
+    el.style.top = `${iso.top}%`;
+    el.style.transform = 'translate(-50%, -90%)'; 
+    el.style.zIndex = iso.zIndex + 50;
 
-        const img = document.createElement('img');
-        img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
-        img.className = 'w-full h-full object-contain drop-shadow-lg';
-        el.appendChild(img);
+    // ==========================================
+    // ⭐ [수정] 크기 조절: % 대신 px를 넣어보세요.
+    // 100%로 해도 안된다면 아래처럼 150px 정도로 넣어보세요.
+    // ==========================================
+    el.style.width = '150px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
+    el.style.height = 'auto'; 
+
+    const img = document.createElement('img');
+    img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
+    
+    // ⭐ [수정] h-full을 빼고 w-full만 남깁니다. max-width 제한도 해제합니다.
+    img.className = 'w-full h-auto object-contain drop-shadow-lg';
+    img.style.maxWidth = 'none'; // CSS에서 걸려있을지 모르는 제한을 해제
+    
+    el.appendChild(img);
 
         // 말풍선 등 나머지 캐릭터 로직...
         const bubble = document.createElement('div');
