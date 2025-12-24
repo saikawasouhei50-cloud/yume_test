@@ -3567,25 +3567,22 @@ function displayMyRoom() {
                 hitbox.style.border = '2px dashed #fbbf24';
                 hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
                 hitbox.style.borderRadius = '50%';
+                
+                // ✨ 더블클릭 반전 로직 (중복 제거 및 괄호 수정)
+                hitbox.addEventListener('dblclick', (e) => {
+                    e.stopPropagation(); // 이벤트 전파 방지
+                    
+                    // 1. 데이터 값 반전
+                    item.isFlipped = !item.isFlipped;
+                    
+                    // 2. CSS 즉시 적용 (위에 정의된 getTransformStr 함수 활용)
+                    img.style.transform = getTransformStr(item.isFlipped);
+                    
+                    // 3. 저장
+                    if (typeof saveGame === 'function') saveGame();
+                    console.log("가구 반전 상태:", item.isFlipped);
+                });
             }
-            
-            // ✨ 더블클릭 반전 로직 개선
-            hitbox.addEventListener('dblclick', (e) => {
-                if (isEdit) {
-    hitbox.ondblclick = (e) => {
-        e.stopPropagation();
-        // 1. 데이터 값 반전
-        item.isFlipped = !item.isFlipped;
-        
-        // 2. CSS 즉시 적용 (가구 타입별 위치 보정 포함)
-        const flip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-        const offset = (furnitureData.type === 'wall') ? '-100%' : '-95%';
-        img.style.transform = `translate(-50%, ${offset}) ${flip}`;
-        
-        // 3. 저장
-        saveGame();
-    };
-}
 
             container.appendChild(hitbox);
             roomLayer.appendChild(container);
