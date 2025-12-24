@@ -3521,7 +3521,7 @@ function displayMyRoom() {
             
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
             const baseScale = furnitureData.scale || 1; 
-            el.style.width = `${baseScale * 10}%`;
+            el.style.width = `${baseScale * 30}%`;
 
             let zOffset = 0;
 
@@ -3618,7 +3618,7 @@ function displayMyRoom() {
     // ⭐ [수정] 크기 조절: % 대신 px를 넣어보세요.
     // 100%로 해도 안된다면 아래처럼 150px 정도로 넣어보세요.
     // ==========================================
-    el.style.width = '50px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
+    el.style.width = '100px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
     el.style.height = 'auto'; 
 
     const img = document.createElement('img');
