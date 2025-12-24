@@ -3571,21 +3571,21 @@ function displayMyRoom() {
             
             // ✨ 더블클릭 반전 로직 개선
             hitbox.addEventListener('dblclick', (e) => {
-                if (!isEdit) return;
-                e.stopPropagation();
-                
-                // 1. 데이터 변경
-                item.isFlipped = !item.isFlipped;
-                
-                // 2. 이미지 즉시 업데이트 (리렌더링 없이 즉각 반응)
-                img.style.transform = getTransformStr(item.isFlipped);
-                
-                // 3. 효과음이나 진동 등 추가 피드백 (선택 사항)
-                console.log(`${furnitureData.name} 반전됨: ${item.isFlipped}`);
-                
-                // 4. 게임 저장
-                if (typeof saveGame === 'function') saveGame();
-            });
+                if (isEdit) {
+    hitbox.ondblclick = (e) => {
+        e.stopPropagation();
+        // 1. 데이터 값 반전
+        item.isFlipped = !item.isFlipped;
+        
+        // 2. CSS 즉시 적용 (가구 타입별 위치 보정 포함)
+        const flip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+        const offset = (furnitureData.type === 'wall') ? '-100%' : '-95%';
+        img.style.transform = `translate(-50%, ${offset}) ${flip}`;
+        
+        // 3. 저장
+        saveGame();
+    };
+}
 
             container.appendChild(hitbox);
             roomLayer.appendChild(container);
