@@ -3563,15 +3563,24 @@ function displayMyRoom() {
             container.style.zIndex = baseZ + (iso.zIndex || 0);
 
             // 타입별 위치 및 효과
-            if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
-                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-            } else if (furnitureData.type === 'wall') {
-                container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-            } else {
-                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-                img.style.filter = furnitureData.type === 'prop' ? 
-                    'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))' : 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-            }
+           if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
+    el.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+    zOffset = -1000; // ✨ 수정: 바닥/카페트는 그리드 위치와 상관없이 항상 최하단으로 보냅니다.
+} 
+else if (furnitureData.type === 'wall') {
+    el.style.transform = `translate(-50%, -100%) ${flipTransform}`;
+    zOffset = -500; // ✨ 수정: 벽은 바닥보다는 위, 가구보다는 아래에 위치시킵니다.
+} 
+else {
+    el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
+    if (furnitureData.type === 'prop') {
+        el.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
+        zOffset = 500; // ✨ 수정: 소품(prop)은 가구(0)나 바닥(-1000)보다 항상 위에 오도록 큰 값을 부여합니다.
+    } else {
+        el.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+        zOffset = 0; // 일반 가구(furniture)의 기본값
+    }
+}
 
             // 더블클릭 반전
             container.addEventListener('dblclick', (e) => {
