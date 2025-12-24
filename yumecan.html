@@ -3529,7 +3529,7 @@ sortedFurniture.forEach((item, index) => {
         // ⭐ [크기 설정] 시트 데이터 너비 계산 (기존 수치 20% 유지)
         let visualWidthStr = furnitureData.width ? 
             (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
-            `${(furnitureData.scale || 1) * 20}%`;
+            `${(furnitureData.scale || 1) * 12}%`;
 
         // ⭐ [히트박스 설정] 가로/세로 비율 (원하는 만큼 줄이세요)
         const hRatio = 0.4; // 가로 40%
