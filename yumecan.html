@@ -3946,37 +3946,29 @@ const isBlocked = playerRoom.furniture.some(f => {
 // ================== ✨ 수정된 initDragEvents (배치 모드) ✨ ==================
 function initDragEvents() {
     const container = document.getElementById('room-container');
-    let dragOccurred = false;
 
     const handleStart = (e) => {
         if (!isEditMode) return;
-        
         let target = e.target;
+        
         if (e.type === 'touchstart') {
             const touch = e.touches[0];
             target = document.elementFromPoint(touch.clientX, touch.clientY);
         }
 
+        // 히트박스를 클릭했을 때 부모 컨테이너(placed-furniture)를 찾음
         const furnitureElement = target.closest('.placed-furniture');
-        const isHitbox = target.classList.contains('furniture-hitbox');
 
-        if (furnitureElement && isHitbox) {
-            // ✨ dblclick을 허용하기 위해 mousedown에서는 preventDefault를 신중하게 사용하거나 생략합니다.
-            // 대신 터치 환경에서만 스크롤 방지를 위해 사용합니다.
-            if (e.type === 'touchstart' && e.cancelable) e.preventDefault();
-            
-            draggedFurniture = furnitureElement;
-            draggedFurniture.style.zIndex = 9999; // 드래그 중엔 최상단
+        if (furnitureElement) {
+            if (e.cancelable) e.preventDefault();
+            draggedFurniture = furnitureElement; // 이미지가 포함된 컨테이너 선택
+            draggedFurniture.style.zIndex = 9999;
             draggedFurniture.style.transition = 'none';
-            dragOccurred = false; 
         }
     };
 
     const handleMove = (e) => {
         if (!isEditMode || !draggedFurniture) return;
-        
-        // 이동이 발생하면 드래그 중임을 표시
-        dragOccurred = true;
         if (e.cancelable) e.preventDefault();
 
         const containerRect = container.getBoundingClientRect();
@@ -4004,14 +3996,13 @@ function initDragEvents() {
         }
 
         const newIso = getIsoPos(gridPos.x, gridPos.y);
-        
-        // Z-Index 복구 (타입별 가중치 재계산)
+        // z-index 재계산 (타입별 오프셋 유지 필요)
         const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
         let zOffset = 0;
         if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
         else if (furnitureData.type === 'wall') zOffset = -500;
         else if (furnitureData.type === 'prop') zOffset = 500;
-
+        
         draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
         draggedFurniture.style.transition = '';
         draggedFurniture.style.left = `${newIso.left}%`;
@@ -4020,7 +4011,7 @@ function initDragEvents() {
         draggedFurniture = null;
     };
 
-    // 이벤트 리스너 재등록
+    // 이벤트 리스너 등록
     container.addEventListener('mousedown', handleStart);
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
@@ -4028,23 +4019,23 @@ function initDragEvents() {
     window.addEventListener('touchmove', handleMove, { passive: false });
     window.addEventListener('touchend', handleEnd);
 
-    // 우클릭 회수
-    container.oncontextmenu = (e) => {
+    // 우클릭 회수 로직 수정 (부모 컨테이너 기준)
+    container.addEventListener('contextmenu', (e) => {
         if (!isEditMode) return;
         const furnitureElement = e.target.closest('.placed-furniture');
         if (furnitureElement) {
             e.preventDefault();
-            const uniqueKey = furnitureElement.dataset.key;
-            if (uniqueKey !== undefined) {
-                if(confirm('이 가구를 회수하시겠습니까?')) {
+            if(confirm('이 가구를 회수하시겠습니까?')) {
+                const uniqueKey = furnitureElement.dataset.key;
+                if (uniqueKey !== undefined) {
                     playerRoom.furniture.splice(uniqueKey, 1);
                     displayMyRoom();
                     saveGame();
                 }
             }
         }
-    };
-}
+    });
+} // initDragEvents 끝
 
 
 // ================== ✨ [신규] 가구 보관함 기능 시작 ✨ ==================
