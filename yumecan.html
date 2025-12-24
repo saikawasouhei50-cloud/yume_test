@@ -3496,159 +3496,129 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (floor -> rug -> wall -> furniture -> prop)
+    // 1. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
         const priority = { 'floor': 1, 'rug': 1, 'wall': 2, 'furniture': 3, 'prop': 4 };
-        return (priority[dataA?.type] || 0) - (priority[dataB?.type] || 0);
+        const pA = dataA ? priority[dataA.type] || 0 : 0;
+        const pB = dataB ? priority[dataB.type] || 0 : 0;
+        return pA - pB;
     });
 
-    // --- (1) 가구 렌더링 시작 ---
-sortedFurniture.forEach((item, index) => {
-    const furnitureData = furnitureItems.find(f => f.id === item.id);
-    if (furnitureData) {
-        // 1. 히트박스 역할을 할 컨테이너(div) 생성
-        const container = document.createElement('div');
-        const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
-        
-        // 컨테이너 스타일: 위치, 이벤트, 커서 등을 모두 이 div가 담당합니다.
-        container.className = `furniture-hitbox absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
-        
-        const iso = getIsoPos(item.x, item.y);
-        container.style.left = `${iso.left}%`;
-        container.style.top = `${iso.top}%`;
-        container.style.zIndex = (iso.zIndex || 0); // 기본 zIndex 부여
+    // --- (1) 가구 렌더링 시작 (히트박스 방식 적용) ---
+    sortedFurniture.forEach((item, index) => {
+        const furnitureData = furnitureItems.find(f => f.id === item.id);
+        if (furnitureData) {
+            // 히트박스 역할을 할 투명 컨테이너 생성
+            const container = document.createElement('div');
+            const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
+            
+            // 드래그 로직이 이 div를 인식하도록 클래스와 데이터셋 부여
+            container.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
+            container.dataset.id = item.id;
+            container.dataset.key = index;
 
-        // 2. 가구 이미지 생성
-        const img = document.createElement('img');
-        img.src = furnitureData.imageUrl;
-        // ⭐ 중요: 이미지는 클릭을 무시하도록 설정 (히트박스인 div가 클릭을 받음)
-        img.className = 'w-full h-auto object-contain pointer-events-none'; 
-        
-        const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-        const baseScale = furnitureData.scale || 1; 
+            const iso = getIsoPos(item.x, item.y);
+            container.style.left = `${iso.left}%`;
+            container.style.top = `${iso.top}%`;
 
-        // 3. 히트박스 너비 조절 (실제 이미지보다 좁게 설정하여 클릭 간섭 방지)
-        // 여기서는 기본 너비의 60% 정도로 히트박스를 잡습니다.
-        const visualWidth = baseScale * 12; // 원래 보여야 할 너비 (%)
-        const hitboxWidth = visualWidth * 0.6; // 실제 클릭 가능한 너비 (%)
-        
-        container.style.width = `${hitboxWidth}%`;
-        container.style.display = 'flex';
-        container.style.justifyContent = 'center';
-        container.style.alignItems = 'flex-end';
-        container.style.overflow = 'visible'; // 이미지가 히트박스보다 커도 보이게 설정
-
-        // 이미지는 히트박스 안에서 중앙 정렬되고, 원래 크기 비율만큼 커집니다.
-        img.style.width = `${(visualWidth / hitboxWidth) * 100}%`;
-        img.style.flexShrink = '0';
-
-        let zOffset = 0;
-
-        // 4. 가구 타입별 transform 및 zOffset 설정 (컨테이너에 적용)
-        if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-            container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-            zOffset = -100; 
-        } 
-        else if (furnitureData.type === 'wall') {
-            container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-            zOffset = -50; 
-        } 
-        else {
-            container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-            // 그림자 효과는 이미지에 부여
-            if (furnitureData.type === 'prop') {
-                img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
-                zOffset = 10; 
-            } else {
-                img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-                zOffset = 0; 
+            // 실제 이미지 생성
+            const img = document.createElement('img');
+            img.src = furnitureData.imageUrl;
+            // 이미지는 클릭을 무시하고 뒤의 컨테이너가 클릭을 받게 함
+            img.className = 'w-full h-auto object-contain pointer-events-none'; 
+            
+            // ⭐ [크기 설정] 시트 데이터 정직하게 반영
+            let visualWidthStr = "auto";
+            if (furnitureData.width) {
+                visualWidthStr = typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width;
+            } else if (furnitureData.scale) {
+                visualWidthStr = `${furnitureData.scale * 100}%`;
             }
-        }
 
-        container.style.zIndex = (iso.zIndex || 0) + zOffset; 
+            // ⭐ [히트박스] 컨테이너 너비는 시각적 크기의 60%로 좁게 설정
+            container.style.width = `calc(${visualWidthStr} * 0.6)`;
+            container.style.overflow = 'visible'; // 이미지는 튀어나와도 다 보이게
+            container.style.display = 'flex';
+            container.style.justifyContent = 'center';
+            container.style.alignItems = 'flex-end';
 
-        // 5. 가구 더블클릭 이벤트 (컨테이너인 div에 부여)
-        container.addEventListener('dblclick', (e) => {
-            if (typeof isEditMode !== 'undefined' && !isEditMode) return;
-            e.stopPropagation();
+            // 이미지는 컨테이너 중앙에서 원래 크기 비율(1/0.6 = 166%)만큼 커져야 함
+            img.style.width = '166.6%';
+            img.style.flexShrink = '0';
 
-            item.isFlipped = !item.isFlipped;
+            const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            let zOffset = 0;
 
-            const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            // 타입별 transform 및 그림자
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                container.style.transform = `translate(-50%, -50%) ${currentFlip}`;
+                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+                zOffset = -100; 
             } else if (furnitureData.type === 'wall') {
-                container.style.transform = `translate(-50%, -100%) ${currentFlip}`;
+                container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
+                zOffset = -50; 
             } else {
-                container.style.transform = `translate(-50%, -95%) ${currentFlip}`;
+                container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
+                if (furnitureData.type === 'prop') {
+                    img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
+                    zOffset = 10; 
+                } else {
+                    img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+                    zOffset = 0; 
+                }
             }
-        });
+            container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-        container.appendChild(img);
-        roomLayer.appendChild(container);
-    }
-});
+            // 더블클릭 반전 이벤트 (배치 모드 유지)
+            container.addEventListener('dblclick', (e) => {
+                if (typeof isEditMode !== 'undefined' && !isEditMode) return;
+                e.stopPropagation();
+                item.isFlipped = !item.isFlipped;
+                const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+                const baseTrans = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? '-50%, -50%' :
+                                  (furnitureData.type === 'wall') ? '-50%, -100%' : '-50%, -95%';
+                container.style.transform = `translate(${baseTrans}) ${currentFlip}`;
+            });
 
-// 배치 모드 캐릭터 생략 로직 유지
-if (typeof isEditMode !== 'undefined' && isEditMode) {
-    console.log("배치 모드 활성화: 캐릭터 렌더링을 생략합니다.");
-    return;
-}
-
-    // --- (2) 캐릭터 렌더링 시작 (배치 모드가 아닐 때만 실행됨) ---
-    let activeCharacters = [];
-
-    if (playerRoom.characters && playerRoom.characters.length > 0) {
-        if (typeof playerRoom.characters[0] === 'string') {
-            activeCharacters = playerRoom.characters
-                .map(id => playerInventory.find(c => c.id === id))
-                .filter(Boolean);
-        } else {
-            activeCharacters = playerRoom.characters;
+            container.appendChild(img);
+            roomLayer.appendChild(container);
         }
-    }
+    });
 
-    if (activeCharacters.length === 0) {
-        activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
-    }
+    // 배치 모드 시 캐릭터 렌더링 중단
+    if (typeof isEditMode !== 'undefined' && isEditMode) return;
+
+    // --- (2) 캐릭터 렌더링 ---
+    let activeCharacters = playerRoom.characters || [];
+    if (activeCharacters.length === 0) activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
 
     activeCharacters.forEach((card, index) => {
-    const charData = findCharacter(card.name);
-    if (!charData) return;
+        const charData = findCharacter(card.name);
+        if (!charData) return;
 
-    const el = document.createElement('div');
-    // 'h-full'을 이미지에서 제어하기 위해 div의 설정을 변경합니다.
-    el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
-    el.id = `chibi-${index}`;
-    
-    const gridX = Math.random() * 90;
-    const gridY = Math.random() * 90;
-    const iso = getIsoPos(gridX, gridY);
+        const el = document.createElement('div');
+        el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
+        el.id = `chibi-${index}`;
+        el.dataset.charName = charData.name;
+        
+        const gridX = Math.random() * 80 + 10; // 벽에 너무 붙지 않게
+        const gridY = Math.random() * 80 + 10;
+        el.dataset.gridX = gridX;
+        el.dataset.gridY = gridY;
 
-    el.style.left = `${iso.left}%`;
-    el.style.top = `${iso.top}%`;
-    el.style.transform = 'translate(-50%, -90%)'; 
-    el.style.zIndex = iso.zIndex + 50;
+        const iso = getIsoPos(gridX, gridY);
+        el.style.left = `${iso.left}%`;
+        el.style.top = `${iso.top}%`;
+        el.style.transform = 'translate(-50%, -90%)'; 
+        el.style.width = '100px'; // 👈 치비 크기 고정
+        el.style.zIndex = iso.zIndex + 50;
 
-    // ==========================================
-    // ⭐ [수정] 크기 조절: % 대신 px를 넣어보세요.
-    // 100%로 해도 안된다면 아래처럼 150px 정도로 넣어보세요.
-    // ==========================================
-    el.style.width = '100px'; // 👈 여기에 원하는 픽셀 값을 직접 넣어보세요.
-    el.style.height = 'auto'; 
+        const img = document.createElement('img');
+        img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
+        img.className = 'w-full h-auto object-contain drop-shadow-lg';
+        el.appendChild(img);
 
-    const img = document.createElement('img');
-    img.src = (typeof chibiImages !== 'undefined' && chibiImages[charData.name]) ? chibiImages[charData.name] : charData.cardImageUrl;
-    
-    // ⭐ [수정] h-full을 빼고 w-full만 남깁니다. max-width 제한도 해제합니다.
-    img.className = 'w-full h-auto object-contain drop-shadow-lg';
-    img.style.maxWidth = 'none'; // CSS에서 걸려있을지 모르는 제한을 해제
-    
-    el.appendChild(img);
-
-        // 말풍선 등 나머지 캐릭터 로직...
         const bubble = document.createElement('div');
         bubble.className = 'chibi-bubble absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black px-2 py-1 rounded-lg text-xs whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none z-20 border border-gray-300 shadow-sm';
         bubble.innerText = charData.dialogues[0];
@@ -3656,8 +3626,7 @@ if (typeof isEditMode !== 'undefined' && isEditMode) {
 
         el.addEventListener('click', (e) => {
             e.stopPropagation();
-            const randomDialogue = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
-            bubble.innerText = randomDialogue;
+            bubble.innerText = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
             bubble.style.opacity = 1;
             setTimeout(() => bubble.style.opacity = 0, 3000);
         });
