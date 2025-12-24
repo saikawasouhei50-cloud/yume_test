@@ -3496,103 +3496,108 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
+    // 1. 레이어 우선순위 숫자 대폭 강화 (숫자가 클수록 나중에 그려짐)
+    const typePriority = { 
+        'floor': 10, 
+        'rug': 20, 
+        'wall': 30, 
+        'furniture': 40, 
+        'prop': 50 // prop을 가장 높은 숫자로 설정
+    };
+
+    // 2. 우선순위에 따라 배열 정렬 (바닥재가 항상 먼저 DOM에 생성되도록 함)
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
-        const priority = { 'floor': 1, 'rug': 1, 'wall': 2, 'furniture': 3, 'prop': 4 };
-        const pA = dataA ? priority[dataA.type] || 0 : 0;
-        const pB = dataB ? priority[dataB.type] || 0 : 0;
+        const pA = dataA ? typePriority[dataA.type] || 0 : 0;
+        const pB = dataB ? typePriority[dataB.type] || 0 : 0;
         return pA - pB;
     });
 
-    // --- (1) 가구 렌더링 시작 (중앙 히트박스 적용) ---
-sortedFurniture.forEach((item, index) => {
-    const furnitureData = furnitureItems.find(f => f.id === item.id);
-    if (furnitureData) {
-        const container = document.createElement('div');
-        const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
-        
-        container.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
-        container.dataset.id = item.id;
-        container.dataset.key = index;
-
-        const iso = getIsoPos(item.x, item.y);
-        container.style.left = `${iso.left}%`;
-        container.style.top = `${iso.top}%`;
-
-        // 실제 이미지 생성
-        const img = document.createElement('img');
-        img.src = furnitureData.imageUrl;
-        img.className = 'pointer-events-none'; 
-        
-        // ⭐ [크기 설정] 시트 데이터 너비 계산 (기존 수치 20% 유지)
-        let visualWidthStr = furnitureData.width ? 
-            (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
-            `${(furnitureData.scale || 1) * 12}%`;
-
-        // ⭐ [히트박스 설정] 가로/세로 비율 (원하는 만큼 줄이세요)
-        const hRatio = 0.4; // 가로 40%
-        const vRatio = 0.4; // 세로 40%
-
-        // ⭐ [중앙 정렬 레이아웃]
-        container.style.width = `calc(${visualWidthStr} * ${hRatio})`;
-        container.style.height = `calc(${visualWidthStr} * ${vRatio})`; 
-        container.style.overflow = 'visible'; 
-        container.style.display = 'flex';
-        container.style.justifyContent = 'center'; // 가로 중앙
-        container.style.alignItems = 'center';     // ⭐ 세로 중앙 (하단에서 중앙으로 변경)
-
-        // ⭐ [이미지 크기 보존] 컨테이너 크기에 상관없이 이미지는 원래 크기대로
-        img.style.width = `${(1 / hRatio) * 100}%`;
-        img.style.maxWidth = 'none'; 
-        img.style.flexShrink = '0';
-        // 이미지가 컨테이너의 높이 때문에 찌그러지지 않게 설정
-        img.style.height = 'auto'; 
-
-        const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-        let zOffset = 0;
-
-        // 타입별 위치(translate) 설정
-        if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-            container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-            zOffset = -100; 
-        } else if (furnitureData.type === 'wall') {
-            container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-            zOffset = -50; 
-        } else {
-            // 일반 가구 및 소품: 기준점을 중앙에 맞추기 위해 translate 조정 가능
-            container.style.transform = `translate(-50%, -50%) ${flipTransform}`; 
-            zOffset = (furnitureData.type === 'prop') ? 10 : 0;
+    // --- (1) 가구 렌더링 시작 ---
+    sortedFurniture.forEach((item, index) => {
+        const furnitureData = furnitureItems.find(f => f.id === item.id);
+        if (furnitureData) {
+            const container = document.createElement('div');
+            const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
             
-            // 그림자 효과
-            img.style.filter = furnitureData.type === 'prop' ? 
-                'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))' : 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+            container.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
+            container.dataset.id = item.id;
+            container.dataset.key = index;
+
+            const iso = getIsoPos(item.x, item.y);
+            container.style.left = `${iso.left}%`;
+            container.style.top = `${iso.top}%`;
+
+            const img = document.createElement('img');
+            img.src = furnitureData.imageUrl;
+            img.className = 'pointer-events-none'; 
+            
+            // ⭐ 가구 크기 설정 (기존 20%에서 15%로 축소)
+            let visualWidthStr = furnitureData.width ? 
+                (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
+                `${(furnitureData.scale || 1) * 12}%`;
+
+            // 히트박스 비율 및 중앙 정렬
+            const hRatio = 0.4; 
+            const vRatio = 0.4; 
+
+            container.style.width = `calc(${visualWidthStr} * ${hRatio})`;
+            container.style.height = `calc(${visualWidthStr} * ${vRatio})`; 
+            container.style.overflow = 'visible'; 
+            container.style.display = 'flex';
+            container.style.justifyContent = 'center'; 
+            container.style.alignItems = 'center'; // 중앙 정렬
+
+            img.style.width = `${(1 / hRatio) * 100}%`;
+            img.style.maxWidth = 'none'; 
+            img.style.height = 'auto'; 
+            img.style.flexShrink = '0';
+
+            const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            
+            // ⭐ [핵심 수정] zOffset 값을 아주 크게 벌려 레이어를 강제 분리합니다.
+            let zOffset = 0;
+            if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
+                zOffset = -5000; // 바닥은 무조건 최하단
+            } else if (furnitureData.type === 'wall') {
+                zOffset = -1000; // 벽은 바닥보다는 위, 가구보다는 아래
+            } else if (furnitureData.type === 'prop') {
+                zOffset = 2000;  // 소품은 무조건 최상단
+            } else {
+                zOffset = 0;     // 일반 가구
+            }
+
+            // 타입별 위치 보정
+            if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
+                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+            } else if (furnitureData.type === 'wall') {
+                container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
+            } else {
+                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+                img.style.filter = furnitureData.type === 'prop' ? 
+                    'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))' : 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+            }
+            
+            // 최종 zIndex 적용
+            container.style.zIndex = (iso.zIndex || 0) + zOffset;
+
+            // 더블클릭 반전
+            container.addEventListener('dblclick', (e) => {
+                if (typeof isEditMode !== 'undefined' && !isEditMode) return;
+                e.stopPropagation();
+                item.isFlipped = !item.isFlipped;
+                const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+                const transY = (furnitureData.type === 'wall') ? "-100%" : "-50%";
+                container.style.transform = `translate(-50%, ${transY}) ${currentFlip}`;
+            });
+
+            container.appendChild(img);
+            roomLayer.appendChild(container);
         }
-        
-        container.style.zIndex = (iso.zIndex || 0) + zOffset;
+    });
 
-        // 더블클릭 반전 이벤트 (현재 transform 유지하며 flip)
-        container.addEventListener('dblclick', (e) => {
-            if (typeof isEditMode !== 'undefined' && !isEditMode) return;
-            e.stopPropagation();
-            item.isFlipped = !item.isFlipped;
-            const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-            
-            // 타입별 translate 유지 (중앙 배치를 위해 -50%, -50% 사용 권장)
-            const transX = "-50%";
-            const transY = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? "-50%" : 
-                          (furnitureData.type === 'wall') ? "-100%" : "-50%";
-            
-            container.style.transform = `translate(${transX}, ${transY}) ${currentFlip}`;
-        });
-
-        container.appendChild(img);
-        roomLayer.appendChild(container);
-    }
-});
-
-    // 배치 모드 시 캐릭터 렌더링 중단
+    // 배치 모드일 때 캐릭터 생략
     if (typeof isEditMode !== 'undefined' && isEditMode) return;
 
     // --- (2) 캐릭터 렌더링 ---
