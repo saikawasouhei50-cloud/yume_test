@@ -317,7 +317,7 @@ body.pointer-events-none {
     width: 60px;
     height: 60px;
     transition: all 2s linear; /* 부드러운 이동 */
-    z-index: 10;
+    
     cursor: pointer;
 }
 .chibi-character:hover {
@@ -3525,7 +3525,7 @@ function displayMyRoom() {
 
         container.style.zIndex = iso.zIndex + zOffset;
 
-container.style.zIndex = (iso.zIndex || 0) + zOffset;
+
 
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
@@ -3645,7 +3645,7 @@ container.style.zIndex = (iso.zIndex || 0) + zOffset;
     el.style.transform = 'translate(-50%, -90%)'; 
     
     // ✨ [수정] +1000을 제거하여 가구와 레이어 순위를 맞춥니다.
-    el.style.zIndex = Math.floor(iso.zIndex);
+    el.style.zIndex = iso.zIndex + 5;
     
     el.style.width = '100px';
 
@@ -3956,7 +3956,7 @@ const isBlocked = playerRoom.furniture.some(f => {
     // ✨ 중요: getIsoPos의 역산을 사용하여 gridX + gridY 값을 추출한 뒤 100을 곱합니다.
     // 캐릭터는 가구와 동점일 때 살짝 앞에 보이도록 +1을 더해줍니다.
     const logicalY = (currentTopPercent - 45) / 0.24;
-    element.style.zIndex = Math.floor(logicalY * 100) + 1;
+    element.style.zIndex = Math.floor(logicalY * 100) + 5;
 
     if (elapsed < duration) {
         requestAnimationFrame(updateZIndexRealtime);
@@ -4067,7 +4067,7 @@ function initDragEvents() {
         }
 
         // ✨ 3. 최종 zIndex 및 위치 적용
-        draggedFurniture.style.zIndex = Math.floor(newIso.zIndex * 100) + zOffset;
+        draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
         draggedFurniture.style.transition = '';
         draggedFurniture.style.left = `${newIso.left}%`;
         draggedFurniture.style.top = `${newIso.top}%`;
