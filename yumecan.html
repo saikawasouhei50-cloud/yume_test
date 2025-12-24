@@ -3560,30 +3560,34 @@ function displayMyRoom() {
             else hitbox.style.top = '-40px'; 
             
             if (isEdit) {
-                hitbox.style.border = '2px dashed #fbbf24';
-                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
+                // 1. 기본 상태: 완전히 투명하게 설정
+                hitbox.style.border = 'none'; // 테두리 제거
+                hitbox.style.backgroundColor = 'transparent'; // 배경 투명
                 hitbox.style.borderRadius = '50%';
+                hitbox.style.transition = 'background-color 0.2s'; // 부드러운 효과
 
-                // ✨ [해결책] mouseup 이벤트를 사용하여 드래그 방해를 우회하고 수동으로 더블 클릭 감지
+                // 2. 마우스를 올렸을 때(Hover)만 살짝 표시 (선택 사항)
+                // 만약 아예 안 보이게 하고 싶다면 이 부분은 삭제해도 됩니다.
+                hitbox.onmouseenter = () => {
+                    hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.2)'; 
+                    hitbox.style.border = '1px dashed #fbbf24';
+                };
+                hitbox.onmouseleave = () => {
+                    hitbox.style.backgroundColor = 'transparent';
+                    hitbox.style.border = 'none';
+                };
+
+                // 3. 수동 더블클릭 감지 로직 (기존 유지)
                 let lastClick = 0;
                 hitbox.addEventListener('mouseup', (e) => {
                     if (!isEditMode) return;
-                    
                     const now = Date.now();
-                    // 0.35초 이내에 다시 떼었을 때 (더블 클릭)
                     if (now - lastClick < 350) {
                         e.stopPropagation();
-                        
-                        // 데이터 반전
                         item.isFlipped = !item.isFlipped;
-                        // 즉시 시각적 반영
                         img.style.transform = getTransformStr(item.isFlipped);
-                        
-                        // 저장
                         if (typeof saveGame === 'function') saveGame();
-                        console.log("가구 반전 성공!", item.isFlipped);
-                        
-                        lastClick = 0; // 초기화
+                        lastClick = 0;
                     } else {
                         lastClick = now;
                     }
