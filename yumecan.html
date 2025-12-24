@@ -3558,11 +3558,8 @@ function displayMyRoom() {
             // ==========================================
 
             roomLayer.appendChild(el);
-       
-    el.addEventListener('dblclick', () => {
-    if (!isEditMode) return; // 배치 모드가 아니면 무시
-    item.isFlipped = !item.isFlipped;
-    displayMyRoom();
+        }
+
 });
 
 
