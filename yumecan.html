@@ -3644,7 +3644,7 @@ function displayMyRoom() {
     el.style.transform = 'translate(-50%, -90%)'; 
     
     // ✨ [수정] +1000을 제거하여 가구와 레이어 순위를 맞춥니다.
-    el.style.zIndex = iso.zIndex; 
+    el.style.zIndex = Math.floor(iso.zIndex);
     
     el.style.width = '100px';
 
@@ -3928,6 +3928,7 @@ const isBlocked = playerRoom.furniture.some(f => {
         const currentLeft = parseFloat(element.style.left) || iso.left;
         const img = element.querySelector('img');
         
+        // 1. 방향 전환
         if (iso.left < currentLeft) {
             img.style.transform = 'scaleX(1)'; 
             element.dataset.facing = 'left';
@@ -3936,11 +3937,34 @@ const isBlocked = playerRoom.furniture.some(f => {
             element.dataset.facing = 'right';
         }
 
+        // 2. 위치 이동 (CSS transition 시작)
         element.style.left = `${iso.left}%`;
         element.style.top = `${iso.top}%`;
         
-        // 가구보다 살짝 앞에 서기
-        element.style.zIndex = Math.floor((topPercent - 45) / 0.24);
+        // 🔥 3. [핵심] 이동하는 2초 동안 실시간으로 zIndex 업데이트
+        const startTime = Date.now();
+        const duration = 2000; // 캐릭터 이동 시간(2s)과 일치시켜주세요.
+
+        const updateZIndexRealtime = () => {
+            const elapsed = Date.now() - startTime;
+            
+            // 현재 엘리먼트의 실시간 위치(px)를 가져와서 %로 변환
+            const style = window.getComputedStyle(element);
+            const currentTopPx = parseFloat(style.top);
+            const parentHeight = element.parentElement.offsetHeight;
+            const currentTopPercent = (currentTopPx / parentHeight) * 100;
+
+            // 가구와 동일한 공식으로 zIndex 계산 (캐릭터가 살짝 앞에 보이게 +0.1)
+            element.style.zIndex = Math.floor((currentTopPercent - 45) / 0.24) + 0.1;
+
+            // 이동 시간(2초) 동안만 매 프레임 실행
+            if (elapsed < duration) {
+                requestAnimationFrame(updateZIndexRealtime);
+            }
+        };
+
+        // 실시간 업데이트 시작
+        requestAnimationFrame(updateZIndexRealtime);
         
         element.dataset.gridX = finalTarget.x;
         element.dataset.gridY = finalTarget.y;
@@ -4035,12 +4059,17 @@ let zOffset = 0;
 if (furnitureData.type === 'floor') {
     zOffset = -2; // 가장 밑바닥
 } else if (furnitureData.type === 'rug') {
-    zOffset = -1; // 바닥보다는 위, 가구/캐릭터보다는 아래
+    zOffset = -1; // 바닥 위, 가구 아래
+} else if (furnitureData.type === 'wall') {
+    zOffset = -10; // 벽은 모든 가구보다 뒤에 있어야 함
 } else if (furnitureData.type === 'prop') {
-    zOffset = 1;  // 가구 위에 올라가는 소품이므로 캐릭터/가구보다 살짝 위
+    zOffset = 1;  // 가구 위에 올라가는 소품
 } else {
-    zOffset = 0;  // 일반 가구 (캐릭터와 Y좌표로 입체감 대결)
+    zOffset = 0;  // 일반 가구 (캐릭터와 동일 선상)
 }
+
+// 적용
+container.style.zIndex = Math.floor(iso.zIndex + zOffset);
 
 // 최종 zIndex 적용 (미세한 오프셋만 더함)
 draggedFurniture.style.zIndex = newIso.zIndex + zOffset;
