@@ -3880,20 +3880,19 @@ function startChibiMovement(element) {
         if (!myRoomView || myRoomView.classList.contains('hidden')) return;
         if (element.dataset.isInteracting === 'true') return;
 
-        let attempts = 0;
         let finalTarget = null;
+        let attempts = 0;
 
+        // 1. 빈 자리 찾기 (기존 로직 유지)
         while (attempts < 10) {
             const margin = 10;
-            const effectiveSize = 100 - (margin * 2);
-            const testX = Math.floor(Math.random() * effectiveSize) + margin;
-            const testY = Math.floor(Math.random() * effectiveSize) + margin;
+            const testX = Math.floor(Math.random() * (100 - margin * 2)) + margin;
+            const testY = Math.floor(Math.random() * (100 - margin * 2)) + margin;
 
             const isBlocked = playerRoom.furniture.some(f => {
                 const itemData = furnitureItems.find(i => i.id === f.id);
                 if (!itemData || itemData.type === 'wall' || itemData.type === 'rug' || itemData.type === 'floor') return false;
-                const dist = Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2));
-                return dist < 8; // 충돌 범위 살짝 조정
+                return Math.sqrt(Math.pow(f.x - testX, 2) + Math.pow(f.y - testY, 2)) < 7;
             });
 
             if (!isBlocked) {
@@ -3902,54 +3901,41 @@ function startChibiMovement(element) {
             }
             attempts++;
         }
-
         if (!finalTarget) return;
 
         const iso = getIsoPos(finalTarget.x, finalTarget.y);
         const img = element.querySelector('img');
-        const currentLeft = parseFloat(element.style.left) || iso.left;
 
-        if (iso.left < currentLeft) {
-            img.style.transform = 'scaleX(1)'; 
-            element.dataset.facing = 'left';
-        } else {
-            img.style.transform = 'scaleX(-1)'; 
-            element.dataset.facing = 'right';
-        }
+        // 2. 방향 전환 및 이동 시작
+        const currentLeft = parseFloat(element.style.left);
+        img.style.transform = iso.left < currentLeft ? 'scaleX(1)' : 'scaleX(-1)';
 
-        // 목적지 설정 (CSS transition 2000ms 작동 시작)
         element.style.left = `${iso.left}%`;
         element.style.top = `${iso.top}%`;
 
-        // ✨ [핵심 수정] 실시간 zIndex 동기화 루프
+        // 🔥 [중요] 실시간 zIndex 업데이트 (이동 시간 2000ms 동안 실행)
         const startTime = Date.now();
-        const duration = 2000; // 캐릭터 이동 시간과 일치시킴
-
-        const updateZIndexDuringMove = () => {
+        const updateZ = () => {
             const elapsed = Date.now() - startTime;
             
-            // 1. 현재 화면상의 실시간 top(%) 값을 구합니다.
-            const currentTop = parseFloat(element.style.top);
-            
-            // 2. getIsoPos의 공식(top = 45 + (gridX+gridY) * 0.24)을 역산하여 
-            // 실시간 zIndex(gridX+gridY)를 추출합니다.
-            const realTimeZIndex = Math.floor((currentTop - 45) / 0.24);
-            
-            // 3. 가구보다 살짝 앞에 보이도록 +1 정도의 보정치를 줍니다.
-            element.style.zIndex = realTimeZIndex + 1;
+            // window.getComputedStyle를 써야 '실시간' 위치를 가져옵니다.
+            const computedStyle = window.getComputedStyle(element);
+            const currentTop = parseFloat(computedStyle.top);
+            const parentHeight = element.parentElement.offsetHeight;
+            const topPercent = (currentTop / parentHeight) * 100;
 
-            if (elapsed < duration) {
-                requestAnimationFrame(updateZIndexDuringMove);
+            // 룸 시스템의 zIndex 공식: (top - 45) / 0.24 = x + y
+            // 가구보다 아주 살짝(0.1) 앞에 있게 설정
+            element.style.zIndex = Math.floor((topPercent - 45) / 0.24) + 0.1;
+
+            if (elapsed < 2000) { // transition 시간 동안 반복
+                requestAnimationFrame(updateZ);
             }
         };
-
-        requestAnimationFrame(updateZIndexDuringMove);
-
-        element.dataset.gridX = finalTarget.x;
-        element.dataset.gridY = finalTarget.y;
+        requestAnimationFrame(updateZ);
     };
 
-    const interval = setInterval(move, Math.random() * 2000 + 3500);
+    const interval = setInterval(move, 3000 + Math.random() * 2000);
     element.dataset.moveInterval = interval;
 }
 
