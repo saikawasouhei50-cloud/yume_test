@@ -3507,87 +3507,85 @@ function displayMyRoom() {
     });
 
     // --- (1) 가구 렌더링 시작 (히트박스 방식 적용) ---
-    sortedFurniture.forEach((item, index) => {
-        const furnitureData = furnitureItems.find(f => f.id === item.id);
-        if (furnitureData) {
-            // 히트박스 역할을 할 투명 컨테이너 생성
-            const container = document.createElement('div');
-            const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
-            
-            // 드래그 로직이 이 div를 인식하도록 클래스와 데이터셋 부여
-            container.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
-            container.dataset.id = item.id;
-            container.dataset.key = index;
+sortedFurniture.forEach((item, index) => {
+    const furnitureData = furnitureItems.find(f => f.id === item.id);
+    if (furnitureData) {
+        const container = document.createElement('div');
+        const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
+        
+        container.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
+        container.dataset.id = item.id;
+        container.dataset.key = index;
 
-            const iso = getIsoPos(item.x, item.y);
-            container.style.left = `${iso.left}%`;
-            container.style.top = `${iso.top}%`;
+        const iso = getIsoPos(item.x, item.y);
+        container.style.left = `${iso.left}%`;
+        container.style.top = `${iso.top}%`;
 
-            // 실제 이미지 생성
-            const img = document.createElement('img');
-            img.src = furnitureData.imageUrl;
-            // 이미지는 클릭을 무시하고 뒤의 컨테이너가 클릭을 받게 함
-            img.className = 'w-full h-auto object-contain pointer-events-none'; 
-			
-			
-            
-            // ⭐ [크기 설정] 시트 데이터 정직하게 반영
-            let visualWidthStr = furnitureData.width ? 
+        // 실제 이미지 생성
+        const img = document.createElement('img');
+        img.src = furnitureData.imageUrl;
+        img.className = 'pointer-events-none'; // 이미지는 클릭 무시
+        
+        // ⭐ [크기 설정] 시트 데이터 기준 너비 계산
+        let visualWidthStr = furnitureData.width ? 
             (typeof furnitureData.width === 'number' ? `${furnitureData.width}px` : furnitureData.width) : 
             `${(furnitureData.scale || 1) * 20}%`;
 
-        // ⭐ [핵심] 가로/세로 히트박스 비율 설정
-        const hRatio = 0.6; // 가로 60%
-        const vRatio = 0.4; // 세로 40% (더 납작하게 줄임)
+        // ⭐ [핵심] 히트박스 비율 설정 (수치를 낮출수록 히트박스가 작아짐)
+        const hRatio = 0.4; // 가로: 원래 크기의 40% 영역만 클릭 가능
+        const vRatio = 0.2; // 세로: 원래 크기의 20% 영역만 클릭 가능 (바닥에 납작하게)
 
-            // ⭐ [히트박스] 컨테이너 너비는 시각적 크기의 60%로 좁게 설정
-            container.style.width = `calc(${visualWidthStr} * 0.6)`;
-            container.style.overflow = 'visible'; // 이미지는 튀어나와도 다 보이게
-            container.style.display = 'flex';
-            container.style.justifyContent = 'center';
-            container.style.alignItems = 'flex-end';
+        // ⭐ [히트박스 크기 축소] 컨테이너에 가로와 세로를 모두 적용
+        container.style.width = `calc(${visualWidthStr} * ${hRatio})`;
+        container.style.height = `calc(${visualWidthStr} * ${vRatio})`; 
+        container.style.overflow = 'visible'; // 이미지가 컨테이너 밖으로 나가도 보이게 설정
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center'; // 가로 중앙 정렬
+        container.style.alignItems = 'flex-end';    // 세로 하단 정렬 (가구 발치에 히트박스 고정)
 
-            // 이미지는 컨테이너 중앙에서 원래 크기 비율(1/0.6 = 166%)만큼 커져야 함
-            img.style.width = '166.6%';
-            img.style.flexShrink = '0';
+        // ⭐ [이미지 크기 보존] 컨테이너가 줄어든 만큼 이미지 크기를 역으로 키움
+        // 예: 컨테이너가 0.4배면 이미지는 1/0.4 = 2.5배(250%)가 되어야 원래 크기로 보임
+        img.style.width = `${(1 / hRatio) * 100}%`;
+        img.style.maxWidth = 'none'; // 부모(컨테이너) 크기에 맞춰 이미지가 줄어드는 것 방지
+        img.style.flexShrink = '0';
 
-            const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-            let zOffset = 0;
+        const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+        let zOffset = 0;
 
-            // 타입별 transform 및 그림자
-            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-                zOffset = -100; 
-            } else if (furnitureData.type === 'wall') {
-                container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-                zOffset = -50; 
+        // 타입별 transform 및 그림자 (컨테이너 기준)
+        if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
+            container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+            zOffset = -100; 
+        } else if (furnitureData.type === 'wall') {
+            container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
+            zOffset = -50; 
+        } else {
+            container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
+            if (furnitureData.type === 'prop') {
+                img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
+                zOffset = 10; 
             } else {
-                container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-                if (furnitureData.type === 'prop') {
-                    img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
-                    zOffset = 10; 
-                } else {
-                    img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-                    zOffset = 0; 
-                }
+                img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+                zOffset = 0; 
             }
-            container.style.zIndex = (iso.zIndex || 0) + zOffset;
-
-            // 더블클릭 반전 이벤트 (배치 모드 유지)
-            container.addEventListener('dblclick', (e) => {
-                if (typeof isEditMode !== 'undefined' && !isEditMode) return;
-                e.stopPropagation();
-                item.isFlipped = !item.isFlipped;
-                const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-                const baseTrans = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? '-50%, -50%' :
-                                  (furnitureData.type === 'wall') ? '-50%, -100%' : '-50%, -95%';
-                container.style.transform = `translate(${baseTrans}) ${currentFlip}`;
-            });
-
-            container.appendChild(img);
-            roomLayer.appendChild(container);
         }
-    });
+        container.style.zIndex = (iso.zIndex || 0) + zOffset;
+
+        // 더블클릭 반전 이벤트
+        container.addEventListener('dblclick', (e) => {
+            if (typeof isEditMode !== 'undefined' && !isEditMode) return;
+            e.stopPropagation();
+            item.isFlipped = !item.isFlipped;
+            const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            const baseTrans = (furnitureData.type === 'rug' || furnitureData.type === 'floor') ? '-50%, -50%' :
+                              (furnitureData.type === 'wall') ? '-50%, -100%' : '-50%, -95%';
+            container.style.transform = `translate(${baseTrans}) ${currentFlip}`;
+        });
+
+        container.appendChild(img);
+        roomLayer.appendChild(container);
+    }
+});
 
     // 배치 모드 시 캐릭터 렌더링 중단
     if (typeof isEditMode !== 'undefined' && isEditMode) return;
