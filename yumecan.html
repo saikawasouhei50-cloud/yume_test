@@ -3505,79 +3505,97 @@ function displayMyRoom() {
     });
 
     // --- (1) 가구 렌더링 시작 ---
-    sortedFurniture.forEach((item, index) => {
-        const furnitureData = furnitureItems.find(f => f.id === item.id);
-        if (furnitureData) {
-            const el = document.createElement('img');
-            el.src = furnitureData.imageUrl;
-            
-            // 배치 모드 여부에 따라 커서 변경
-            const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
-            el.className = `placed-furniture absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
-            
-            const iso = getIsoPos(item.x, item.y);
-            el.style.left = `${iso.left}%`;
-            el.style.top = `${iso.top}%`;
-            
-            const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-            const baseScale = furnitureData.scale || 1; 
-            el.style.width = `${baseScale * 12}%`;
+sortedFurniture.forEach((item, index) => {
+    const furnitureData = furnitureItems.find(f => f.id === item.id);
+    if (furnitureData) {
+        // 1. 히트박스 역할을 할 컨테이너(div) 생성
+        const container = document.createElement('div');
+        const canEdit = (typeof isEditMode !== 'undefined' && isEditMode);
+        
+        // 컨테이너 스타일: 위치, 이벤트, 커서 등을 모두 이 div가 담당합니다.
+        container.className = `furniture-hitbox absolute transition-transform duration-200 pointer-events-auto ${canEdit ? 'cursor-pointer' : ''}`;
+        
+        const iso = getIsoPos(item.x, item.y);
+        container.style.left = `${iso.left}%`;
+        container.style.top = `${iso.top}%`;
+        container.style.zIndex = (iso.zIndex || 0); // 기본 zIndex 부여
 
-            let zOffset = 0;
+        // 2. 가구 이미지 생성
+        const img = document.createElement('img');
+        img.src = furnitureData.imageUrl;
+        // ⭐ 중요: 이미지는 클릭을 무시하도록 설정 (히트박스인 div가 클릭을 받음)
+        img.className = 'w-full h-auto object-contain pointer-events-none'; 
+        
+        const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+        const baseScale = furnitureData.scale || 1; 
 
-            // 가구 타입별 transform 및 그림자 설정
-            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                el.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-                zOffset = -100; 
-            } 
-            else if (furnitureData.type === 'wall') {
-                el.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-                zOffset = -50; 
-            } 
-            else {
-                el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-                // 일반 가구 및 소품에 그림자(shadow) 추가
-                if (furnitureData.type === 'prop') {
-                    el.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
-                    zOffset = 10; 
-                } else {
-                    el.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-                    zOffset = 0; 
-                }
+        // 3. 히트박스 너비 조절 (실제 이미지보다 좁게 설정하여 클릭 간섭 방지)
+        // 여기서는 기본 너비의 60% 정도로 히트박스를 잡습니다.
+        const visualWidth = baseScale * 12; // 원래 보여야 할 너비 (%)
+        const hitboxWidth = visualWidth * 0.6; // 실제 클릭 가능한 너비 (%)
+        
+        container.style.width = `${hitboxWidth}%`;
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'flex-end';
+        container.style.overflow = 'visible'; // 이미지가 히트박스보다 커도 보이게 설정
+
+        // 이미지는 히트박스 안에서 중앙 정렬되고, 원래 크기 비율만큼 커집니다.
+        img.style.width = `${(visualWidth / hitboxWidth) * 100}%`;
+        img.style.flexShrink = '0';
+
+        let zOffset = 0;
+
+        // 4. 가구 타입별 transform 및 zOffset 설정 (컨테이너에 적용)
+        if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
+            container.style.transform = `translate(-50%, -50%) ${flipTransform}`;
+            zOffset = -100; 
+        } 
+        else if (furnitureData.type === 'wall') {
+            container.style.transform = `translate(-50%, -100%) ${flipTransform}`;
+            zOffset = -50; 
+        } 
+        else {
+            container.style.transform = `translate(-50%, -95%) ${flipTransform}`;
+            // 그림자 효과는 이미지에 부여
+            if (furnitureData.type === 'prop') {
+                img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
+                zOffset = 10; 
+            } else {
+                img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
+                zOffset = 0; 
             }
-
-            el.style.zIndex = (iso.zIndex || 0) + zOffset; 
-
-            // 가구 더블클릭 이벤트 (좌우 반전)
-            el.addEventListener('dblclick', (e) => {
-                if (typeof isEditMode !== 'undefined' && !isEditMode) return;
-                e.stopPropagation();
-
-                // 데이터 값 변경
-                item.isFlipped = !item.isFlipped;
-
-                // DOM 요소 직접 수정 (전체 리렌더링 방지하여 배치 모드 및 캐릭터 상태 유지)
-                const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-                if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                    el.style.transform = `translate(-50%, -50%) ${currentFlip}`;
-                } else if (furnitureData.type === 'wall') {
-                    el.style.transform = `translate(-50%, -100%) ${currentFlip}`;
-                } else {
-                    el.style.transform = `translate(-50%, -95%) ${currentFlip}`;
-                }
-            });
-
-            roomLayer.appendChild(el);
         }
-    });
 
-    // ==========================================
-    // ⭐ 핵심 수정: 배치 모드일 때는 캐릭터 렌더링을 하지 않음
-    // ==========================================
-    if (typeof isEditMode !== 'undefined' && isEditMode) {
-        console.log("배치 모드 활성화: 캐릭터 렌더링을 생략합니다.");
-        return; // 가구 배치 중에는 여기서 함수 종료
+        container.style.zIndex = (iso.zIndex || 0) + zOffset; 
+
+        // 5. 가구 더블클릭 이벤트 (컨테이너인 div에 부여)
+        container.addEventListener('dblclick', (e) => {
+            if (typeof isEditMode !== 'undefined' && !isEditMode) return;
+            e.stopPropagation();
+
+            item.isFlipped = !item.isFlipped;
+
+            const currentFlip = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
+                container.style.transform = `translate(-50%, -50%) ${currentFlip}`;
+            } else if (furnitureData.type === 'wall') {
+                container.style.transform = `translate(-50%, -100%) ${currentFlip}`;
+            } else {
+                container.style.transform = `translate(-50%, -95%) ${currentFlip}`;
+            }
+        });
+
+        container.appendChild(img);
+        roomLayer.appendChild(container);
     }
+});
+
+// 배치 모드 캐릭터 생략 로직 유지
+if (typeof isEditMode !== 'undefined' && isEditMode) {
+    console.log("배치 모드 활성화: 캐릭터 렌더링을 생략합니다.");
+    return;
+}
 
     // --- (2) 캐릭터 렌더링 시작 (배치 모드가 아닐 때만 실행됨) ---
     let activeCharacters = [];
