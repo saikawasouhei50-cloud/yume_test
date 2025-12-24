@@ -3496,75 +3496,56 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 타입별 우선순위 정의 (숫자가 높을수록 앞에 나옴)
-    const typePriority = {
-        'floor': 1,
-        'rug': 1,
-        'wall': 2,
-        'furniture': 3,
-        'prop': 4 // prop이 가장 앞에 오도록 설정
-    };
-
-    // 2. 가구들을 우선순위에 따라 정렬 (원본 배열을 건드리지 않기 위해 복사본 사용)
+    // 1. 레이어 우선순위 (prop이 항상 floor보다 앞에 오도록 정렬)
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
-        
-        const priorityA = dataA ? typePriority[dataA.type] || 0 : 0;
-        const priorityB = dataB ? typePriority[dataB.type] || 0 : 0;
-
-        // 우선순위가 같으면 iso depth(y좌표 등)에 따라 정렬하도록 할 수도 있습니다.
-        return priorityA - priorityB;
+        const priority = { 'floor': 1, 'rug': 1, 'wall': 2, 'furniture': 3, 'prop': 4 };
+        return (priority[dataA?.type] || 0) - (priority[dataB?.type] || 0);
     });
 
-    // 3. 정렬된 배열로 그리기
     sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
             const el = document.createElement('img');
             el.src = furnitureData.imageUrl;
             el.className = 'placed-furniture absolute transition-transform duration-200 pointer-events-auto';
-            el.dataset.id = item.id;
-            el.dataset.key = index;
-
+            
             const iso = getIsoPos(item.x, item.y);
             el.style.left = `${iso.left}%`;
             el.style.top = `${iso.top}%`;
             
             const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+            
+            // --- 시트 데이터 반영 로직 ---
+            
+            // 1. 크기 결정: 시트의 scale 값을 우선 사용, 없으면 1을 기준으로 함
+            // baseWidth는 프로젝트의 기준 해상도에 맞춰 조절하세요 (예: 100% 기준)
+            const baseScale = furnitureData.scale || 1; 
+            el.style.width = `${baseScale * 10}%`; // 여기서 '%' 앞의 숫자로 전체적인 기본 크기만 잡으세요.
+
             let zOffset = 0;
 
-            // 바닥재/러그 처리
             if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
+                // 불필요한 rotate, scaleY 제거 -> 시트 이미지 그대로 출력
                 el.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
-                el.style.width = `${sizeW * 7}%`; 
-                el.style.opacity = '0.95';
+                el.style.opacity = '1'; // 투명도 제거
                 zOffset = -100; 
             } 
-            // 벽 가구 처리
             else if (furnitureData.type === 'wall') {
-                el.style.transform = `translate(-50%, -200%) ${flipTransform}`;
-                const sizeW = (furnitureData.size && furnitureData.size.w) ? furnitureData.size.w : 1;
-                el.style.width = `${sizeW * 10}%`; 
+                el.style.transform = `translate(-50%, -100%) ${flipTransform}`;
                 zOffset = -50; 
             } 
-            // 일반 가구 및 소품(prop) 처리
             else {
+                // 일반 가구 및 prop
                 el.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-                let baseWidth = 12; 
-                if (furnitureData.scale) baseWidth = baseWidth * furnitureData.scale;
-                el.style.width = `${baseWidth}%`; 
-
+                
                 if (furnitureData.type === 'prop') {
-                    el.style.filter = 'drop-shadow(0px 2px 3px rgba(0,0,0,0.4))'; 
-                    zOffset = 50; // prop의 zOffset을 더 높게 설정
-                } else {
-                    el.style.filter = 'drop-shadow(0px 5px 5px rgba(0,0,0,0.5))'; 
-                    zOffset = 0; 
+                    zOffset = 10; 
                 }
             }
 
+            // 최종 zIndex 적용
             el.style.zIndex = (iso.zIndex || 0) + zOffset; 
             roomLayer.appendChild(el);
         }
