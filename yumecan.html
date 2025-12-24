@@ -3496,7 +3496,7 @@ function displayMyRoom() {
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
 
-    // 1. 레이어 우선순위 정렬 (floor -> rug -> wall -> furniture -> prop)
+    // 1. 레이어 우선순위 정렬 (바닥 -> 벽 -> 가구 -> 소품)
     const sortedFurniture = [...playerRoom.furniture].sort((a, b) => {
         const dataA = furnitureItems.find(f => f.id === a.id);
         const dataB = furnitureItems.find(f => f.id === b.id);
@@ -3506,98 +3506,91 @@ function displayMyRoom() {
 
     const isEdit = (typeof isEditMode !== 'undefined' && isEditMode);
 
-    // --- (1) 가구 렌더링 시작 ---
     sortedFurniture.forEach((item, index) => {
         const furnitureData = furnitureItems.find(f => f.id === item.id);
         if (furnitureData) {
-            // [컨테이너] 그리드 좌표 기준점
+            // [컨테이너]
             const container = document.createElement('div');
-            container.className = `placed-furniture absolute pointer-events-none transition-all duration-200 ${isEdit ? 'cursor-pointer' : ''}`;
+            container.className = `placed-furniture absolute pointer-events-none transition-all duration-200`;
             container.dataset.key = index;
             
             const iso = getIsoPos(item.x, item.y);
             container.style.left = `${iso.left}%`;
             container.style.top = `${iso.top}%`;
 
+            // 레이어 설정 (Prop이 Floor보다 위에 오도록)
             let zOffset = 0;
-            const flipTransform = item.isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
-            const baseScale = furnitureData.scale || 1; 
-
-            // 레이어 우선순위 설정
-            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                zOffset = -1000; 
-            } else if (furnitureData.type === 'wall') {
-                zOffset = -500; 
-            } else if (furnitureData.type === 'prop') {
-                zOffset = 500; 
-            } else {
-                zOffset = 0; 
-            }
+            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') zOffset = -1000;
+            else if (furnitureData.type === 'wall') zOffset = -500;
+            else if (furnitureData.type === 'prop') zOffset = 500;
+            else zOffset = 0;
+            
             container.style.zIndex = (iso.zIndex || 0) + zOffset;
 
-            // [히트박스 생성]
-            const hitbox = document.createElement('div');
-            hitbox.className = 'furniture-hitbox absolute pointer-events-auto';
-            hitbox.style.width = '30px'; 
-            hitbox.style.height = '30px';
-            
-            // ✨ 핵심: 타입별 히트박스 위치 보정 (이미지 중앙으로 이동)
-            if (furnitureData.type === 'wall') {
-                hitbox.style.top = '-60px'; // 벽은 높이가 높으므로 많이 올림
-            } else if (furnitureData.type === 'floor' || furnitureData.type === 'rug') {
-                hitbox.style.top = '0px';   // 바닥은 그리드 포인트가 이미 중앙임
-            } else {
-                hitbox.style.top = '-40px'; // 일반 가구 및 소품(prop) 중간 높이
-            }
-            
-            hitbox.style.left = '0px';
-            hitbox.style.transform = 'translate(-50%, -50%)'; // 중심점 정렬
-            
-            if (isEdit) {
-                hitbox.style.border = '2px solid #fbbf24';
-                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.4)';
-                hitbox.style.borderRadius = '50%';
-            }
-            container.appendChild(hitbox);
-
-            // [이미지 생성]
+            // [이미지] - 시각적 요소
             const img = document.createElement('img');
             img.src = furnitureData.imageUrl;
             img.className = 'absolute pointer-events-none transition-transform duration-200';
+            const baseScale = furnitureData.scale || 1; 
             img.style.width = `${baseScale * 12 * 8}px`;
             img.style.maxWidth = 'none';
 
-            // 이미지 배치 로직 (기존 유지)
-            if (furnitureData.type === 'rug' || furnitureData.type === 'floor') {
-                img.style.transform = `translate(-50%, -50%) ${flipTransform}`;
-            } else if (furnitureData.type === 'wall') {
-                img.style.transform = `translate(-50%, -100%) ${flipTransform}`;
-            } else {
-                img.style.transform = `translate(-50%, -95%) ${flipTransform}`;
-            }
+            // 초기 반전 상태 적용 함수
+            const getTransformStr = (isFlipped) => {
+                const flip = isFlipped ? 'scaleX(-1)' : 'scaleX(1)';
+                if (furnitureData.type === 'rug' || furnitureData.type === 'floor') return `translate(-50%, -50%) ${flip}`;
+                if (furnitureData.type === 'wall') return `translate(-50%, -100%) ${flip}`;
+                return `translate(-50%, -95%) ${flip}`;
+            };
+
+            img.style.transform = getTransformStr(item.isFlipped);
             
-            if (furnitureData.type === 'prop') {
-                img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
-            } else if (furnitureData.type === 'furniture') {
-                img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
-            }
+            if (furnitureData.type === 'prop') img.style.filter = 'drop-shadow(0px 3px 3px rgba(0,0,0,0.3))';
+            else if (furnitureData.type === 'furniture') img.style.filter = 'drop-shadow(0px 5px 8px rgba(0,0,0,0.4))';
 
             container.appendChild(img);
 
-            // 이벤트 바인딩 (히트박스 기준)
+            // [히트박스] - 클릭/드래그 전용 (이미지 중앙 위치)
+            const hitbox = document.createElement('div');
+            hitbox.className = `furniture-hitbox absolute pointer-events-auto ${isEdit ? 'cursor-pointer' : ''}`;
+            hitbox.style.width = '32px'; 
+            hitbox.style.height = '32px';
+            hitbox.style.left = '0px';
+            hitbox.style.transform = 'translate(-50%, -50%)';
+            
+            // 타입별 히트박스 중앙 위치 보정
+            if (furnitureData.type === 'wall') hitbox.style.top = '-60px';
+            else if (furnitureData.type === 'floor' || furnitureData.type === 'rug') hitbox.style.top = '0px';
+            else hitbox.style.top = '-40px'; 
+            
+            if (isEdit) {
+                hitbox.style.border = '2px dashed #fbbf24';
+                hitbox.style.backgroundColor = 'rgba(251, 191, 36, 0.3)';
+                hitbox.style.borderRadius = '50%';
+            }
+            
+            // ✨ 더블클릭 반전 로직 개선
             hitbox.addEventListener('dblclick', (e) => {
                 if (!isEdit) return;
                 e.stopPropagation();
+                
+                // 1. 데이터 변경
                 item.isFlipped = !item.isFlipped;
-                displayMyRoom();
-                saveGame();
+                
+                // 2. 이미지 즉시 업데이트 (리렌더링 없이 즉각 반응)
+                img.style.transform = getTransformStr(item.isFlipped);
+                
+                // 3. 효과음이나 진동 등 추가 피드백 (선택 사항)
+                console.log(`${furnitureData.name} 반전됨: ${item.isFlipped}`);
+                
+                // 4. 게임 저장
+                if (typeof saveGame === 'function') saveGame();
             });
 
+            container.appendChild(hitbox);
             roomLayer.appendChild(container);
         }
     });
-
-    if (isEdit) return;
 
     // --- (2) 캐릭터 렌더링 시작 (동일) ---
     let activeCharacters = [];
