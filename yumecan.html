@@ -10,6 +10,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
 
+	
+	/* 모바일 환경 스타일 조정 */
+@media (max-width: 768px) {
+    /* 1. 배치된 가구 이미지 크기 축소 */
+    .placed-furniture img {
+        /* 기존 크기보다 약 30~40% 축소 (수치는 적절히 조절하세요) */
+        max-width: 70px !important; 
+        height: auto !important;
+    }
+
+    /* 2. 치비(캐릭터) 이미지 크기 축소 */
+    .chibi-item {
+        /* 캐릭터 전체 크기 조정 */
+        width: 40px !important; 
+        height: 40px !important;
+    }
+    
+    .chibi-item img {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* 3. (선택사항) 가구 목록(인벤토리) 아이콘도 작게 만들고 싶을 때 */
+    .furniture-item img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+}
 		/* gacha.html의 .iso-floor 스타일 수정 */
 
 		/* 시간대별 필터 효과 */
