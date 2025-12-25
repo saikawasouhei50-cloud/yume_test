@@ -4322,62 +4322,73 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 
 // 1. 배치 모드 토글 함수
-function toggleEditMode() {
-if (!document.getElementById('visit-mode-overlay').classList.contains('hidden')) {
+	function toggleEditMode() {
+    if (!document.getElementById('visit-mode-overlay').classList.contains('hidden')) {
         return;
     }
     isEditMode = !isEditMode;
     const btn = document.getElementById('myroom-edit-mode');
     const container = document.getElementById('room-container');
-    
-    // ✨ [추가] 보관함 버튼 요소 가져오기
     const storageBtn = document.getElementById('open-furniture-storage');
 
     if (isEditMode) {
-        // [ON] 배치 모드 켜짐
+        // [ON] 배치 모드 활성화 (기존 로직 유지)
         btn.textContent = '✅ 저장 완료';
         btn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
         btn.classList.add('bg-green-600', 'hover:bg-green-700');
-        
         container.classList.add('border-yellow-400'); 
-        
-        // ✨ [추가] 보관함 버튼 보이기
         if(storageBtn) storageBtn.classList.remove('hidden');
-
-        // 캐릭터 숨기기
         document.querySelectorAll('.chibi-character').forEach(el => el.classList.add('hidden'));
-        
-        // 가구 드래그 활성화
         document.querySelectorAll('.placed-furniture').forEach(el => {
             el.style.cursor = 'grab';
             el.style.pointerEvents = 'auto';
         });
-        
-        // 안내 메시지 수정 (회수하면 보관함으로 간다는 내용 추가)
         showMessage('가구를 드래그하여 이동하거나, 우클릭하여 보관함에 넣으세요.', 'text-yellow-300', messageArea);
 
     } else {
-        // [OFF] 배치 모드 꺼짐
+        // [OFF] 배치 모드 종료 및 데이터 저장 단계
         btn.textContent = '🔨 배치 모드';
         btn.classList.remove('bg-green-600', 'hover:bg-green-700');
         btn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-        
         container.classList.remove('border-yellow-400');
-        
-        // ✨ [추가] 보관함 버튼 숨기기
         if(storageBtn) storageBtn.classList.add('hidden');
+
+        // ✨ [중요] 1. 화면의 가구 위치를 데이터(playerRoom.furniture)에 반영
+        syncFurnitureData();
 
         // 캐릭터 보이기
         document.querySelectorAll('.chibi-character').forEach(el => el.classList.remove('hidden'));
-        
         document.querySelectorAll('.placed-furniture').forEach(el => {
             el.style.cursor = 'default';
         });
 
-        saveGame();
+        // ✨ [중요] 2. 이제 업데이트된 데이터를 서버에 저장
+        saveGame(); 
         showMessage('배치가 저장되었습니다.', 'text-green-300', messageArea);
     }
-	displayMyRoom();
+    
+    // 마지막에 방을 다시 그려서 변경된 데이터를 확정함
+    displayMyRoom();
+}
+
+// ✨ 화면의 좌표를 데이터로 옮겨주는 도우미 함수
+function syncFurnitureData() {
+    const furnitureElements = document.querySelectorAll('.placed-furniture');
+    
+    furnitureElements.forEach(el => {
+        const index = el.dataset.key; // 가구 생성 시 부여했던 originalIndex
+        if (index !== undefined && playerRoom.furniture[index]) {
+            // 현재 화면에 표시된 % 위치 가져오기
+            const leftPercent = parseFloat(el.style.left);
+            const topPercent = parseFloat(el.style.top);
+
+            // 화면의 % 위치를 다시 게임용 x, y 좌표(0~100)로 변환
+            // (이전에 만든 좌표 변환 로직의 역산이 필요할 수 있습니다)
+            // 간단하게는 현재 %값을 그대로 좌표로 사용할 수도 있습니다.
+            playerRoom.furniture[index].x = leftPercent; 
+            playerRoom.furniture[index].y = topPercent;
+        }
+    });
 }
 
 		
