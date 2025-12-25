@@ -3701,12 +3701,26 @@ window.addEventListener('mousemove', (e) => {
     const roomLayer = document.getElementById('room-layer');
     const rect = roomLayer.getBoundingClientRect();
     
-    // 마우스 위치를 퍼센트(%)로 계산
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    // 1. 마우스의 현재 화면상 % 위치 계산
+    const rawX = ((e.clientX - rect.left) / rect.width) * 100;
+    const rawY = ((e.clientY - rect.top) / rect.height) * 100;
 
-    draggedFurniture.style.left = `${x}%`;
-    draggedFurniture.style.top = `${y}%`;
+    // 2. 화면 위치를 그리드 좌표(x, y)로 역계산
+    let gridPos = getGridPosFromScreen(rawX, rawY);
+
+    // 3. ✨ [핵심] 그리드 좌표를 0~100 사이로 제한 (방 밖으로 못 나가게 함)
+    gridPos.x = Math.max(0, Math.min(100, gridPos.x));
+    gridPos.y = Math.max(0, Math.min(100, gridPos.y));
+
+    // 4. 제한된 그리드 좌표를 다시 화면 % 위치로 변환
+    const finalIso = getIsoPos(gridPos.x, gridPos.y);
+
+    // 5. 실제 가구 위치 업데이트
+    draggedFurniture.style.left = `${finalIso.left}%`;
+    draggedFurniture.style.top = `${finalIso.top}%`;
+
+    // 실시간 레이어(zIndex) 계산 (가구끼리 겹침 방지)
+    draggedFurniture.style.zIndex = Math.floor(finalIso.zIndex);
 });
 
 // ✨ 마우스를 뗐을 때 (가구를 내려놓음)
