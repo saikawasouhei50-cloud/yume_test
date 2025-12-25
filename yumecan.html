@@ -3632,24 +3632,23 @@ else zOffset = 0; // 일반 가구
         if (activeCharacters.length === 0) activeCharacters = playerDeck.length > 0 ? playerDeck : playerInventory.slice(0, 5);
 
         activeCharacters.forEach((card, index) => {
-            const charData = findCharacter(card.name);
-            if (!charData) return;
+    const charData = findCharacter(card.name);
+    if (!charData) return;
 
-            const el = document.createElement('div');
-            el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
-            el.dataset.charName = card.name;
-            
-            const gridX = Math.random() * 90;
-            const gridY = Math.random() * 90;
-            const iso = getIsoPos(gridX, gridY);
+    const el = document.createElement('div'); // 변수명 확인: el
+    el.className = 'chibi-character absolute cursor-pointer transition-all duration-[2000ms] ease-linear pointer-events-auto';
+    el.dataset.charName = card.name;
+    
+    const gridX = Math.random() * 90;
+    const gridY = Math.random() * 90;
+    const iso = getIsoPos(gridX, gridY);
 
     el.style.left = `${iso.left}%`;
     el.style.top = `${iso.top}%`;
     el.style.transform = 'translate(-50%, -90%)'; 
     
-    // ✨ [수정] +1000을 제거하여 가구와 레이어 순위를 맞춥니다.
-    el.style.zIndex = iso.zIndex
-    
+    // 캐릭터는 가구와 같은 선상에 있을 때 아주 살짝(+1) 앞에 오도록 설정
+    el.style.zIndex = iso.zIndex + 1; 
     el.style.width = '100px';
 
             const cImg = document.createElement('img');
@@ -3949,23 +3948,21 @@ const isBlocked = playerRoom.furniture.some(f => {
         const startTime = Date.now();
         const duration = 2000; // 캐릭터 이동 시간(2s)과 일치시켜주세요.
 
-        const updateZIndexRealtime = () => {
-    // ✨ [추가] 부모 요소가 없으면(삭제되었다면) 함수를 즉시 종료합니다.
-    if (!element.parentElement) return; 
+       const updateZIndexRealtime = () => {
+    // 1. 안전장치: 부모 요소가 없으면 즉시 중단 (오류 방지)
+    if (!element || !element.parentElement) return; 
 
     const elapsed = Date.now() - startTime;
     const style = window.getComputedStyle(element);
     const currentTopPx = parseFloat(style.top);
-    
-    // 부모가 있을 때만 offsetHeight를 읽으므로 오류가 나지 않습니다.
-    const parentHeight = element.parentElement.offsetHeight; 
+    const parentHeight = element.parentElement.offsetHeight;
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
-    const gridSum = (currentTopPercent - 45) / 0.24;
+    // 2. 가구의 zIndex 계산 방식과 일치시킵니다.
+    const gridSum = (currentTopPercent - 45) / 0.12;
     
-    // ✨ 캐릭터는 가구와 같은 '깊이'에 있을 때 살짝 앞에 보이도록 +5 보정치를 줍니다.
-    // CSS transition이 빠졌으므로 이 값이 즉시 반영되어 자연스럽게 가구 뒤로 숨게 됩니다.
-    element.style.zIndex = Math.floor(gridSum * 100) + 5;
+    // 3. 실시간으로 zIndex 업데이트 (캐릭터 보정값 +1)
+    element.style.zIndex = Math.floor(gridSum * 100) + 1;
 
     if (elapsed < duration) {
         requestAnimationFrame(updateZIndexRealtime);
