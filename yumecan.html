@@ -3484,6 +3484,14 @@ function getGridPosFromScreen(screenX, screenY) {
 function displayMyRoom() {
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
+
+    // ✨ [추가] 방을 비우기 전에 기존 캐릭터들의 이동 인터벌을 모두 제거합니다.
+    document.querySelectorAll('.chibi-character').forEach(el => {
+        if (el.dataset.moveInterval) {
+            clearInterval(parseInt(el.dataset.moveInterval));
+        }
+    });
+
     roomLayer.innerHTML = '';
 
     if (!playerRoom.furniture) playerRoom.furniture = [];
@@ -3942,11 +3950,15 @@ const isBlocked = playerRoom.furniture.some(f => {
         const duration = 2000; // 캐릭터 이동 시간(2s)과 일치시켜주세요.
 
         const updateZIndexRealtime = () => {
+    // ✨ [추가] 부모 요소가 없으면(삭제되었다면) 함수를 즉시 종료합니다.
+    if (!element.parentElement) return; 
+
     const elapsed = Date.now() - startTime;
     const style = window.getComputedStyle(element);
     const currentTopPx = parseFloat(style.top);
-    if (!element.parentElement) return;
-const parentHeight = element.parentElement.offsetHeight;
+    
+    // 부모가 있을 때만 offsetHeight를 읽으므로 오류가 나지 않습니다.
+    const parentHeight = element.parentElement.offsetHeight; 
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
     // ✨ 중요: 가구 배치 공식(screenY = 45 + (gridX + gridY) * 0.24)을 역산합니다.
