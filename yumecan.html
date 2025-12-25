@@ -3480,6 +3480,7 @@ function getGridPosFromScreen(screenX, screenY) {
     return { x: gridX, y: gridY };
 }
 
+
 // ================== ✨ 수정된 displayMyRoom (전체 코드) ✨ ==================
 function displayMyRoom() {
     const roomLayer = document.getElementById('room-layer');
@@ -3516,7 +3517,13 @@ function displayMyRoom() {
         const container = document.createElement('div');
         container.className = `placed-furniture absolute pointer-events-none transition-all duration-200`;
         container.dataset.key = originalIndex;
-        
+        container.onmousedown = (e) => {
+            if (!isEditMode) return;
+            e.preventDefault(); // 브라우저의 기본 드래그 기능 방지
+            draggedFurniture = container; // 지금 잡은 가구를 저장
+            draggedFurniture.style.transition = 'none'; // 드래그 중엔 애니메이션 끄기
+            draggedFurniture.style.zIndex = 99999; // 맨 앞으로 가져오기
+        };
         const iso = getIsoPos(item.x, item.y);
         container.style.left = `${iso.left}%`;
         container.style.top = `${iso.top}%`;
@@ -3686,6 +3693,38 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
     } // <--- 괄호 중요! 여기서 if (!isEdit) 블록이 끝납니다.
 
 } // <--- 여기서 displayMyRoom() 함수 전체가 끝납니다.
+
+// ✨ 마우스를 움직일 때 (가구가 따라옴)
+window.addEventListener('mousemove', (e) => {
+    if (!isEditMode || !draggedFurniture) return;
+
+    const roomLayer = document.getElementById('room-layer');
+    const rect = roomLayer.getBoundingClientRect();
+    
+    // 마우스 위치를 퍼센트(%)로 계산
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    draggedFurniture.style.left = `${x}%`;
+    draggedFurniture.style.top = `${y}%`;
+});
+
+// ✨ 마우스를 뗐을 때 (가구를 내려놓음)
+window.addEventListener('mouseup', () => {
+    if (draggedFurniture) {
+        // 원래 위치 계산식에 맞춰 zIndex 복구
+        const style = window.getComputedStyle(draggedFurniture);
+        const topPercent = parseFloat(style.top);
+        const gridSum = (topPercent - 45) / 0.24;
+        
+        // 가구 타입에 따른 zIndex 보정 (이전 답변 참고)
+        draggedFurniture.style.zIndex = Math.floor(gridSum * 100);
+        draggedFurniture.style.transition = 'left 0.2s, top 0.2s';
+        
+        // ⭐ 핵심: 잡고 있던 변수를 비워서 드래그 중단!
+        draggedFurniture = null; 
+    }
+});
 
 		// ================== ✨ 캐릭터 상호작용 시스템 ✨ ==================
 
