@@ -3694,34 +3694,7 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
 
 } // <--- 여기서 displayMyRoom() 함수 전체가 끝납니다.
 
-// ✨ 마우스를 움직일 때 (가구가 따라옴)
-window.addEventListener('mousemove', (e) => {
-    // 1. 드래그 중이 아니거나 배치 모드가 아니면 중단
-    if (!isEditMode || !draggedFurniture) return;
 
-    const roomLayer = document.getElementById('room-layer');
-    const rect = roomLayer.getBoundingClientRect();
-    
-    // 2. 마우스의 현재 위치를 %로 계산
-    const mouseXPercent = ((e.clientX - rect.left) / rect.width) * 100;
-    const mouseYPercent = ((e.clientY - rect.top) / rect.height) * 100;
-
-    // 3. 화면 위치를 그리드 좌표(x, y)로 변환 (역계산)
-    let gridPos = getGridPosFromScreen(mouseXPercent, mouseYPercent);
-
-    // 4. ⭐ [핵심] 그리드 좌표를 0~100 사이로 강제 고정 (Clamp)
-    // 이 코드가 가구를 방 안으로 가둡니다.
-    gridPos.x = Math.max(0, Math.min(100, gridPos.x));
-    gridPos.y = Math.max(0, Math.min(100, gridPos.y));
-
-    // 5. 고정된 그리드 좌표를 다시 화면 % 위치로 변환 (정계산)
-    const finalIso = getIsoPos(gridPos.x, gridPos.y);
-
-    // 6. 실제 가구 위치 및 레이어 업데이트
-    draggedFurniture.style.left = `${finalIso.left}%`;
-    draggedFurniture.style.top = `${finalIso.top}%`;
-    draggedFurniture.style.zIndex = Math.floor(finalIso.zIndex);
-});
 
 // ✨ 마우스를 뗐을 때 (가구를 내려놓음)
 window.addEventListener('mouseup', () => {
@@ -4099,19 +4072,29 @@ function initDragEvents() {
     };
 
     const handleMove = (e) => {
-        if (!isEditMode || !draggedFurniture) return;
-        if (e.cancelable) e.preventDefault();
+    if (!isEditMode || !draggedFurniture) return;
+    if (e.cancelable) e.preventDefault();
 
-        const containerRect = container.getBoundingClientRect();
-        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    const containerRect = container.getBoundingClientRect();
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
-        let screenX = ((clientX - containerRect.left) / containerRect.width) * 100;
-        let screenY = ((clientY - containerRect.top) / containerRect.height) * 100;
+    // 1. 현재 마우스/터치 위치를 컨테이너 기준 %로 계산
+    let screenX = ((clientX - containerRect.left) / containerRect.width) * 100;
+    let screenY = ((clientY - containerRect.top) / containerRect.height) * 100;
 
-        draggedFurniture.style.left = `${screenX}%`;
-        draggedFurniture.style.top = `${screenY}%`;
-    };
+    // 2. 화면 위치를 그리드 좌표(x, y)로 변환 (getGridPosFromScreen 내부에서 0~100으로 자동 제한됨)
+    let gridPos = getGridPosFromScreen(screenX, screenY);
+
+    // 3. 제한된 그리드 좌표를 다시 아이소메트릭 화면 % 위치로 변환
+    const finalIso = getIsoPos(gridPos.x, gridPos.y);
+
+    // 4. 가구의 시각적 위치 업데이트
+    draggedFurniture.style.left = `${finalIso.left}%`;
+    draggedFurniture.style.top = `${finalIso.top}%`;
+    
+    
+};
 
     const handleEnd = (e) => {
         if (!isEditMode || !draggedFurniture) return;
