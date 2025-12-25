@@ -4079,21 +4079,26 @@ function initDragEvents() {
     const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
-    // 1. 현재 마우스/터치 위치를 컨테이너 기준 %로 계산
+    // 1. 현재 마우스 위치를 화면 %로 환산
     let screenX = ((clientX - containerRect.left) / containerRect.width) * 100;
     let screenY = ((clientY - containerRect.top) / containerRect.height) * 100;
 
-    // 2. 화면 위치를 그리드 좌표(x, y)로 변환 (getGridPosFromScreen 내부에서 0~100으로 자동 제한됨)
+    // 2. 화면 좌표를 그리드 좌표(x, y)로 변환
     let gridPos = getGridPosFromScreen(screenX, screenY);
 
-    // 3. 제한된 그리드 좌표를 다시 아이소메트릭 화면 % 위치로 변환
+    // 3. ⭐ 핵심: 그리드 범위를 0 ~ 100 사이로 제한 (Clamping)
+    // 가구의 크기를 고려한다면 100 대신 (100 - 가구너비) 등으로 조절 가능합니다.
+    gridPos.x = Math.max(0, Math.min(100, gridPos.x));
+    gridPos.y = Math.max(0, Math.min(100, gridPos.y));
+
+    // 4. 제한된 그리드 좌표를 다시 화면 표시용 아이소메트릭 좌표로 변환
     const finalIso = getIsoPos(gridPos.x, gridPos.y);
 
-    // 4. 가구의 시각적 위치 업데이트
+    // 5. 가구 위치 업데이트
     draggedFurniture.style.left = `${finalIso.left}%`;
     draggedFurniture.style.top = `${finalIso.top}%`;
     
-    
+     
 };
 
     const handleEnd = (e) => {
