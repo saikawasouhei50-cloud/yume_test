@@ -3640,7 +3640,7 @@ container.style.zIndex = iso.zIndex + zOffset;
     el.style.transform = 'translate(-50%, -90%)'; 
     
     // ✨ [수정] +1000을 제거하여 가구와 레이어 순위를 맞춥니다.
-    el.style.zIndex = iso.zIndex + 5;
+    el.style.zIndex = iso.zIndex
     
     el.style.width = '100px';
 
@@ -3945,14 +3945,15 @@ const isBlocked = playerRoom.furniture.some(f => {
     const elapsed = Date.now() - startTime;
     const style = window.getComputedStyle(element);
     const currentTopPx = parseFloat(style.top);
-    const parentHeight = element.parentElement.offsetHeight;
+    if (!element.parentElement) return;
+const parentHeight = element.parentElement.offsetHeight;
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
     // ✨ 중요: 가구 배치 공식(screenY = 45 + (gridX + gridY) * 0.24)을 역산합니다.
     const gridSum = (currentTopPercent - 45) / 0.24;
     
     // 가구와 같은 단위를 사용하고, 캐릭터가 가구와 같은 줄에 있을 때 살짝 앞에 보이게 +5만 더합니다.
-    element.style.zIndex = Math.floor(gridSum * 100) + 5;
+    element.style.zIndex = Math.floor(gridSum * 100);
 
     if (elapsed < duration) {
         requestAnimationFrame(updateZIndexRealtime);
