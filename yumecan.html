@@ -3485,9 +3485,10 @@ function displayMyRoom() {
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
 
-    // ✨ [추가] 방을 비우기 전에 기존 캐릭터들의 이동 인터벌을 모두 제거합니다.
+    // ✨ [수정] 아래 블록을 정확하게 확인해 주세요. 
+    // .forEach(el => { ... }) 부분이 핵심입니다.
     document.querySelectorAll('.chibi-character').forEach(el => {
-        if (el.dataset.moveInterval) {
+        if (el && el.dataset && el.dataset.moveInterval) {
             clearInterval(parseInt(el.dataset.moveInterval));
         }
     });
