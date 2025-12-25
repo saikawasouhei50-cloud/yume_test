@@ -3697,30 +3697,7 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
 
 
 // ✨ 마우스를 뗐을 때 (가구를 내려놓음)
-window.addEventListener('mouseup', () => {
-    if (draggedFurniture) {
-        const index = draggedFurniture.dataset.key; // 가구의 인덱스
-        
-        if (index !== undefined && playerRoom.furniture[index]) {
-            const leftPercent = parseFloat(draggedFurniture.style.left);
-            const topPercent = parseFloat(draggedFurniture.style.top);
 
-            // ✨ [핵심] 역계산을 통해 실제 그리드 좌표(x, y)를 찾아냄
-            const newGridPos = getGridPosFromScreen(leftPercent, topPercent);
-
-            // 실제 데이터 업데이트
-            playerRoom.furniture[index].x = newGridPos.x;
-            playerRoom.furniture[index].y = newGridPos.y;
-
-            // zIndex 재계산 (입체감 유지)
-            const iso = getIsoPos(newGridPos.x, newGridPos.y);
-            draggedFurniture.style.zIndex = iso.zIndex;
-        }
-
-        draggedFurniture.style.opacity = '1';
-        draggedFurniture = null; // 드래그 종료
-    }
-});
 
 		// ================== ✨ 캐릭터 상호작용 시스템 ✨ ==================
 
@@ -4050,117 +4027,106 @@ const isBlocked = playerRoom.furniture.some(f => {
 // ================== ✨ 수정된 initDragEvents (배치 모드) ✨ ==================
 function initDragEvents() {
     const container = document.getElementById('room-container');
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
     const handleStart = (e) => {
         if (!isEditMode) return;
         let target = e.target;
-        
         if (e.type === 'touchstart') {
             const touch = e.touches[0];
             target = document.elementFromPoint(touch.clientX, touch.clientY);
         }
 
-        // 히트박스를 클릭했을 때 부모 컨테이너(placed-furniture)를 찾음
         const furnitureElement = target.closest('.placed-furniture');
-
         if (furnitureElement) {
             if (e.cancelable) e.preventDefault();
-            draggedFurniture = furnitureElement; // 이미지가 포함된 컨테이너 선택
-            draggedFurniture.style.zIndex = 9999;
+            draggedFurniture = furnitureElement;
+            
+            // 1. 드래그 시작 시 마우스와 가구 중심점 사이의 거리(오프셋) 계산
+            const rect = draggedFurniture.getBoundingClientRect();
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            
+            // 마우스 클릭 지점이 가구 중앙으로부터 얼마나 떨어져 있는지 저장 (픽셀 단위)
+            dragOffsetX = clientX - (rect.left + rect.width / 2);
+            dragOffsetY = clientY - (rect.top + rect.height / 2);
+
+            draggedFurniture.style.zIndex = 99999;
             draggedFurniture.style.transition = 'none';
+            draggedFurniture.style.opacity = '0.8';
         }
     };
 
     const handleMove = (e) => {
-    if (!isEditMode || !draggedFurniture) return;
-    if (e.cancelable) e.preventDefault();
+        if (!isEditMode || !draggedFurniture) return;
+        if (e.cancelable) e.preventDefault();
 
-    const containerRect = container.getBoundingClientRect();
-    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        const containerRect = container.getBoundingClientRect();
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
-    // 1. 현재 마우스 위치를 화면 %로 환산
-    let screenX = ((clientX - containerRect.left) / containerRect.width) * 100;
-    let screenY = ((clientY - containerRect.top) / containerRect.height) * 100;
+        // 2. 오프셋을 적용하여 가구가 마우스 위치에서 튀지 않게 계산
+        let screenX = ((clientX - dragOffsetX - containerRect.left) / containerRect.width) * 100;
+        let screenY = ((clientY - dragOffsetY - containerRect.top) / containerRect.height) * 100;
 
-    // 2. 화면 좌표를 그리드 좌표(x, y)로 변환
-    let gridPos = getGridPosFromScreen(screenX, screenY);
+        let gridPos = getGridPosFromScreen(screenX, screenY);
+        
+        // 그리드 범위 제한 (0~100)
+        gridPos.x = Math.max(0, Math.min(100, gridPos.x));
+        gridPos.y = Math.max(0, Math.min(100, gridPos.y));
 
-    // 3. ⭐ 핵심: 그리드 범위를 0 ~ 100 사이로 제한 (Clamping)
-    // 가구의 크기를 고려한다면 100 대신 (100 - 가구너비) 등으로 조절 가능합니다.
-    gridPos.x = Math.max(0, Math.min(100, gridPos.x));
-    gridPos.y = Math.max(0, Math.min(100, gridPos.y));
+        const finalIso = getIsoPos(gridPos.x, gridPos.y);
 
-    // 4. 제한된 그리드 좌표를 다시 화면 표시용 아이소메트릭 좌표로 변환
-    const finalIso = getIsoPos(gridPos.x, gridPos.y);
-
-    // 5. 가구 위치 업데이트
-    draggedFurniture.style.left = `${finalIso.left}%`;
-    draggedFurniture.style.top = `${finalIso.top}%`;
-    
-     
-};
+        // 시각적 위치 업데이트
+        draggedFurniture.style.left = `${finalIso.left}%`;
+        draggedFurniture.style.top = `${finalIso.top}%`;
+        
+        // ⭐ 중요: 역계산을 하지 않도록 현재 그리드 좌표를 데이터 속성에 실시간 저장
+        draggedFurniture.dataset.tempX = gridPos.x;
+        draggedFurniture.dataset.tempY = gridPos.y;
+    };
 
     const handleEnd = (e) => {
         if (!isEditMode || !draggedFurniture) return;
 
-        const currentLeft = parseFloat(draggedFurniture.style.left);
-        const currentTop = parseFloat(draggedFurniture.style.top);
-        const gridPos = getGridPosFromScreen(currentLeft, currentTop);
+        // 3. 스타일 값 파싱 대신 저장해둔 데이터(tempX, tempY)를 직접 사용 (오차 0%)
+        const gridX = parseFloat(draggedFurniture.dataset.tempX);
+        const gridY = parseFloat(draggedFurniture.dataset.tempY);
         
         const uniqueKey = draggedFurniture.dataset.key;
         if (uniqueKey !== undefined && playerRoom.furniture[uniqueKey]) {
-            playerRoom.furniture[uniqueKey].x = gridPos.x;
-            playerRoom.furniture[uniqueKey].y = gridPos.y;
+            playerRoom.furniture[uniqueKey].x = gridX;
+            playerRoom.furniture[uniqueKey].y = gridY;
+            
+            // zIndex 및 최종 위치 확정
+            const finalIso = getIsoPos(gridX, gridY);
+            const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
+            
+            let zOffset = 0;
+            if (furnitureData?.type === 'wall') zOffset = -20000;
+            
+            draggedFurniture.style.zIndex = Math.floor(finalIso.zIndex + zOffset);
+            draggedFurniture.style.left = `${finalIso.left}%`;
+            draggedFurniture.style.top = `${finalIso.top}%`;
         }
 
-        const newIso = getIsoPos(gridPos.x, gridPos.y);
-const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
+        draggedFurniture.style.transition = 'left 0.2s, top 0.2s';
+        draggedFurniture.style.opacity = '1';
+        draggedFurniture = null;
+        
+        // 즉시 데이터 저장 실행
+        if (typeof saveGame === 'function') saveGame();
+    };
 
-let zOffset = 0;
-const type = furnitureData.type;
-
-if (type === 'wall') {
-    zOffset = -20000; // 벽은 무조건 캐릭터와 가구보다 뒤에 위치
-} else if (type === 'floor' || type === 'rug' || type === 'prop') {
-    zOffset = 0;      // 캐릭터와 앞뒤로 겹쳐야 하는 가구들은 보정치 없이 좌표로만 승부
-} else {
-    zOffset = 0;      // 일반 가구
-}
-
-// 최종 적용
-container.style.zIndex = Math.floor(iso.zIndex + zOffset);
-    draggedFurniture.style.transition = 'left 0.2s, top 0.2s'; // z-index 애니메이션 방지
-    draggedFurniture.style.left = `${newIso.left}%`;
-    draggedFurniture.style.top = `${newIso.top}%`;
-    draggedFurniture = null;
-};
-
-    // 이벤트 리스너 등록
+    // 이벤트 리스너 등록 (중복 방지를 위해 container와 window 적절히 분배)
     container.addEventListener('mousedown', handleStart);
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
     container.addEventListener('touchstart', handleStart, { passive: false });
     window.addEventListener('touchmove', handleMove, { passive: false });
     window.addEventListener('touchend', handleEnd);
-
-    // 우클릭 회수 로직 수정 (부모 컨테이너 기준)
-    container.addEventListener('contextmenu', (e) => {
-        if (!isEditMode) return;
-        const furnitureElement = e.target.closest('.placed-furniture');
-        if (furnitureElement) {
-            e.preventDefault();
-            if(confirm('이 가구를 회수하시겠습니까?')) {
-                const uniqueKey = furnitureElement.dataset.key;
-                if (uniqueKey !== undefined) {
-                    playerRoom.furniture.splice(uniqueKey, 1);
-                    displayMyRoom();
-                    saveGame();
-                }
-            }
-        }
-    });
-} // initDragEvents 끝
+}
 
 
 // ================== ✨ [신규] 가구 보관함 기능 시작 ✨ ==================
