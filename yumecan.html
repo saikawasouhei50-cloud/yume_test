@@ -11,31 +11,33 @@
     <style>
 
 	
-	/* 모바일 환경 스타일 조정 */
+	/* 📱 모바일 환경 (화면 너비 768px 이하) 대응 */
 @media (max-width: 768px) {
     /* 1. 배치된 가구 이미지 크기 축소 */
     .placed-furniture img {
-        /* 기존 크기보다 약 30~40% 축소 (수치는 적절히 조절하세요) */
-        max-width: 70px !important; 
+        /* 기존 약 96px에서 약 60px로 축소 (비율 유지) */
+        width: 60px !important; 
         height: auto !important;
     }
 
-    /* 2. 치비(캐릭터) 이미지 크기 축소 */
-    .chibi-item {
-        /* 캐릭터 전체 크기 조정 */
-        width: 20px !important; 
-        height: 20px !important;
+    /* 2. 치비(캐릭터) 전체 크기 축소 */
+    .chibi-character {
+        /* JS에서 설정한 100px을 무시하고 50px로 강제 고정 */
+        width: 50px !important; 
+        height: 50px !important;
     }
-    
-    .chibi-item img {
+
+    /* 3. 치비 내부의 이미지 비율 맞춤 */
+    .chibi-character img {
         width: 100% !important;
         height: auto !important;
     }
 
-    /* 3. (선택사항) 가구 목록(인벤토리) 아이콘도 작게 만들고 싶을 때 */
-    .furniture-item img {
-        width: 50px !important;
-        height: 50px !important;
+    /* 4. 캐릭터 말풍선 위치 및 크기 조정 (선택사항) */
+    .chibi-bubble {
+        font-size: 10px !important;
+        top: -30px !important;
+        padding: 2px 6px !important;
     }
 }
 		/* gacha.html의 .iso-floor 스타일 수정 */
