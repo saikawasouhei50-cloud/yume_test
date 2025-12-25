@@ -3523,15 +3523,18 @@ function displayMyRoom() {
 
         // ✨ 층을 확실하게 나누기 위해 보정치(zOffset)를 크게 조정합니다.
         let zOffset = 0;
-        const type = furnitureData.type;
-        if (type === 'floor') zOffset = -100000;      // 바닥은 최하단
-        else if (type === 'rug') zOffset = -50000;    // 카페트는 가구보다 무조건 뒤
-        else if (type === 'wall') zOffset = -20000;   // 벽장식
-        else if (type === 'prop') zOffset = 10000;    // 소품은 가구 위(앞)에 잘 보이게
-        else zOffset = 0;                             // 일반 가구
+const type = furnitureData.type;
 
-        // ✨ [핵심 추가] 계산된 zIndex를 실제 스타일에 적용합니다!
-        container.style.zIndex = Math.floor(iso.zIndex + zOffset);
+if (type === 'wall') {
+    zOffset = -20000; // 벽은 무조건 캐릭터와 가구보다 뒤에 위치
+} else if (type === 'floor' || type === 'rug' || type === 'prop') {
+    zOffset = 0;      // 캐릭터와 앞뒤로 겹쳐야 하는 가구들은 보정치 없이 좌표로만 승부
+} else {
+    zOffset = 0;      // 일반 가구
+}
+
+// 최종 적용
+container.style.zIndex = Math.floor(iso.zIndex + zOffset);
 
 
 
@@ -3965,8 +3968,10 @@ const isBlocked = playerRoom.furniture.some(f => {
     const currentTopPercent = (currentTopPx / parentHeight) * 100;
 
     // 2. 가구의 zIndex 계산 방식과 일치시킵니다.
-    const gridSum = (currentTopPercent - 45) / 0.24; // ✨ 0.12를 0.24로 수정
-element.style.zIndex = Math.floor(gridSum * 100) + 5;
+    const gridSum = (currentTopPercent - 45) / 0.12; 
+    
+    // ✨ 보정치를 +5로 최소화하여 가구의 위치(iso.zIndex)와 직접 경쟁하게 합니다.
+    element.style.zIndex = Math.floor(gridSum * 100) + 5;
 
     if (elapsed < duration) {
         requestAnimationFrame(updateZIndexRealtime);
@@ -4063,15 +4068,18 @@ function initDragEvents() {
 const furnitureData = furnitureItems.find(f => f.id === playerRoom.furniture[uniqueKey].id);
 
 let zOffset = 0;
-    const type = furnitureData.type;
-    if (type === 'floor') zOffset = -100000;
-    else if (type === 'rug') zOffset = -50000;
-    else if (type === 'wall') zOffset = -20000;
-    else if (type === 'prop') zOffset = 10000;
-    else zOffset = 0;
+const type = furnitureData.type;
 
-    // ✨ 최종 zIndex 적용 (99999로 올렸던 드래그 층을 정상 층으로 복구)
-    draggedFurniture.style.zIndex = Math.floor(newIso.zIndex + zOffset);
+if (type === 'wall') {
+    zOffset = -20000; // 벽은 무조건 캐릭터와 가구보다 뒤에 위치
+} else if (type === 'floor' || type === 'rug' || type === 'prop') {
+    zOffset = 0;      // 캐릭터와 앞뒤로 겹쳐야 하는 가구들은 보정치 없이 좌표로만 승부
+} else {
+    zOffset = 0;      // 일반 가구
+}
+
+// 최종 적용
+container.style.zIndex = Math.floor(iso.zIndex + zOffset);
     draggedFurniture.style.transition = 'left 0.2s, top 0.2s'; // z-index 애니메이션 방지
     draggedFurniture.style.left = `${newIso.left}%`;
     draggedFurniture.style.top = `${newIso.top}%`;
