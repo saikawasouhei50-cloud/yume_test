@@ -3712,17 +3712,26 @@ window.addEventListener('mousemove', (e) => {
 // ✨ 마우스를 뗐을 때 (가구를 내려놓음)
 window.addEventListener('mouseup', () => {
     if (draggedFurniture) {
-        // 원래 위치 계산식에 맞춰 zIndex 복구
-        const style = window.getComputedStyle(draggedFurniture);
-        const topPercent = parseFloat(style.top);
-        const gridSum = (topPercent - 45) / 0.24;
+        const index = draggedFurniture.dataset.key; // 가구의 인덱스
         
-        // 가구 타입에 따른 zIndex 보정 (이전 답변 참고)
-        draggedFurniture.style.zIndex = Math.floor(gridSum * 100);
-        draggedFurniture.style.transition = 'left 0.2s, top 0.2s';
-        
-        // ⭐ 핵심: 잡고 있던 변수를 비워서 드래그 중단!
-        draggedFurniture = null; 
+        if (index !== undefined && playerRoom.furniture[index]) {
+            const leftPercent = parseFloat(draggedFurniture.style.left);
+            const topPercent = parseFloat(draggedFurniture.style.top);
+
+            // ✨ [핵심] 역계산을 통해 실제 그리드 좌표(x, y)를 찾아냄
+            const newGridPos = getGridPosFromScreen(leftPercent, topPercent);
+
+            // 실제 데이터 업데이트
+            playerRoom.furniture[index].x = newGridPos.x;
+            playerRoom.furniture[index].y = newGridPos.y;
+
+            // zIndex 재계산 (입체감 유지)
+            const iso = getIsoPos(newGridPos.x, newGridPos.y);
+            draggedFurniture.style.zIndex = iso.zIndex;
+        }
+
+        draggedFurniture.style.opacity = '1';
+        draggedFurniture = null; // 드래그 종료
     }
 });
 
@@ -4346,16 +4355,7 @@ let dragOffsetY = 0;
         showMessage('가구를 드래그하여 이동하거나, 우클릭하여 보관함에 넣으세요.', 'text-yellow-300', messageArea);
 
     } else {
-        // [OFF] 배치 모드 종료 및 데이터 저장 단계
-        btn.textContent = '🔨 배치 모드';
-        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-        btn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-        container.classList.remove('border-yellow-400');
-        if(storageBtn) storageBtn.classList.add('hidden');
-
-        // ✨ [중요] 1. 화면의 가구 위치를 데이터(playerRoom.furniture)에 반영
-        syncFurnitureData();
-
+        
         // 캐릭터 보이기
         document.querySelectorAll('.chibi-character').forEach(el => el.classList.remove('hidden'));
         document.querySelectorAll('.placed-furniture').forEach(el => {
@@ -4389,6 +4389,20 @@ function syncFurnitureData() {
             playerRoom.furniture[index].y = topPercent;
         }
     });
+}
+
+function getGridPosFromScreen(leftPercent, topPercent) {
+    // getIsoPos 공식의 역산입니다. (기준점 50%, 45% 및 계수 0.42, 0.24 사용 기준)
+    const relativeLeft = leftPercent - 50;
+    const relativeTop = topPercent - 45;
+
+    const x = (relativeTop / 0.24 + relativeLeft / 0.42) / 2;
+    const y = (relativeTop / 0.24 - relativeLeft / 0.42) / 2;
+
+    return {
+        x: Math.max(0, Math.min(100, x)), // 0~100 사이로 제한
+        y: Math.max(0, Math.min(100, y))
+    };
 }
 
 		
