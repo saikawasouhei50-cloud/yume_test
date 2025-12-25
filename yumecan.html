@@ -4405,7 +4405,8 @@ function syncFurnitureData() {
     });
 }
 
-// getIsoPos의 기준점(50, 45)과 계수(0.42, 0.24)를 사용함
+function getGridPosFromScreen(leftPercent, topPercent) {
+    // getIsoPos의 기준점(50, 45)과 계수(0.42, 0.24)를 사용함
     const relX = leftPercent - 50;
     const relY = topPercent - 45;
 
@@ -4415,7 +4416,6 @@ function syncFurnitureData() {
 
     return { x, y };
 }
-
 		
 
 
