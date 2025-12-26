@@ -786,6 +786,9 @@ body.pointer-events-none {
     <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
         <button id="pull-one-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥 1회 뽑기 (10)</button>
         <button id="pull-ten-event" class="gacha-button w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-full shadow-lg">🔥🔥 10회 뽑기 (100)</button>
+		<button id="pull-ssr-guaranteed" class="gacha-button hidden w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-black py-3 px-8 rounded-full shadow-[0_0_15px_rgba(251,191,36,0.6)] border-2 border-yellow-200 transition-all">
+            🌟 SSR 확정 소환 (보유: <span id="ssr-ticket-display">0</span>)
+        </button>
         
         <button onclick="openGachaPoolModal('event')" class="gacha-button w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full shadow-lg text-sm mt-2">
             등장인물 목록 (획득 가능)
@@ -1727,6 +1730,8 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let playerChoices = {};
 			let playerFountainPens = 500; // 🖋️
 			let playerInkwells = 0;
+			let playerSsrTickets = 0;
+			let playerSsrTickets = 0;
 			let currentEventChoice = null;
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
             let selectedCardsToDismantle = new Set(); // ✨ 선택된 카드 ID Set 추가
@@ -1987,6 +1992,7 @@ async function saveGameToFirebase() {
         inventory: playerInventory || [],
         deck: playerDeck.map(card => card.id),
         capacity: inventoryCapacity || 100,
+		    ssrTickets: playerSsrTickets || 0,
         representative: representativeCharacter ? representativeCharacter.name : null,
         clearedStages: clearedStages || [],
         currentEventId: (typeof CURRENT_EVENT_ID !== 'undefined') ? CURRENT_EVENT_ID : null,
@@ -2048,6 +2054,7 @@ async function loadGameFromFirebase(uid) {
         playerCurrency = savedData.currency ?? 100;
         playerFountainPens = savedData.fountainPens ?? 500;
         playerInkwells = savedData.inkwells ?? 0;
+		playerSsrTickets = savedData.ssrTickets ?? 0;
         
         // 2. 인벤토리 및 덱 로드
         const loadedInventory = savedData.inventory || [];
@@ -2963,6 +2970,10 @@ function displayEventHomeView() {
         playerInkwells += item.itemData;
         showMessage(`잉크병 ${item.itemData}개 획득!`, 'text-fuchsia-300', messageArea);
     }
+	else if (item.type === 'ssrTicket') {
+    playerSsrTickets += (item.itemData || 1);
+    showMessage(`SSR 확정권 ${item.itemData}장 획득!`, 'text-yellow-400', messageArea);
+}
     else if (item.type === 'bookmark') {
         // 책갈피는 한도 체크
         if (playerBookmarks >= HARD_MAX_BOOKMARKS) {
@@ -3140,20 +3151,46 @@ function displayEventShopView() {
             }
 
             function updateUI() {
-                currencyDisplay.textContent = playerCurrency;
-                fountainPenDisplay.textContent = playerFountainPens; // 만년필 UI 업데이트
-				document.getElementById('inkwell-display').textContent = playerInkwells;
-                eventPointsSpan.textContent = playerEventPoints;
-                bookmarkDisplay.textContent = playerBookmarks;
-                maxBookmarkDisplay.textContent = MAX_BOOKMARKS;
+    // 1. 기존 재화 정보 업데이트
+    currencyDisplay.textContent = playerCurrency;
+    fountainPenDisplay.textContent = playerFountainPens; 
+    document.getElementById('inkwell-display').textContent = playerInkwells;
+    eventPointsSpan.textContent = playerEventPoints;
+    bookmarkDisplay.textContent = playerBookmarks;
+    maxBookmarkDisplay.textContent = MAX_BOOKMARKS;
 
-                const buttons = [pullOneButton, pullTenButton, pullOneEventButton, pullTenEventButton];
-                buttons.forEach(btn => {
-                    if (btn.id.includes('ten')) btn.disabled = playerCurrency < PULL_TEN_COST;
-                    else btn.disabled = playerCurrency < PULL_ONE_COST;
-                });
-                expandInventoryButton.disabled = playerCurrency < EXPAND_COST;
-            }
+    // 2. [추가] SSR 확정권 보유량 UI 업데이트
+    // HTML에 <span id="ssr-ticket-display"></span> 요소가 있어야 합니다.
+    const ssrTicketDisplay = document.getElementById('ssr-ticket-display');
+    if (ssrTicketDisplay) {
+        ssrTicketDisplay.textContent = playerSsrTickets;
+    }
+
+    // 3. 일반/이벤트 가챠 버튼 활성/비활성화 (기존 로직)
+    const buttons = [pullOneButton, pullTenButton, pullOneEventButton, pullTenEventButton];
+    buttons.forEach(btn => {
+        if (btn && btn.id.includes('ten')) {
+            btn.disabled = playerCurrency < PULL_TEN_COST;
+        } else if (btn) {
+            btn.disabled = playerCurrency < PULL_ONE_COST;
+        }
+    });
+
+    // 4. [추가] SSR 확정 뽑기 버튼 제어
+    // 보유 중일 때만 버튼을 보여주고(hidden 제거), 없을 때는 숨깁니다(hidden 추가).
+    const ssrPullBtn = document.getElementById('pull-ssr-guaranteed');
+    if (ssrPullBtn) {
+        if (playerSsrTickets > 0) {
+            ssrPullBtn.classList.remove('hidden');
+            ssrPullBtn.disabled = false;
+        } else {
+            ssrPullBtn.classList.add('hidden');
+            ssrPullBtn.disabled = true;
+        }
+    }
+
+    expandInventoryButton.disabled = playerCurrency < EXPAND_COST;
+}
 			
             
 
@@ -8176,6 +8213,34 @@ if(marketTabBtn) marketTabBtn.click();
             }
         };
 		
+		function handleSsrGuaranteedPull() {
+    if (playerSsrTickets < 1) {
+        showMessage('확정권이 부족합니다!', 'text-red-400', messageArea);
+        return;
+    }
+    if (playerInventory.length + 1 > inventoryCapacity) {
+        showMessage('서고가 부족합니다!', 'text-yellow-400', messageArea);
+        return;
+    }
+
+    // 확정권 소모
+    playerSsrTickets--;
+    
+    // SSR 캐릭터 추첨 (이벤트 풀 기준)
+    // pullCharacter의 첫 번째 인자로 'SSR'만 허용하도록 배열 전달
+    const pulledChar = pullCharacter(['SSR'], 'event'); 
+    
+    addCardToInventory(pulledChar.name);
+    displayResults([pulledChar]);
+    
+    updateUI();
+    saveGame();
+    showMessage('SSR 확정 소환 완료!', 'text-yellow-300', messageArea);
+}
+
+// 2. 이벤트 리스너 등록 (DOMContentLoaded 내부에 추가)
+document.getElementById('pull-ssr-guaranteed').addEventListener('click', handleSsrGuaranteedPull);
+		
 		
 		// ================== 🤝 친구 시스템 (상호 수락 버전) ==================
 
@@ -10876,7 +10941,6 @@ function updateRaidDailyCountUI() {
     </script>
 </body>
 </html>
-
 
 
 
