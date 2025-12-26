@@ -826,12 +826,27 @@ body.pointer-events-none {
     </div>
 
     <div class="bg-black/40 p-4 rounded-xl max-w-lg mx-auto text-center border border-gray-600 mb-6">
-        <p class="text-gray-300 text-sm mb-2">필요한 영감: <span class="text-gray-500">등급별 상이</span></p>
-        <p id="breeding-prediction" class="text-green-400 text-sm font-bold mb-4">모티브를 선택하면 예상 결과가 분석됩니다.</p>
-        
-        <button id="btn-execute-breeding" onclick="executeBreeding()" class="gacha-button bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-10 rounded-full text-lg shadow-[0_0_15px_rgba(234,179,8,0.6)] disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-            💡 구상 시작
+    <p class="text-gray-300 text-sm mb-2">필요한 영감: <span class="text-gray-500">등급별 상이</span></p>
+    <p id="breeding-prediction" class="text-green-400 text-sm font-bold mb-4">모티브를 선택하면 예상 결과가 분석됩니다.</p>
+    
+    <div class="flex flex-col items-center gap-2 mb-4">
+        <button id="btn-open-insp-modal" onclick="openInspItemModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-full shadow-lg transition-all border border-indigo-400">
+            ✨ 영감 아이템 사용
         </button>
+        <div id="insp-item-status" class="text-xs text-yellow-300 font-bold hidden bg-black/40 px-3 py-1 rounded-full border border-yellow-500/50">
+        </div>
+    </div>
+    <button id="btn-execute-breeding" onclick="executeBreeding()" class="gacha-button ...">
+        💡 구상 시작
+    </button>
+</div>
+<div id="insp-item-modal" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-gray-800 border-2 border-indigo-500 rounded-2xl p-6 w-full max-w-sm shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+            <h3 class="text-xl font-bold text-white mb-2 text-center">영감 아이템 선택</h3>
+            <p class="text-gray-400 text-xs text-center mb-6">스탯을 계승할 모티브를 선택하세요.</p>
+            <div id="insp-item-list" class="space-y-4"></div>
+            <button onclick="closeInspModal()" class="mt-6 w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold">취소</button>
+        </div>
     </div>
 
     <div class="bg-black/20 p-4 rounded-xl">
@@ -1731,7 +1746,10 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let playerFountainPens = 500; // 🖋️
 			let playerInkwells = 0;
 			let playerSsrTickets = 0;
-			
+			let playerInspAtk = 0; // 공격적 영감
+let playerInspDef = 0; // 방어적 영감
+let playerInspHp = 0;  // 끈기있는 영감
+let activeInspirationEffect = null; // 현재 선택된 영감 효과 { type: 'atk', motive: 'a' }
 			let currentEventChoice = null;
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
             let selectedCardsToDismantle = new Set(); // ✨ 선택된 카드 ID Set 추가
@@ -1992,6 +2010,9 @@ async function saveGameToFirebase() {
         inventory: playerInventory || [],
         deck: playerDeck.map(card => card.id),
         capacity: inventoryCapacity || 100,
+		 inspAtk: playerInspAtk || 0,
+    inspDef: playerInspDef || 0,
+    inspHp: playerInspHp || 0,
 		    ssrTickets: playerSsrTickets || 0,
         representative: representativeCharacter ? representativeCharacter.name : null,
         clearedStages: clearedStages || [],
@@ -2055,6 +2076,9 @@ async function loadGameFromFirebase(uid) {
         playerFountainPens = savedData.fountainPens ?? 500;
         playerInkwells = savedData.inkwells ?? 0;
 		playerSsrTickets = savedData.ssrTickets ?? 0;
+		playerInspAtk = savedData.inspAtk ?? 0;
+playerInspDef = savedData.inspDef ?? 0;
+playerInspHp = savedData.inspHp ?? 0;
         
         // 2. 인벤토리 및 덱 로드
         const loadedInventory = savedData.inventory || [];
@@ -2973,6 +2997,16 @@ function displayEventHomeView() {
 	else if (item.type === 'ssrTicket') {
     playerSsrTickets += (item.itemData || 1);
     showMessage(`SSR 확정권 ${item.itemData}장 획득!`, 'text-yellow-400', messageArea);
+}
+else if (item.type === 'insp_atk') {
+    playerInspAtk += (item.itemData || 1);
+    showMessage(`공격적 영감 획득!`, 'text-orange-400', messageArea);
+} else if (item.type === 'insp_def') {
+    playerInspDef += (item.itemData || 1);
+    showMessage(`방어적 영감 획득!`, 'text-blue-400', messageArea);
+} else if (item.type === 'insp_hp') {
+    playerInspHp += (item.itemData || 1);
+    showMessage(`끈기있는 영감 획득!`, 'text-green-400', messageArea);
 }
     else if (item.type === 'bookmark') {
         // 책갈피는 한도 체크
@@ -10087,8 +10121,28 @@ function executeBreeding() {
     const baseStatsB = charB.stats;
 
     let rawHp = (Math.random() < HIGH_CHANCE) ? baseStatsA.hp : baseStatsB.hp;
-    let rawDef = (Math.random() < HIGH_CHANCE) ? baseStatsA.def : baseStatsB.def;
-    let rawAtk = (Math.random() < HIGH_CHANCE) ? baseStatsB.atk : baseStatsA.atk;
+let rawDef = (Math.random() < HIGH_CHANCE) ? baseStatsA.def : baseStatsB.def;
+let rawAtk = (Math.random() < HIGH_CHANCE) ? baseStatsB.atk : baseStatsA.atk;
+
+// ✨ [추가] 아이템 효과 강제 적용
+if (activeInspirationEffect) {
+    const targetBase = activeInspirationEffect.motive === 'a' ? baseStatsA : baseStatsB;
+    
+    if (activeInspirationEffect.type === 'atk') {
+        rawAtk = targetBase.atk;
+        playerInspAtk--;
+    } else if (activeInspirationEffect.type === 'def') {
+        rawDef = targetBase.def;
+        playerInspDef--;
+    } else if (activeInspirationEffect.type === 'hp') {
+        rawHp = targetBase.hp;
+        playerInspHp--;
+    }
+    
+    // 사용 후 초기화
+    activeInspirationEffect = null;
+    document.getElementById('insp-item-status').classList.add('hidden');
+}
 
     // 등급 하락 시 스탯 페널티 적용
     const childHp = Math.floor(rawHp * statMultiplier);
@@ -10140,6 +10194,51 @@ function executeBreeding() {
     if(confirm("서고에서 확인하시겠습니까?")) {
         switchTab('inventory');
     }
+}
+
+
+function openInspItemModal() {
+    const modal = document.getElementById('insp-item-modal');
+    const list = document.getElementById('insp-item-list');
+    modal.classList.remove('hidden');
+    list.innerHTML = '';
+
+    const items = [
+        { id: 'atk', name: '공격적 영감', count: playerInspAtk, color: 'text-orange-400' },
+        { id: 'def', name: '방어적 영감', count: playerInspDef, color: 'text-blue-400' },
+        { id: 'hp', name: '끈기있는 영감', count: playerInspHp, color: 'text-green-400' }
+    ];
+
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "bg-gray-900/50 p-3 rounded-xl border border-gray-700";
+        div.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold ${item.color}">${item.name} <span class="text-xs text-gray-500">(보유: ${item.count})</span></span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="selectInspItem('${item.id}', 'a')" ${item.count <= 0 ? 'disabled' : ''} class="bg-indigo-900/50 hover:bg-indigo-800 text-xs py-1 rounded border border-indigo-700 disabled:opacity-30">모티브1 적용</button>
+                <button onclick="selectInspItem('${item.id}', 'b')" ${item.count <= 0 ? 'disabled' : ''} class="bg-indigo-900/50 hover:bg-indigo-800 text-xs py-1 rounded border border-indigo-700 disabled:opacity-30">모티브2 적용</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function selectInspItem(type, motive) {
+    activeInspirationEffect = { type, motive };
+    const status = document.getElementById('insp-item-status');
+    const typeNames = { atk: '공격적', def: '방어적', hp: '끈기있는' };
+    
+    status.innerHTML = `✅ <span class="text-white">[${typeNames[type]} 영감]</span> 모티브 ${motive === 'a' ? '1' : '2'} 적용 중`;
+    status.classList.remove('hidden');
+    
+    closeInspModal();
+    showMessage('아이템이 적용되었습니다. 구상을 시작하세요!', 'text-yellow-400', messageArea);
+}
+
+function closeInspModal() {
+    document.getElementById('insp-item-modal').classList.add('hidden');
 }
 
 		// [신규] 거래소 카드 상세 정보 보기 (미리보기 모드)
