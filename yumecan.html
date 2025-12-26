@@ -13,15 +13,12 @@
 	
 	/* 📱 모바일 환경 (화면 너비 768px 이하) 대응 */
 @media (max-width: 768px) {
-    /* 가구 이미지 크기만 줄이는 대신, 방 전체를 작게 보이게 하려면 */
-    #my-room-display { 
-        transform: scale(1); /* 전체를 80% 크기로 축소 */
-        transform-origin: top left; /* 왼쪽 상단 기준 축소 */
+    /* 1. 배치된 가구 이미지 크기 축소 */
+    .placed-furniture img {
+        /* 기존 약 96px에서 약 60px로 축소 (비율 유지) */
+        width: 60px !important; 
+        height: auto !important;
     }
-    
-    /* 기존에 이미지를 강제로 60px로 만들던 코드는 주석 처리하거나 삭제하세요 */
-    /* .placed-furniture img { width: 60px !important; } */
-}
 
     /* 2. 치비(캐릭터) 전체 크기 축소 */
     .chibi-character {
@@ -8478,14 +8475,16 @@ async function openOtherUserProfile(initialData) {
     
     try {
         document.body.style.cursor = 'wait';
-        
+        console.log(`🔍 [DEBUG] UID(${initialData.uid}) 데이터 불러오는 중...`);
         
         const doc = await db.collection('users').doc(initialData.uid).get();
         if (doc.exists) {
             const dbData = doc.data();
             
             // 🔥 [여기를 확인하세요] F12 콘솔에 이 로그가 뜰 겁니다.
-            
+            console.log("🔥 [DEBUG] 서버에서 받은 데이터:", dbData);
+            console.log("📦 [DEBUG] 인벤토리 개수:", dbData.inventory ? dbData.inventory.length : "없음");
+            console.log("👤 [DEBUG] 프로필 설정:", dbData.profile);
 
             userData = { ...initialData, ...dbData };
         } else {
@@ -11090,7 +11089,6 @@ function closeInspModal() {
     </script>
 </body>
 </html>
-
 
 
 
