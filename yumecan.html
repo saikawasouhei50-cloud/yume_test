@@ -8301,21 +8301,23 @@ async function sendFriendRequest(targetUid, targetNickname) {
 
     try {
         const batch = db.batch();
+        const now = firebase.firestore.FieldValue.serverTimestamp();
 
-        // 1. 내 친구 목록에 '보냄' 상태로 저장
+        // 1. 내 목록에 기록 (상태: 보냄)
         const myRef = db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid);
         batch.set(myRef, {
             nickname: targetNickname,
             status: 'sent',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: now
         });
 
-        // 2. 상대방 친구 목록에 '받음' 상태로 저장 (여기서 규칙의 allow create가 작동함)
+        // 2. 상대방 목록에 기록 (상태: 받음)
+        // ✅ 규칙에 의해 friendId(여기서는 currentUser.uid)가 본인인 경우에만 write가 허용됨
         const theirRef = db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid);
         batch.set(theirRef, {
-            nickname: currentPlayerNickname, // 내 닉네임
+            nickname: currentPlayerNickname, 
             status: 'received',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: now
         });
 
         await batch.commit();
@@ -8323,9 +8325,10 @@ async function sendFriendRequest(targetUid, targetNickname) {
         
         if (typeof loadFriendList === 'function') loadFriendList();
     } catch (error) {
-        console.error("요청 실패:", error);
-        // 오류 메시지가 'Missing or insufficient permissions'라면 위 규칙 수정을 먼저 적용해야 합니다.
-        alert("친구 요청 전송에 실패했습니다. (권한 오류)");
+        console.error("요청 실패 상세:", error);
+        // 만약 여기서도 오류가 난다면, 파이어베이스 콘솔의 'Rules'가 
+        // 제가 처음에 드린 [친구 신청 핵심 수정] 버전으로 적용되어 있는지 다시 확인해야 합니다.
+        alert("권한이 없거나 이미 요청을 보낸 상대입니다.");
     }
 }
 
