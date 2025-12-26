@@ -13,12 +13,19 @@
 	
 	/* 📱 모바일 환경 (화면 너비 768px 이하) 대응 */
 @media (max-width: 768px) {
-    /* 1. 배치된 가구 이미지 크기 축소 */
-    .placed-furniture img {
-        /* 기존 약 96px에서 약 60px로 축소 (비율 유지) */
-        width: 60px !important; 
+    /* 1. 컨테이너 전체 축소 */
+    #my-room-display { 
+        transform: scale(0.65) !important; /* 축소 비율을 더 과감하게 0.65 정도로 시도 */
+        transform-origin: top left !important; 
+        width: 150% !important; /* scale로 줄어든 만큼 영역 확보를 위해 너비를 늘려야 할 수 있음 */
+    }
+
+    /* 2. 기존에 가구 하나하나에 적용되던 크기 제한을 '해제' */
+    .placed-furniture, .placed-furniture img {
+        width: auto !important; 
         height: auto !important;
     }
+}
 
     /* 2. 치비(캐릭터) 전체 크기 축소 */
     .chibi-character {
