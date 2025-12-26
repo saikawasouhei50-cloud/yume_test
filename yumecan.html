@@ -3669,7 +3669,7 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
             img.src = furnitureData.imageUrl;
             img.className = 'absolute pointer-events-none transition-transform duration-200';
             const baseScale = furnitureData.scale || 1; 
-            img.classList.add('furniture-img');
+            img.style.width = `${baseScale * 12 * 8}px`;
             img.style.maxWidth = 'none';
 
             // 반전 및 위치 변환 문자열 생성 함수
