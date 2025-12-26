@@ -1508,6 +1508,10 @@ body.pointer-events-none {
 	
     <script>
 	
+	let playerInspAtk = 0; // 공격적 영감
+let playerInspDef = 0; // 방어적 영감
+let playerInspHp = 0;  // 끈기있는 영감
+let activeInspirationEffect = null; // 현재 선택된 영감 효과 { type: 'atk', motive: 'a' }
 	const firebaseConfig = {
         apiKey: "AIzaSyDNradWwvrFqZHbmlfavgiN8a7ll_Jb2Sg",
         authDomain: "kside-5db33.firebaseapp.com",
@@ -1746,10 +1750,7 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let playerFountainPens = 500; // 🖋️
 			let playerInkwells = 0;
 			let playerSsrTickets = 0;
-			let playerInspAtk = 0; // 공격적 영감
-let playerInspDef = 0; // 방어적 영감
-let playerInspHp = 0;  // 끈기있는 영감
-let activeInspirationEffect = null; // 현재 선택된 영감 효과 { type: 'atk', motive: 'a' }
+			
 			let currentEventChoice = null;
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
             let selectedCardsToDismantle = new Set(); // ✨ 선택된 카드 ID Set 추가
