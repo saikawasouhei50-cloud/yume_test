@@ -3277,15 +3277,29 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
     
     let selectedRarity = '';
 
-    // 1. 등급(Rarity) 결정
     if (allowedRarities) {
-        // 10회 뽑기 확정 등급 (SR 이상)
-        const highTierProb = { 'SSR': probabilities['SSR'], 'SR': probabilities['SR'] };
-        const totalProb = highTierProb.SSR + highTierProb.SR;
-        // SSR/SR 비율에 맞춰 재추첨
-        selectedRarity = (Math.random() * totalProb < highTierProb.SSR) ? 'SSR' : 'SR';
-    } else {
-        // 일반 확률 뽑기
+        // ✨ 입력받은 등급들(예: ['SSR'])의 확률 합계를 계산
+        let totalProb = 0;
+        allowedRarities.forEach(r => {
+            totalProb += probabilities[r] || 0;
+        });
+
+        // 해당 등급들 중에서만 랜덤 추첨
+        const rand = Math.random() * totalProb;
+        let cumulativeProb = 0;
+        for (const r of allowedRarities) {
+            cumulativeProb += (probabilities[r] || 0);
+            if (rand < cumulativeProb) {
+                selectedRarity = r;
+                break;
+            }
+        }
+        // 안전장치: 혹시라도 선택이 안 되면 첫 번째 등급으로 지정
+        if (!selectedRarity) selectedRarity = allowedRarities[0];
+    } 
+    // --- [여기까지 수정] ---
+    else {
+        // 일반 확률 뽑기 (기존 로직 유지)
         const rand = Math.random() * 100; 
         let cumulativeProb = 0;
         for (const rarity in probabilities) {
