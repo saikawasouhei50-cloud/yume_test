@@ -8295,23 +8295,14 @@ document.getElementById('pull-ssr-guaranteed').addEventListener('click', handleS
 		
 		// ================== 🤝 친구 시스템 (상호 수락 버전) ==================
 
-// 1. 친구 요청 보내기 (중복 방지 안전장치 추가)
 async function sendFriendRequest(targetUid, targetNickname) {
     if (!currentUser) return alert("로그인이 필요합니다.");
-    
-    try {
-        // ✨ [핵심] 이미 친구인지 먼저 확인!
-        const myCheck = await db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid).get();
-        if (myCheck.exists) {
-            const status = myCheck.data().status || 'accepted';
-            if (status === 'accepted') return alert("이미 친구 사이입니다.");
-            if (status === 'sent') return alert("이미 요청을 보낸 상태입니다.");
-            if (status === 'received') return alert("상대방이 이미 요청을 보냈습니다. 받은 요청을 확인해주세요.");
-        }
+    if (currentUser.uid === targetUid) return alert("자기 자신에게는 신청할 수 없습니다.");
 
+    try {
         const batch = db.batch();
 
-        // 1. 내 친구 목록에 추가 (상태: sent)
+        // 1. 내 친구 목록에 '보냄' 상태로 저장
         const myRef = db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid);
         batch.set(myRef, {
             nickname: targetNickname,
@@ -8319,28 +8310,22 @@ async function sendFriendRequest(targetUid, targetNickname) {
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // 2. 상대방 친구 목록에 추가 (상태: received)
+        // 2. 상대방 친구 목록에 '받음' 상태로 저장 (여기서 규칙의 allow create가 작동함)
         const theirRef = db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid);
         batch.set(theirRef, {
-            nickname: currentPlayerNickname, 
+            nickname: currentPlayerNickname, // 내 닉네임
             status: 'received',
-			tutorialFinished: playerTutorialFinished, 
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         await batch.commit();
-        
         alert(`[${targetNickname}]님에게 친구 요청을 보냈습니다!`);
         
-        // UI 갱신 (프로필 창이 열려있다면 닫고, 친구 목록이 열려있다면 갱신)
-        if (document.getElementById('other-user-profile-modal')) {
-            document.getElementById('other-user-profile-modal').remove();
-        }
-        loadFriendList();
-
+        if (typeof loadFriendList === 'function') loadFriendList();
     } catch (error) {
         console.error("요청 실패:", error);
-        alert("친구 요청 전송에 실패했습니다.");
+        // 오류 메시지가 'Missing or insufficient permissions'라면 위 규칙 수정을 먼저 적용해야 합니다.
+        alert("친구 요청 전송에 실패했습니다. (권한 오류)");
     }
 }
 
@@ -11100,7 +11085,6 @@ function closeInspModal() {
     </script>
 </body>
 </html>
-
 
 
 
