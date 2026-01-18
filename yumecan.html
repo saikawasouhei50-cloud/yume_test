@@ -1785,6 +1785,7 @@ let ownedFurniture = []; // 보유한 가구 목록
 			let currentSortOrder = 'rarity';
 			let currentRarityFilter = 'All'; // 👈 이 줄을 추가하세요.
 			let clearedStageStories = []; 
+			let currentStabilizationChapter = 1;
 			// [기존 변수들 아래에 추가]
 let playerCumulativeEventPoints = 0; // 🏆 랭킹용 누적 포인트
 let playerSystemMailHistory = []; // ✨ 이 줄이 있어야 합니다.
@@ -2865,6 +2866,22 @@ function displayCharacterDialogues(baseName) {
         
         dialogueList.innerHTML += `<hr class="border-gray-600 my-4">`;
     });
+}
+
+function renderStabilization() {
+    // 기존 코드: 항상 1챕터부터 보여주거나 초기화하는 로직이 있었을 것입니다.
+    // 수정 코드: 저장된 챕터 변수를 사용합니다.
+    
+    // 예: 챕터 버튼들의 활성 상태를 다시 그릴 때
+    for (let i = 1; i <= 5; i++) {
+        if (i === currentStabilizationChapter) {
+            // i번째 챕터 내용을 보여줌 (display: block)
+            document.getElementById(`chapter-${i}`).style.display = 'block';
+        } else {
+            // 나머지 챕터는 숨김
+            document.getElementById(`chapter-${i}`).style.display = 'none';
+        }
+    }
 }
 
 // ✅ displayEventView 함수 바로 위에 이 함수를 추가하세요.
@@ -11089,7 +11106,6 @@ function closeInspModal() {
     </script>
 </body>
 </html>
-
 
 
 
