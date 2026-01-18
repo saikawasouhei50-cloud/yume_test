@@ -10016,7 +10016,7 @@ function clearBreedingSlot(slot) {
 function updateBreedingUI() {
     const btn = document.getElementById('btn-execute-breeding');
     const predictionEl = document.getElementById('breeding-prediction');
-    // 비용 표시 요소 찾기 (HTML 구조에 맞춰 첫번째 p 태그 선택)
+    // 비용 표시 요소 찾기
     const costTextEl = document.querySelector('#breeding-view .bg-black\\/40 p:first-child');
     
     const isReady = breedingSlots.a && breedingSlots.b;
@@ -10028,9 +10028,18 @@ function updateBreedingUI() {
         const charA = findCharacter(cardA.name);
         const charB = findCharacter(cardB.name);
         
-        // [규칙] 등급 체크
-        if (charA.rarity !== charB.rarity) {
-            predictionEl.textContent = "⚠️ 등급이 서로 다릅니다. 같은 등급만 가능합니다.";
+        // ✨ [수정 1] 실제 등급 계산 (유전된 등급이 있으면 그것을, 없으면 도감 등급 사용)
+        const realRarityA = (cardA.inherited && cardA.inherited.originalRarity) 
+                            ? cardA.inherited.originalRarity 
+                            : charA.rarity;
+
+        const realRarityB = (cardB.inherited && cardB.inherited.originalRarity) 
+                            ? cardB.inherited.originalRarity 
+                            : charB.rarity;
+
+        // [규칙] 등급 체크 (수정됨: charA.rarity -> realRarityA)
+        if (realRarityA !== realRarityB) {
+            predictionEl.textContent = `⚠️ 등급이 서로 다릅니다. (${realRarityA} vs ${realRarityB})`;
             predictionEl.className = "text-red-400 text-sm font-bold mb-4";
             btn.disabled = true;
             btn.textContent = "조건 불충족";
@@ -10039,19 +10048,20 @@ function updateBreedingUI() {
             return;
         }
 
-        // 비용 계산
-        const cost = BREEDING_COSTS[charA.rarity];
-        costDisplayHtml = `필요한 영감 (${charA.rarity}): <span class="text-yellow-300 font-bold">💎 ${cost.gem}</span> + <span class="text-gray-300 font-bold">🖋️ ${cost.pen}</span>`;
+        // 비용 계산 (수정됨: 실제 등급 기준 비용 호출)
+        const cost = BREEDING_COSTS[realRarityA];
+        costDisplayHtml = `필요한 영감 (${realRarityA}): <span class="text-yellow-300 font-bold">💎 ${cost.gem}</span> + <span class="text-gray-300 font-bold">🖋️ ${cost.pen}</span>`;
         if(costTextEl) costTextEl.innerHTML = costDisplayHtml;
 
-        // 확률 메시지
-        const rarityIdx = RARITY_ORDER.indexOf(charA.rarity);
+        // 확률 메시지 (수정됨: 실제 등급 기준 확률 계산)
+        const rarityIdx = RARITY_ORDER.indexOf(realRarityA);
         let nextMsg = "";
-        if (charA.rarity === 'N') {
+        
+        if (realRarityA === 'N') {
             nextMsg = "100% 확률로 [N] 등급 유지";
         } else {
             const lowerRarity = RARITY_ORDER[rarityIdx - 1];
-            nextMsg = `50% [${charA.rarity}] 유지 / 50% [${lowerRarity}] 하락`;
+            nextMsg = `50% [${realRarityA}] 유지 / 50% [${lowerRarity}] 하락`;
         }
 
         predictionEl.textContent = `📊 예상 결과: ${nextMsg}`;
@@ -10078,7 +10088,6 @@ function updateBreedingUI() {
         if(costTextEl) costTextEl.innerHTML = costDisplayHtml;
     }
 }
-
 // [핵심] 교배 실행 함수
 function executeBreeding() {
     if (!breedingSlots.a || !breedingSlots.b) return;
