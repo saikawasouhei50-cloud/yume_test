@@ -10127,10 +10127,13 @@ function executeBreeding() {
     const childName = charA.name;   
     
     // 법칙 2: 진영은 교배원2(B)
-    const childFaction = charB.faction; 
+    // [수정 후] 부모 B가 유전된 진영을 가지고 있다면 그것을, 없다면 원래 진영을 사용
+const childFaction = (instanceB.inherited && instanceB.inherited.faction) 
+                     ? instanceB.inherited.faction 
+                     : charB.faction;
 
     // 법칙 3: 스탯 유전 (HP/DEF: A우세, ATK: B우세)
-    const HIGH_CHANCE = 0.7;
+    const HIGH_CHANCE = 0.8;
     const baseStatsA = charA.stats;
     const baseStatsB = charB.stats;
 
@@ -11111,7 +11114,6 @@ function closeInspModal() {
     </script>
 </body>
 </html>
-
 
 
 
