@@ -892,28 +892,28 @@ body.pointer-events-none {
     <button data-sort="level" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">퇴고<span class="sort-indicator"></span></button>
     <button data-sort="revision" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">개정<span class="sort-indicator"></span></button>
     <button data-sort="name" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">이름<span class="sort-indicator"></span></button>
-</div>
-<div class="mb-4">
-    <button onclick="toggleFactionMenu()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-200 flex justify-center items-center gap-2">
-        <span>🏳️ 진영별 모아보기</span>
-        <span id="faction-filter-arrow">▼</span>
+<div class="relative inline-block ml-1">
+    <button onclick="toggleFactionMenu()" class="bg-black/40 hover:bg-gray-700 text-gray-300 text-xs py-1 px-2 rounded border border-gray-600 flex items-center gap-1 transition-colors">
+        <span>🏳️ 진영</span>
+        <span id="faction-filter-arrow" class="text-[10px]">▼</span>
     </button>
 
-    <div id="faction-filter-options" class="hidden grid grid-cols-5 gap-2 mt-2 bg-gray-800 p-3 rounded-lg border border-gray-700">
-        <button onclick="setFactionFilter('all')" class="faction-btn bg-gray-600 hover:bg-gray-500 text-white text-xs py-2 rounded col-span-5 mb-1">
-            🔄 전체 보기 (필터 해제)
+    <div id="faction-filter-options" class="hidden absolute top-full right-0 mt-1 w-64 bg-gray-900/95 border border-gray-600 rounded-lg shadow-xl z-50 p-2 grid grid-cols-4 gap-1 backdrop-blur-sm">
+        <button onclick="setFactionFilter('all')" class="faction-btn col-span-4 bg-gray-700 hover:bg-gray-600 text-white text-[10px] py-1.5 rounded mb-1 border border-gray-500">
+            🔄 전체 (필터 해제)
         </button>
         
-        <button onclick="setFactionFilter('히어로')" class="faction-btn bg-blue-900/50 hover:bg-blue-800 text-blue-200 text-xs py-2 rounded border border-blue-700">히어로</button>
-        <button onclick="setFactionFilter('빌런')" class="faction-btn bg-red-900/50 hover:bg-red-800 text-red-200 text-xs py-2 rounded border border-red-700">빌런</button>
-        <button onclick="setFactionFilter('탐정')" class="faction-btn bg-yellow-900/50 hover:bg-yellow-800 text-yellow-200 text-xs py-2 rounded border border-yellow-700">탐정</button>
-        <button onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-900/50 hover:bg-purple-800 text-purple-200 text-xs py-2 rounded border border-purple-700">마법사</button>
-        <button onclick="setFactionFilter('도박사')" class="faction-btn bg-green-900/50 hover:bg-green-800 text-green-200 text-xs py-2 rounded border border-green-700">도박사</button>
-        <button onclick="setFactionFilter('초대객')" class="faction-btn bg-pink-900/50 hover:bg-pink-800 text-pink-200 text-xs py-2 rounded border border-pink-700">초대객</button>
-        <button onclick="setFactionFilter('악마')" class="faction-btn bg-gray-900 hover:bg-black text-gray-400 text-xs py-2 rounded border border-gray-600">악마</button>
-        <button onclick="setFactionFilter('사제')" class="faction-btn bg-indigo-100/20 hover:bg-indigo-100/30 text-indigo-100 text-xs py-2 rounded border border-indigo-300">사제</button>
-        <button onclick="setFactionFilter('범인')" class="faction-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded border border-zinc-500">범인</button>
+        <button onclick="setFactionFilter('히어로')" class="faction-btn bg-blue-900/60 hover:bg-blue-800 text-blue-100 text-[10px] py-1 rounded border border-blue-800">히어로</button>
+        <button onclick="setFactionFilter('빌런')" class="faction-btn bg-red-900/60 hover:bg-red-800 text-red-100 text-[10px] py-1 rounded border border-red-800">빌런</button>
+        <button onclick="setFactionFilter('탐정')" class="faction-btn bg-yellow-900/60 hover:bg-yellow-800 text-yellow-100 text-[10px] py-1 rounded border border-yellow-800">탐정</button>
+        <button onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-900/60 hover:bg-purple-800 text-purple-100 text-[10px] py-1 rounded border border-purple-800">마법사</button>
+        <button onclick="setFactionFilter('도박사')" class="faction-btn bg-green-900/60 hover:bg-green-800 text-green-100 text-[10px] py-1 rounded border border-green-800">도박사</button>
+        <button onclick="setFactionFilter('초대객')" class="faction-btn bg-pink-900/60 hover:bg-pink-800 text-pink-100 text-[10px] py-1 rounded border border-pink-800">초대객</button>
+        <button onclick="setFactionFilter('악마')" class="faction-btn bg-gray-800 hover:bg-black text-gray-300 text-[10px] py-1 rounded border border-gray-600">악마</button>
+        <button onclick="setFactionFilter('사제')" class="faction-btn bg-indigo-900/60 hover:bg-indigo-800 text-indigo-100 text-[10px] py-1 rounded border border-indigo-800">사제</button>
+        <button onclick="setFactionFilter('범인')" class="faction-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] py-1 rounded border border-zinc-600">범인</button>
     </div>
+</div>
 </div>
 
         <div id="inventory-filter-buttons" class="mt-2 flex justify-center gap-2">
