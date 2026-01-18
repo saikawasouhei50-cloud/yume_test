@@ -893,7 +893,29 @@ body.pointer-events-none {
     <button data-sort="revision" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">개정<span class="sort-indicator"></span></button>
     <button data-sort="name" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">이름<span class="sort-indicator"></span></button>
 </div>
-		 
+<div class="mb-4">
+    <button onclick="toggleFactionMenu()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded shadow-lg transition duration-200 flex justify-center items-center gap-2">
+        <span>🏳️ 진영별 모아보기</span>
+        <span id="faction-filter-arrow">▼</span>
+    </button>
+
+    <div id="faction-filter-options" class="hidden grid grid-cols-5 gap-2 mt-2 bg-gray-800 p-3 rounded-lg border border-gray-700">
+        <button onclick="setFactionFilter('all')" class="faction-btn bg-gray-600 hover:bg-gray-500 text-white text-xs py-2 rounded col-span-5 mb-1">
+            🔄 전체 보기 (필터 해제)
+        </button>
+        
+        <button onclick="setFactionFilter('히어로')" class="faction-btn bg-blue-900/50 hover:bg-blue-800 text-blue-200 text-xs py-2 rounded border border-blue-700">히어로</button>
+        <button onclick="setFactionFilter('빌런')" class="faction-btn bg-red-900/50 hover:bg-red-800 text-red-200 text-xs py-2 rounded border border-red-700">빌런</button>
+        <button onclick="setFactionFilter('탐정')" class="faction-btn bg-yellow-900/50 hover:bg-yellow-800 text-yellow-200 text-xs py-2 rounded border border-yellow-700">탐정</button>
+        <button onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-900/50 hover:bg-purple-800 text-purple-200 text-xs py-2 rounded border border-purple-700">마법사</button>
+        <button onclick="setFactionFilter('도박사')" class="faction-btn bg-green-900/50 hover:bg-green-800 text-green-200 text-xs py-2 rounded border border-green-700">도박사</button>
+        <button onclick="setFactionFilter('초대객')" class="faction-btn bg-pink-900/50 hover:bg-pink-800 text-pink-200 text-xs py-2 rounded border border-pink-700">초대객</button>
+        <button onclick="setFactionFilter('악마')" class="faction-btn bg-gray-900 hover:bg-black text-gray-400 text-xs py-2 rounded border border-gray-600">악마</button>
+        <button onclick="setFactionFilter('사제')" class="faction-btn bg-indigo-100/20 hover:bg-indigo-100/30 text-indigo-100 text-xs py-2 rounded border border-indigo-300">사제</button>
+        <button onclick="setFactionFilter('범인')" class="faction-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded border border-zinc-500">범인</button>
+    </div>
+</div>
+
         <div id="inventory-filter-buttons" class="mt-2 flex justify-center gap-2">
     <button data-filter="All" class="gacha-button filter-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">전체</button>
     <button data-filter="N" class="gacha-button filter-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded-full text-sm">N</button>
@@ -3469,16 +3491,39 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
 
     // --- 1. 필터링 로직 (수정됨) ---
     const filteredInventory = playerInventory.filter(cardInstance => {
-        if (currentRarityFilter === 'All') return true;
-        // 기존: findCharacter(cardInstance.name).rarity (X) -> 이름만 보고 판단함
-        // 수정: getRealRarity(cardInstance) (O) -> 유전 정보까지 확인
-        return getRealRarity(cardInstance) === currentRarityFilter;
+        
+        // 1️⃣ 등급 필터 검사
+        let isRarityMatch = true;
+        if (currentRarityFilter !== 'All') {
+            // getRealRarity 함수를 사용하여 실제 등급 비교
+            isRarityMatch = getRealRarity(cardInstance) === currentRarityFilter;
+        }
+
+        // 2️⃣ 진영 필터 검사 (✨ 추가된 부분)
+        let isFactionMatch = true;
+        if (typeof currentFactionFilter !== 'undefined' && currentFactionFilter !== 'all') {
+            const charInfo = findCharacter(cardInstance.name);
+            
+            // 유전된 진영 우선 확인, 없으면 도감 진영 사용
+            const realFaction = (cardInstance.inherited && cardInstance.inherited.faction) 
+                                ? cardInstance.inherited.faction 
+                                : charInfo.faction;
+            
+            isFactionMatch = realFaction === currentFactionFilter;
+        }
+
+        // 두 조건 모두 만족(AND)해야 목록에 표시
+        return isRarityMatch && isFactionMatch;
     });
 
+    // 결과가 없을 때 메시지 처리
     if (filteredInventory.length === 0) {
-        const emptyMessage = currentRarityFilter === 'All' 
-            ? '아직 수집한 등장인물이 없습니다.' 
-            : `해당 등급의 등장인물이 없습니다.`;
+        let emptyMessage = '조건에 맞는 등장인물이 없습니다.';
+        
+        if (currentRarityFilter === 'All' && currentFactionFilter === 'all') {
+             emptyMessage = '아직 수집한 등장인물이 없습니다.';
+        }
+
         inventoryContainer.innerHTML = `<p class="col-span-full text-center text-gray-400 mt-10">${emptyMessage}</p>`;
         if (isMultiSelectMode) {
             updateMultiSelectUI();
@@ -4414,6 +4459,34 @@ window.buyFurniture = function(furnitureId) {
         alert('보석이 부족합니다.');
     }
 };
+
+// [추가] 현재 선택된 진영 필터 (기본값: 'all')
+let currentFactionFilter = 'all';
+
+// 1. 진영 메뉴 토글 함수
+function toggleFactionMenu() {
+    const menu = document.getElementById('faction-filter-options');
+    const arrow = document.getElementById('faction-filter-arrow');
+    menu.classList.toggle('hidden');
+    arrow.textContent = menu.classList.contains('hidden') ? '▼' : '▲';
+}
+
+// 2. 필터 설정 함수
+function setFactionFilter(faction) {
+    currentFactionFilter = faction;
+    
+    // UI 업데이트 (선택된 버튼 강조)
+    document.querySelectorAll('.faction-btn').forEach(btn => {
+        if (btn.innerText.includes(faction) || (faction === 'all' && btn.innerText.includes('전체'))) {
+            btn.classList.add('ring-2', 'ring-white'); // 선택됨 표시
+        } else {
+            btn.classList.remove('ring-2', 'ring-white');
+        }
+    });
+
+    // 서고 다시 그리기
+    displayInventory();
+}
 
 let playerLastRaidSpawnId = 0;
 
