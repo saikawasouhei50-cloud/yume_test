@@ -1750,6 +1750,7 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let playerFountainPens = 500; // 🖋️
 			let playerInkwells = 0;
 			let playerSsrTickets = 0;
+			let currentSelectedChapter = 0;
 			
 			let currentEventChoice = null;
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
@@ -4710,12 +4711,16 @@ function getGridPosFromScreen(leftPercent, topPercent) {
                     chapterContainer.appendChild(chapterEl);
                 });
 
-                // 기본적으로 첫 번째 챕터의 스테이지를 표시
-                displayStages(0);
+                if (typeof currentSelectedChapter !== 'undefined') {
+        displayStages(currentSelectedChapter);
+    } else {
+        displayStages(0);
+    }
             }
             
 			// ✅ displayCombatView 함수 바로 다음에 이 새로운 함수를 추가해주세요.
             function displayStages(chapterIndex) {
+			currentSelectedChapter = chapterIndex;
                 const stageContainer = document.getElementById('stage-list-container');
                 stageContainer.innerHTML = ''; // 초기화
                 
