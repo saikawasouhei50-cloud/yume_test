@@ -10088,23 +10088,37 @@ function executeBreeding() {
     const charA = findCharacter(instanceA.name);
     const charB = findCharacter(instanceB.name);
 
-    // 등급 체크
-    if (charA.rarity !== charB.rarity) return alert("같은 등급끼리만 가능합니다.");
+    // ✨ [수정 1] 실제 등급 가져오기
+    // 인벤토리 카드에 저장된 등급이 있으면 그걸 쓰고, 없으면 도감 등급 사용
+    const realRarityA = (instanceA.inherited && instanceA.inherited.originalRarity) 
+                        ? instanceA.inherited.originalRarity 
+                        : charA.rarity;
 
-    // 비용 체크
-    const cost = BREEDING_COSTS[charA.rarity];
+    const realRarityB = (instanceB.inherited && instanceB.inherited.originalRarity) 
+                        ? instanceB.inherited.originalRarity 
+                        : charB.rarity;
+
+    // ✨ [수정 2] 등급 체크 (charA.rarity -> realRarityA 로 변경)
+    if (realRarityA !== realRarityB) return alert("같은 등급끼리만 가능합니다.");
+
+    // ✨ [수정 3] 비용 체크 (charA.rarity -> realRarityA 로 변경)
+    // 이제 SR 카드를 넣으면 SR 비용이 청구됩니다.
+    const cost = BREEDING_COSTS[realRarityA]; 
     if (playerCurrency < cost.gem || playerFountainPens < cost.pen) {
         return alert(`재화가 부족합니다.\n(필요: 💎${cost.gem}, 🖋️${cost.pen})`);
     }
 
-    if (!confirm(`[${charA.rarity} 등급 구상]\n💎${cost.gem}, 🖋️${cost.pen}을 소모하여 진행하시겠습니까?`)) return;
+    // ✨ [수정 4] 확인 메시지도 실제 등급으로 표시
+    if (!confirm(`[${realRarityA} 등급 구상]\n💎${cost.gem}, 🖋️${cost.pen}을 소모하여 진행하시겠습니까?`)) return;
 
     // 1. 재화 소모
     playerCurrency -= cost.gem;
     playerFountainPens -= cost.pen;
 
     // 2. 결과 등급 결정 (50% 확률로 하락)
-    const parentRarity = charA.rarity;
+    // ✨ [수정 5] 부모 등급 기준을 실제 등급으로 변경
+    const parentRarity = realRarityA; 
+    
     let childRarity = parentRarity;
     let statMultiplier = 1.0; 
     let rarityChangeMsg = "(등급 유지)";
@@ -10116,7 +10130,7 @@ function executeBreeding() {
             
             const parentWeight = RARITY_STATS_WEIGHT[parentRarity];
             const childWeight = RARITY_STATS_WEIGHT[childRarity];
-            statMultiplier = childWeight / parentWeight; // 예: 45/70 = 0.64
+            statMultiplier = childWeight / parentWeight; 
             
             rarityChangeMsg = "📉 등급 하락 (능력치 조정됨)";
         }
@@ -10126,11 +10140,10 @@ function executeBreeding() {
     // 법칙 1: 캐릭터(외형/대사)는 교배원1(A)
     const childName = charA.name;   
     
-    // 법칙 2: 진영은 교배원2(B)
-    // [수정 후] 부모 B가 유전된 진영을 가지고 있다면 그것을, 없다면 원래 진영을 사용
-const childFaction = (instanceB.inherited && instanceB.inherited.faction) 
-                     ? instanceB.inherited.faction 
-                     : charB.faction;
+    // 법칙 2: 진영은 교배원2(B) (이미 수정하셨으므로 그대로 둡니다)
+    const childFaction = (instanceB.inherited && instanceB.inherited.faction) 
+                         ? instanceB.inherited.faction 
+                         : charB.faction;
 
     // 법칙 3: 스탯 유전 (HP/DEF: A우세, ATK: B우세)
     const HIGH_CHANCE = 0.8;
@@ -10138,28 +10151,28 @@ const childFaction = (instanceB.inherited && instanceB.inherited.faction)
     const baseStatsB = charB.stats;
 
     let rawHp = (Math.random() < HIGH_CHANCE) ? baseStatsA.hp : baseStatsB.hp;
-let rawDef = (Math.random() < HIGH_CHANCE) ? baseStatsA.def : baseStatsB.def;
-let rawAtk = (Math.random() < HIGH_CHANCE) ? baseStatsB.atk : baseStatsA.atk;
+    let rawDef = (Math.random() < HIGH_CHANCE) ? baseStatsA.def : baseStatsB.def;
+    let rawAtk = (Math.random() < HIGH_CHANCE) ? baseStatsB.atk : baseStatsA.atk;
 
-// ✨ [추가] 아이템 효과 강제 적용
-if (activeInspirationEffect) {
-    const targetBase = activeInspirationEffect.motive === 'a' ? baseStatsA : baseStatsB;
-    
-    if (activeInspirationEffect.type === 'atk') {
-        rawAtk = targetBase.atk;
-        playerInspAtk--;
-    } else if (activeInspirationEffect.type === 'def') {
-        rawDef = targetBase.def;
-        playerInspDef--;
-    } else if (activeInspirationEffect.type === 'hp') {
-        rawHp = targetBase.hp;
-        playerInspHp--;
+    // 아이템 효과 강제 적용
+    if (activeInspirationEffect) {
+        const targetBase = activeInspirationEffect.motive === 'a' ? baseStatsA : baseStatsB;
+        
+        if (activeInspirationEffect.type === 'atk') {
+            rawAtk = targetBase.atk;
+            playerInspAtk--;
+        } else if (activeInspirationEffect.type === 'def') {
+            rawDef = targetBase.def;
+            playerInspDef--;
+        } else if (activeInspirationEffect.type === 'hp') {
+            rawHp = targetBase.hp;
+            playerInspHp--;
+        }
+        
+        // 사용 후 초기화
+        activeInspirationEffect = null;
+        document.getElementById('insp-item-status').classList.add('hidden');
     }
-    
-    // 사용 후 초기화
-    activeInspirationEffect = null;
-    document.getElementById('insp-item-status').classList.add('hidden');
-}
 
     // 등급 하락 시 스탯 페널티 적용
     const childHp = Math.floor(rawHp * statMultiplier);
@@ -10189,8 +10202,7 @@ if (activeInspirationEffect) {
             faction: childFaction,
             stats: { hp: childHp, atk: childAtk, def: childDef },
             skills: childSkills,
-            originalRarity: childRarity,
-            // ✨ [핵심 추가] 부모(모티브)의 이름을 족보에 기록합니다!
+            originalRarity: childRarity, // 자식에게 물려줄 등급 저장
             parents: [charA.name, charB.name] 
         }
     };
