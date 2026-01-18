@@ -4852,32 +4852,17 @@ async function startCombat(indices, type) {
         }));
         // 레이드 최대 체력 저장
         monsterData.maxHp = raidBossData.maxHp; 
-    } else if (type === 'main_stage') {
-        const combatData = mainChapters[indices.chapter].stages[indices.stage];
-		// 🕵️‍♂️ [범인 찾기용 로그 코드 시작]
-        console.log("=== 몬스터 데이터 디버깅 ===");
-        console.log("1. 스테이지에서 요구하는 몬스터 이름:", combatData.monsterName);
-        console.log("   -> 글자 길이:", combatData.monsterName ? combatData.monsterName.length : "없음");
+    const combatData = mainChapters[indices.chapter].stages[indices.stage];
         
-        console.log("2. 현재 로드된 전체 몬스터 이름 목록:", Object.keys(monsters));
-        
-        const checkMonster = monsters[combatData.monsterName];
-        console.log("3. 검색 결과:", checkMonster);
-        
-        // 몬스터 데이터 내부 구조 확인 (헤더 문제 확인용)
-        if (Object.keys(monsters).length > 0) {
-            const firstKey = Object.keys(monsters)[0];
-            console.log("4. (참고) 첫 번째 몬스터의 데이터 구조:", monsters[firstKey]);
+        // ✨ [수정] 몬스터 데이터 존재 여부 확인 (안전장치)
+        if (!combatData.monsterName || !monsters[combatData.monsterName]) {
+            console.error(`🚨 오류: 스테이지의 몬스터 이름([${combatData.monsterName}])과 일치하는 몬스터 데이터가 없습니다.`);
+            alert(`데이터 오류: 몬스터 '[${combatData.monsterName}]'의 정보를 찾을 수 없습니다.\n(오타가 있거나 몬스터 시트에 등록되지 않았습니다.)`);
+            isCombatRunning = false;
+            return; // 함수 강제 종료
         }
-        console.log("================================");
-        // 🕵️‍♂️ [범인 찾기용 로그 코드 끝]
+
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
-        // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
-        monsterData.maxHp = monsterData.stats.hp;
-    } else if (type === 'event') {
-        const combatData = eventDungeons[indices];
-        monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
-        // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
         monsterData.maxHp = monsterData.stats.hp;
     }
     // ▲▲▲ 몬스터 데이터 설정 끝 ▲▲▲
