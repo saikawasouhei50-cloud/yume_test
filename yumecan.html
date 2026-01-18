@@ -1533,7 +1533,7 @@ let currentCollectionGroup = '히어로 대 빌런: 각축전';
 	// ▼▼▼ [수정] 도감 그룹 관리 변수 ▼▼▼
 let currentCollectionSelection = null;
 // 탭으로 만들 그룹 목록 (순서대로 나옵니다)
-const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '히어로 대 빌런: 점령전', '탐정 대 마법사: 기론추리교전', '도박사: 승부사들', '초대객: 몽중관의 살인', '사제와 악마: 고해소', '탐정과 범인: 정차역', 'NPC'];
+const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '사제와 악마: 고해소', 'NPC'];
 
     // DOM이 모두 로드된 후 게임 스크립트 실행
     document.addEventListener('DOMContentLoaded', async () => {
@@ -4854,6 +4854,23 @@ async function startCombat(indices, type) {
         monsterData.maxHp = raidBossData.maxHp; 
     } else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
+		// 🕵️‍♂️ [범인 찾기용 로그 코드 시작]
+        console.log("=== 몬스터 데이터 디버깅 ===");
+        console.log("1. 스테이지에서 요구하는 몬스터 이름:", combatData.monsterName);
+        console.log("   -> 글자 길이:", combatData.monsterName ? combatData.monsterName.length : "없음");
+        
+        console.log("2. 현재 로드된 전체 몬스터 이름 목록:", Object.keys(monsters));
+        
+        const checkMonster = monsters[combatData.monsterName];
+        console.log("3. 검색 결과:", checkMonster);
+        
+        // 몬스터 데이터 내부 구조 확인 (헤더 문제 확인용)
+        if (Object.keys(monsters).length > 0) {
+            const firstKey = Object.keys(monsters)[0];
+            console.log("4. (참고) 첫 번째 몬스터의 데이터 구조:", monsters[firstKey]);
+        }
+        console.log("================================");
+        // 🕵️‍♂️ [범인 찾기용 로그 코드 끝]
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
         // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
         monsterData.maxHp = monsterData.stats.hp;
@@ -8295,41 +8312,52 @@ document.getElementById('pull-ssr-guaranteed').addEventListener('click', handleS
 		
 		// ================== 🤝 친구 시스템 (상호 수락 버전) ==================
 
+// 1. 친구 요청 보내기 (중복 방지 안전장치 추가)
 async function sendFriendRequest(targetUid, targetNickname) {
-    if (!auth.currentUser) return alert("로그인이 필요합니다.");
-    const myUid = auth.currentUser.uid;
+    if (!currentUser) return alert("로그인이 필요합니다.");
     
-    // 자기 자신 체크
-    if (myUid === targetUid) return alert("자기 자신에게는 신청할 수 없습니다.");
-
     try {
+        // ✨ [핵심] 이미 친구인지 먼저 확인!
+        const myCheck = await db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid).get();
+        if (myCheck.exists) {
+            const status = myCheck.data().status || 'accepted';
+            if (status === 'accepted') return alert("이미 친구 사이입니다.");
+            if (status === 'sent') return alert("이미 요청을 보낸 상태입니다.");
+            if (status === 'received') return alert("상대방이 이미 요청을 보냈습니다. 받은 요청을 확인해주세요.");
+        }
+
         const batch = db.batch();
-        const now = firebase.firestore.FieldValue.serverTimestamp();
 
-        // [1] 상대방의 친구 목록에 나를 추가 (상태: received)
-        // 경로는 users / 상대UID / friends / 내UID
-        const targetRef = db.collection('users').doc(targetUid).collection('friends').doc(myUid);
-        batch.set(targetRef, {
-            nickname: currentPlayerNickname || "이름없음", // 내 닉네임
-            status: 'received',
-            updatedAt: now
-        });
-
-        // [2] 내 친구 목록에 상대방을 추가 (상태: sent)
-        // 경로는 users / 내UID / friends / 상대UID
-        const myRef = db.collection('users').doc(myUid).collection('friends').doc(targetUid);
+        // 1. 내 친구 목록에 추가 (상태: sent)
+        const myRef = db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid);
         batch.set(myRef, {
             nickname: targetNickname,
             status: 'sent',
-            updatedAt: now
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 2. 상대방 친구 목록에 추가 (상태: received)
+        const theirRef = db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid);
+        batch.set(theirRef, {
+            nickname: currentPlayerNickname, 
+            status: 'received',
+			tutorialFinished: playerTutorialFinished, 
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         await batch.commit();
+        
         alert(`[${targetNickname}]님에게 친구 요청을 보냈습니다!`);
         
+        // UI 갱신 (프로필 창이 열려있다면 닫고, 친구 목록이 열려있다면 갱신)
+        if (document.getElementById('other-user-profile-modal')) {
+            document.getElementById('other-user-profile-modal').remove();
+        }
+        loadFriendList();
+
     } catch (error) {
-        console.error("상세 에러 확인:", error);
-        alert("권한 오류가 발생했습니다. 규칙 설정을 다시 확인해주세요.");
+        console.error("요청 실패:", error);
+        alert("친구 요청 전송에 실패했습니다.");
     }
 }
 
@@ -11089,6 +11117,7 @@ function closeInspModal() {
     </script>
 </body>
 </html>
+
 
 
 
