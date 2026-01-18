@@ -3489,30 +3489,38 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
         return char ? char.rarity : 'N'; // 데이터 없으면 N 처리
     };
 
-    // --- 1. 필터링 로직 (수정됨) ---
+    // --- 1. 필터링 로직 (수정됨: 안전장치 추가) ---
     const filteredInventory = playerInventory.filter(cardInstance => {
         
+        // 0️⃣ 안전장치: 도감 정보가 없는 카드는 목록에서 제외하거나 무시
+        const charInfo = findCharacter(cardInstance.name);
+        if (!charInfo) return false; 
+
         // 1️⃣ 등급 필터 검사
         let isRarityMatch = true;
         if (currentRarityFilter !== 'All') {
-            // getRealRarity 함수를 사용하여 실제 등급 비교
-            isRarityMatch = getRealRarity(cardInstance) === currentRarityFilter;
+            // getRealRarity 함수가 없다면 아래 로직 사용, 있다면 getRealRarity(cardInstance) 사용
+            // 여기서는 안전하게 직접 로직을 넣었습니다.
+            const realRarity = (cardInstance.inherited && cardInstance.inherited.originalRarity) 
+                               ? cardInstance.inherited.originalRarity 
+                               : charInfo.rarity;
+                               
+            isRarityMatch = realRarity === currentRarityFilter;
         }
 
-        // 2️⃣ 진영 필터 검사 (✨ 추가된 부분)
+        // 2️⃣ 진영 필터 검사
         let isFactionMatch = true;
         if (typeof currentFactionFilter !== 'undefined' && currentFactionFilter !== 'all') {
-            const charInfo = findCharacter(cardInstance.name);
             
             // 유전된 진영 우선 확인, 없으면 도감 진영 사용
             const realFaction = (cardInstance.inherited && cardInstance.inherited.faction) 
                                 ? cardInstance.inherited.faction 
-                                : charInfo.faction;
+                                : charInfo.faction; // 여기서 에러가 났었음 (이제 charInfo가 확실히 있어서 괜찮음)
             
             isFactionMatch = realFaction === currentFactionFilter;
         }
 
-        // 두 조건 모두 만족(AND)해야 목록에 표시
+        // 두 조건 모두 만족해야 함
         return isRarityMatch && isFactionMatch;
     });
 
