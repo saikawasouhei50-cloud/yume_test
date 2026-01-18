@@ -1533,7 +1533,7 @@ let currentCollectionGroup = '히어로 대 빌런: 각축전';
 	// ▼▼▼ [수정] 도감 그룹 관리 변수 ▼▼▼
 let currentCollectionSelection = null;
 // 탭으로 만들 그룹 목록 (순서대로 나옵니다)
-const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '사제와 악마: 고해소', 'NPC'];
+const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '히어로 대 빌런: 점령전', '탐정 대 마법사: 기론추리교전', '도박사: 승부사들', '초대객: 몽중관의 살인', '사제와 악마: 고해소', '탐정과 범인: 정차역', 'NPC'];
 
     // DOM이 모두 로드된 후 게임 스크립트 실행
     document.addEventListener('DOMContentLoaded', async () => {
@@ -4787,7 +4787,7 @@ function challengeStage(chapterIndex, stageIndex) {
     const stageId = `${chapterIndex + 1}-${stageIndex + 1}`;
 
     // 1. 스테이지 스토리가 있고, 아직 열람하지 않은 경우
-    if (stage.stageStory && stage.stageStory.length > 0 && !clearedStageStories.includes(stageId)) {
+    if (stage.stageStory && !clearedStageStories.includes(stageId)) {
         const storyToStart = { content: stage.stageStory }; 
         
         // 스토리 완료 시 책갈피 소모 및 전투 시작을 위한 콜백 설정
@@ -4852,17 +4852,15 @@ async function startCombat(indices, type) {
         }));
         // 레이드 최대 체력 저장
         monsterData.maxHp = raidBossData.maxHp; 
-    const combatData = mainChapters[indices.chapter].stages[indices.stage];
-        
-        // ✨ [수정] 몬스터 데이터 존재 여부 확인 (안전장치)
-        if (!combatData.monsterName || !monsters[combatData.monsterName]) {
-            console.error(`🚨 오류: 스테이지의 몬스터 이름([${combatData.monsterName}])과 일치하는 몬스터 데이터가 없습니다.`);
-            alert(`데이터 오류: 몬스터 '[${combatData.monsterName}]'의 정보를 찾을 수 없습니다.\n(오타가 있거나 몬스터 시트에 등록되지 않았습니다.)`);
-            isCombatRunning = false;
-            return; // 함수 강제 종료
-        }
-
+    } else if (type === 'main_stage') {
+        const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
+        monsterData.maxHp = monsterData.stats.hp;
+    } else if (type === 'event') {
+        const combatData = eventDungeons[indices];
+        monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
         monsterData.maxHp = monsterData.stats.hp;
     }
     // ▲▲▲ 몬스터 데이터 설정 끝 ▲▲▲
@@ -7476,15 +7474,7 @@ interactiveStoryModal.addEventListener('click', handleStoryInteraction);
 document.getElementById('close-stats-modal').addEventListener('click', () => {
     document.getElementById('choice-stats-modal').classList.add('hidden');
 });
-storySkipButton.addEventListener('click', () => {
-    // 스킵 시에도 콜백(전투 시작)이 있으면 실행하도록 처리
-    const callback = interactiveStoryModal.dataset.callback;
-    closeInteractiveStory();
-    if (callback) {
-        eval(callback);
-        interactiveStoryModal.dataset.callback = '';
-    }
-});
+storySkipButton.addEventListener('click', closeInteractiveStory);
 
 // ✨ 카드 상세 스토리 페이지네이션
 detailStoryPrevButton.addEventListener('click', () => {
@@ -8305,52 +8295,41 @@ document.getElementById('pull-ssr-guaranteed').addEventListener('click', handleS
 		
 		// ================== 🤝 친구 시스템 (상호 수락 버전) ==================
 
-// 1. 친구 요청 보내기 (중복 방지 안전장치 추가)
 async function sendFriendRequest(targetUid, targetNickname) {
-    if (!currentUser) return alert("로그인이 필요합니다.");
+    if (!auth.currentUser) return alert("로그인이 필요합니다.");
+    const myUid = auth.currentUser.uid;
     
+    // 자기 자신 체크
+    if (myUid === targetUid) return alert("자기 자신에게는 신청할 수 없습니다.");
+
     try {
-        // ✨ [핵심] 이미 친구인지 먼저 확인!
-        const myCheck = await db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid).get();
-        if (myCheck.exists) {
-            const status = myCheck.data().status || 'accepted';
-            if (status === 'accepted') return alert("이미 친구 사이입니다.");
-            if (status === 'sent') return alert("이미 요청을 보낸 상태입니다.");
-            if (status === 'received') return alert("상대방이 이미 요청을 보냈습니다. 받은 요청을 확인해주세요.");
-        }
-
         const batch = db.batch();
+        const now = firebase.firestore.FieldValue.serverTimestamp();
 
-        // 1. 내 친구 목록에 추가 (상태: sent)
-        const myRef = db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid);
+        // [1] 상대방의 친구 목록에 나를 추가 (상태: received)
+        // 경로는 users / 상대UID / friends / 내UID
+        const targetRef = db.collection('users').doc(targetUid).collection('friends').doc(myUid);
+        batch.set(targetRef, {
+            nickname: currentPlayerNickname || "이름없음", // 내 닉네임
+            status: 'received',
+            updatedAt: now
+        });
+
+        // [2] 내 친구 목록에 상대방을 추가 (상태: sent)
+        // 경로는 users / 내UID / friends / 상대UID
+        const myRef = db.collection('users').doc(myUid).collection('friends').doc(targetUid);
         batch.set(myRef, {
             nickname: targetNickname,
             status: 'sent',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // 2. 상대방 친구 목록에 추가 (상태: received)
-        const theirRef = db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid);
-        batch.set(theirRef, {
-            nickname: currentPlayerNickname, 
-            status: 'received',
-			tutorialFinished: playerTutorialFinished, 
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: now
         });
 
         await batch.commit();
-        
         alert(`[${targetNickname}]님에게 친구 요청을 보냈습니다!`);
         
-        // UI 갱신 (프로필 창이 열려있다면 닫고, 친구 목록이 열려있다면 갱신)
-        if (document.getElementById('other-user-profile-modal')) {
-            document.getElementById('other-user-profile-modal').remove();
-        }
-        loadFriendList();
-
     } catch (error) {
-        console.error("요청 실패:", error);
-        alert("친구 요청 전송에 실패했습니다.");
+        console.error("상세 에러 확인:", error);
+        alert("권한 오류가 발생했습니다. 규칙 설정을 다시 확인해주세요.");
     }
 }
 
@@ -11110,8 +11089,6 @@ function closeInspModal() {
     </script>
 </body>
 </html>
-
-
 
 
 
