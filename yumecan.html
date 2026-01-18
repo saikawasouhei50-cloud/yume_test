@@ -4460,33 +4460,7 @@ window.buyFurniture = function(furnitureId) {
     }
 };
 
-// [추가] 현재 선택된 진영 필터 (기본값: 'all')
-let currentFactionFilter = 'all';
 
-// 1. 진영 메뉴 토글 함수
-function toggleFactionMenu() {
-    const menu = document.getElementById('faction-filter-options');
-    const arrow = document.getElementById('faction-filter-arrow');
-    menu.classList.toggle('hidden');
-    arrow.textContent = menu.classList.contains('hidden') ? '▼' : '▲';
-}
-
-// 2. 필터 설정 함수
-function setFactionFilter(faction) {
-    currentFactionFilter = faction;
-    
-    // UI 업데이트 (선택된 버튼 강조)
-    document.querySelectorAll('.faction-btn').forEach(btn => {
-        if (btn.innerText.includes(faction) || (faction === 'all' && btn.innerText.includes('전체'))) {
-            btn.classList.add('ring-2', 'ring-white'); // 선택됨 표시
-        } else {
-            btn.classList.remove('ring-2', 'ring-white');
-        }
-    });
-
-    // 서고 다시 그리기
-    displayInventory();
-}
 
 let playerLastRaidSpawnId = 0;
 
@@ -11203,6 +11177,34 @@ function closeInspModal() {
     if (modal) {
         modal.classList.add('hidden');
     }
+}
+
+// [추가] 현재 선택된 진영 필터 (기본값: 'all')
+let currentFactionFilter = 'all';
+
+// 1. 진영 메뉴 토글 함수
+function toggleFactionMenu() {
+    const menu = document.getElementById('faction-filter-options');
+    const arrow = document.getElementById('faction-filter-arrow');
+    menu.classList.toggle('hidden');
+    arrow.textContent = menu.classList.contains('hidden') ? '▼' : '▲';
+}
+
+// 2. 필터 설정 함수
+function setFactionFilter(faction) {
+    currentFactionFilter = faction;
+    
+    // UI 업데이트 (선택된 버튼 강조)
+    document.querySelectorAll('.faction-btn').forEach(btn => {
+        if (btn.innerText.includes(faction) || (faction === 'all' && btn.innerText.includes('전체'))) {
+            btn.classList.add('ring-2', 'ring-white'); // 선택됨 표시
+        } else {
+            btn.classList.remove('ring-2', 'ring-white');
+        }
+    });
+
+    // 서고 다시 그리기
+    displayInventory();
 }
 	
     </script>
