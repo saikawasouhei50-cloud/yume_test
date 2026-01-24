@@ -3643,7 +3643,10 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
     // --- 4. 버튼 UI 업데이트 ---
     document.querySelectorAll('.sort-button').forEach(btn => {
         btn.classList.remove('active', 'bg-blue-500');
-        btn.querySelector('.sort-indicator').textContent = '';
+        const indicator = btn.querySelector('.sort-indicator');
+if (indicator) {
+    indicator.textContent = '';
+}
     });
     const activeSortButton = document.querySelector(`.sort-button[data-sort="${currentSortOrder}"]`);
     if (activeSortButton) {
@@ -11256,7 +11259,6 @@ function setFactionFilter(faction) {
     </script>
 </body>
 </html>
-
 
 
 
