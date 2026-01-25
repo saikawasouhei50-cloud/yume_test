@@ -930,7 +930,6 @@ body.pointer-events-none {
                 🔄 전체 (필터 해제)
             </button>
             <button onclick="setFactionFilter('탐정')" class="faction-btn bg-blue-500 hover:bg-blue-600 text-white text-[10px] py-1 rounded shadow-sm">탐정</button>
-            <button onclick="setFactionFilter('조수')" class="faction-btn bg-green-500 hover:bg-green-600 text-white text-[10px] py-1 rounded shadow-sm">조수</button>
             <button onclick="setFactionFilter('범인')" class="faction-btn bg-red-500 hover:bg-red-600 text-white text-[10px] py-1 rounded shadow-sm">범인</button>
             <button onclick="setFactionFilter('히어로')" class="faction-btn bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded shadow-sm">히어로</button>
             <button onclick="setFactionFilter('빌런')" class="faction-btn bg-gray-800 hover:bg-gray-900 text-white text-[10px] py-1 rounded shadow-sm border border-gray-600">빌런</button>
@@ -1804,7 +1803,7 @@ let currentUser = null;
 			// 전역 변수 선언부 (스크립트 맨 위쪽)
 let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기값을 줘야 합니다!
 			let currentTradeRarityFilter = 'All';
-            let playerCurrency = 100;
+            let playerCurrency = 500;
 			let playerChoices = {};
 			let playerFountainPens = 500; // 🖋️
 			let playerInkwells = 0;
@@ -2234,6 +2233,7 @@ playerInspHp = savedData.inspHp ?? 0;
     } else {
         console.log("새로운 유저입니다. 초기 데이터로 시작합니다.");
         initializeNewGameData();
+		playerSystemMailHistory = [];
         await saveGameToFirebase(); 
     }
 
@@ -2288,83 +2288,92 @@ function saveGame() {
 
             // [수정] 게임 데이터 초기화 (리세마라 + 거래소 삭제 + 친구 관계 완전 삭제)
 async function resetGame() {
-    // 1. 확인 버튼 로직 (한 번 누르면 '확인?'으로 바뀜)
-    if (resetButton.dataset.confirming === 'true') {
-        try {
-            if (currentUser) {
-                console.log("🔥 계정 초기화 시작...");
-
-                // =========================================================
-                // 1단계: 거래소에 올려둔 내 매물 삭제
-                // =========================================================
-                const myTradesSnapshot = await db.collection('trades')
-                    .where('senderUid', '==', currentUser.uid)
-                    .get();
-
-                const tradeBatch = db.batch();
-                myTradesSnapshot.forEach(doc => {
-                    tradeBatch.delete(doc.ref);
-                });
-                await tradeBatch.commit();
-                console.log(`✅ 거래소 매물 ${myTradesSnapshot.size}건 삭제 완료.`);
-
-                // =========================================================
-                // 2단계: 친구 관계 끊기 (나 <-> 친구 양쪽 모두 삭제)
-                // =========================================================
-                const myFriendsSnapshot = await db.collection('users')
-                    .doc(currentUser.uid)
-                    .collection('friends')
-                    .get();
-
-                if (!myFriendsSnapshot.empty) {
-                    const friendBatch = db.batch();
-                    
-                    myFriendsSnapshot.forEach(doc => {
-                        const friendUid = doc.id;
-                        
-                        // 1. 상대방의 친구 목록에서 '나'를 삭제
-                        const theirRef = db.collection('users').doc(friendUid)
-                                           .collection('friends').doc(currentUser.uid);
-                        friendBatch.delete(theirRef);
-
-                        // 2. 내 친구 목록에서 '상대방'을 삭제 (사실 본체 삭제하면 같이 사라지지만 확실하게 처리)
-                        friendBatch.delete(doc.ref);
-                    });
-
-                    await friendBatch.commit();
-                    console.log(`✅ 친구 ${myFriendsSnapshot.size}명과의 관계 삭제 완료.`);
-                }
-
-                // =========================================================
-                // 3단계: 내 유저 데이터(본체) 삭제
-                // =========================================================
-                await db.collection('users').doc(currentUser.uid).delete();
-                console.log("✅ 유저 데이터 삭제 완료.");
-            }
-
-            // 4. 로컬 데이터 삭제 및 새로고침
-            localStorage.removeItem(SAVE_DATA_KEY);
-
-            alert("계정이 완벽하게 초기화되었습니다.\n(친구 목록, 거래소 매물, 게임 데이터 삭제 완료)");
-            location.reload(); 
-
-        } catch (e) {
-            console.error("초기화 실패:", e);
-            alert("초기화 중 오류가 발생했습니다: " + e.message);
-        }
-    } else {
-        // 버튼 UI 변경 로직
-        resetButton.textContent = '확인?';
+    // 1. [UI] 버튼 상태 변경 로직 (기존과 동일)
+    if (resetButton.dataset.confirming !== 'true') {
+        resetButton.textContent = '정말 삭제?';
         resetButton.dataset.confirming = 'true';
-        resetButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-        resetButton.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+        resetButton.classList.replace('bg-red-600', 'bg-yellow-500');
         
         setTimeout(() => {
             resetButton.textContent = '초기화';
             resetButton.dataset.confirming = 'false';
-            resetButton.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-            resetButton.classList.add('bg-red-600', 'hover:bg-red-700');
+            resetButton.classList.replace('bg-yellow-500', 'bg-red-600');
         }, 3000);
+        return;
+    }
+
+    // 2. [로직] 실제 삭제 시작
+    try {
+        if (!currentUser) return;
+        
+        console.log("🔥 계정 초기화 프로세스 시작...");
+        
+        // ⛔ [중요 1] 삭제 중에 자동 저장이 돌면 데이터가 부활하므로, 자동 저장 타이머가 있다면 끕니다.
+        // (만약 autoSaveInterval 변수가 있다면 clearInterval 하세요)
+        // if (typeof autoSaveInterval !== 'undefined') clearInterval(autoSaveInterval);
+
+        // ⛔ [중요 2] 로딩 오버레이를 띄워 유저가 아무것도 못하게 막습니다.
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        document.body.classList.add('loading');
+
+        // =========================================================
+        // 1단계: 거래소 & 친구 삭제 (기존 코드 유지)
+        // =========================================================
+        const batch = db.batch();
+
+        // (내 매물 삭제)
+        const myTrades = await db.collection('trades').where('senderUid', '==', currentUser.uid).get();
+        myTrades.forEach(doc => batch.delete(doc.ref));
+
+        // (친구 관계 삭제)
+        const myFriends = await db.collection('users').doc(currentUser.uid).collection('friends').get();
+        myFriends.forEach(doc => {
+            // 상대방 친구 목록에서 나 삭제
+            const theirRef = db.collection('users').doc(doc.id).collection('friends').doc(currentUser.uid);
+            batch.delete(theirRef);
+            // 내 친구 목록 삭제
+            batch.delete(doc.ref);
+        });
+
+        await batch.commit();
+        console.log("✅ 거래소 및 친구 관계 정리 완료");
+
+        // =========================================================
+        // 2단계: 유저 데이터(본체) 삭제
+        // =========================================================
+        // delete()는 권한 문제로 가끔 실패할 수 있으므로, 
+        // 확실하게 하기 위해 빈 껍데기로 덮어쓰기(set)를 먼저 하고 삭제합니다.
+        
+        // 1. 빈 데이터로 덮어쓰기 (내용물 비우기)
+        await db.collection('users').doc(currentUser.uid).set({
+            nickname: "Unknown",
+            systemMailHistory: [], // ✨ 우편 기록 확실히 날리기
+            resetTime: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 2. 문서 자체 삭제
+        await db.collection('users').doc(currentUser.uid).delete();
+        console.log("✅ 유저 DB 데이터 완전 삭제 성공");
+
+        // =========================================================
+        // 3단계: 로컬 데이터 삭제
+        // =========================================================
+        localStorage.removeItem(SAVE_DATA_KEY);
+        playerSystemMailHistory = []; // 메모리에서도 날림
+
+        // ⛔ [중요 3] alert창은 사용자가 '확인'을 누를 때까지 브라우저를 멈춥니다.
+        // 이 덕분에 삭제가 완료될 시간을 확실하게 벌어줍니다.
+        alert("계정이 초기화되었습니다.\n확인을 누르면 게임을 다시 시작합니다.");
+        
+        location.reload();
+
+    } catch (e) {
+        console.error("초기화 실패:", e);
+        alert("초기화 중 오류 발생: " + e.message + "\n(Firestore 규칙 권한 문제일 수 있습니다)");
+        
+        // 에러가 나도 오버레이는 꺼줍니다.
+        document.getElementById('loading-overlay').classList.add('hidden');
+        document.body.classList.remove('loading');
     }
 }
 
@@ -9636,20 +9645,40 @@ window.openMailbox = openMailbox;
 
 
 async function checkAndProcessSystemMails(uid) {
+    // 🚨 [안전장치] 시트 데이터(systemMails)가 아직 안 왔으면 0.5초씩 기다림 (최대 5초)
+    let retryCount = 0;
+    while ((!systemMails || systemMails.length === 0) && retryCount < 10) {
+        console.log(`⏳ 우편 데이터를 기다리는 중... (${retryCount + 1}/10)`);
+        await new Promise(resolve => setTimeout(resolve, 500)); // 0.5초 대기
+        retryCount++;
+    }
+
+    // 기다려도 데이터가 없으면 포기
+    if (!systemMails || systemMails.length === 0) {
+        console.warn("⚠️ 우편 데이터(systemMails)를 불러오지 못해 우편 검사를 건너뜁니다.");
+        return;
+    }
+
     const now = new Date();
     const batch = db.batch();
     const userRef = db.collection('users').doc(uid);
     let newMailCount = 0;
 
+    console.log(`📬 우편 검사 시작 (총 ${systemMails.length}개 운영자 메일 확인 중)`);
+
     // 1. 시트에 있는 모든 메일을 순회
     systemMails.forEach(mail => {
-        // (A) 기간 체크
-        if (now < mail.startDate || now > mail.endDate) return;
+        // (A) 기간 체크 (Date 객체가 아닐 경우를 대비해 변환)
+        const startDate = mail.startDate instanceof Date ? mail.startDate : new Date(mail.startDate);
+        const endDate = mail.endDate instanceof Date ? mail.endDate : new Date(mail.endDate);
+
+        if (now < startDate || now > endDate) return;
 
         // (B) 타겟 체크 (ALL 이거나 내 UID여야 함)
         if (mail.target !== 'ALL' && mail.target !== uid) return;
 
         // (C) 이미 받은 메일인지 체크 (History 배열 확인)
+        // ✨ [디버깅] 여기서 playerSystemMailHistory가 빈 배열이어야 메일을 받음
         if (playerSystemMailHistory.includes(mail.id)) return;
 
         // --- 조건 만족! 받을 메일임 ---
@@ -9680,8 +9709,6 @@ async function checkAndProcessSystemMails(uid) {
             await batch.commit();
             console.log(`📭 시스템 우편 ${newMailCount}개가 도착했습니다!`);
             
-            // 배지 알림 갱신을 위해 리스너가 작동하겠지만, 즉각 반응을 위해 알림 띄우기
-            // (toastNotification이 있다면 활용)
             const toast = document.getElementById('toast-notification');
             if(toast) {
                 toast.textContent = `📩 새로운 운영자 우편이 ${newMailCount}통 도착했습니다!`;
@@ -9691,6 +9718,8 @@ async function checkAndProcessSystemMails(uid) {
         } catch (e) {
             console.error("시스템 우편 동기화 실패:", e);
         }
+    } else {
+        console.log("📭 새로 받을 우편이 없습니다.");
     }
 }
 // ✅ [신규] 1분마다 구글 시트를 확인해서 새 우편이 있으면 배달하는 함수
@@ -11286,8 +11315,6 @@ function setFactionFilter(faction) {
     </script>
 </body>
 </html>
-
-
 
 
 
