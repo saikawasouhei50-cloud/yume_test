@@ -8,6 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <title>YUMECAN!_</title>
     <!-- Tailwind CSS를 사용하여 빠르고 멋진 디자인을 적용합니다 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 3D 렌더링을 위한 Three.js 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
 
     /* --- ✨ 체력 바 스타일 복구 및 테크웨어 테마 적용 ✨ --- */
@@ -778,23 +780,38 @@
                 </div>
             </div>
 
-            <div id="combat-in-progress-view" class="hidden">
-                <div class="grid grid-cols-3 gap-4 items-center">
+            <div id="combat-in-progress-view" class="hidden relative overflow-hidden bg-black/80 border border-gray-800 p-4 rounded-sm">
+
+                <!-- ✨ 3D 전투 배경 캔버스 (거대 회전 코어) -->
+                <canvas id="combat-bg-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+
+                <!-- 궁극기 3D 팝업 컷인 연출 오버레이 -->
+                    <div id="combat-3d-cutin" class="hidden absolute inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden bg-cyan-950/30 backdrop-blur-[2px]">
+                        <div id="cutin-card-wrapper" class="relative transform scale-0 transition-transform duration-300 flex flex-col items-center max-w-lg px-4 text-center">
+                            <div class="absolute -inset-4 border-2 border-cyan-400 animate-ping opacity-40"></div>
+                            <img id="cutin-character-img" src="" class="max-h-[45vh] object-contain drop-shadow-[0_0_30px_rgba(0,255,255,0.8)] border-2 border-cyan-400 bg-black/80 mb-3">
+                            <div id="cutin-skill-name" class="font-tech font-black text-2xl md:text-4xl text-cyan-400 tracking-[0.2em] bg-black/90 px-6 py-1.5 border-l-4 border-cyan-400"></div>
+                            <!-- ✨ [추가] 컷인 대사 출력 영역 -->
+                            <div id="cutin-dialogue" class="mt-2 text-sm md:text-lg text-gray-200 font-bold bg-black/80 px-4 py-1.5 border border-gray-700 tracking-wide italic"></div>
+                        </div>
+                    </div>
+
+                <!-- 기존 전투 요소 (z-10을 주어 3D 배경 위로 배치) -->
+                <div class="relative z-10 grid grid-cols-3 gap-4 items-center">
                     <div id="combat-player-deck" class="col-span-1 space-y-2"></div>
                     <div id="combat-monster-area" class="col-span-2 flex flex-col items-center"></div>
                 </div>
 
-                <div class="flex justify-end items-center gap-2 mt-4">
-                    <button id="speed-1x" class="speed-button active bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">1x</button>
-                    <button id="speed-2x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">2x</button>
-                    <button id="speed-4x" class="speed-button bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm">4x</button>
-
-                    <button id="combat-run-button" class="gacha-button bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-1 px-3 rounded-full text-sm ml-2">항복</button>
+                <div class="relative z-10 flex justify-end items-center gap-2 mt-4 font-tech">
+                    <button id="speed-1x" class="speed-button active gacha-button py-1 px-3 text-xs">1x</button>
+                    <button id="speed-2x" class="speed-button gacha-button py-1 px-3 text-xs">2x</button>
+                    <button id="speed-4x" class="speed-button gacha-button py-1 px-3 text-xs">4x</button>
+                    <button id="combat-run-button" class="gacha-button py-1 px-3 text-xs border-yellow-600 text-yellow-500 ml-2">항복</button>
                 </div>
-                <div id="combat-log-container" class="mt-2 bg-black/30 p-4 rounded-lg h-40 overflow-y-auto">
+
+                <div class="relative z-10 mt-2 bg-black/60 border border-gray-800 p-4 rounded-sm h-32 overflow-y-auto custom-scrollbar font-tech text-xs">
                     <div id="combat-log"></div>
                 </div>
-
             </div>
 
              <div id="collection-view" class="hidden">
@@ -1458,6 +1475,28 @@
                         <div class="mt-4 pt-3 border-t border-gray-800 flex justify-between items-center">
                             <p class="text-xs text-gray-400">선택된 인원: <span id="dispatch-selected-count" class="text-purple-400 font-bold">0</span>명</p>
                             <button onclick="confirmDispatch()" class="gacha-button py-2 px-6 text-xs border-purple-500 text-purple-400 hover:bg-purple-900/30">파견 개시</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 🔥 3D 가챠(소환) 홀로그램 연출 모달 -->
+                <div id="gacha-3d-modal" class="hidden fixed inset-0 z-[10000] bg-[#0b0c10] flex items-center justify-center overflow-hidden">
+                    <!-- 3D 캔버스 -->
+                    <canvas id="gacha-canvas" class="absolute inset-0 w-full h-full"></canvas>
+
+                    <!-- 텍티컬 HUD 오버레이 -->
+                    <div class="absolute inset-0 pointer-events-none flex flex-col justify-between p-6 md:p-10 font-tech">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-cyan-400 text-xs md:text-sm tracking-[0.3em] font-bold animate-pulse">TACTICAL OVERRIDE // SIGNAL DECODER</p>
+                                <h2 id="gacha-3d-status" class="text-white font-black text-xl md:text-3xl tracking-widest mt-1">ANALYZING SIGNAL...</h2>
+                            </div>
+                            <button onclick="skip3DGachaAnimation()" class="pointer-events-auto gacha-button text-xs py-1.5 px-4 border-gray-600 text-gray-400 hover:text-white hover:border-cyan-400">SKIP [ESC]</button>
+                        </div>
+
+                        <!-- 3D 기호 분석 모니터링 텍스트 -->
+                        <div class="w-full max-w-md mx-auto text-center mb-10">
+                            <div id="gacha-3d-rarity-badge" class="hidden text-3xl md:text-6xl font-black font-tech tracking-[0.3em] mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"></div>
+                            <p id="gacha-3d-subtext" class="text-xs text-gray-500 tracking-[0.2em]">DECRYPTING ARCHIVE CODE UNITS</p>
                         </div>
                     </div>
                 </div>
@@ -3706,23 +3745,42 @@ function addCardToInventory(cardName) {
             collectedCardNames.add(cardName);
         }
 
-            function performPulls(count, gachaType = 'normal') {
-    const results = [];
-                let guaranteedSR = (count === 10);
-                for (let i = 0; i < count; i++) {
-                    let pulledChar;
-                    if (guaranteedSR && i === count - 1 && !results.some(c => c.rarity === 'SR' || c.rarity === 'SSR')) {
-                        pulledChar = pullCharacter(['SR', 'SSR'], gachaType);
-                    } else {
-                        pulledChar = pullCharacter(null, gachaType);
-                    }
-                    results.push(pulledChar);
-                    addCardToInventory(pulledChar.name);
-                    playerStats.totalPulls++; // 이 줄 추가
+        function performPulls(count, gachaType = 'normal') {
+            const results = [];
+            let guaranteedSR = (count === 10);
+
+            for (let i = 0; i < count; i++) {
+                let pulledChar;
+                if (guaranteedSR && i === count - 1 && !results.some(c => c.rarity === 'SR' || c.rarity === 'SSR')) {
+                    pulledChar = pullCharacter(['SR', 'SSR'], gachaType);
+                } else {
+                    pulledChar = pullCharacter(null, gachaType);
                 }
-                displayResults(results); updateUI(); saveGame();
-                checkAchievements(); // 이 줄 추가
+                results.push(pulledChar);
+                addCardToInventory(pulledChar.name);
+                playerStats.totalPulls++;
             }
+
+            // ✨ 3D 연출에 results 배열을 통째로 넘겨서 10개의 와이어프레임이 모두 생성되도록 함
+            play3DGachaAnimation(results, () => {
+                displayResults(results); // 10개 전부 나열
+                updateUI();
+                saveGame();
+                checkAchievements();
+            });
+        }
+
+        // ✨ 10개의 카드가 결과 창에 빠짐없이 전부 출력되도록 보장하는 displayResults 함수
+        function displayResults(pulledCharacters) {
+            if (!resultsContainer) return;
+            resultsContainer.innerHTML = ''; // 이전 결과 초기화
+
+            // 반복문을 돌며 10장의 카드를 각각 생성해서 그리드에 모두 추가합니다.
+            pulledCharacters.forEach((character, index) => {
+                const cardEl = createCard(character, { animationIndex: index, mode: 'gachaResult' });
+                resultsContainer.appendChild(cardEl);
+            });
+        }
 
             function getEnhancedStats(cardInstance) {
                 const baseCard = findCharacter(cardInstance.name);
@@ -5507,6 +5565,7 @@ async function startCombat(indices, type) {
 
     // 4. 전투 루프 실행
     await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
+    initCombat3DBackground();
 }
 
 
@@ -5577,11 +5636,15 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 let damage = 0;
 
                 if (skillToUse) {
-                    logCombat(`<strong>${card.name}</strong>의 스킬! <span class="text-yellow-300">"${skillToUse.name}"</span>`);
-                    await delay(400);
-                    if (!isCombatRunning) return;
+                                    logCombat(`<strong>${card.name}</strong>의 스킬! <span class="text-yellow-300">"${skillToUse.name}"</span>`);
 
-                    logCombat(`<em>"${skillToUse.dialogue}"</em>`);
+                                    // ✨ [추가] 궁극기(SSR 혹은 확률적 발동) 또는 일반 스킬 사용 시 3D 팝업 컷인 실행
+                                    await playUltimateCutin(card, skillToUse); // ✨ 객체 전체를 넘겨서 dialogue도 함께 쓰게 함
+
+                                    await delay(400);
+                                    if (!isCombatRunning) return;
+
+                                    logCombat(`<em>"${skillToUse.dialogue}"</em>`);
 
                     // --- 스킬 효과 계산 ---
                     if (skillToUse.type === 'true_damage') {
@@ -5727,10 +5790,17 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     }
 }
 
-            function logCombat(message) {
-                combatLog.innerHTML += `<p>${message}</p>`;
-                combatLogContainer.scrollTop = combatLogContainer.scrollHeight;
-            }
+function logCombat(message) {
+    const logContainer = document.getElementById('combat-log-container');
+    const logEl = document.getElementById('combat-log');
+
+    if (logEl) {
+        logEl.innerHTML += `<p>${message}</p>`;
+    }
+    if (logContainer) {
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+}
 
 			// ✨ [수정된 registerUser 함수]
         async function registerUser() {
@@ -5982,6 +6052,7 @@ if (!hasStoryToShow) {
 
            // ✅ [최종 수정] endCombat (레이드 종료 시 모달 잔상 해결)
 function endCombat(isVictory, combatInfo, totalDamageDealt = 0) {
+  stopCombat3DBackground();
     console.log("1. 전투 종료 진입:", combatInfo);
 
     isCombatRunning = false;
@@ -11985,17 +12056,348 @@ function setFactionFilter(faction) {
     // 서고 다시 그리기
     displayInventory();
 }
+// ==========================================
+// 🔥 Three.js 3D 가챠(소환) 연출 로직 🔥
+// ==========================================
+
+// ==========================================
+// 🔥 10개 다중 3D 와이어프레임 가챠 연출 로직 🔥
+// ==========================================
+
+let gacha3D = {
+    scene: null,
+    camera: null,
+    renderer: null,
+    cubes: [],      // 10개의 3D 와이어프레임 객체를 담을 배열
+    cores: [],      // 10개의 내부 코어 객체를 담을 배열
+    particles: null,
+    animId: null,
+    startTime: 0,
+    onCompleteCallback: null,
+    isSkipped: false
+};
+
+// 1. 다중 3D 가챠 애니메이션 실행 함수 (results 배열을 통째로 받음)
+function play3DGachaAnimation(results, onComplete) {
+    gacha3D.onCompleteCallback = onComplete;
+    gacha3D.isSkipped = false;
+    gacha3D.startTime = Date.now();
+
+    const modal = document.getElementById('gacha-3d-modal');
+    const statusText = document.getElementById('gacha-3d-status');
+    const rarityBadge = document.getElementById('gacha-3d-rarity-badge');
+    const subText = document.getElementById('gacha-3d-subtext');
+
+    modal.classList.remove('hidden');
+    rarityBadge.classList.add('hidden');
+    statusText.textContent = `DECRYPTING ${results.length} SIGNALS...`;
+    subText.textContent = "MULTIPLE ARCHIVE UNITS DETECTED";
+
+    // Three.js 씬 초기화 및 10개 생성
+    initMulti3DGachaScene(results);
+
+    // 애니메이션 루프 시작
+    animateMulti3DGacha();
+}
+
+// 2. 10개의 다중 3D 오브젝트 씬 구축
+function initMulti3DGachaScene(results) {
+    const canvas = document.getElementById('gacha-canvas');
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    gacha3D.scene = new THREE.Scene();
+    gacha3D.scene.fog = new THREE.FogExp2(0x0b0c10, 0.04);
+
+    gacha3D.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+    gacha3D.camera.position.z = 10;
+
+    if (!gacha3D.renderer) {
+        gacha3D.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        gacha3D.renderer.setPixelRatio(window.devicePixelRatio);
+    }
+    gacha3D.renderer.setSize(width, height);
+
+    // 조명
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    gacha3D.scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 2, 25);
+    pointLight.position.set(0, 0, 5);
+    gacha3D.scene.add(pointLight);
+
+    gacha3D.cubes = [];
+    gacha3D.cores = [];
+
+    const colorMap = {
+        'SSR': 0xffcc00, // 골드
+        'SR':  0xb321ff, // 퍼플
+        'R':   0x00f0ff, // 시안
+        'N':   0x888888  // 회색
+    };
+
+    const count = results.length;
+
+    // 결과 개수(최대 10개)만큼 각각의 3동물(와이어프레임 + 코어) 생성 후 배치
+    results.forEach((res, index) => {
+            const color = colorMap[res.rarity] || 0x00f0ff;
+
+            let posX = 0, posY = 0, posZ = 0;
+            if (count === 1) {
+                posX = 0; posY = 0; posZ = 0;
+            } else {
+                // ✨ [수정] 10개의 오브젝트가 화면 중앙을 기준으로 완벽한 원형을 그리며 균등하게 배치되도록 수정
+                const angle = (index / count) * Math.PI * 2;
+                const radius = 2.8; // 반지름 크기 (숫자를 줄이면 더 모이고, 늘리면 더 넓게 퍼집니다)
+
+                posX = (Math.cos(angle) * radius) - 0.8;
+                posY = Math.sin(angle) * radius; // 세로 비율도 1:1 원형으로 맞춤
+                posZ = (Math.random() - 0.5) * 1.5;
+            }
+
+            // [1] 외각 전술 와이어프레임
+            const outerGeo = new THREE.IcosahedronGeometry(1.2, 1);
+            const outerMat = new THREE.MeshBasicMaterial({
+                color: color,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.6
+            });
+            const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+            outerMesh.position.set(posX, posY, posZ);
+            gacha3D.scene.add(outerMesh);
+            gacha3D.cubes.push(outerMesh);
+
+            // [2] 내부 코어
+            const innerGeo = new THREE.OctahedronGeometry(0.5, 0);
+            const innerMat = new THREE.MeshPhongMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.8,
+                shininess: 100,
+                flatShading: true
+            });
+            const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+            innerMesh.position.set(posX, posY, posZ);
+            gacha3D.scene.add(innerMesh);
+            gacha3D.cores.push(innerMesh);
+        });
+
+    // 배경 파티클
+    const particleCount = 300;
+    const particleGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 20;
+        positions[i + 1] = (Math.random() - 0.5) * 20;
+        positions[i + 2] = (Math.random() - 0.5) * 20;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const particleMat = new THREE.PointsMaterial({
+        color: 0x66fcf1,
+        size: 0.06,
+        transparent: true,
+        opacity: 0.7
+    });
+    gacha3D.particles = new THREE.Points(particleGeo, particleMat);
+    gacha3D.scene.add(gacha3D.particles);
+}
+
+// 3. 다중 오브젝트 회전 및 폭발 연출 루프
+function animateMulti3DGacha() {
+    if (gacha3D.isSkipped) return;
+
+    const elapsed = (Date.now() - gacha3D.startTime) / 1000;
+    gacha3D.animId = requestAnimationFrame(animateMulti3DGacha);
+
+    // 10개의 와이어프레임 전부 개별 회전
+    gacha3D.cubes.forEach((cube, idx) => {
+        cube.rotation.x += 0.01 + (idx * 0.002);
+        cube.rotation.y += 0.015 + (idx * 0.001);
+    });
+
+    gacha3D.cores.forEach((core, idx) => {
+        core.rotation.x -= 0.02;
+        core.rotation.y -= 0.025;
+    });
+
+    if (gacha3D.particles) {
+        gacha3D.particles.rotation.y += 0.001;
+    }
+
+    const statusText = document.getElementById('gacha-3d-status');
+
+    // 시퀀스 1: 회전하며 대기 (0초 ~ 2초)
+    if (elapsed < 2.0) {
+        statusText.textContent = "SYNCHRONIZING 10 UNITS...";
+    }
+    // 시퀀스 2: 에너지 임계점 및 사방으로 확산 폭발 (2.0초 ~ 3.0초)
+    else if (elapsed >= 2.0 && elapsed < 3.0) {
+        statusText.textContent = "DECRYPTION COMPLETE // UNLEASHING";
+
+        // 10개의 오브젝트가 중앙 혹은 사방으로 퍼지며 커짐
+        const scaleFactor = 1 + (elapsed - 2.0) * 1.5;
+        gacha3D.cubes.forEach(c => c.scale.setScalar(scaleFactor));
+        gacha3D.cores.forEach(c => c.scale.setScalar(scaleFactor));
+    }
+    // 시퀀스 3: 연출 종료 (3.0초)
+    else if (elapsed >= 3.0) {
+        finish3DGachaAnimation();
+    }
+
+    gacha3D.renderer.render(gacha3D.scene, gacha3D.camera);
+}
+
+// 4. 정리 및 콜백
+function finish3DGachaAnimation() {
+    if (gacha3D.animId) cancelAnimationFrame(gacha3D.animId);
+    gacha3D.isSkipped = true;
+
+    document.getElementById('gacha-3d-modal').classList.add('hidden');
+
+    if (gacha3D.scene) {
+        gacha3D.scene.traverse((child) => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                else child.material.dispose();
+            }
+        });
+    }
+
+    if (typeof gacha3D.onCompleteCallback === 'function') {
+        gacha3D.onCompleteCallback();
+    }
+}
+
+function skip3DGachaAnimation() {
+    finish3DGachaAnimation();
+}
+
+window.skip3DGachaAnimation = skip3DGachaAnimation;
+
+// ==========================================
+// 🔥 전투 배경 3D 코어 & 스킬 컷인 연출 엔진 🔥
+// ==========================================
+
+let combat3D = {
+    renderer: null,
+    scene: null,
+    camera: null,
+    coreGroup: null,
+    animId: null,
+    isActive: false
+};
+
+// 1. 전투 시작 시 3D 기계 코어 배경 실행
+function initCombat3DBackground() {
+    const canvas = document.getElementById('combat-bg-canvas');
+    if (!canvas) return;
+
+    combat3D.scene = new THREE.Scene();
+    combat3D.camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    combat3D.camera.position.z = 7;
+
+    combat3D.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    combat3D.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    combat3D.renderer.setPixelRatio(window.devicePixelRatio);
+
+    // 조명
+    const light = new THREE.PointLight(0x00f0ff, 2, 20);
+    light.position.set(0, 0, 5);
+    combat3D.scene.add(light);
+    combat3D.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+    // 거대 기계 코어 구조물 생성 (회전하는 링과 코어 icosahedron)
+    combat3D.coreGroup = new THREE.Group();
+
+    const ringGeo = new THREE.TorusGeometry(2.5, 0.05, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.5 });
+    const ring1 = new THREE.Mesh(ringGeo, ringMat);
+    const ring2 = new THREE.Mesh(ringGeo, ringMat);
+    ring2.rotation.x = Math.PI / 3;
+
+    const coreGeo = new THREE.IcosahedronGeometry(1.2, 0);
+    const coreMat = new THREE.MeshPhongMaterial({ color: 0xffcc00, emissive: 0xff3366, wireframe: true });
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+
+    combat3D.coreGroup.add(ring1);
+    combat3D.coreGroup.add(ring2);
+    combat3D.coreGroup.add(coreMesh);
+    combat3D.scene.add(combat3D.coreGroup);
+
+    combat3D.isActive = true;
+    animateCombat3DBackground();
+}
+
+function animateCombat3DBackground() {
+    if (!combat3D.isActive) return;
+    combat3D.animId = requestAnimationFrame(animateCombat3DBackground);
+
+    if (combat3D.coreGroup) {
+        combat3D.coreGroup.rotation.x += 0.005;
+        combat3D.coreGroup.rotation.y += 0.008;
+    }
+
+    combat3D.renderer.render(combat3D.scene, combat3D.camera);
+}
+
+function stopCombat3DBackground() {
+    combat3D.isActive = false;
+    if (combat3D.animId) cancelAnimationFrame(combat3D.animId);
+    if (combat3D.renderer) {
+        combat3D.renderer.dispose();
+        combat3D.renderer = null;
+    }
+}
+
+// 궁극기/스킬 사용 시 3D 공간 팝업 컷인 연출 함수 (대사 포함)
+async function playUltimateCutin(card, skill) {
+    const cutinLayer = document.getElementById('combat-3d-cutin');
+    const cardWrapper = document.getElementById('cutin-card-wrapper');
+    const charImg = document.getElementById('cutin-character-img');
+    const skillNameEl = document.getElementById('cutin-skill-name');
+    const dialogueEl = document.getElementById('cutin-dialogue'); // ✨ 대사 요소
+
+    if (!cutinLayer || !cardWrapper) return;
+
+    // 캐릭터 이미지, 스킬 이름, 스킬 대사 매핑
+    charImg.src = card.cardImageUrl || card.imageUrl || '';
+    skillNameEl.textContent = skill.name;
+
+    if (dialogueEl) {
+        dialogueEl.textContent = skill.dialogue ? `"${skill.dialogue}"` : `"${card.name}, 전개 완료."`;
+    }
+
+    // 모달 및 애니메이션 트리거 (스케일 0 -> 1 팝업)
+    cutinLayer.classList.remove('hidden');
+    cardWrapper.classList.remove('scale-0');
+    cardWrapper.classList.add('scale-100', 'rotate-1', 'transition-transform', 'duration-300');
+
+    // 연출 지속 시간 (약 1.4초 후 자동 퇴장)
+    await new Promise(res => setTimeout(res, 500));
+
+    cardWrapper.classList.remove('scale-100', 'rotate-1');
+    cardWrapper.classList.add('scale-0');
+    cutinLayer.classList.add('hidden');
+}
+
+window.playUltimateCutin = playUltimateCutin;
+
+
+
 
     </script>
-    <!-- ✨ [신규] 장비 선택 모달 -->
-        <div id="equipment-select-modal" class="hidden fixed inset-0 bg-[#0b0c10]/90 flex items-center justify-center z-[100] p-4">
-            <div class="bg-[#12151c] border border-gray-700 border-t-2 border-t-green-500 shadow-[0_0_30px_rgba(34,197,94,0.2)] p-6 max-w-lg w-full relative">
-                <button onclick="document.getElementById('equipment-select-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
-                <h3 class="text-xl font-tech text-green-400 font-bold tracking-widest mb-1 text-center">SELECT TOOL</h3>
-                <p class="text-[10px] text-gray-500 text-center mb-4 tracking-widest">장착할 집필 도구를 선택하십시오.</p>
+    <div id="equipment-select-modal" class="hidden fixed inset-0 bg-[#0b0c10]/90 flex items-center justify-center z-[100] p-4">
+        <div class="bg-[#12151c] border border-gray-700 border-t-2 border-t-green-500 shadow-[0_0_30px_rgba(34,197,94,0.2)] p-6 max-w-lg w-full relative">
+            <button onclick="document.getElementById('equipment-select-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
+            <h3 class="text-xl font-tech text-green-400 font-bold tracking-widest mb-1 text-center">SELECT TOOL</h3>
+            <p class="text-[10px] text-gray-500 text-center mb-4 tracking-widest">장착할 집필 도구를 선택하십시오.</p>
 
-                <div id="equipment-list-container" class="max-h-64 overflow-y-auto space-y-2 pr-2 custom-scrollbar"></div>
-            </div>
+            <div id="equipment-list-container" class="max-h-64 overflow-y-auto space-y-2 pr-2 custom-scrollbar"></div>
         </div>
+    </div>
 </body>
 </html>
