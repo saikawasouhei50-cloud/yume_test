@@ -297,21 +297,23 @@
                             <!-- ✨ PC에서는 캐릭터 아래에 대사, 모바일에서는 캐릭터 위에 대사가 오도록 반응형 정렬 적용 -->
                             <div class="absolute inset-0 flex flex-col md:flex-row items-center md:items-center justify-start md:justify-start z-0 pt-6 md:pt-0 md:pl-12 pointer-events-none">
 
-                                <div id="home-character-container" class="relative h-full flex flex-col-reverse md:flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-0 md:ml-[-2%] -translate-y-16 md:-translate-y-28>
+                                <!-- ✨ 클릭 버그를 완벽히 해결한 캐릭터 및 대사창 구조 -->
+                                <div id="home-character-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden">
 
+                                    <!-- 1. 캐릭터 이미지 (해당 이미지 영역만 클릭 가능) -->
+                                    <div class="absolute top-[30%] left-[33%] transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto cursor-pointer">
+                                        <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[35vh] md:max-h-[50vh] object-contain drop-shadow-2xl transition-all">
+                                    </div>
 
-
-                                    <!-- ✨ 대표 캐릭터 일러스트 (모바일에서는 flex-col-reverse 덕분에 대사 아래에 배치됨) -->
-                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[28%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mt-2 md:mt-0 md:mb-3">
-
-                                    <!-- ✨ 스토리 대화창 (모바일에서는 캐릭터 위쪽에 위치) -->
-                                    <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-2.5 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[270px] md:w-[420px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm mb-2 md:mb-0 md:-mt-2">
+                                    <!-- 2. 스토리 대화창 (대사창 내부만 클릭 가능) -->
+                                    <div id="home-dialogue-container" class="absolute top-[65%] left-[33%] transform -translate-x-1/2 -translate-y-1/2 bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-3 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[90%] max-w-[320px] md:w-[400px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm pointer-events-auto">
                                         <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
                                             <p id="home-character-name" class="font-bold text-cyan-400 text-[10px] md:text-sm tracking-widest font-tech uppercase"></p>
                                             <span class="font-tech text-[8px] md:text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
                                         </div>
                                         <p id="home-character-dialogue" class="text-[11px] md:text-sm leading-relaxed text-gray-100 font-medium"></p>
                                     </div>
+
                                 </div>
 
                             </div>
@@ -370,46 +372,46 @@
                                                                     </div>
 
                                                                     <!-- 거대 전투(안정화) 버튼 + 폐기된 서고/현장 조사 2열 배치 영역 -->
-                                                                                        <div class="w-full flex gap-2 mt-1">
-                                                                                            <!-- 왼쪽: 안정화 버튼 -->
-                                                                                            <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group
-                                                                                                    w-1/2 h-16 md:h-24
-                                                                                                    bg-red-700 text-white font-black transform -skew-x-12
-                                                                                                    hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
-                                                                                                    flex items-center justify-center overflow-hidden relative">
-                                                                                                <span class="transform skew-x-12 inline-block text-sm md:text-3xl tracking-widest z-10">안정화</span>
-                                                                                                <span class="absolute right-[-10px] bottom-[-10px] text-3xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
-                                                                                            </button>
+                                                                    <div class="w-full flex gap-2 mt-1">
+                                                                        <!-- 왼쪽: 안정화 버튼 (h-16 md:h-24를 지우고 h-full을 주어 오른쪽에 완벽히 높이를 맞춤) -->
+                                                                        <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group
+                                                                                w-5/12 h-full
+                                                                                bg-red-700 text-white font-black transform -skew-x-12
+                                                                                hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
+                                                                                flex items-center justify-center overflow-hidden relative">
+                                                                            <span class="transform skew-x-12 inline-block text-sm md:text-3xl tracking-widest z-10">안정화</span>
+                                                                            <span class="absolute right-[-10px] bottom-[-10px] text-3xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
+                                                                        </button>
 
-                                                                                            <!-- 오른쪽: 폐기된 서고 & 현장 조사 2열 세트 -->
-                                                                                            <div class="w-1/2 flex flex-col gap-1">
-                                                                                                <!-- 로그라이크(폐기된 서고) 버튼 -->
-                                                                                                <button onclick="switchTab('roguelike')" class="pointer-events-auto group
-                                                                                                        w-full h-[30px] md:h-16
-                                                                                                        bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                                                        hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
-                                                                                                        flex items-center justify-center overflow-hidden relative">
-                                                                                                    <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">폐기된 서고</span>
-                                                                                                    <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
-                                                                                                </button>
+                                                                        <!-- 오른쪽: 폐기된 서고 & 현장 조사 2열 세트 (간격인 gap-1을 gap-2로 수정하여 여백 딱 맞춤) -->
+                                                                        <div class="w-1/2 flex flex-col gap-2">
+                                                                            <!-- 로그라이크(폐기된 서고) 버튼 -->
+                                                                            <button onclick="switchTab('roguelike')" class="pointer-events-auto group
+                                                                                    w-full h-[30px] md:h-16
+                                                                                    bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                                                                                    hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
+                                                                                    flex items-center justify-center overflow-hidden relative">
+                                                                                <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">폐기된 서고</span>
+                                                                                <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
+                                                                            </button>
 
-                                                                                                <!-- 현장 조사 파견 버튼 -->
-                                                                                                <button onclick="switchTab('dispatch')" class="pointer-events-auto group
-                                                                                                        w-full h-[30px] md:h-16
-                                                                                                        bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                                                        hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
-                                                                                                        flex items-center justify-center overflow-hidden relative">
-                                                                                                    <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">현장 조사</span>
-                                                                                                    <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
+                                                                            <!-- 현장 조사 파견 버튼 -->
+                                                                            <button onclick="switchTab('dispatch')" class="pointer-events-auto group
+                                                                                    w-full h-[30px] md:h-16
+                                                                                    bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                                                                                    hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
+                                                                                    flex items-center justify-center overflow-hidden relative">
+                                                                                <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">현장 조사</span>
+                                                                                <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
 
 
 
                                                                                         <!-- 하단 부가 기능 및 이벤트 배너 (모바일 겹침 방지형 수직 정렬) -->
-                                                                                                        <div class="w-full mt-4 mb-2 flex flex-col gap-2 z-20 relative">
-
+                                                                                        <div class="w-full mt-4 mb-2 flex flex-col gap-2 z-30 relative pointer-events-auto">
                                                                                                             <!-- 이벤트 배너 -->
                                                                                                             <div class="w-full">
                                                                                                                 <button id="event-banner" onclick="switchTab('event-home')" class="bg-[#12151c]/95 text-white px-3 py-2 border-l-4 border-cyan-400 hover:bg-gray-800 transition-colors flex items-center gap-3 w-full justify-start shadow-md">
@@ -422,8 +424,7 @@
                                                                                                             </div>
 
                                                                                                             <!-- 하단 4개 버튼 (FRIENDS, ARCHIVE, ACHIEVE, PROFILE) -->
-                                                                                                            <div class="grid grid-cols-4 gap-1 w-full bg-black/80 p-1 border border-gray-800">
-                                                                                                                <button onclick="switchTab('friends')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 relative truncate">
+                                                                                                            <div class="grid grid-cols-4 gap-1 w-full bg-black/80 p-1 border border-gray-800 pointer-events-auto relative z-30">                                                                                                                <button onclick="switchTab('friends')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 relative truncate">
                                                                                                                     <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
                                                                                                                     FRIENDS
                                                                                                                 </button>
@@ -3351,11 +3352,16 @@ function displayHomeView(cycleDialogue = false) {
     const backdropEl = document.getElementById('home-char-backdrop');
 
     if (representativeCharacter) {
-        homeCharacterContainer.classList.remove('hidden');
-        homeDialogueContainer.classList.remove('hidden');
-        homeDefaultMessage.classList.add('hidden');
-        homeCharacterImage.src = representativeCharacter.imageUrl;
-        homeCharacterName.textContent = representativeCharacter.name;
+        // ✨ 이미지 요소가 존재하는지 안전하게 먼저 확인합니다.
+        const charImgEl = document.getElementById('home-character-image');
+        if (charImgEl) {
+            charImgEl.src = representativeCharacter.imageUrl;
+        }
+
+        if (homeCharacterContainer) homeCharacterContainer.classList.remove('hidden');
+        if (homeDialogueContainer) homeDialogueContainer.classList.remove('hidden');
+        if (homeDefaultMessage) homeDefaultMessage.classList.add('hidden');
+        if (homeCharacterName) homeCharacterName.textContent = representativeCharacter.name;
 
         // ✨ [추가] 진영별 컬러 테두리 매핑
         const factionBorderColors = {
