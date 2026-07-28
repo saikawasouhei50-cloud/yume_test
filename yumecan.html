@@ -294,14 +294,15 @@
                             <div id="home-default-message" class="absolute inset-0 flex items-center justify-center text-cyan-500/40 font-tech text-xl md:text-3xl tracking-[0.3em] font-black z-0 pointer-events-none">
                                 NO REPRESENTATIVE SELECTED
                             </div>
-                        <!-- 캐릭터 일러스트 영역 (왼쪽으로 밀고 최대 크기를 줄여 폭 조정) -->
-                        <div class="absolute inset-x-0 top-0 flex flex-col items-center justify-start z-0 pt-4 md:pt-12 md:pl-4 pointer-events-none">
-                            <div id="home-character-container" class="relative flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300">
+                        <!-- <!-- ✨ 캐릭터 일러스트 및 네온 박스 영역 (완전 상단 고정형 구조) -->
+                        <div class="absolute inset-x-0 top-2 z-0 flex flex-col items-center justify-start pointer-events-none">
+
+                            <div id="home-character-container" class="relative flex flex-col items-center justify-start pointer-events-auto cursor-pointer transition-transform duration-300">
 
 
 
-                                <!-- ✨ 대표 캐릭터 일러스트 -->
-                                <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[22%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-1">
+                                <!-- ✨ 대표 캐릭터 일러스트 (상단 배치) -->
+                                <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[20%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-1">
 
                                 <!-- ✨ 스토리 대화창 -->
                                 <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-2 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[250px] md:w-[420px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm mt-1">
@@ -312,6 +313,7 @@
                                     <p id="home-character-dialogue" class="text-[10px] md:text-sm leading-relaxed text-gray-100 font-medium"></p>
                                 </div>
                             </div>
+
                         </div>
 
                                                 <!-- 텍티컬 로비 메뉴 (모바일 2열 정렬 및 폰트 크기 최적화) -->
