@@ -299,17 +299,22 @@
                             <div class="absolute inset-0 flex items-center justify-start z-0 pb-44 md:pb-0 md:pl-4 md:-translate-y-12 pointer-events-none">
 
 
-                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-5%] md:ml-[-2%] -translate-y-8 md:-translate-y-12">
+                            <!-- ✨ 모바일에서 캐릭터와 대사창을 위로 훅 끌어올림 -->
+                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[-2%] -translate-y-36 md:-translate-y-12">
 
-                                                    <!-- ✨ 1. 대표 캐릭터 일러스트 -->
-                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[38%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-3">
+                                                    <!-- ✨ 네온 박스 (백드롭 프레임) -->
+                                                    <div id="home-char-backdrop" class="absolute w-[300px] h-[420px] md:w-[480px] md:h-[600px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
 
-                                                    <!-- ✨ 2. 스토리 대화창 -->
-                                                    <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-3 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[310px] md:w-[420px] hidden transition-opacity duration-300 z-20 backdrop-blur-md rounded-sm -mt-20 md:-mt-17">                                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
-                                                            <p id="home-character-name" class="font-bold text-cyan-400 text-xs md:text-sm tracking-widest font-tech uppercase"></p>
-                                                            <span class="font-tech text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
+                                                    <!-- ✨ 대표 캐릭터 일러스트 -->
+                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[30%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-2">
+
+                                                    <!-- ✨ 스토리 대화창 (모바일에서 위치 정돈) -->
+                                                    <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-2.5 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[280px] md:w-[420px] hidden transition-opacity duration-300 z-20 backdrop-blur-md rounded-sm -mt-1">
+                                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
+                                                            <p id="home-character-name" class="font-bold text-cyan-400 text-[10px] md:text-sm tracking-widest font-tech uppercase"></p>
+                                                            <span class="font-tech text-[8px] md:text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
                                                         </div>
-                                                        <p id="home-character-dialogue" class="text-xs md:text-sm leading-relaxed text-gray-100 font-medium"></p>
+                                                        <p id="home-character-dialogue" class="text-[11px] md:text-sm leading-relaxed text-gray-100 font-medium"></p>
                                                     </div>
                                                 </div>
 
@@ -413,19 +418,19 @@
                         </button>
                     </div>
 
-                    <div class="flex gap-1 md:gap-2 pointer-events-auto bg-black/60 p-1 md:p-2 border border-gray-800">
-                        <button onclick="switchTab('friends')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
-                            <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                            FRIENDS
-                        </button>
-                        <button onclick="switchTab('collection')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">ARCHIVE</button>
-                        <button onclick="switchTab('achievements')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
-                            <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                            ACHIEVE
-                        </button>
-                        <button onclick="switchTab('profile')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">PROFILE</button>
-                    </div>
-                </div>
+                    <div class="grid grid-cols-4 gap-1 w-full md:flex md:gap-2 pointer-events-auto bg-black/70 p-1 border border-gray-800">
+                                            <button onclick="switchTab('friends')" class="gacha-button text-[9px] md:text-xs py-1 px-1 text-gray-300 relative truncate">
+                                                <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                                                FRIENDS
+                                            </button>
+                                            <button onclick="switchTab('collection')" class="gacha-button text-[9px] md:text-xs py-1 px-1 text-gray-300 truncate">ARCHIVE</button>
+                                            <button onclick="switchTab('achievements')" class="gacha-button text-[9px] md:text-xs py-1 px-1 text-gray-300 relative truncate">
+                                                <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                                                ACHIEVE
+                                            </button>
+                                            <button onclick="switchTab('profile')" class="gacha-button text-[9px] md:text-xs py-1 px-1 text-gray-300 truncate">PROFILE</button>
+                                        </div>
+                                    </div>
             </div>
             </div>
 
