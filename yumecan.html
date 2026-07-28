@@ -299,15 +299,17 @@
 
 
                             <!-- ✨ 캐릭터 영역 (모바일에서 위로 바짝 올림) -->
-                            <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[-2%] -translate-y-20 md:-translate-y-12">
-                                                    <!-- ✨ 네온 박스 (백드롭 프레임) -->
-                                                    <div id="home-char-backdrop" class="absolute w-[280px] h-[380px] md:w-[480px] md:h-[600px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
+                            <!-- ✨ 캐릭터와 대사창을 세트로 묶어 위로 바짝 끌어올림 (-translate-y 수치 확대 및 크기 압축) -->
+                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[-2%] -translate-y-56 md:-translate-y-12">
 
-                                                    <!-- ✨ 대표 캐릭터 일러스트 -->
-                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[26%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-2">
+                                                    <!-- ✨ 네온 박스 (백드롭 프레임 - 모바일 화면 맞춤형 크기 축소) -->
+                                                    <div id="home-char-backdrop" class="absolute w-[260px] h-[340px] md:w-[480px] md:h-[600px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
 
-                                                    <!-- ✨ 스토리 대화창 (메뉴 버튼들보다 위쪽으로 쏙 빼내어 절대 안 가려지게 조정) -->
-                                                    <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-2 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[270px] md:w-[420px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm -mt-3 md:-mt-2">
+                                                    <!-- ✨ 대표 캐릭터 일러스트 (모바일에서 높이 조절) -->
+                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[22%] md:max-h-[52%] object-contain drop-shadow-2xl transition-all relative z-10 mb-1">
+
+                                                    <!-- ✨ 스토리 대화창 (메뉴 버튼들과 겹치지 않도록 위쪽으로 당김) -->
+                                                    <div id="home-dialogue-container" class="relative bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-2 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[250px] md:w-[420px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm -mt-2 md:-mt-2">
                                                         <div class="flex items-center justify-between mb-0.5 border-b border-gray-800 pb-0.5">
                                                             <p id="home-character-name" class="font-bold text-cyan-400 text-[10px] md:text-sm tracking-widest font-tech uppercase"></p>
                                                             <span class="font-tech text-[8px] md:text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
