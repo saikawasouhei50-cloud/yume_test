@@ -373,36 +373,41 @@
                                                                         <button onclick="switchTab('myroom')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1.5 px-1 md:py-2 md:px-5 text-center">객실</button>
                                                                     </div>
 
-                                                                    <!-- 거대 전투(안정화) 버튼 -->
-                                                                    <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group mt-1
-                                                                            w-full h-14 md:h-24
-                                                                            bg-red-700 text-white font-black transform -skew-x-12
-                                                                            hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
-                                                                            flex items-center justify-center overflow-hidden relative">
-                                                                        <span class="transform skew-x-12 inline-block text-base md:text-3xl tracking-widest z-10">안정화</span>
-                                                                        <span class="absolute right-[-10px] bottom-[-10px] text-4xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
-                                                                    </button>
+                                                                    <!-- 거대 전투(안정화) 버튼 + 폐기된 서고/현장 조사 2열 배치 영역 -->
+                                                                                        <div class="w-full flex gap-2 mt-1">
+                                                                                            <!-- 왼쪽: 안정화 버튼 -->
+                                                                                            <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group
+                                                                                                    w-1/2 h-16 md:h-24
+                                                                                                    bg-red-700 text-white font-black transform -skew-x-12
+                                                                                                    hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
+                                                                                                    flex items-center justify-center overflow-hidden relative">
+                                                                                                <span class="transform skew-x-12 inline-block text-sm md:text-3xl tracking-widest z-10">안정화</span>
+                                                                                                <span class="absolute right-[-10px] bottom-[-10px] text-3xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
+                                                                                            </button>
 
-                                                                    <!-- 로그라이크(폐기된 서고) 버튼 -->
-                                                                    <button onclick="switchTab('roguelike')" class="pointer-events-auto group mt-1
-                                                                            w-full h-11 md:h-16
-                                                                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                            hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
-                                                                            flex items-center justify-center overflow-hidden relative">
-                                                                        <span class="transform skew-x-12 inline-block text-xs md:text-xl tracking-widest z-10">폐기된 서고</span>
-                                                                        <span class="absolute right-[-5px] bottom-[-10px] text-3xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
-                                                                    </button>
+                                                                                            <!-- 오른쪽: 폐기된 서고 & 현장 조사 2열 세트 -->
+                                                                                            <div class="w-1/2 flex flex-col gap-1">
+                                                                                                <!-- 로그라이크(폐기된 서고) 버튼 -->
+                                                                                                <button onclick="switchTab('roguelike')" class="pointer-events-auto group
+                                                                                                        w-full h-[30px] md:h-16
+                                                                                                        bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                                                                                                        hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
+                                                                                                        flex items-center justify-center overflow-hidden relative">
+                                                                                                    <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">폐기된 서고</span>
+                                                                                                    <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
+                                                                                                </button>
 
-                                                                    <!-- 현장 조사 파견 버튼 -->
-                                                                    <button onclick="switchTab('dispatch')" class="pointer-events-auto group mt-1
-                                                                            w-full h-11 md:h-16
-                                                                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                            hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
-                                                                            flex items-center justify-center overflow-hidden relative">
-                                                                        <span class="transform skew-x-12 inline-block text-xs md:text-xl tracking-widest z-10">현장 조사</span>
-                                                                        <span class="absolute right-[-5px] bottom-[-10px] text-3xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
-                                                                    </button>
-                                                                </div>
+                                                                                                <!-- 현장 조사 파견 버튼 -->
+                                                                                                <button onclick="switchTab('dispatch')" class="pointer-events-auto group
+                                                                                                        w-full h-[30px] md:h-16
+                                                                                                        bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                                                                                                        hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
+                                                                                                        flex items-center justify-center overflow-hidden relative">
+                                                                                                    <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">현장 조사</span>
+                                                                                                    <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
 
 
 
