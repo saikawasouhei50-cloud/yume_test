@@ -309,6 +309,13 @@ html.calm-mode .hud-scanline-container::after { display: none; }
  .archive-settings-panel { width: 230px; }
 }
 </style>
+
+<style id="rogue-v2-style">
+#roguelike-view{--rg-accent:#cbb9ff;--rg-line:#344058;color:#e7edf8;max-width:100%;font-family:inherit}
+.rg-heading{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--rg-line);padding:20px 0 26px;margin-bottom:24px}.rg-heading h2{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.04em;margin:8px 0}.rg-heading p,.rg-intro p{color:#aebad0;font-size:14px;line-height:1.8}.rg-kicker{font-size:10px;letter-spacing:.18em;color:var(--rg-accent);font-weight:700}.rg-edition{align-self:center;text-align:right;font-size:12px;color:#aebad0}.rg-edition b{font-size:20px;color:var(--rg-accent)}
+.rg-intro{padding:28px;border:1px solid #53496c;border-radius:14px;background:linear-gradient(120deg,#252035,#131e2c);margin-bottom:18px}.rg-intro h3{font-size:34px;line-height:1.3;font-weight:700;margin:12px 0 20px}.rg-lobby-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.rg-panel{background:#101925;border:1px solid var(--rg-line);padding:18px;border-radius:12px;margin-bottom:14px}.rg-panel h3,.rg-panel label{display:block;font-size:14px;font-weight:700;margin-bottom:12px}.rg-panel small{display:block;color:#aebad0;font-size:11px;line-height:1.7}.rg-panel select{width:100%;padding:12px;background:#192437;border:1px solid #46526d;border-radius:8px;color:#e7edf8;font-size:13px;margin:6px 0 16px}.rg-primary,.rg-secondary{width:100%;padding:14px 18px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}.rg-primary{background:#cbb9ff;color:#181125;display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.rg-primary span{font-size:12px}.rg-secondary{border:1px solid #48546c;background:#152031;color:#becbdd}.rg-status{display:flex;align-items:center;gap:26px;border:1px solid #53496c;background:#1b2030;padding:18px;border-radius:12px;margin-bottom:18px}.rg-status h3{font-size:26px;font-weight:800}.rg-status>div:nth-child(2){display:flex;flex-direction:column;font-size:11px;color:#aebad0}.rg-status b{font-size:24px;color:#f2d38b}.rg-status p{margin-left:auto;color:#d8cfff;font-size:13px}.rg-layout{display:grid;grid-template-columns:175px minmax(0,1fr);gap:16px}.rg-map-panel{align-self:start}.rg-map-row{display:flex;gap:5px;align-items:center;padding:9px 3px;border-bottom:1px solid #253147;font-size:10px;color:#8c9ab1}.rg-map-row>span:first-child{font-variant-numeric:tabular-nums;width:18px;flex-shrink:0}.rg-map-row.current{color:#e4d9ff;background:#342e46;border-radius:5px}.rg-map-row.done{opacity:.65}.rg-map-node.taken{color:#94e8d3;text-decoration:underline}.rg-or{opacity:.35}.rg-main{min-width:0}.rg-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:18px}.rg-choice{background:#192337;border:1px solid #46526d;border-radius:10px;padding:18px;text-align:left;min-height:125px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .18s,background .18s}.rg-choice:hover:not(:disabled){border-color:#cbb9ff;background:#27283e}.rg-choice strong{font-size:16px;color:#dfd4ff}.rg-choice span{color:#b5c2d7;font-size:12px;line-height:1.8;white-space:pre-line}.rg-team{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.rg-member{min-width:0}.rg-member img{width:100%;height:85px;object-fit:cover;border-radius:6px;background:#202b3d}.rg-member strong{font-size:10px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}.rg-member progress{display:block;width:100%;height:6px;accent-color:#83ddc5;margin:6px 0}.rg-member small{font-size:9px}.rg-member.fallen{filter:grayscale(1);opacity:.45}.rg-resonances{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.rg-resonance{border:1px solid #39455b;border-radius:8px;padding:10px}.rg-resonance b{font-size:13px;color:#b0bfd5}.rg-resonance.lit{border-color:#cbb9ff;background:#302940}.rg-resonance.lit b{color:#e3d6ff}.rg-tags{display:flex;flex-wrap:wrap;gap:7px}.rg-tags span{border:1px solid #39455b;border-radius:6px;padding:6px 9px;font-size:11px;color:#c1cee0}.rg-rules{margin-top:20px;color:#aebad0;font-size:12px}.rg-rules p{margin-top:12px;line-height:1.9}.rg-panel summary{cursor:pointer;color:#cbb9ff;font-size:13px}#rogue-log{font-size:12px;color:#b5c2d7;max-height:190px;overflow:auto;margin-top:12px}#rogue-log li{padding:6px 0;border-bottom:1px solid #253147}#rogue-record{color:#cbb9ff;font-size:14px}#rogue-report{font-size:12px;color:#aebad0;line-height:1.9;margin-top:12px}
+@media(max-width:640px){.rg-heading{padding-top:10px}.rg-layout,.rg-lobby-grid{grid-template-columns:1fr}.rg-map-panel{padding:12px}.rg-map-panel small{display:none}#rogue-map{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.rg-map-row{font-size:9px;padding:5px 2px;flex-wrap:wrap;gap:3px}.rg-map-row>span:first-child{width:100%}.rg-status{gap:16px;flex-wrap:wrap}.rg-status p{margin-left:0;width:100%}.rg-choices{grid-template-columns:1fr}.rg-choice{min-height:100px}.rg-resonances{grid-template-columns:1fr}.rg-resonance small{display:inline;margin-left:8px}.rg-panel{padding:14px}.rg-member img{height:60px}.rg-team{gap:5px}.rg-intro{padding:22px}.rg-intro h3{font-size:28px}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1550,52 +1557,25 @@ html.calm-mode .hud-scanline-container::after { display: none; }
     </div>
 </div>
 
-                <!-- 로그라이크(폐기된 서고) 뷰 -->
-                <div id="roguelike-view" class="hidden w-full flex flex-col items-center">
-                    <div class="text-center mb-6 w-full border-b border-gray-800 pb-4">
-                        <h2 class="text-3xl md:text-4xl font-black font-tech text-red-500 tracking-[0.2em] drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]">ABANDONED ARCHIVE</h2>
-                        <p class="text-xs text-gray-500 tracking-widest mt-1">폐기된 서고 - 연속 탐사 시스템</p>
-                    </div>
-
-                    <!-- 대기 화면 (진입 전) -->
-                    <div id="rogue-lobby" class="flex flex-col items-center">
-                        <p class="text-gray-300 text-sm mb-4 text-center">전투 종료 시 체력이 회복되지 않습니다.<br>매 층을 클리어하고 전술 영감(버프)을 선택해 심층까지 도달하십시오.</p>
-                        <button onclick="startRoguelike()" class="gacha-button py-3 px-10 text-lg border-cyan-500 text-cyan-400 hover:bg-cyan-900/30">탐사 시작</button>
-                    </div>
-
-                    <!-- 진행 화면 -->
-                    <div id="rogue-active" class="hidden w-full max-w-3xl">
-                        <div class="bg-gray-900/80 border border-gray-700 border-l-4 border-l-cyan-500 p-4 rounded-sm flex justify-between items-center mb-4">
-                            <div>
-                                <p class="font-tech text-[10px] text-gray-500 tracking-widest">CURRENT DEPTH</p>
-                                <p class="text-2xl font-tech font-bold text-white">DEPTH-<span id="rogue-floor-display" class="text-cyan-400">1</span></p>
-                            </div>
-                            <button onclick="generateRogueFloor()" class="gacha-button py-2 px-6 text-sm border-red-500 text-red-400 hover:bg-red-900/30 animate-pulse">다음 층 교전</button>
-                        </div>
-
-                        <div class="bg-black/40 border border-gray-800 p-4 rounded-sm mb-4">
-                            <h3 class="font-tech text-xs text-gray-400 mb-2 border-b border-gray-700 pb-1">SQUAD STATUS // 분대 상태</h3>
-                            <div id="rogue-team-status" class="grid grid-cols-5 gap-2"></div>
-                        </div>
-
-                        <div class="bg-black/40 border border-gray-800 p-4 rounded-sm mb-6">
-                            <h3 class="font-tech text-xs text-yellow-500 mb-2 border-b border-gray-700 pb-1">ACTIVE INSPIRATIONS // 활성화된 버프</h3>
-                            <div id="rogue-buffs-list" class="flex flex-wrap gap-2 text-xs text-gray-300 min-h-[24px]"></div>
-                        </div>
-
-                        <button onclick="endRoguelikeRun()" class="gacha-button py-2 px-4 w-full text-xs text-gray-400 border-gray-600 hover:text-white">탐사 중단 및 현재 보상 정산</button>
-                    </div>
-                </div>
-
-                <!-- 버프 선택 모달 -->
-                <div id="rogue-buff-modal" class="hidden fixed inset-0 bg-[#0b0c10]/95 flex items-center justify-center z-[100] p-4">
-                    <div class="bg-[#12151c] border border-gray-700 border-t-2 border-t-yellow-500 shadow-[0_0_30px_rgba(255,200,0,0.2)] p-6 max-w-3xl w-full">
-                        <h3 class="text-2xl font-tech text-yellow-500 mb-1 text-center font-bold tracking-widest">DATA EXTRACTION</h3>
-                        <p class="text-[10px] text-gray-500 text-center mb-6 tracking-widest">전술 영감을 1개 선택하십시오.</p>
-
-                        <div id="rogue-buff-choices" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-                    </div>
-                </div>
+<div id="roguelike-view" class="hidden w-full">
+ <div class="rg-heading"><div><span class="rg-kicker">ROGUELIKE EXPEDITION / VOL. 02</span><h2>폐기된 서고</h2><p>버려진 이야기 속에서, 살아 돌아올 결말을 고르세요.</p></div><span class="rg-edition">3개 구역<br><b>12층 탐사</b></span></div>
+ <div id="rogue-lobby">
+  <div class="rg-intro"><span class="rg-kicker">EVERY CHOICE LEAVES A TRACE</span><h3>어떤 이야기를<br>완성하시겠어요?</h3><p>정예에 도전해 유물을 얻거나, 쉼터에 머물러 다음 장을 준비하세요.<br>세 계열의 영감을 모으면 새로운 공명 효과가 열립니다.</p></div>
+  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status"></p></div></div>
+ </div>
+ <div id="rogue-active" class="hidden">
+  <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><p id="rogue-phase" role="status"></p></div>
+  <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small>매 층 하나의 경로 선택<br>4 · 8 · 12층은 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
+   <div id="rogue-choices" class="rg-choices"></div>
+   <section class="rg-panel"><h3>동행 중인 등장인물</h3><div id="rogue-team-status" class="rg-team"></div></section>
+   <section class="rg-panel"><h3>영감과 공명 <small>같은 계열 3개 획득 시 발동 · 중복 포함</small></h3><div id="rogue-resonance" class="rg-resonances"></div><div id="rogue-buffs-list" class="rg-tags"></div></section>
+   <section class="rg-panel"><h3>탐사 유물</h3><div id="rogue-relics" class="rg-tags"></div></section>
+   <details class="rg-panel"><summary>이번 탐사의 기록</summary><ol id="rogue-log"></ol></details>
+   <button id="rogue-retire" onclick="endRoguelikeRun()" class="rg-secondary">귀환하고 현재 보상 정산</button>
+  </div></div>
+ </div>
+ <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 휴식·상점·사건은 전투 보상을 주지 않습니다. 귀환·전멸 모두 누적 보상을 지급하며 정산은 한 번만 처리합니다.</p><p>경로·후보·선택 결과는 계정에 자동 저장됩니다. 저장된 탐사는 다시 접속한 뒤 이 화면에서 이어갑니다. 전투 중 연결이 끊기면 같은 경로의 전투 시작 시점부터 재도전합니다. 저장 실패 표시는 상단에서 확인하고 다시 저장해 주세요.</p><p>적의 능력치는 입장 당시 편성의 평균 체력·방어력과 합산 공격력에 맞춰 정해집니다. 입장 후 얻은 강화에 따라 적이 추가로 강해지지는 않습니다. 보스는 3턴마다 강한 공격을 하며, 8·12층 보스는 광역 공격을 합니다.</p></details>
+</div>
                 <!-- 현장 조사 (파견) 뷰 -->
                 <div id="dispatch-view" class="hidden w-full flex flex-col items-center">
                     <div class="text-center mb-6 w-full border-b border-gray-800 pb-4">
@@ -1669,7 +1649,647 @@ html.calm-mode .hud-scanline-container::after { display: none; }
                         <h1 class="font-tech font-black text-3xl md:text-5xl text-white tracking-[0.2em]">ENGAGING HOSTILE ZONE</h1>
                     </div>
                 </div>
-		</main> <script src="yumecan_data.js"></script>
+		</main> <!-- 제공된 yumecan_data.js 통합: 캐릭터 목록은 기존 데이터 서버에서 갱신됩니다. -->
+<script>
+// --- 게임 설정 ---
+let characters = [];
+let monsters = {}; 
+let furnitureItems = [];
+let eventDungeons = [];
+let eventShopItems = [];
+let mainStories = [];
+let eventStories = [];
+let currentEventInfo = {};
+let EVENT_CHARACTER_NAME = "";
+let mainChapters = [];
+let gachaPool = {}; 
+let characterProfiles = {};
+let interactionDialogues = {};
+let systemMails = [];
+let raidBossDataSheet = null;
+let allEventInfos = []; // ✨ [추가] 모든 이벤트 목록 저장용
+
+// ✨ [변경] 인연 데이터는 이제 시트에서 불러오므로 초기값은 빈 배열입니다.
+let synergies = []; 
+let chibiImages = {};
+let CURRENT_EVENT_ID = null; 
+
+// ==========================================
+// 1. 웹 앱 URL (여기에만 최신 주소를 적으세요!)
+// ==========================================
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby0Tq97edWMchBrVf10sr233P33UMlKFdMsxWvA94eeM7VQ8A10ejyDTGgOf34CoY5TVg/exec";
+
+// 2. 데이터를 가져와서 변수에 채워넣는 함수
+async function loadGameData() {
+    try {
+        console.log("데이터 로딩 시작...");
+		function parseDate(dateStr) {
+    if (!dateStr) return null;
+    // 구글 시트가 "2023-10-25 14:30:00" 처럼 줄 경우
+    // "2023-10-25T14:30:00" 으로 바꿔주면 브라우저가 시간을 정확히 인식합니다.
+    let safeStr = String(dateStr).replace(' ', 'T'); 
+    return new Date(safeStr);
+}
+        
+        // ❌ [삭제] 아래 줄을 지우세요! (이제 맨 위의 주소를 자동으로 씁니다)
+        // const GOOGLE_SHEET_URL = "..."; 
+
+        // 자동으로 맨 위에 적은 GOOGLE_SHEET_URL을 가져옵니다.
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`); 
+        const data = await response.json();
+		
+		if (data.systemMails) {
+            systemMails = data.systemMails.map(row => ({
+                id: row.id,
+                target: row.target, // 'ALL' or UID
+                title: row.title,
+                content: row.content,
+                rewards: row.rewards ? JSON.parse(row.rewards) : {}, // JSON 파싱
+                startDate: parseDate(row.startDate),
+        endDate: parseDate(row.endDate)
+            }));
+            console.log("시스템 우편 데이터 로드 완료:", systemMails.length);
+        }
+
+        // 1. 캐릭터 데이터 조립
+        chibiImages = {}; 
+const rawCharacterData = data.characters || data.Characters || []; 
+
+if (!rawCharacterData || rawCharacterData.length === 0) {
+    throw new Error("캐릭터 데이터를 찾을 수 없습니다. 시트 이름을 확인해 주세요.");
+}
+        characters = rawCharacterData.map(row => {
+            // [수정] baseName 처리: 시트에 값이 없으면 이름에서 [ ]를 떼고 생성
+            let rawBase = row.baseName || row.basename || row['baseName ']; 
+
+            if (!rawBase || String(rawBase).trim() === "") {
+                rawBase = row.name.replace(/\[.*?\]\s*/g, '');
+            }
+
+            const calculatedBaseName = String(rawBase).trim();
+
+            // [수정] 치비 이미지 전역 변수에 저장 (이게 없어서 이미지가 안 떴음)
+            if (row.chibi_image || row.cardImageUrl || row.imageUrl) {
+                 chibiImages[row.name] = row.chibi_image || row.cardImageUrl || row.imageUrl;
+            }
+
+            return {
+                name: row.name,
+                baseName: calculatedBaseName,
+                faction: row.faction,
+                grade: row.grade, // 혹은 row.rarity
+                rarity: row.rarity,
+                publishTarget: row.publish_target,
+                
+                stats: { 
+                    hp: Number(row.hp) || 100, 
+                    atk: Number(row.atk) || 10, 
+                    def: Number(row.def) || 5
+                },
+                
+                imageUrl: row.imageUrl,
+                cardImageUrl: row.cardImageUrl || row.imageUrl,
+                chibi_image: row.chibi_image || row.cardImageUrl, // 객체 내부에도 저장
+                
+                dialogues: row.dialogues ? String(row.dialogues).split('|') : ['...'],
+                
+                skills: [
+    // [0] 첫 번째 스킬
+    {
+        name: row.skill1_name,
+        desc: row.skill1_desc,
+        dialogue: row.skill1_dialogue,
+        // ✨ value를 power로 변경
+        power: parseFloat(row.skill1_power) || 1.0, 
+        type: row.skill1_type || 'damage',
+        cooldown: 3
+    },
+    // [1] 두 번째 스킬
+    {
+        name: row.skill2_name,
+        desc: row.skill2_desc,
+        dialogue: row.skill2_dialogue,
+        // ✨ value를 power로 변경
+        power: parseFloat(row.skill2_power) || 0.0, 
+        type: row.skill2_type
+    }
+].filter(skill => skill.name),
+                deathDialogue: row.deathDialogue,
+                story: row.story,
+                enhancementSuccessDialogue: row.enhancementSuccessDialogue
+            };
+        });
+
+        // 2. 몬스터 데이터 조립
+        if (data.monsters) {
+    monsters = {}; 
+    data.monsters.forEach(row => {
+        const mKey = row.key || row.name;
+        monsters[mKey] = {
+            name: row.name,
+            stats: { hp: Number(row.hp), atk: Number(row.atk), def: Number(row.def) },
+            imageUrl: row.imageUrl,
+            // ▼▼▼ [추가] 광역 공격 여부 체크 ▼▼▼
+            isAoE: (row.isAoE === true || row.isAoE === 'TRUE' || row.isAoE === 1)
+        };
+    });
+}
+
+        // 3. 가구 데이터 조립
+        if (data.furniture) {
+            furnitureItems = data.furniture.map(row => ({
+                id: row.id,
+                name: row.name,
+                type: row.type,
+                size: { w: Number(row.w), h: Number(row.h) }, 
+                cost: Number(row.cost),
+                scale: row.scale ? Number(row.scale) : undefined, 
+                imageUrl: row.imageUrl
+            }));
+        }
+
+        // 4. 이벤트 던전 조립
+        if (data.eventDungeons) {
+    eventDungeons = data.eventDungeons.map(row => ({
+        eventId: row.eventId || 'ALL', // ✨ eventId 추가 (없으면 ALL)
+        name: row.name,
+        monsterName: row.monsterName,
+        eventPointReward: Number(row.eventPointReward)
+    }));
+}
+
+        // 5. 이벤트 상점 조립
+        if (data.eventShop) {
+            eventShopItems = data.eventShop.map(row => {
+                let itemData = row.itemData;
+                if (row.type === 'card') {
+                    const foundChar = characters.find(c => c.name === row.itemData);
+                    itemData = foundChar || row.itemData; 
+                } else {
+                    itemData = Number(row.itemData); 
+                }
+
+                return {
+                    id: row.id,
+                    name: row.name,
+                    type: row.type,
+                    cost: Number(row.cost),
+                    limit: Number(row.limit),
+                    itemData: itemData,
+					eventId: row.eventId || 'ALL'
+                };
+            });
+        }
+
+        // 6. 메인 스토리 조립
+        if (data.mainStories) {
+            const rawMainStories = data.mainStories;
+            mainStories = [];
+            let currentMainChapter = null;
+            let currentMainChapterId = -1;
+
+            rawMainStories.forEach(row => {
+                const chapterId = Number(row.chapter_id);
+                if (chapterId !== currentMainChapterId) {
+                    currentMainChapterId = chapterId;
+                    currentMainChapter = {
+    id: chapterId, // ✨ 이 줄을 추가해서 0장인지 1장인지 구분할 수 있게 합니다.
+    title: row.title,
+    dungeonToUnlock: (row.dungeonToUnlock && row.dungeonToUnlock !== "") ? row.dungeonToUnlock : null,
+    content: []
+};
+                    mainStories.push(currentMainChapter);
+                }
+                currentMainChapter.content.push({
+                    character: (row.character && row.character !== "") ? row.character : null,
+                    expression: row.expression,
+                    position: row.position,
+                    dialogue: row.dialogue
+                });
+            });
+        }
+
+        // 7. 이벤트 스토리 조립
+        if (data.eventStories) {
+    const rawEventStories = data.eventStories;
+    eventStories = [];
+    let currentEventChapter = null;
+    
+    // 이전 행의 키를 기억하기 위한 변수
+    let lastKey = ""; 
+
+    rawEventStories.forEach(row => {
+        const eventId = row.eventId || "unknown"; // ✨ 시트의 eventId 컬럼 읽기
+        const chapterId = Number(row.chapter_id);
+        
+        // ✨ [핵심] 이벤트ID와 챕터ID가 모두 같아야 같은 스토리로 인식
+        const uniqueKey = `${eventId}_${chapterId}`;
+
+        if (uniqueKey !== lastKey) {
+            lastKey = uniqueKey;
+            
+            currentEventChapter = {
+                eventId: eventId, // ✨ 여기에 ID 저장 (제목은 저장 안 함)
+                chapterId: chapterId,
+                title: row.title,
+                content: []
+            };
+            eventStories.push(currentEventChapter);
+        }
+        
+        // 대사 내용 추가
+        currentEventChapter.content.push({
+            character: (row.character && row.character !== "") ? row.character : null,
+            expression: row.expression,
+            position: row.position,
+            dialogue: row.dialogue
+        });
+    });
+}
+
+        // 8. 이벤트 정보 설정 (디버깅 로그 추가 버전)
+        if (data.eventInfo && data.eventInfo.length > 0) {
+    allEventInfos = data.eventInfo.map(info => ({
+        id: info.id || `event_${info.title}`,
+        title: info.title,
+        startDate: parseDate(info.startDate),
+        endDate: parseDate(info.endDate)
+    }));
+
+    // ✨ [수정] 내 PC 시간이 아니라, 무조건 '한국 시간(KST)' 객체를 생성합니다.
+    const nowKST = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+    
+    console.log("🕒 [시스템 시간(KST)]:", nowKST.toLocaleString());
+    
+    // 시트에 있는 이벤트 목록 중 '한국 시간 기준'으로 진행 중인 이벤트 찾기
+    const activeEvent = data.eventInfo.find(info => {
+        const start = parseDate(info.startDate);
+        const end = parseDate(info.endDate);
+        
+        // KST 기준으로 비교
+        const isOpen = nowKST >= start && nowKST <= end;
+
+        // 디버깅용 로그
+        console.log(`🔍 [이벤트 체크] ${info.title}`);
+        console.log(`   - 기간: ${start.toLocaleString()} ~ ${end.toLocaleString()}`);
+        console.log(`   👉 결과: ${isOpen ? "✅ 진행중" : "❌ 기간 아님"}`);
+
+        return isOpen;
+    });
+
+    if (activeEvent) {
+        // ID 생성 로직 (기존 유지)
+        const safeId = activeEvent.id || `event_${activeEvent.title}`; 
+
+        console.log(`🎉 현재 활성화된 이벤트: ${activeEvent.title} (ID: ${safeId})`);
+        
+        // 전역 변수 업데이트
+        CURRENT_EVENT_ID = safeId; 
+        EVENT_CHARACTER_NAME = activeEvent.gachaCharacterName;
+
+        currentEventInfo = {
+            id: safeId,
+            title: activeEvent.title,
+            startDate: new Date(activeEvent.startDate),
+            endDate: new Date(activeEvent.endDate),
+            bannerImageUrl: activeEvent.bannerImageUrl,
+            description: activeEvent.description,
+            gachaCharacterName: activeEvent.gachaCharacterName
+        };
+    } else {
+        console.log("⚠️ 현재(KST 기준) 진행 중인 이벤트가 없습니다.");
+        CURRENT_EVENT_ID = null;
+        currentEventInfo = null;
+    }
+}
+
+        // 10. 가챠 등장 목록(Pool) 설정
+        if (data.gachaPool) {
+    gachaPool = {};
+    data.gachaPool.forEach(row => {
+        gachaPool[row.name] = {
+            // 일반 서가 등장 여부 (기존 유지)
+            normal: (row.in_normal === true || row.in_normal === 'TRUE' || row.in_normal === 1),
+            
+            // ✨ [핵심 수정] 단순 TRUE/FALSE가 아니라 '이벤트 ID'를 저장합니다.
+            // 시트 컬럼명이 target_event_id 라고 가정합니다. (시트 헤더와 일치시켜주세요)
+            // 만약 해당 이벤트 때만 등장하게 하려면 여기에 'event_title' 등을 적습니다.
+            targetEventId: row.target_event_id || row.eventId || null 
+        };
+    });
+}
+
+        // 11. 스테이지 및 스테이지 스토리 조립
+        if (data.stages && data.stageStories) {
+            const tempChapters = {}; 
+            data.stages.forEach(row => {
+                const chIdx = Number(row.chapter_index);
+                const stIdx = Number(row.stage_index);
+                if (!tempChapters[chIdx]) {
+                    tempChapters[chIdx] = {
+                        chapterName: row.chapter_name,
+                        stages: []
+                    };
+                }
+                tempChapters[chIdx].stages[stIdx] = {
+                    stageName: row.stage_name,
+                    monsterName: row.monster_name,
+                    rewards: {
+                        fountainPens: Number(row.reward_fp),
+                        currency: Number(row.reward_cur)
+                    },
+                    stageStory: [] 
+                };
+            });
+
+            data.stageStories.forEach(row => {
+                const chIdx = Number(row.chapter_index);
+                const stIdx = Number(row.stage_index);
+                if (tempChapters[chIdx] && tempChapters[chIdx].stages[stIdx]) {
+                    tempChapters[chIdx].stages[stIdx].stageStory.push({
+                        character: (row.character && row.character !== "") ? row.character : null,
+                        expression: row.expression,
+                        position: row.position,
+                        dialogue: row.dialogue
+                    });
+                }
+            });
+
+            mainChapters = [];
+            const sortedChapterKeys = Object.keys(tempChapters).sort((a, b) => a - b);
+            sortedChapterKeys.forEach(key => {
+                const chapterObj = tempChapters[key];
+                // 빈 스테이지 제거
+                chapterObj.stages = chapterObj.stages.filter(s => s !== undefined);
+                mainChapters.push(chapterObj);
+            });
+            // 전역 변수 stages에도 할당
+            stages = mainChapters; 
+        }
+        
+        // 12. 캐릭터 프로필(도감용) 로드
+        if (data.profiles) {
+            characterProfiles = {}; 
+            data.profiles.forEach(row => {
+                characterProfiles[row.baseName] = {
+                    name: row.name,
+                    age: row.age,
+                    job: row.job,
+                    description: row.description,
+                    imageUrl: row.imageUrl,
+                    group: row.group || '기타' 
+                };
+            });
+        }
+		// ✨ [추가] 2.5 레이드 보스 데이터 로드
+if (data.raidBoss && data.raidBoss.length > 0) {
+    // 레이드 보스는 하나만 사용한다고 가정하고 첫 번째 행만 가져옵니다.
+    const bossRow = data.raidBoss[0]; 
+    raidBossDataSheet = {
+        name: bossRow.name,
+        level: Number(bossRow.level) || 1,
+        maxHp: Number(bossRow.maxHp) || 1000000,
+        atk: Number(bossRow.atk) || 100,
+        def: Number(bossRow.def) || 50,
+        imageUrl: bossRow.imageUrl,
+        isAoE: (bossRow.isAoE === true || bossRow.isAoE === 'TRUE' || bossRow.isAoE === 1)
+    };
+    console.log("레이드 보스 시트 데이터 로드 완료:", raidBossDataSheet.name);
+}
+
+        // 13. 인연(Synergy) 데이터 조립
+        if (data.synergies) {
+            synergies = data.synergies.map(row => {
+                return {
+                    name: row.name,
+                    description: row.description,
+                    
+                    condition: (deck) => {
+                        if (row.type === 'faction') {
+                            const hasReq1 = deck.some(c => c.faction === row.req1);
+                            const hasReq2 = deck.some(c => c.faction === row.req2);
+                            return hasReq1 && hasReq2;
+                        } else if (row.type === 'character') {
+                            const hasReq1 = deck.some(c => c.baseName === row.req1);
+                            const hasReq2 = deck.some(c => c.baseName === row.req2);
+                            return hasReq1 && hasReq2;
+                        }
+                        return false;
+                    },
+
+                    applyBonus: (card) => {
+                        let isTarget = false;
+                        if (row.target === 'all') {
+                            isTarget = true;
+                        } else if (row.target === 'self') {
+                            if (row.type === 'character') {
+                                isTarget = (card.baseName === row.req1 || card.baseName === row.req2);
+                            } else if (row.type === 'faction') {
+                                isTarget = (card.faction === row.req1 || card.faction === row.req2);
+                            }
+                        }
+
+                        if (isTarget) {
+                            const val = Number(row.value);
+                            const statKey = row.stat;     
+
+                            if (row.method === 'multiply') {
+                                card.stats[statKey] = Math.floor(card.stats[statKey] * val);
+                            } else if (row.method === 'add') {
+                                card.stats[statKey] += val;
+                            }
+                        }
+                    }
+                };
+            });
+            console.log("인연 데이터 로드 완료:", synergies.length);
+        } else {
+            synergies = [];
+        }
+
+        // 14. 마이룸 상호작용 대사 조립 (수정됨: Map 구조 유지)
+        if (data.interactions) {
+            const tempMap = {}; 
+
+            data.interactions.forEach(row => {
+                const c1 = String(row.char1).trim();
+                const c2 = String(row.char2).trim();
+                const pairKey = [c1, c2].sort().join('_');
+                
+                if (!tempMap[pairKey]) {
+                    tempMap[pairKey] = {
+                        pair: [c1, c2], 
+                        dialogues: []
+                    };
+                }
+                tempMap[pairKey].dialogues.push([row.dialogue1, row.dialogue2]);
+            });
+
+            // [핵심] 배열로 변환 안 함! tempMap 그대로 사용
+            interactionDialogues = tempMap; 
+            console.log("상호작용 대사 로드 완료 (Map 구조 유지됨)");
+        }
+		
+		
+        
+        console.log("모든 데이터 로딩 완료!");
+        
+        // 게임 초기화 함수 호출
+        if (typeof initGame === "function") {
+            initGame();
+        }
+
+    } catch (error) {
+        console.error("데이터 로딩 실패:", error);
+        throw error;
+    }
+}
+
+// --- 아래는 하드코딩된 데이터(이벤트 스토리 등)를 유지합니다 ---
+// (synergies 변수는 위에서 로드하므로 여기서 지웁니다)
+
+const eventStoryPart2 = {
+    firstHalf: [
+        {
+            character: '서도진', expression: 'serious', position: 'left',
+            dialogue: '사건 현장에서 두 개의 결정적인 증거가 나왔어. 하나는 피해자의 다잉 메시지, 다른 하나는... 용의자의 지문이 묻은 찻잔이야.'
+        },
+        {
+            character: '도천영', expression: 'neutral', position: 'right',
+            dialogue: '데이터는 거짓말을 하지 않죠. 하지만 다잉 메시지는 해석의 여지가 있고, 지문은 조작될 수 있습니다.'
+        },
+        {
+            character: null,
+            dialogue: '두 개의 상반된 단서. 어떤 것을 더 신뢰해야 할까?'
+        },
+        {
+            character: '서도진', expression: 'neutral', position: 'left',
+            dialogue: '이제 선택해야 해. 어떤 증거를 중심으로 수사를 진행할지...',
+            choices: [
+                { text: '다잉 메시지를 믿는다.', nextScene: 4 },
+                { text: '결정적인 지문을 믿는다.', nextScene: 5 }
+            ]
+        },
+        {
+            character: null,
+            dialogue: '당신은 피해자가 마지막 힘을 다해 남긴 메시지에 더 무게를 두기로 했다.',
+            jumpTo: 6 
+        },
+        {
+            character: null,
+            dialogue: '당신은 과학적이고 물리적인 증거인 지문을 더 신뢰하기로 했다.',
+            jumpTo: 6 
+        },
+        {
+            character: '서도진', expression: 'serious', position: 'left',
+            dialogue: '좋아, 그 방향으로 수사를 진행하지. 우리의 선택이 어떤 결과로 이어질지는... 아직 아무도 몰라.',
+            choices: [
+                {
+                    text: '전반부 스토리 완료',
+                    statId: 'event_part2_final_choice',
+                    isFinalChoice: true
+                }
+            ]
+        }
+    ],
+    secondHalf: [] 
+};
+
+const achievements = [
+    { id: 'ach_001', title: '첫걸음', description: '누군가의 서고에서 1회 뽑기', condition: (state) => state.stats.totalPulls >= 1, reward: { currency: 100 } },
+    { id: 'ach_002', title: '수집의 시작', description: '누군가의 서고에서 10회 뽑기', condition: (state) => state.stats.totalPulls >= 10, reward: { currency: 500 } },
+    { id: 'ach_003', title: '대량 집필', description: '누군가의 서고에서 50회 뽑기', condition: (state) => state.stats.totalPulls >= 50, reward: { currency: 100 } },
+    { id: 'ach_004', title: '인연의 실', description: '등장인물 10종류 수집', condition: (state) => new Set(state.inventory.map(c => c.name)).size >= 10, reward: { currency: 50 } },
+    { id: 'ach_005', title: '탐정의 자질', description: 'SSR 등급 등장인물 1장 획득', condition: (state) => state.inventory.some(c => c.rarity === 'SSR'), reward: { currency: 100 } },
+    { id: 'ach_007', title: '퇴고의 기본', description: '등장인물을 1회 퇴고하기', condition: (state) => state.inventory.some(c => c.level >= 1), reward: { fountainPens: 50 } }, 
+    { id: 'ach_008', title: '개정판 입문', description: '개정 레벨이 1 이상인 카드 1장 보유', condition: (state) => state.inventory.some(c => c.revision >= 1), reward: { currency: 70 } },
+    { id: 'ach_009', title: '최고의 필력', description: 'SSR 카드를 최대 레벨(+9)까지 퇴고', condition: (state) => state.inventory.some(c => c.rarity === 'SSR' && c.level >= 9), reward: { currency: 200 } },
+    { id: 'ach_010', title: '첫 독서', description: '스테이지 1-1 클리어', condition: (state) => state.clearedStages.includes('1-1'), reward: { fountainPens: 50 } }, 
+    { id: 'ach_011', title: '1장 완독', description: '제1장(1-10) 모두 클리어', condition: (state) => state.clearedStages.includes('1-10'), reward: { bookmarks: 5 } },
+    { id: 'ach_012', title: '2장 완독', description: '제2장(2-10) 모두 클리어', condition: (state) => state.clearedStages.includes('2-10'), reward: { bookmarks: 10 } },
+    { id: 'ach_013', title: '넓어진 서재', description: '보관함 1회 확장', condition: (state) => state.capacity > 100, reward: { currency: 30 } },
+    { id: 'ach_014', title: '잉크 부자', description: '만년필 1,000개 이상 보유', condition: (state) => state.fountainPens >= 1000, reward: { currency: 100 } },
+];
+
+const characterPortraits = {
+    '서도진': {
+        neutral: 'https://i.imgur.com/9AoLI6I.png',
+        serious: 'https://i.imgur.com/ERUGX0P.png',
+        surprised: 'https://i.imgur.com/IayOWqf.png',
+        angry: 'https://i.imgur.com/ERUGX0P.png',
+    },
+    '도천영': {
+        neutral: 'https://i.imgur.com/svV5WKn.png',
+        serious: 'https://i.imgur.com/HlApnIL.png',
+    },
+    '윤필규': {
+        neutral: 'https://i.imgur.com/x6rfl1m.png'
+    },
+    '강은율': {
+        neutral: 'https://placehold.co/400x800/0bc5ea/ffffff?text=강은율',
+        serious: 'https://placehold.co/400x800/0987a0/ffffff?text=강은율'
+    },
+    '박연우': {
+        neutral: 'https://placehold.co/400x800/dd6b20/ffffff?text=박연우'
+    },
+    '백정문': {
+        neutral: 'https://placehold.co/400x800/f687b3/ffffff?text=백정문',
+        serious: 'https://placehold.co/400x800/d53f8c/ffffff?text=백정문'
+    },
+    '양석민': {
+        neutral: 'https://placehold.co/400x800/2f855a/ffffff?text=양석민',
+        serious: 'https://placehold.co/400x800/22543d/ffffff?text=양석민'
+    },
+    '독고유진': {
+        neutral: 'https://placehold.co/400x800/805ad5/ffffff?text=독고유진',
+        serious: 'https://placehold.co/400x800/553c9a/ffffff?text=독고유진'
+    },
+    '윤서천': {
+        neutral: 'https://i.imgur.com/Ruo7GXd.png',
+        serious: 'https://i.imgur.com/L6RdFz9.png'
+    },
+    '한 현': {
+        neutral: 'https://i.imgur.com/0F4cRdF.png'
+    },
+    '윤유준': {
+        neutral: 'https://placehold.co/400x800/c53030/ffffff?text=윤유준',
+        surprised: 'https://placehold.co/400x800/e53e3e/ffffff?text=윤유준'
+    },
+    '선생': { 
+        neutral: 'https://placehold.co/400x800/8B4513/ffffff?text=선생'
+    },
+    '백도화': {
+        neutral: 'https://placehold.co/400x800/FFC0CB/000000?text=백도화'
+    }
+};
+
+const rarityProbabilities = { 'SSR': 3, 'SR': 12, 'R': 35, 'N': 50 };
+const eventRarityProbabilities = { 'SSR': 6, 'SR': 14, 'R': 30, 'N': 50 };
+
+const ENHANCEMENT_BASE_COSTS = [5, 10, 15, 25, 40, 60, 85, 115, 150];
+const RARITY_COST_MULTIPLIER = {
+    'N': 0.7,   
+    'R': 1.0,   
+    'SR': 1.3,  
+    'SSR': 1.6, 
+};
+
+
+
+// yumecan_data.js 파일 맨 끝부분에 추가하세요.
+
+// 범용 상호작용 대사 (쌍이 맞지 않을 때 사용하는 기본 대사)
+const genericInteractions = [
+    ['오늘 날씨가 좋네요.', '그러게 말입니다.'],
+    ['사건 조사는 잘 돼가나요?', '쉽지 않네요.'],
+    ['안녕하세요!', '반갑습니다.'],
+    ['잠시 쉬었다 갈까요?', '좋은 생각입니다.']
+];
+
+
+
+</script>
 
     <script>
 
@@ -2190,215 +2810,306 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             saveGame();
         }
 
-        // 로그라이크 화면 진입 시 상태 체크 함수
-        function displayRoguelikeView() {
-            if (typeof rogueState !== 'undefined' && rogueState.active) {
-                document.getElementById('rogue-lobby').classList.add('hidden');
-                document.getElementById('rogue-active').classList.remove('hidden');
-                updateRogueUI();
-            } else {
-                document.getElementById('rogue-lobby').classList.remove('hidden');
-                document.getElementById('rogue-active').classList.add('hidden');
-            }
-        }
-        // ==========================================
-        // 🔥 폐기된 서고 (로그라이크) 로직 🔥
-        // ==========================================
-        let rogueState = {
-            active: false,
-            floor: 0,
-            team: [], // 현재 체력을 보존할 덱의 복사본
-            buffs: []
-        };
-
-        // 버프(전술 영감) 풀
+        // 폐기된 서고 v2: 저장 가능한 경로 선택 / 영감 조합 / 12층 완주
+        const ROGUE_VERSION = 2;
+        const rogueSchools = { assault: '파괴', guard: '수호', renewal: '재생' };
         const rogueBuffPool = [
-            { id: 'atk_1', name: "전술 자극 I", desc: "모든 아군의 공격력 10% 증가", type: "atk", val: 1.1 },
-            { id: 'atk_2', name: "전술 자극 II", desc: "모든 아군의 공격력 20% 증가", type: "atk", val: 1.2 },
-            { id: 'def_1', name: "장갑 보강 I", desc: "모든 아군의 방어력 15% 증가", type: "def", val: 1.15 },
-            { id: 'def_2', name: "장갑 보강 II", desc: "모든 아군의 방어력 30% 증가", type: "def", val: 1.3 },
-            { id: 'heal_1', name: "긴급 수복", desc: "모든 아군의 체력을 30% 즉시 회복", type: "heal", val: 0.3 },
-            { id: 'heal_2', name: "전면 수복", desc: "모든 아군의 체력을 100% 즉시 회복", type: "heal", val: 1.0 },
-            { id: 'hp_1', name: "생명력 증강", desc: "최대 체력 20% 증가 (현재 체력도 증가)", type: "maxHp", val: 1.2 }
+            {id:'a1',name:'날카로운 문장',school:'assault',desc:'전원 공격력 +12%',type:'atk',val:1.12},
+            {id:'a2',name:'붉은 교정선',school:'assault',desc:'전원 공격력 +18%, 생존자 현재 체력 8% 소모',type:'risk',val:1.18},
+            {id:'a3',name:'마지막 문단',school:'assault',desc:'전원 공격력 +10%, 탐사 조각 15개 획득',type:'ink',val:1.10},
+            {id:'a4',name:'거침없는 집필',school:'assault',desc:'전원 공격력 +15%',type:'atk',val:1.15},
+            {id:'g1',name:'단단한 표지',school:'guard',desc:'전원 방어력 +15%',type:'def',val:1.15},
+            {id:'g2',name:'여백의 방벽',school:'guard',desc:'전원 최대 체력 +15%, 늘어난 만큼 생존자 회복',type:'maxHp',val:1.15},
+            {id:'g3',name:'보존 처리',school:'guard',desc:'전원 방어력 +20%',type:'def',val:1.20},
+            {id:'g4',name:'겹겹의 장정',school:'guard',desc:'전원 최대 체력 +20%, 늘어난 만큼 생존자 회복',type:'maxHp',val:1.20},
+            {id:'r1',name:'복원 잉크',school:'renewal',desc:'생존자 최대 체력의 30% 회복',type:'heal',val:.30},
+            {id:'r2',name:'다시 쓰는 결말',school:'renewal',desc:'전투불능 1명 체력 40%로 복귀. 없으면 생존자 25% 회복',type:'revive',val:.40},
+            {id:'r3',name:'온전한 페이지',school:'renewal',desc:'생존자 최대 체력의 50% 회복',type:'heal',val:.50},
+            {id:'r4',name:'생명의 각주',school:'renewal',desc:'전원 최대 체력 +10%, 생존자 15% 회복',type:'growth',val:1.10}
         ];
-
-        function startRoguelike() {
-                    if (playerDeck.length < 5) return alert("덱을 5장 편성해야 진입할 수 있습니다.");
-
-                    // ✨ [추가] 책갈피 5개 확인 및 소모 로직
-                    if (playerBookmarks < 5) {
-                        return alert("책갈피가 부족합니다! (5개 필요)");
-                    }
-
-                    playerBookmarks -= 5;
-
-                    // 책갈피가 꽉 차 있다가 줄어든 경우 타이머를 갱신
-                    if (playerBookmarks >= MAX_BOOKMARKS - 5) {
-                        lastBookmarkUpdateTime = Date.now();
-                    }
-                    updateUI(); // 상단 재화 바 갱신
-                    saveGame(); // 소모 내역 저장
-                    // ✨ [추가 끝]
-
-                    rogueState.active = true;
-                    rogueState.floor = 1;
-                    rogueState.buffs = [];
-
-                    // 현재 덱을 깊은 복사하여 로그라이크 전용 팀 생성
-                    rogueState.team = playerDeck.map(cardInstance => {
-                        const baseCard = findCharacter(cardInstance.name);
-                        const enhancedStats = getEnhancedStats(cardInstance);
-                        let activeSkills = baseCard.skills;
-                        if (cardInstance.inherited && cardInstance.inherited.skills) {
-                            activeSkills = cardInstance.inherited.skills;
-                        }
-                        return {
-                            ...baseCard,
-                            instanceId: cardInstance.id,
-                            level: cardInstance.level,
-                            skills: activeSkills,
-                            stats: { ...enhancedStats },
-                            maxHp: enhancedStats.hp, // 최대 체력 저장 (회복용)
-                            activeEffects: []
-                        };
-                    });
-
-                    document.getElementById('rogue-lobby').classList.add('hidden');
-                    document.getElementById('rogue-active').classList.remove('hidden');
-                    updateRogueUI();
-                }
-
+        const rogueRelics = [
+            {id:'compass',name:'탐색자의 나침반',desc:'전투 승리마다 탐사 조각 +10'},
+            {id:'needle',name:'제본 바늘',desc:'전투 승리마다 생존자 체력 8% 회복'},
+            {id:'lens',name:'교정 렌즈',desc:'이번 탐사에서 영감 후보 새로고침 2회 추가'},
+            {id:'seal',name:'봉인된 인장',desc:'획득 즉시 전원 공격력 +12%'},
+            {id:'cover',name:'기억의 표지',desc:'획득 즉시 전원 최대 체력 +15%'}
+        ];
+        const rogueNodeInfo = {
+            battle:['교전','일반 적 · 영감 1개 / 조각 25'], elite:['정예','강한 적 · 영감 + 유물 / 조각 45'],
+            rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
+            event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
+        };
+        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[]}; }
+        let rogueState = emptyRogueState();
+        let rogueMeta = {runs:0,clears:0,best:0,last:null};
+        let rogueBusy = false;
+        function rogueEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function rogueRand() { let x=rogueState.seed|0; x^=x<<13;x^=x>>>17;x^=x<<5;rogueState.seed=x>>>0;return (x>>>0)/4294967296; }
+        function rogueShuffle(items) { const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(rogueRand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+        function rogueLog(text) { rogueState.history.unshift(text);rogueState.history=rogueState.history.slice(0,18); }
+        function rogueHeal(percent) { rogueState.team.forEach(c=>{if(c.stats.hp>0)c.stats.hp=Math.min(c.maxHp,c.stats.hp+Math.floor(c.maxHp*percent));}); }
+        function rogueStat(type,multiplier) {
+            rogueState.team.forEach(c=>{
+                if(type==='maxHp'){const old=c.maxHp;c.maxHp=Math.floor(old*multiplier);if(c.stats.hp>0)c.stats.hp+=c.maxHp-old;}
+                else c.stats[type]=Math.floor(c.stats[type]*multiplier);
+            });
+        }
+        function rogueRevive(percent) { const c=rogueState.team.find(c=>c.stats.hp<=0);if(c)c.stats.hp=Math.max(1,Math.floor(c.maxHp*percent));else rogueHeal(.25); }
+        async function roguePersist() {
+            rogueBusy=true;updateRogueUI();
+            try { return await saveGame(); }
+            finally { rogueBusy=false;updateRogueUI(); }
+        }
+        function restoreRogueProgress(saved) {
+            const meta=saved.rogueMeta;
+            rogueMeta={runs:Math.max(0,Number(meta?.runs)||0),clears:Math.max(0,Number(meta?.clears)||0),best:Math.min(12,Math.max(0,Number(meta?.best)||0)),last:meta?.last||null};
+            let r;
+            try { r=typeof saved.rogueRun==='string'?JSON.parse(saved.rogueRun):saved.rogueRun; } catch (_) { r=null; }
+            rogueState=emptyRogueState();
+            if(!r?.active || r.version!==ROGUE_VERSION)return;
+            const valid=Array.isArray(r.team)&&r.team.length===5&&r.team.every(c=>c&&typeof c.name==='string'&&c.stats&&['hp','atk','def'].every(k=>Number.isFinite(c.stats[k])&&c.stats[k]>=0)&&Number.isFinite(c.maxHp)&&c.maxHp>0&&c.stats.hp<=c.maxHp)
+                &&Array.isArray(r.map)&&r.map.length===12&&r.map.every(row=>Array.isArray(row)&&row.length>0&&row.length<=3&&row.every(n=>n&&rogueNodeInfo[n.type]&&typeof n.id==='string'))
+                &&['route','combat','buff','relic','rest','shop','event'].includes(r.phase)&&Number.isInteger(r.floor)&&r.floor>=1&&r.floor<=12
+                &&['cleared','wins','bosses','shards','rerolls','seed'].every(k=>Number.isFinite(r[k])&&r[k]>=0)
+                &&r.baseline&&['hp','atk','def'].every(k=>Number.isFinite(r.baseline[k])&&r.baseline[k]>0)
+                &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
+            if(!valid){console.warn('Invalid rogue checkpoint ignored');return;}
+            rogueState=JSON.parse(JSON.stringify(r));
+            if(rogueState.phase==='combat'){rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;rogueLog('연결이 끊긴 전투를 시작 시점부터 다시 진행합니다.');}
+            if(['rest','shop','event','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
+        }
+        function displayRoguelikeView() { updateRogueUI(); }
+        function makeRogueMap() {
+            const names=Object.keys(monsters).filter(k=>monsters[k]?.stats);
+            const types=['battle','elite','event','shop'];
+            return Array.from({length:12},(_,i)=>{
+                const depth=i+1;
+                const row=depth%4===0?['boss']:depth%4===3?['rest','elite']:depth===1?['battle','event']:rogueShuffle(types).slice(0,2);
+                return row.map((type,j)=>({id:`${depth}-${j}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event:Math.floor(rogueRand()*3)}));
+            });
+        }
+        async function startRoguelike() {
+            if(rogueBusy||isCombatRunning)return;
+            if(rogueState.active){displayRoguelikeView();return;}
+            if(!currentUser)return alert('로그인 후 탐사할 수 있습니다.');
+            if(playerDeck.length!==5)return alert('덱을 5장 편성해야 진입할 수 있습니다.');
+            if(playerBookmarks<5)return alert('책갈피 5개가 필요합니다.');
+            if(!Object.values(monsters).some(m=>m?.stats))return alert('적 데이터를 불러오지 못했습니다.');
+            let team;
+            try {
+                team=playerDeck.map(card=>{
+                    const base=findCharacter(card.name),stats=getEnhancedStats(card);
+                    if(!base||!stats||![stats.hp,stats.atk,stats.def].every(Number.isFinite)||stats.hp<=0)throw Error('Invalid card');
+                    return {...JSON.parse(JSON.stringify(base)),instanceId:card.id,level:card.level,stats:{...stats},skills:JSON.parse(JSON.stringify(card.inherited?.skills||base.skills||[])),activeEffects:[]};
+                });
+                team=applySynergyBonusesToDeck(team);team.forEach(c=>c.maxHp=c.stats.hp);
+            } catch(error){console.error(error);return alert('편성의 캐릭터 데이터를 확인해 주세요.');}
+            rogueState={...emptyRogueState(),active:true,seed:(Date.now()^Math.floor(Math.random()*4294967295))>>>0||1,runId:generateUniqueId(),team};
+            rogueState.baseline={hp:team.reduce((n,c)=>n+c.maxHp,0)/5,atk:Math.max(1,team.reduce((n,c)=>n+c.stats.atk,0)),def:Math.max(1,team.reduce((n,c)=>n+c.stats.def,0)/5)};
+            rogueState.map=makeRogueMap();
+            const selected=document.getElementById('rogue-start-relic').value;
+            grantRogueRelic(rogueRelics.find(r=>r.id===selected)||rogueRelics[0]);
+            playerBookmarks-=5;if(playerBookmarks>=MAX_BOOKMARKS-5)lastBookmarkUpdateTime=Date.now();
+            rogueMeta.runs++;rogueLog('책갈피 5개를 사용해 폐기된 서고에 진입했습니다.');
+            updateUI();await roguePersist();
+        }
+        function rogueEnemyPlan(node) {
+            const f=rogueState.floor,b=rogueState.baseline;
+            const elite=node.type==='elite',boss=node.type==='boss';
+            const source=monsters[node.monsterName]||{};
+            const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
+            const aoe=boss&&f>=8;
+            return {name:boss?({4:'제1봉인 · 지워진 문지기',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
+                stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
+                rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
+        }
         function updateRogueUI() {
-            document.getElementById('rogue-floor-display').textContent = rogueState.floor;
-
-            const teamStatus = document.getElementById('rogue-team-status');
-            teamStatus.innerHTML = '';
-
-            rogueState.team.forEach(c => {
-                const hpPercent = (c.stats.hp / c.maxHp) * 100;
-                const hpColor = hpPercent > 50 ? 'bg-cyan-500' : (hpPercent > 20 ? 'bg-yellow-500' : 'bg-red-500');
-                const isDead = c.stats.hp <= 0;
-
-                teamStatus.innerHTML += `
-                    <div class="bg-gray-800 border border-gray-700 p-1 rounded-sm text-center ${isDead ? 'opacity-30 grayscale' : ''}">
-                        <img src="${c.cardImageUrl}" class="w-full h-12 md:h-16 object-cover mb-1 border border-gray-600">
-                        <div class="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden">
-                            <div class="h-full ${hpColor}" style="width: ${hpPercent}%"></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            const buffsList = document.getElementById('rogue-buffs-list');
-            if (rogueState.buffs.length === 0) {
-                buffsList.innerHTML = '<span class="text-gray-600">없음</span>';
+            const lobby=document.getElementById('rogue-lobby');if(!lobby)return;
+            lobby.classList.toggle('hidden',rogueState.active);
+            document.getElementById('rogue-active').classList.toggle('hidden',!rogueState.active);
+            document.getElementById('rogue-record').textContent=`최고 ${rogueMeta.best}/12층 · 완주 ${rogueMeta.clears}회 · 도전 ${rogueMeta.runs}회`;
+            const report=document.getElementById('rogue-report');
+            report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}`:'';
+            document.getElementById('rogue-start-button').disabled=rogueBusy;
+            if(!rogueState.active)return;
+            document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
+            document.getElementById('rogue-shards').textContent=rogueState.shards;
+            document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'어떤 결말을 쓰시겠어요?'}[rogueState.phase]);
+            document.getElementById('rogue-map').innerHTML=rogueState.map.map((row,i)=>`<div class="rg-map-row ${i+1===rogueState.floor?'current':''} ${i<rogueState.cleared?'done':''}"><span>${String(i+1).padStart(2,'0')}</span>${row.map(n=>`<span class="rg-map-node ${n.id===rogueState.visited?.[i]?'taken':''}">${rogueNodeInfo[n.type][0]}</span>`).join('<span class="rg-or">/</span>')}</div>`).join('');
+            document.getElementById('rogue-team-status').innerHTML=rogueState.team.map(c=>`<div class="rg-member ${c.stats.hp<=0?'fallen':''}"><img src="${rogueEscape(c.cardImageUrl||c.imageUrl||'')}" alt="${rogueEscape(c.name)}"><strong>${rogueEscape(c.name)}</strong><progress max="${c.maxHp}" value="${c.stats.hp}" aria-label="${rogueEscape(c.name)} 체력"></progress><small>${Math.ceil(c.stats.hp)} / ${c.maxHp}</small></div>`).join('');
+            const counts={};for(const id of rogueState.buffs){const b=rogueBuffPool.find(b=>b.id===id);if(b)counts[b.school]=(counts[b.school]||0)+1;}
+            document.getElementById('rogue-resonance').innerHTML=Object.entries(rogueSchools).map(([k,v])=>`<div class="rg-resonance ${rogueState.resonances.includes(k)?'lit':''}"><b>${v} ${counts[k]||0}/3</b><small>${{assault:'3개: 공격력 +25%',guard:'3개: 방어력 +25%, 최대 체력 +10%',renewal:'3개: 승리 시 생존자 체력 10% 회복'}[k]}</small></div>`).join('');
+            document.getElementById('rogue-buffs-list').innerHTML=rogueState.buffs.map(id=>{const b=rogueBuffPool.find(b=>b.id===id);return b?`<span title="${rogueEscape(b.desc)}">${b.name}</span>`:'';}).join('')||'<span>아직 획득한 영감이 없습니다.</span>';
+            document.getElementById('rogue-relics').innerHTML=rogueState.relics.map(id=>{const r=rogueRelics.find(r=>r.id===id);return r?`<span title="${r.desc}">${r.name} · ${r.desc}</span>`:'';}).join('');
+            document.getElementById('rogue-log').innerHTML=rogueState.history.map(t=>`<li>${rogueEscape(t)}</li>`).join('');
+            document.getElementById('rogue-retire').disabled=rogueBusy||rogueState.phase==='combat';
+            renderRogueChoices();
+        }
+        function rogueChoiceButton(title,desc,callback,disabled=false) {
+            const b=document.createElement('button');b.type='button';b.className='rg-choice';b.disabled=rogueBusy||disabled;
+            const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=desc;b.append(h,p);b.onclick=callback;return b;
+        }
+        function renderRogueChoices() {
+            const box=document.getElementById('rogue-choices');box.replaceChildren();
+            const phase=rogueState.phase;
+            const add=(title,desc,callback,disabled)=>box.append(rogueChoiceButton(title,desc,callback,disabled));
+            if(phase==='route') {
+                for(const node of rogueState.map[rogueState.floor-1]) {
+                    const info=rogueNodeInfo[node.type];let detail=info[1];
+                    if(['battle','elite','boss'].includes(node.type)){const m=rogueEnemyPlan(node);detail+=`\n${m.name}\nHP ${m.stats.hp} · ATK ${m.stats.atk} · DEF ${m.stats.def}\n${m.rogueTactic}`;}
+                    add(info[0],detail,()=>chooseRogueNode(node.id),Boolean(rogueState.retryNode&&rogueState.retryNode!==node.id));
+                }
+            } else if(phase==='buff'||phase==='relic') {
+                const pool=phase==='buff'?rogueBuffPool:rogueRelics;
+                for(const id of rogueState.choices){const item=pool.find(b=>b.id===id);if(item)add(item.name,(item.school?`[${rogueSchools[item.school]}] `:'')+item.desc,()=>chooseRogueReward(id));}
+                if(phase==='buff')add(`후보 새로고침 (${rogueState.rerolls}회)`, '이번 탐사에서만 사용 · 현재 후보는 제외',rogueReroll,rogueState.rerolls<=0);
+                if(!rogueState.choices.length)add('다음 층으로','모든 유물을 획득했습니다.',async()=>{if(rogueBusy)return;advanceRogueFloor();await roguePersist();});
+            } else if(phase==='rest') {
+                add('휴식','생존자 최대 체력 40% 회복',()=>resolveRogueRoom('rest'));
+                add('퇴고','회복을 포기하고 전원 공격력 +12%',()=>resolveRogueRoom('forge'));
+                add('페이지 복원','전투불능 1명 체력 40%로 복귀',()=>resolveRogueRoom('revive'),!rogueState.team.some(c=>c.stats.hp<=0));
+            } else if(phase==='shop') {
+                const sold=rogueState.purchases||[];
+                add('복원액 · 조각 30','생존자 최대 체력 35% 회복 · 1회 한정',()=>resolveRogueRoom('buyHeal'),rogueState.shards<30||sold.includes('buyHeal'));
+                const b=rogueBuffPool.find(b=>b.id===rogueState.shopBuff);
+                if(b)add(`${b.name} · 조각 45`,`[${rogueSchools[b.school]}] ${b.desc} · 1회 한정`,()=>resolveRogueRoom('buyBuff'),rogueState.shards<45||sold.includes('buyBuff'));
+                add('행상인을 떠난다','남은 조각은 이번 탐사 중에만 사용됩니다.',()=>resolveRogueRoom('leave'));
+            } else if(phase==='event') {
+                const e=rogueState.node.event;
+                if(e===0){add('금지된 원고를 읽는다','생존자 현재 체력 20% 소모 (전투불능 없음) → 파괴 영감 획득',()=>resolveRogueRoom('risk'));add('원고를 봉인한다','탐사 조각 20개 획득',()=>resolveRogueRoom('safe'));}
+                if(e===1){add('길 잃은 사서를 돕는다','조각 20개 지불 → 전원 최대 체력 +15%',()=>resolveRogueRoom('help'),rogueState.shards<20);add('길을 물어본다','탐사 조각 10개 획득',()=>resolveRogueRoom('ask'));}
+                if(e===2){add('기억을 복원한다','전투불능 1명 체력 30%로 복귀. 없으면 생존자 25% 회복',()=>resolveRogueRoom('memory'));add('잉크를 회수한다','탐사 조각 35개 획득',()=>resolveRogueRoom('collect'));}
+            }
+        }
+        async function chooseRogueNode(id) {
+            if(!rogueState.active||rogueBusy||rogueState.phase!=='route'||isCombatRunning)return;
+            const node=rogueState.map[rogueState.floor-1].find(n=>n.id===id);
+            if(!node||rogueState.retryNode&&rogueState.retryNode!==id)return;
+            rogueState.node=node;rogueState.retryNode=null;
+            rogueLog(`${rogueState.floor}층 · ${rogueNodeInfo[node.type][0]} 진입`);
+            if(['battle','elite','boss'].includes(node.type)) {
+                if(!rogueState.team.some(c=>c.stats.hp>0))return endRoguelikeRun('defeat');
+                rogueState.phase='combat';
+                const saved=await roguePersist();
+                if(!saved){rogueState.phase='route';rogueState.retryNode=id;updateRogueUI();return;}
+                try{await startCombat({monsterName:node.monsterName,floor:rogueState.floor,nodeId:id},'rogue');}
+                catch(error){console.error(error);isCombatRunning=false;stopCombat3DBackground();rogueState.phase='route';rogueState.retryNode=id;switchTab('roguelike');alert('전투를 시작하지 못했습니다. 같은 경로로 다시 시도해 주세요.');}
             } else {
-                buffsList.innerHTML = rogueState.buffs.map(b => `<span class="bg-yellow-900/30 border border-yellow-700 px-2 py-0.5 rounded-sm">${b.name}</span>`).join('');
+                rogueState.phase=node.type;
+                if(node.type==='shop'){rogueState.purchases=[];rogueState.shopBuff=rogueShuffle(rogueBuffPool)[0].id;}
+                await roguePersist();
             }
         }
-
-        function generateRogueFloor() {
-            // 생존자 체크
-            if (!rogueState.team.some(c => c.stats.hp > 0)) {
-                alert("전투 가능한 탐정이 없습니다.");
-                return endRoguelikeRun();
-            }
-
-            // 몬스터 랜덤 선택 (현재 층수에 비례해 체력/공격력 뻥튀기)
-            const monsterNames = Object.keys(monsters);
-            const randomMonster = monsterNames[Math.floor(Math.random() * monsterNames.length)];
-
-            // startCombat에 전달
-            startCombat({ monsterName: randomMonster, floor: rogueState.floor }, 'rogue');
+        function generateRogueFloor() { displayRoguelikeView(); }
+        function rollRogueBuffs(exclude=[]) {
+            const available=rogueBuffPool.filter(b=>!exclude.includes(b.id));
+            return rogueShuffle(available).slice(0,3).map(b=>b.id);
         }
-
-        function showRogueBuffSelection() {
-            const modal = document.getElementById('rogue-buff-modal');
-            const container = document.getElementById('rogue-buff-choices');
-            container.innerHTML = '';
-
-            // 버프 3개 랜덤 추출
-            const shuffled = [...rogueBuffPool].sort(() => 0.5 - Math.random());
-            const choices = shuffled.slice(0, 3);
-
-            choices.forEach(buff => {
-                const btn = document.createElement('div');
-                btn.className = "bg-gray-900/80 border border-gray-700 hover:border-yellow-400 p-4 cursor-pointer transition-all flex flex-col justify-between";
-                btn.innerHTML = `
-                    <div>
-                        <h4 class="text-yellow-400 font-tech font-bold mb-1 text-lg">${buff.name}</h4>
-                        <p class="text-xs text-gray-300">${buff.desc}</p>
-                    </div>
-                    <button class="mt-4 gacha-button border-gray-600 text-xs py-1 w-full pointer-events-none">추출</button>
-                `;
-                btn.onclick = () => {
-                    applyRogueBuff(buff);
-                    rogueState.buffs.push(buff);
-                    rogueState.floor++;
-                    modal.classList.add('hidden');
-                    updateRogueUI();
-                };
-                container.appendChild(btn);
-            });
-
-            modal.classList.remove('hidden');
-        }
-
+        function showRogueBuffSelection() { rogueState.phase='buff';rogueState.choices=rollRogueBuffs();updateRogueUI(); }
         function applyRogueBuff(buff) {
-            rogueState.team.forEach(c => {
-                if (c.stats.hp <= 0 && buff.type !== 'heal') return; // 죽은 캐릭은 힐 외엔 적용 안함
-
-                if (buff.type === 'atk') c.stats.atk = Math.floor(c.stats.atk * buff.val);
-                else if (buff.type === 'def') c.stats.def = Math.floor(c.stats.def * buff.val);
-                else if (buff.type === 'maxHp') {
-                    const oldMax = c.maxHp;
-                    c.maxHp = Math.floor(c.maxHp * buff.val);
-                    c.stats.hp += (c.maxHp - oldMax); // 늘어난 만큼 현재 체력도 더해줌
-                }
-                else if (buff.type === 'heal') {
-                    if (c.stats.hp > 0) { // 살아있는 캐릭만 회복
-                        c.stats.hp = Math.min(c.maxHp, c.stats.hp + Math.floor(c.maxHp * buff.val));
-                    }
-                }
-            });
+            if(!buff)return;
+            if(['atk','def','maxHp'].includes(buff.type))rogueStat(buff.type,buff.val);
+            if(buff.type==='risk'){rogueStat('atk',buff.val);rogueState.team.forEach(c=>{if(c.stats.hp>0)c.stats.hp=Math.max(1,Math.floor(c.stats.hp*.92));});}
+            if(buff.type==='ink'){rogueStat('atk',buff.val);rogueState.shards+=15;}
+            if(buff.type==='heal')rogueHeal(buff.val);
+            if(buff.type==='revive')rogueRevive(buff.val);
+            if(buff.type==='growth'){rogueStat('maxHp',buff.val);rogueHeal(.15);}
+            rogueState.buffs.push(buff.id);rogueLog(`영감 획득 · ${buff.name}`);
+            const count=rogueState.buffs.filter(id=>rogueBuffPool.find(b=>b.id===id)?.school===buff.school).length;
+            if(count>=3&&!rogueState.resonances.includes(buff.school)) {
+                rogueState.resonances.push(buff.school);
+                if(buff.school==='assault')rogueStat('atk',1.25);
+                if(buff.school==='guard'){rogueStat('def',1.25);rogueStat('maxHp',1.10);}
+                rogueLog(`${rogueSchools[buff.school]} 공명 활성화!`);
+            }
+        }
+        function grantRogueRelic(relic) {
+            if(!relic||rogueState.relics.includes(relic.id))return;
+            rogueState.relics.push(relic.id);
+            if(relic.id==='seal')rogueStat('atk',1.12);
+            if(relic.id==='cover')rogueStat('maxHp',1.15);
+            if(relic.id==='lens')rogueState.rerolls+=2;
+            rogueLog(`유물 획득 · ${relic.name}`);
+        }
+        async function rogueReroll() {
+            if(rogueBusy||!rogueState.active||rogueState.phase!=='buff'||rogueState.rerolls<=0)return;
+            rogueState.rerolls--;rogueState.choices=rollRogueBuffs(rogueState.choices);await roguePersist();
+        }
+        async function chooseRogueReward(id) {
+            if(rogueBusy||!rogueState.active||!['buff','relic'].includes(rogueState.phase)||!rogueState.choices.includes(id))return;
+            const phase=rogueState.phase;rogueState.choices=[];
+            if(phase==='buff') {
+                applyRogueBuff(rogueBuffPool.find(b=>b.id===id));
+                if(['elite','boss'].includes(rogueState.node.type)){
+                    rogueState.phase='relic';rogueState.choices=rogueShuffle(rogueRelics.filter(r=>!rogueState.relics.includes(r.id))).slice(0,3).map(r=>r.id);
+                    if(!rogueState.choices.length){rogueState.shards+=20;advanceRogueFloor();}
+                }else advanceRogueFloor();
+            } else {grantRogueRelic(rogueRelics.find(r=>r.id===id));advanceRogueFloor();}
+            await roguePersist();
+        }
+        function advanceRogueFloor() {
+            rogueState.cleared=rogueState.floor;
+            rogueState.visited=rogueState.visited||[];rogueState.visited[rogueState.floor-1]=rogueState.node.id;
+            if(rogueState.floor===12){settleRogueRun('완주');return;}
+            rogueState.floor++;rogueState.phase='route';rogueState.node=null;rogueState.choices=[];
+        }
+        async function resolveRogueRoom(action) {
+            if(rogueBusy||!rogueState.active)return;
+            const phase=rogueState.phase;
+            const allowed={rest:['rest','forge','revive'],shop:['buyHeal','buyBuff','leave'],event:rogueState.node?.event===0?['risk','safe']:rogueState.node?.event===1?['help','ask']:['memory','collect']};
+            if(!allowed[phase]?.includes(action))return;
+            if(action==='revive'&&!rogueState.team.some(c=>c.stats.hp<=0))return;
+            if(phase==='shop'&&action!=='leave') {
+                const cost=action==='buyHeal'?30:45;
+                if(rogueState.shards<cost||rogueState.purchases.includes(action))return;
+                rogueState.shards-=cost;rogueState.purchases.push(action);
+                if(action==='buyHeal')rogueHeal(.35);else applyRogueBuff(rogueBuffPool.find(b=>b.id===rogueState.shopBuff));
+                rogueLog(`행상인 · ${cost} 조각 사용`);await roguePersist();return;
+            }
+            if(action==='help'&&rogueState.shards<20)return;
+            if(action==='rest')rogueHeal(.40);
+            if(action==='forge')rogueStat('atk',1.12);
+            if(action==='revive')rogueRevive(.40);
+            if(action==='risk') {rogueState.team.forEach(c=>{if(c.stats.hp>0)c.stats.hp=Math.max(1,Math.floor(c.stats.hp*.80));});applyRogueBuff(rogueShuffle(rogueBuffPool.filter(b=>b.school==='assault'))[0]);}
+            if(action==='safe')rogueState.shards+=20;
+            if(action==='help'){rogueState.shards-=20;rogueStat('maxHp',1.15);}
+            if(action==='ask')rogueState.shards+=10;
+            if(action==='memory')rogueRevive(.30);
+            if(action==='collect')rogueState.shards+=35;
+            rogueLog(`${rogueState.floor}층 선택 완료`);advanceRogueFloor();await roguePersist();
+        }
+        function completeRogueCombat(victory,deck) {
+            if(!rogueState.active||rogueState.phase!=='combat')return;
+            if(Array.isArray(deck))rogueState.team.forEach((c,i)=>{const hp=deck[i]?.stats?.hp;c.stats.hp=Number.isFinite(hp)?Math.max(0,Math.min(c.maxHp,hp)):c.stats.hp;});
+            if(!victory){settleRogueRun('탐사 종료');roguePersist();return;}
+            rogueState.wins++;
+            if(rogueState.node.type==='boss')rogueState.bosses++;
+            rogueState.shards+=({battle:25,elite:45,boss:60}[rogueState.node.type]||0)+(rogueState.relics.includes('compass')?10:0);
+            if(rogueState.relics.includes('needle'))rogueHeal(.08);
+            if(rogueState.resonances.includes('renewal'))rogueHeal(.10);
+            rogueState.cleared=rogueState.floor;
+            rogueState.visited=rogueState.visited||[];
+            rogueState.visited[rogueState.floor-1]=rogueState.node.id;
+            rogueLog(`${rogueState.floor}층 승리 · 체력과 보상 기록`);
+            if(rogueState.floor===12){settleRogueRun('완주');roguePersist();return;}
+            showRogueBuffSelection();roguePersist();
+        }
+        function settleRogueRun(result) {
+            if(!rogueState.active)return false;
+            const gems=rogueState.wins*10+rogueState.bosses*20,pens=rogueState.wins*50,ink=Math.floor(rogueState.wins/3);
+            rogueState.active=false;rogueState.phase='settled';
+            playerCurrency+=gems;playerFountainPens+=pens;playerInkwells+=ink;
+            rogueMeta.best=Math.max(rogueMeta.best,rogueState.cleared);
+            if(result==='완주')rogueMeta.clears++;
+            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId};
+            updateUI();updateRogueUI();return true;
+        }
+        async function endRoguelikeRun(reason='retire') {
+            if(!rogueState.active||rogueBusy||isCombatRunning||rogueState.phase==='combat')return;
+            if(reason==='retire'&&!confirm('탐사를 마치고 보상을 정산할까요? 획득한 영감·유물·탐사 조각은 다음 탐사로 이어지지 않습니다.'))return;
+            settleRogueRun('귀환');await roguePersist();
         }
 
-        function endRoguelikeRun() {
-                    if (rogueState.floor <= 1) {
-                        alert("탐사를 포기했습니다. (획득 보상 없음)");
-                    } else {
-                        const clearFloors = rogueState.floor - 1;
-                        const inkReward = Math.floor(clearFloors / 3); // 3층마다 잉크 1개
-                        const penReward = clearFloors * 50;
-                        const gemReward = clearFloors * 10;
-
-                        playerInkwells += inkReward;
-                        playerFountainPens += penReward;
-                        playerCurrency += gemReward;
-
-                        let droppedEqs = [];
-                        const dropChances = Math.floor(clearFloors / 2); // 2층 클리어마다 장비 1개 획득 찬스
-                        for (let i = 0; i < dropChances; i++) {
-                            if (Math.random() < 0.5) { // 50% 확률
-                                const randomTmpl = equipmentTemplates[Math.floor(Math.random() * equipmentTemplates.length)];
-                                playerEquipment.push({ id: generateEqId(), templateId: randomTmpl.id, equippedTo: null });
-                                droppedEqs.push(randomTmpl.name);
-                            }
-                        }
-                        const eqRewardText = droppedEqs.length > 0 ? `\n📦 획득 장비: ${droppedEqs.join(', ')}` : '';
-
-                        // ✨ alert 창 안에 ${eqRewardText}를 추가했습니다!
-                        alert(`[심층 탐사 리포트]\n도달 층수: DEPTH-${rogueState.floor}\n\n획득 보상:\n💧 잉크병 x${inkReward}\n🖋️ 만년필 x${penReward}\n💎 보석 x${gemReward}${eqRewardText}`);
-                    }
-
-                    rogueState.active = false;
-                    document.getElementById('rogue-active').classList.add('hidden');
-                    document.getElementById('rogue-lobby').classList.remove('hidden');
-
-                    saveGame();
-                    updateUI();
-                    switchTab('roguelike'); // 뷰 리셋
-                }
 
 	// gacha3.html - downloadSaveData 함수 (기존 함수 전체 교체)
 
@@ -2829,6 +3540,8 @@ function buildGameSnapshot() {
         stats: playerStats || { totalPulls: 0 },
         summonHistory: summonHistory,
         tutorialFinished: playerTutorialFinished,
+        rogueRun: JSON.stringify(rogueState),
+        rogueMeta: rogueMeta,
         clearedStageStories: clearedStageStories || [],
         playerChoices: playerChoices || {},
         collectedCardNames: Array.from(collectedCardNames || []),
@@ -2882,6 +3595,7 @@ async function loadGameFromFirebase(uid) {
     if (doc.exists) {
         console.log("Firebase에서 게임 데이터를 불러옵니다.");
         const savedData = doc.data();
+        restoreRogueProgress(savedData);
         summonHistory = Array.isArray(savedData.summonHistory) ? savedData.summonHistory.filter(entry =>
             entry && Number.isFinite(entry.at) && Array.isArray(entry.cards) && entry.cards.every(card => card && typeof card.name === 'string' && typeof card.rarity === 'string')
         ).slice(0, 30) : [];
@@ -3031,6 +3745,7 @@ function saveGame() {
 
 
             function initializeNewGameData() {
+    rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     // ✨ 게임 첫 시작 시 기본 지급 카드에 고유 ID와 레벨 부여
     addCardToInventory('[관리인] Ki');
     addCardToInventory('[관리인] Ai');
@@ -5848,6 +6563,8 @@ function startStageCombat(chapterIndex, stageIndex) {
 
 				// ✅ [수정됨] startCombat 함수: 화면 레이아웃 변경 및 효과 시스템 초기화
 				async function startCombat(indices, type) {
+    if(isCombatRunning)return;
+    isCombatRunning = true;
     // ✨ [추가] 전투 진입 텍티컬 경고 연출 재생
     const startOverlay = document.getElementById('combat-start-overlay');
     if (startOverlay) {
@@ -5871,11 +6588,7 @@ function startStageCombat(chapterIndex, stageIndex) {
         // 레이드 최대 체력 저장
         monsterData.maxHp = raidBossData.maxHp;
     } else if (type === 'rogue') {
-            // ✨ 로그라이크 몬스터 설정: 층수에 따라 체력/공격력 비례 스케일링
-            monsterData = JSON.parse(JSON.stringify(monsters[indices.monsterName]));
-            monsterData.maxHp = Math.floor(monsterData.stats.hp * (1 + (indices.floor * 0.3))); // 매 층 체력 30% 증가
-            monsterData.stats.hp = monsterData.maxHp;
-            monsterData.stats.atk = Math.floor(monsterData.stats.atk * (1 + (indices.floor * 0.1))); // 매 층 공격 10% 증가
+            monsterData = rogueEnemyPlan(rogueState.node);
     } else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
@@ -5921,10 +6634,11 @@ function startStageCombat(chapterIndex, stageIndex) {
         }
 
     // 2. 인연 보너스 적용
-    combatDeck = applySynergyBonusesToDeck(combatDeck);
+    if (type !== 'rogue') combatDeck = applySynergyBonusesToDeck(combatDeck);
 
     // 3. 최대 HP 저장 (원본 보너스 덱 저장)
     const originalBonusDeck = JSON.parse(JSON.stringify(combatDeck));
+    if(type==='rogue')originalBonusDeck.forEach(c=>c.stats.hp=c.maxHp);
 
     // --- UI 렌더링 (레이아웃 변경) ---
     const combatMonsterImage = document.getElementById('combat-monster-image');
@@ -6011,8 +6725,8 @@ function startStageCombat(chapterIndex, stageIndex) {
     monsterData.activeEffects = [];
 
     // 4. 전투 루프 실행
-    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
     initCombat3DBackground();
+    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
 }
 
 
@@ -6025,10 +6739,16 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     const originalMonsterDef = monsterData.stats.def; // 몬스터 기본 방어력 백업
     const originalMonsterAtk = monsterData.stats.atk; // 몬스터 기본 공격력 백업
     let totalDamageDealt = 0;
+    let rogueTurn = 0;
 
     while (monsterData.stats.hp > 0 && combatDeck.some(c => c.stats.hp > 0)) {
         if (!isCombatRunning) return;
 
+        if(type==='rogue' && monsterData.rogueBoss) {
+            rogueTurn++;
+            monsterData.rogueStrongTurn=rogueTurn%3===0;
+            logCombat(rogueTurn%3===0?'봉인 수호자가 강공을 준비합니다! 이번 턴 공격력 +40%.':`수호자의 다음 강공까지 ${3-rogueTurn%3}턴.`);
+        }
         // ===============================================
         // 1. 플레이어 턴
         // ===============================================
@@ -6190,7 +6910,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
             if (monsterData.isAoE) {
                 logCombat(`<strong>${monsterData.name}</strong>의 <span class="text-red-400 font-bold">광역 공격!</span>`);
                 for (const targetCard of alivePlayers) {
-                    const damage = Math.max(1, monsterData.stats.atk - targetCard.stats.def);
+                    const damage = Math.max(1, Math.floor(monsterData.stats.atk * (monsterData.rogueStrongTurn ? 1.4 : 1)) - targetCard.stats.def);
                     const hpBeforeAttack = targetCard.stats.hp;
                     targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
                     logCombat(`- <strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
@@ -6208,7 +6928,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
             } else {
                 const targetCard = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
                 logCombat(`<strong>${monsterData.name}</strong>의 공격!`);
-                const damage = Math.max(1, monsterData.stats.atk - targetCard.stats.def);
+                const damage = Math.max(1, Math.floor(monsterData.stats.atk * (monsterData.rogueStrongTurn ? 1.4 : 1)) - targetCard.stats.def);
                 const hpBeforeAttack = targetCard.stats.hp;
                 targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
                 logCombat(`<strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
@@ -6233,7 +6953,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     monsterData.stats.def = originalMonsterDef;
 
     if (isCombatRunning) {
-        endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt);
+        endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt, combatDeck);
     }
 }
 
@@ -6499,7 +7219,7 @@ if (!hasStoryToShow) {
 }
 }
 
-function endCombat(isVictory, combatInfo, totalDamageDealt = 0) {
+function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null) {
     stopCombat3DBackground();
 
     isCombatRunning = false;
@@ -6522,23 +7242,10 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0) {
     }
 
     if (combatInfo && combatInfo.type === 'rogue') {
-        if (resultModal) {
-            resultModal.style.display = 'none';
-            resultModal.classList.add('hidden');
-        }
-        if (isVictory) {
-            const deckEls = document.querySelectorAll('[id^="player-hp-text-"]');
-            deckEls.forEach((el, idx) => {
-                const hpText = el.textContent.split(' / ')[0].trim();
-                rogueState.team[idx].stats.hp = parseInt(hpText) || 0;
-            });
-            document.getElementById('roguelike-view').classList.remove('hidden');
-            showRogueBuffSelection();
-        } else {
-            document.getElementById('roguelike-view').classList.remove('hidden');
-            alert("부대가 전멸했습니다. 탐사를 종료합니다.");
-            endRoguelikeRun();
-        }
+        if(resultModal){resultModal.style.display='none';resultModal.classList.add('hidden');}
+        document.getElementById('roguelike-view').classList.remove('hidden');
+        currentTab='roguelike';window.currentTab='roguelike';
+        completeRogueCombat(isVictory, finalDeck);
         return;
     }
 
