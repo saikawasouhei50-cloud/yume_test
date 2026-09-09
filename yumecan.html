@@ -3,6 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+window.yumecanSettings = { muted: false, quick: false, calm: matchMedia('(prefers-reduced-motion: reduce)').matches };
+try { const saved = JSON.parse(localStorage.getItem('yumecan.preferences.v1') || '{}');
+  for (const key of ['muted', 'quick', 'calm']) if (typeof saved[key] === 'boolean') window.yumecanSettings[key] = saved[key];
+} catch (_) {}
+window.setYumecanPreference = function(key, value) {
+  window.yumecanSettings[key] = Boolean(value);
+  document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
+  try { localStorage.setItem('yumecan.preferences.v1', JSON.stringify(window.yumecanSettings)); } catch (_) {}
+};
+document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
+window.showYumecanStartupError = function(message) {
+  document.body.classList.remove('loading');
+  const overlay = document.getElementById('loading-overlay');
+  overlay.replaceChildren();
+  const panel = document.createElement('section'); panel.className = 'startup-panel';
+  const title = document.createElement('h2'); title.textContent = '서가에 연결하지 못했어요';
+  const detail = document.createElement('p'); detail.textContent = message;
+  const retry = document.createElement('button'); retry.textContent = '다시 연결'; retry.onclick = () => location.reload();
+  panel.append(title, detail, retry); overlay.append(panel); overlay.classList.remove('hidden');
+};
+document.addEventListener('DOMContentLoaded', () => {
+  for (const key of ['muted','quick','calm']) {
+    const input = document.getElementById('pref-' + key);
+    input.checked = window.yumecanSettings[key];
+    input.addEventListener('change', () => window.setYumecanPreference(key, input.checked));
+  }
+});
+</script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <title>YUMECAN!_</title>
@@ -217,6 +246,69 @@
         .placed-furniture { position: absolute; transition: all 0.2s; }
         #event-point-display { display: none !important; }
     </style>
+
+<style id="yumecan-refinements">
+:root { color-scheme: dark; --archive-accent: #80e2d2; }
+.hidden { display: none !important; }
+body { background: #090e16; line-height: 1.65; }
+body > .hud-scanline-container { border-radius: 18px; border-color: #2b3b4d; border-top-color: var(--archive-accent); }
+#global-header { gap: 20px; align-items: center; }
+#global-header h1 { letter-spacing: .12em; }
+#global-info-bar { border-radius: 10px; padding: 14px; }
+#global-currency-bar { justify-content: flex-start; gap: 8px; }
+#global-currency-bar > div { border-radius: 8px; padding: 7px 12px; }
+#global-home-button { position: sticky; top: 10px; left: auto; z-index: 40; margin: 0 0 12px; align-self: flex-start; }
+body { flex-direction: column; }
+.gacha-button { border-radius: 8px !important; transition: background .16s, border-color .16s, transform .16s; }
+button:disabled { opacity: .4 !important; cursor: not-allowed !important; transform: none !important; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid #80e2d2 !important; outline-offset: 4px; }
+#global-info-bar input { min-height: 40px; border-radius: 6px; }
+#message-area { height: auto; min-height: 2rem; }
+#pull-ten, #pull-ten-event { background: #80e2d2 !important; color: #091720 !important; border-color: #80e2d2 !important; font-weight: 800; }
+#results-container { border: 1px solid #2b3b4d; border-radius: 12px; background: #0c131e; }
+#results-container:empty::before { content: '아직 펼치지 않은 이야기 · 소환하면 이곳에 등장인물이 나타나요.'; grid-column: 1 / -1; align-self: center; text-align: center; color: #a3b1c6; font-size: 14px; padding: 20px; }
+.archive-intro { padding: 24px 0 18px; }
+.archive-eyebrow { color: #80e2d2; font-size: 11px; font-weight: 700; letter-spacing: .2em; }
+.archive-intro h2 { font-size: clamp(26px, 5vw, 36px); font-weight: 800; margin: 6px 0; }
+.archive-intro p, .archive-note { color: #b0bdd1; font-size: 14px; }
+.archive-note { padding: 12px 16px; border-left: 2px solid #80e2d2; background: #14232b; margin-bottom: 20px; }
+.archive-settings { position: relative; font-size: 13px; }
+.archive-settings summary { cursor: pointer; color: #c6d5e5; padding: 8px 12px; border: 1px solid #39495d; border-radius: 8px; }
+.archive-settings-panel { position: absolute; right: 0; top: 46px; width: 260px; padding: 18px; border: 1px solid #39495d; background: #141e2c; border-radius: 12px; z-index: 45; box-shadow: 0 16px 40px #0008; }
+.archive-settings label { display: flex; align-items: center; gap: 10px; padding: 9px 0; }
+.archive-settings input { accent-color: #80e2d2; width: 17px; height: 17px; }
+.archive-settings small { color: #a3b1c6; display: block; margin-top: 8px; }
+#save-status { color: #a3b1c6; font-size: 11px; margin-top: 8px; text-align: right; }
+#save-status[data-state="error"] { color: #ffadad; }
+#archive-history { margin-top: 18px; padding: 16px; border: 1px solid #2b3b4d; border-radius: 12px; }
+#archive-history summary { cursor: pointer; font-size: 14px; color: #c6d5e5; }
+#archive-history ol { max-height: 240px; overflow-y: auto; margin-top: 12px; }
+#archive-history li { border-top: 1px solid #263346; padding: 10px 0; font-size: 13px; }
+#archive-history time { display: block; font-size: 11px; color: #a3b1c6; }
+.new-discovery { position: relative; }
+.new-discovery::after { content: 'NEW'; position: absolute; top: 5px; left: 5px; z-index: 25; border-radius: 4px; background: #80e2d2; color: #0b1722; padding: 2px 6px; font: 800 10px sans-serif; }
+#summon-summary { margin: 12px 0; color: #b9e9df; font-size: 14px; }
+.startup-panel { max-width: 480px; padding: 32px; margin: 20px; border: 1px solid #39495d; background: #141e2c; border-radius: 16px; color: #e1e9f5; }
+.startup-panel h2 { font-size: 24px; margin-bottom: 14px; }
+.startup-panel p { color: #bdc8da; white-space: pre-line; }
+.startup-panel button { margin-top: 22px; border-radius: 8px; background: #80e2d2; color: #091720; padding: 10px 20px; }
+html.calm-mode *, html.calm-mode *::before, html.calm-mode *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+html.calm-mode .hud-scanline-container::after { display: none; }
+@media(max-width: 640px) {
+ body { padding: 10px !important; }
+ body > .hud-scanline-container { padding: 18px 14px !important; border-radius: 12px; }
+ #global-header { gap: 8px; }
+ #global-header h1 { font-size: 26px; }
+ #login-view { display: grid; grid-template-columns: 1fr 1fr; }
+ #login-view input { width: 100% !important; min-width: 0; }
+ #email-input { grid-column: 1 / -1; }
+ #global-currency-bar { gap: 6px; }
+ #global-currency-bar > div { padding: 6px 8px; }
+ button.gacha-button, .sub-tab-button { min-height: 42px; }
+ #results-container { gap: 10px; padding: 10px; }
+ .archive-settings-panel { width: 230px; }
+}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -233,7 +325,8 @@
     </div>
 
     <!-- 텍티컬 메인 프레임 -->
-    <div class="hud-scanline-container w-full max-w-5xl bg-[#12151c]/95 backdrop-blur-md border border-gray-700 border-t-2 border-t-cyan-400 shadow-[0_0_30px_rgba(0,0,0,0.9)] text-white p-3 md:p-8 relative overflow-y-auto max-h-[95vh]">        <!-- 디자인용 프레임 모서리 -->
+    <div class="hud-scanline-container w-full max-w-5xl bg-[#12151c]/95 backdrop-blur-md border border-gray-700 border-t-2 border-t-cyan-400 shadow-[0_0_30px_rgba(0,0,0,0.9)] text-white p-6 md:p-8 relative overflow-hidden">
+        <!-- 디자인용 프레임 모서리 -->
         <div class="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-cyan-400 opacity-50"></div>
         <div class="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-yellow-500 opacity-50"></div>
 
@@ -242,23 +335,33 @@
                 <h1 class="text-3xl md:text-5xl font-black tracking-widest font-tech text-white">
                     YUMECAN<span class="text-cyan-400">_</span>
                 </h1>
-                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">TACTICAL ARCHIVE SYSTEM v1.0</p>
+                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">CHARACTER ARCHIVE / 당신의 이야기가 모이는 곳</p>
+            </div>
+            <div>
+              <details class="archive-settings"><summary>환경 설정</summary><div class="archive-settings-panel">
+                <label><input id="pref-muted" type="checkbox">효과음 끄기</label>
+                <label><input id="pref-quick" type="checkbox">소환 연출 건너뛰기</label>
+                <label><input id="pref-calm" type="checkbox">움직임 줄이기</label>
+                <button id="archive-backup" class="gacha-button" type="button" style="padding:8px 12px;width:100%">현재 데이터 백업</button>
+                <small>화면·소리 설정은 이 기기에 저장됩니다.</small>
+              </div></details>
+              <p id="save-status" role="status" aria-live="polite">로그인 후 자동 저장</p><button id="retry-save" type="button" class="hidden" style="font-size:12px;color:#ffadad">저장 다시 시도</button>
             </div>
         </header>
 
         <div id="global-info-bar" class="bg-black/40 border border-gray-800 p-2 md:p-3 mb-2 md:mb-4 flex flex-wrap justify-between items-center gap-2">
             <div id="login-view" class="flex flex-wrap items-center gap-2 justify-center w-full md:w-auto">
-                <input type="text" id="nickname-input" placeholder="CODE NAME" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-20 md:w-28 focus:outline-none focus:border-cyan-400">
-                <input type="email" id="email-input" placeholder="EMAIL" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-20 md:w-28 focus:outline-none focus:border-cyan-400">
-                <input type="password" id="password-input" placeholder="PWD" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-16 md:w-20 focus:outline-none focus:border-cyan-400">
+                <input type="text" id="nickname-input" aria-label="닉네임" placeholder="CODE NAME" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-20 md:w-28 focus:outline-none focus:border-cyan-400">
+                <input type="email" id="email-input" aria-label="이메일" placeholder="EMAIL" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-20 md:w-28 focus:outline-none focus:border-cyan-400">
+                <input type="password" id="password-input" aria-label="비밀번호" placeholder="PWD" class="bg-gray-900 border border-gray-600 text-[#66fcf1] font-tech px-2 py-1 text-xs md:text-sm w-16 md:w-20 focus:outline-none focus:border-cyan-400">
 
-                <button id="login-button" class="gacha-button py-1 px-4 text-xs md:text-sm">AUTH</button>
-                <button id="register-button" class="gacha-button py-1 px-4 text-xs md:text-sm border-cyan-700 text-cyan-500">REG</button>
+                <button id="login-button" class="gacha-button py-1 px-4 text-xs md:text-sm">로그인</button>
+                <button id="register-button" class="gacha-button py-1 px-4 text-xs md:text-sm border-cyan-700 text-cyan-500">회원가입</button>
             </div>
 
             <div id="logged-in-view" class="hidden flex items-center gap-4 justify-center w-full md:w-auto">
                 <p class="font-bold text-xs md:text-sm text-gray-400">COMMANDER. <span id="nickname-display" class="text-cyan-400 font-tech tracking-wider text-base"></span></p>
-                <button id="logout-button" class="gacha-button border-red-600 text-red-500 py-1 px-3 text-xs">LOGOUT</button>
+                <button id="logout-button" class="gacha-button border-red-600 text-red-500 py-1 px-3 text-xs">로그아웃</button>
             </div>
         </div>
 
@@ -294,150 +397,141 @@
                             <div id="home-default-message" class="absolute inset-0 flex items-center justify-center text-cyan-500/40 font-tech text-xl md:text-3xl tracking-[0.3em] font-black z-0 pointer-events-none">
                                 NO REPRESENTATIVE SELECTED
                             </div>
-                            <!-- ✨ PC에서는 캐릭터 아래에 대사, 모바일에서는 캐릭터 위에 대사가 오도록 반응형 정렬 적용 -->
-                            <div class="absolute inset-0 flex flex-col md:flex-row items-center md:items-center justify-start md:justify-start z-0 pt-6 md:pt-0 md:pl-12 pointer-events-none">
+                        <!-- 캐릭터 일러스트 영역 (왼쪽으로 밀고 최대 크기를 줄여 폭 조정) -->
+                            <div class="absolute inset-0 flex items-center justify-start z-0 pb-44 md:pb-0 md:pl-4 md:-translate-y-12 pointer-events-none">
 
-                                <!-- ✨ 클릭 버그를 완벽히 해결한 캐릭터 및 대사창 구조 -->
-                                <div id="home-character-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                            <!-- ✨ 전체 영역 컨테이너 -->
+                            <!-- ✨ 전체 영역 컨테이너 -->
+                            <!-- ✨ 전체 영역 컨테이너 (위치 및 밸런스 정돈) -->
+                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[2%] -translate-y-4 md:-translate-y-6">
 
-                                    <!-- 1. 캐릭터 이미지 (해당 이미지 영역만 클릭 가능) -->
-                                    <div class="absolute top-[30%] left-[33%] transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto cursor-pointer">
-                                        <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[35vh] md:max-h-[50vh] object-contain drop-shadow-2xl transition-all">
-                                    </div>
+                                                    <!-- ✨ 1. 훨씬 크고 시원하게 넓어진 네온 밴드 백드롭 프레임 -->
+                                                    <div id="home-char-backdrop" class="absolute w-96 h-[420px] md:w-[480px] md:h-[540px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
 
-                                    <!-- 2. 스토리 대화창 (대사창 내부만 클릭 가능) -->
-                                    <div id="home-dialogue-container" class="absolute top-[65%] left-[33%] transform -translate-x-1/2 -translate-y-1/2 bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-3 md:p-4 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[90%] max-w-[320px] md:w-[400px] hidden transition-opacity duration-300 z-30 backdrop-blur-md rounded-sm pointer-events-auto">
-                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
-                                            <p id="home-character-name" class="font-bold text-cyan-400 text-[10px] md:text-sm tracking-widest font-tech uppercase"></p>
-                                            <span class="font-tech text-[8px] md:text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
-                                        </div>
-                                        <p id="home-character-dialogue" class="text-[11px] md:text-sm leading-relaxed text-gray-100 font-medium"></p>
-                                    </div>
+                                                    <!-- ✨ 2. 대표 캐릭터 일러스트 -->
+                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[50%] md:max-h-[70%] object-contain drop-shadow-2xl transition-all relative z-10 mb-4">
 
-                                </div>
+                                                    <!-- ✨ 3. 배너와 겹치지 않게 정돈된 스토리 대화창 -->
+                                                    <div id="home-dialogue-container" class="absolute bottom-[16%] md:bottom-[14%] bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-4 md:p-5 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[320px] md:w-[460px] hidden transition-opacity duration-300 z-20 backdrop-blur-md rounded-sm">
+                                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
+                                                            <p id="home-character-name" class="font-bold text-cyan-400 text-xs md:text-sm tracking-widest font-tech uppercase"></p>
+                                                            <span class="font-tech text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
+                                                        </div>
+                                                        <p id="home-character-dialogue" class="text-xs md:text-sm leading-relaxed text-gray-100 font-medium"></p>
+                                                    </div>
+                                                </div>
 
+                <!-- 텍티컬 로비 메뉴 (사선형) -->
+                <div class="absolute z-20 pointer-events-none bottom-[6.5rem] left-0 w-full flex flex-row items-end justify-center gap-2 px-2 md:top-4 md:bottom-28 md:left-auto md:right-0 md:w-1/3 md:min-w-[280px] md:flex-col md:items-end md:gap-2 md:pr-8">
+
+                    <button id="btn-lobby-deck" onclick="switchTab('deck')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-cyan-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-cyan-500 text-xs md:text-sm opacity-70">01</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">편찬</span>
+                    </button>
+
+                    <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-yellow-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-yellow-500 text-xs md:text-sm opacity-70">02</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">서고</span>
+                    </button>
+
+                    <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-purple-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-purple-500 text-xs md:text-sm opacity-70">03</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">영감</span>
+                    </button>
+
+
+                    <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-red-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-red-500 text-xs md:text-sm opacity-70">04</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">소환</span>
+                    </button>
+
+                    <!-- 미니 메뉴 라인 -->
+                    <div class="flex gap-2 w-full justify-center md:justify-end mt-2">
+                        <button onclick="switchTab('story')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">스토리</button>
+                        <button onclick="switchTab('trade')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5 relative">
+                            교환<span id="trade-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                        </button>
+                        <button onclick="switchTab('myroom')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">객실</button>
+                    </div>
+
+                    <!-- 거대 전투(안정화) 버튼 -->
+                    <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group mt-4
+                            w-full h-16 md:h-24
+                            bg-red-700 text-white font-black transform -skew-x-12
+                            hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-lg md:text-3xl tracking-widest z-10">안정화</span>
+                        <span class="absolute right-[-10px] bottom-[-10px] text-5xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
+                    </button>
+                    <!-- 로그라이크(폐기된 서고) 버튼 -->
+                    <button onclick="switchTab('roguelike')" class="pointer-events-auto group mt-2
+                            w-full h-12 md:h-16
+                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">폐기된 서고</span>
+                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
+                    </button>
+                    <!-- 현장 조사 파견 버튼 -->
+                    <button onclick="switchTab('dispatch')" class="pointer-events-auto group mt-2
+                            w-full h-12 md:h-16
+                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">현장 조사</span>
+                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
+                    </button>
+                </div>
+
+
+
+                <!-- 하단 부가 기능 및 이벤트 배너 -->
+                <div class="absolute bottom-4 left-0 w-full px-2 md:px-6 flex justify-between items-end z-10 pointer-events-none">
+                    <div class="pointer-events-auto">
+                        <button id="event-banner" onclick="switchTab('event-home')" class="bg-[#12151c]/90 text-white px-4 py-2 md:px-8 md:py-3 border-l-4 border-cyan-400 hover:bg-gray-800 transition-colors flex items-center gap-3">
+                            <span class="text-cyan-400 font-tech text-xl md:text-2xl animate-pulse">SYS_EVT</span>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-500 font-tech tracking-widest">ACTIVE EVENT</p>
+                                <p id="event-banner-text" class="font-bold text-xs md:text-sm tracking-wide">이벤트 확인</p>
                             </div>
+                        </button>
+                    </div>
 
-                                                <!-- 텍티컬 로비 메뉴 (모바일 2열 정렬 및 폰트 크기 최적화) -->
-                                                <div class="absolute z-25 pointer-events-none bottom-2 left-0 w-full flex flex-col items-center justify-center gap-1.5 px-3 pt-32 md:pt-0 md:top-4 md:bottom-28 md:left-auto md:right-0 md:w-1/3 md:min-w-[280px] md:flex-col md:items-end md:gap-2 md:pr-8">                                                                    <!-- 메인 네비게이션 버튼 (편찬, 서고, 영감, 소환) - 모바일 2열 그리드 적용 -->
-                                                                    <div class="grid grid-cols-2 gap-2 w-full md:flex md:flex-col md:w-[90%] md:max-w-[280px]">
-                                                                        <button id="btn-lobby-deck" onclick="switchTab('deck')" class="pointer-events-auto
-                                                                                w-full h-12 text-xs md:flex-none md:w-full md:max-w-[280px] md:h-16 md:text-xl
-                                                                                bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                                                                                hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                                                                                flex items-center justify-start pl-4
-                                                                                border border-gray-700 border-l-4 border-l-cyan-500 gap-2">
-                                                                            <span class="transform skew-x-12 font-tech text-cyan-500 text-[10px] md:text-sm opacity-70">01</span>
-                                                                            <span class="transform skew-x-12 text-xs md:text-lg tracking-widest">편찬</span>
-                                                                        </button>
-
-                                                                        <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="pointer-events-auto
-                                                                                w-full h-12 text-xs md:flex-none md:w-full md:max-w-[280px] md:h-16 md:text-xl
-                                                                                bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                                                                                hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                                                                                flex items-center justify-start pl-4
-                                                                                border border-gray-700 border-l-4 border-l-yellow-500 gap-2">
-                                                                            <span class="transform skew-x-12 font-tech text-yellow-500 text-[10px] md:text-sm opacity-70">02</span>
-                                                                            <span class="transform skew-x-12 text-xs md:text-lg tracking-widest">서고</span>
-                                                                        </button>
-
-                                                                        <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="pointer-events-auto
-                                                                                w-full h-12 text-xs md:flex-none md:w-full md:max-w-[280px] md:h-16 md:text-xl
-                                                                                bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                                                                                hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                                                                                flex items-center justify-start pl-4
-                                                                                border border-gray-700 border-l-4 border-l-purple-500 gap-2">
-                                                                            <span class="transform skew-x-12 font-tech text-purple-500 text-[10px] md:text-sm opacity-70">03</span>
-                                                                            <span class="transform skew-x-12 text-xs md:text-lg tracking-widest">영감</span>
-                                                                        </button>
-
-                                                                        <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="pointer-events-auto
-                                                                                w-full h-12 text-xs md:flex-none md:w-full md:max-w-[280px] md:h-16 md:text-xl
-                                                                                bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                                                                                hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                                                                                flex items-center justify-start pl-4
-                                                                                border border-gray-700 border-l-4 border-l-red-500 gap-2">
-                                                                            <span class="transform skew-x-12 font-tech text-red-500 text-[10px] md:text-sm opacity-70">04</span>
-                                                                            <span class="transform skew-x-12 text-xs md:text-lg tracking-widest">소환</span>
-                                                                        </button>
-                                                                    </div>
-
-                                                                    <!-- 미니 메뉴 라인 (스토리, 교환, 객실) -->
-                                                                    <div class="grid grid-cols-3 gap-1.5 w-full md:flex md:justify-end md:gap-2 md:w-[90%] md:max-w-[280px] mt-1">
-                                                                        <button onclick="switchTab('story')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1.5 px-1 md:py-2 md:px-5 text-center">스토리</button>
-                                                                        <button onclick="switchTab('trade')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1.5 px-1 md:py-2 md:px-5 relative text-center">
-                                                                            교환<span id="trade-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                                                                        </button>
-                                                                        <button onclick="switchTab('myroom')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1.5 px-1 md:py-2 md:px-5 text-center">객실</button>
-                                                                    </div>
-
-                                                                    <!-- 거대 전투(안정화) 버튼 + 폐기된 서고/현장 조사 2열 배치 영역 -->
-                                                                    <div class="w-full flex gap-2 mt-1">
-                                                                        <!-- 왼쪽: 안정화 버튼 (h-16 md:h-24를 지우고 h-full을 주어 오른쪽에 완벽히 높이를 맞춤) -->
-                                                                        <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group
-                                                                                w-5/12 h-full
-                                                                                bg-red-700 text-white font-black transform -skew-x-12
-                                                                                hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
-                                                                                flex items-center justify-center overflow-hidden relative">
-                                                                            <span class="transform skew-x-12 inline-block text-sm md:text-3xl tracking-widest z-10">안정화</span>
-                                                                            <span class="absolute right-[-10px] bottom-[-10px] text-3xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
-                                                                        </button>
-
-                                                                        <!-- 오른쪽: 폐기된 서고 & 현장 조사 2열 세트 (간격인 gap-1을 gap-2로 수정하여 여백 딱 맞춤) -->
-                                                                        <div class="w-1/2 flex flex-col gap-2">
-                                                                            <!-- 로그라이크(폐기된 서고) 버튼 -->
-                                                                            <button onclick="switchTab('roguelike')" class="pointer-events-auto group
-                                                                                    w-full h-[30px] md:h-16
-                                                                                    bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                                    hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
-                                                                                    flex items-center justify-center overflow-hidden relative">
-                                                                                <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">폐기된 서고</span>
-                                                                                <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
-                                                                            </button>
-
-                                                                            <!-- 현장 조사 파견 버튼 -->
-                                                                            <button onclick="switchTab('dispatch')" class="pointer-events-auto group
-                                                                                    w-full h-[30px] md:h-16
-                                                                                    bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                                                                                    hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
-                                                                                    flex items-center justify-center overflow-hidden relative">
-                                                                                <span class="transform skew-x-12 inline-block text-[11px] md:text-xl tracking-widest z-10">현장 조사</span>
-                                                                                <span class="absolute right-[-5px] bottom-[-10px] text-2xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-
-
-
-
-                                                                                        <!-- 하단 부가 기능 및 이벤트 배너 (모바일 겹침 방지형 수직 정렬) -->
-                                                                                        <div class="w-full mt-4 mb-2 flex flex-col gap-2 z-30 relative pointer-events-auto">
-                                                                                                            <!-- 이벤트 배너 -->
-                                                                                                            <div class="w-full">
-                                                                                                                <button id="event-banner" onclick="switchTab('event-home')" class="bg-[#12151c]/95 text-white px-3 py-2 border-l-4 border-cyan-400 hover:bg-gray-800 transition-colors flex items-center gap-3 w-full justify-start shadow-md">
-                                                                                                                    <span class="text-cyan-400 font-tech text-lg animate-pulse">SYS_EVT</span>
-                                                                                                                    <div class="text-left truncate">
-                                                                                                                        <p class="text-[8px] text-gray-500 font-tech tracking-widest">ACTIVE EVENT</p>
-                                                                                                                        <p id="event-banner-text" class="font-bold text-xs tracking-wide truncate">각축전 진행 중!</p>
-                                                                                                                    </div>
-                                                                                                                </button>
-                                                                                                            </div>
-
-                                                                                                            <!-- 하단 4개 버튼 (FRIENDS, ARCHIVE, ACHIEVE, PROFILE) -->
-                                                                                                            <div class="grid grid-cols-4 gap-1 w-full bg-black/80 p-1 border border-gray-800 pointer-events-auto relative z-30">                                                                                                                <button onclick="switchTab('friends')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 relative truncate">
-                                                                                                                    <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                                                                                                                    FRIENDS
-                                                                                                                </button>
-                                                                                                                <button onclick="switchTab('collection')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 truncate">ARCHIVE</button>
-                                                                                                                <button onclick="switchTab('achievements')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 relative truncate">
-                                                                                                                    <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                                                                                                                    ACHIEVE
-                                                                                                                </button>
-                                                                                                                <button onclick="switchTab('profile')" class="gacha-button text-[9px] py-1 px-1 text-gray-300 truncate">PROFILE</button>
-                                                                                                            </div>
-                                                                                                        </div>
+                    <div class="flex gap-1 md:gap-2 pointer-events-auto bg-black/60 p-1 md:p-2 border border-gray-800">
+                        <button onclick="switchTab('friends')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
+                            <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                            FRIENDS
+                        </button>
+                        <button onclick="switchTab('collection')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">ARCHIVE</button>
+                        <button onclick="switchTab('achievements')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
+                            <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                            ACHIEVE
+                        </button>
+                        <button onclick="switchTab('profile')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">PROFILE</button>
+                    </div>
+                </div>
             </div>
-            </div>
+        </div>
 
 			<div id="event-home-view" class="hidden">
     <div class="flex flex-col md:flex-row gap-6">
@@ -591,7 +685,7 @@
 </div>
 
             <div id="gacha-view" class="hidden">
-                <p class="text-center text-gray-200 mt-2 mb-4">운명을 시험하여 당신의 등장인물을 만나보세요.</p>
+                <div class="archive-intro"><span class="archive-eyebrow">THE NEXT CHAPTER</span><h2>새로운 이야기를 펼치다</h2><p>운명처럼 만난 등장인물, 당신의 서가에 남을 한 장.</p></div><div class="archive-note">10회 소환 시 SR 이상 최소 1장 보장 · 획득 가능 목록은 각 서가에서 확인하세요.</div>
                 <div class="bg-black/20 rounded-full p-1 flex justify-center items-center mb-4 max-w-sm mx-auto">
                     <button id="gacha-tab-normal" class="sub-tab-button active w-1/2 font-bold py-2 px-6 rounded-full">일반 서가</button>
                     <button id="gacha-tab-event" class="sub-tab-button w-1/2 font-bold py-2 px-6 rounded-full hidden">이벤트 서가</button>
@@ -629,7 +723,9 @@
         </button>
     </div>
 </div>
+                <p id="summon-summary" role="status" aria-live="polite"></p>
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
+                <details id="archive-history"><summary>최근 소환 기록 · 최대 30회</summary><ol id="summon-history-list"><li>아직 기록된 소환이 없습니다.</li></ol></details>
             </div>
 
 <div id="breeding-view" class="hidden">
@@ -736,6 +832,9 @@
 </div>
 
 
+<label for="archive-search" style="display:block;margin-top:16px;font-size:13px;color:#bdc8da">서고 검색</label>
+<input id="archive-search" type="search" placeholder="이름 또는 진영으로 찾기" style="width:100%;padding:12px 14px;margin-top:6px;border-radius:8px;border:1px solid #39495d;background:#0c131e;color:#e1e9f5">
+<p id="archive-search-count" role="status" style="font-size:12px;color:#a3b1c6;margin-top:6px"></p>
 <div id="inventory-sort-buttons" class="mt-4 flex justify-center items-center gap-1 md:gap-2 flex-wrap">
     <button data-sort="rarity" class="gacha-button sort-button bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 md:px-4 rounded-full text-xs md:text-sm transition-all">
         등급<span class="sort-indicator"></span>
@@ -1580,17 +1679,21 @@
         }
 
         init() {
-            if (!this.ctx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                this.ctx = new AudioContext();
-            }
-            if (this.ctx.state === 'suspended') {
-                this.ctx.resume();
-            }
+            if (window.yumecanSettings.muted) return;
+            try {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+            } catch (_) { this.ctx = null; }
         }
+
 
         // 1. 버튼 클릭음 (짧고 날카로운 사이버 삑 소리)
         playClick() {
+            if (window.yumecanSettings.muted) return;
             this.init();
             if (!this.ctx) return;
             const osc = this.ctx.createOscillator();
@@ -1612,6 +1715,7 @@
 
         // 2. 가챠(소환) / 충전음 (미래지향적 상승 레이저 사운드)
         playGachaCharge() {
+            if (window.yumecanSettings.muted) return;
             this.init();
             if (!this.ctx) return;
             const osc = this.ctx.createOscillator();
@@ -1633,7 +1737,8 @@
 
         // 3. 전투 스킬 컷인 발동음 (경쾌하고 타격감 있는 사이버 하이톤 빔 사운드)
             playSkillUltimate() {
-                this.init();
+                if (window.yumecanSettings.muted) return;
+            this.init();
                 if (!this.ctx) return;
 
                 const now = this.ctx.currentTime;
@@ -1675,7 +1780,8 @@
 
             // 4. 전투 승리 효과음 (밝고 경쾌하게 상승하는 영웅적인 팡파레)
                 playVictory() {
-                    this.init();
+                    if (window.yumecanSettings.muted) return;
+            this.init();
                     if (!this.ctx) return;
                     const now = this.ctx.currentTime;
 
@@ -1702,7 +1808,8 @@
 
                 // 5. 전투 패배 효과음 (무겁고 어둡게 가라앉는 다운톤 사운드)
                 playDefeat() {
-                    this.init();
+                    if (window.yumecanSettings.muted) return;
+            this.init();
                     if (!this.ctx) return;
                     const now = this.ctx.currentTime;
 
@@ -1725,7 +1832,8 @@
 
                 // 6. 메인 메뉴 마우스오버용 하이톤 휩(Whip) 사운드
                     playWhipHover() {
-                        this.init();
+                        if (window.yumecanSettings.muted) return;
+            this.init();
                         if (!this.ctx) return;
                         const now = this.ctx.currentTime;
 
@@ -1749,6 +1857,7 @@
 
     // 전역 객체 생성
     const sfx = new SoundManager();
+    let currentTab = "home";
 
 	let playerInspAtk = 0; // 공격적 영감
 let playerInspDef = 0; // 방어적 영감
@@ -1764,9 +1873,10 @@ let activeInspirationEffect = null; // 현재 선택된 영감 효과 { type: 'a
     };
 
     // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth(); // 인증 서비스 변수 추가
+    const firebaseReady = typeof firebase !== 'undefined' && typeof firebase.firestore === 'function' && typeof firebase.auth === 'function';
+    if (firebaseReady && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebaseReady ? firebase.firestore() : null;
+    const auth = firebaseReady ? firebase.auth() : null; // 인증 서비스 변수 추가
 
     let currentCombatIndices = null;
 let currentCombatType = null;
@@ -1779,7 +1889,13 @@ const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '히어로 대 빌
 
     // DOM이 모두 로드된 후 게임 스크립트 실행
     document.addEventListener('DOMContentLoaded', async () => {
-	document.body.classList.add('loading');
+    if (!firebaseReady || typeof loadGameData !== 'function') {
+        window.showYumecanStartupError(!firebaseReady
+          ? '로그인 서비스를 불러오지 못했습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.'
+          : '캐릭터 데이터 파일을 찾지 못했습니다. yumecan_data.js를 이 HTML 파일과 같은 폴더에 넣어 주세요.');
+        return;
+    }
+    document.body.classList.add('loading');
 	const eventSubTabBattle = document.getElementById('event-sub-tab-battle');
         const eventSubTabRaid = document.getElementById('event-sub-tab-raid');
         const eventSubTabStory = document.getElementById('event-sub-tab-story');
@@ -1790,7 +1906,12 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         fleeCombat();
     }
 });
-	await loadGameData();
+    try { await loadGameData(); }
+    catch (error) {
+        console.error('Game data initialization failed:', error);
+        window.showYumecanStartupError('캐릭터 데이터를 불러오지 못했습니다. 인터넷 연결과 데이터 파일을 확인해 주세요.');
+        return;
+    }
 	checkEndedEvents();
 	const exitMultiModeButton = document.getElementById('exit-multi-mode');
     const enterMultiModeButton = document.getElementById('enter-multi-mode');
@@ -1806,7 +1927,10 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 loggedInView.classList.remove('hidden');
                 document.getElementById('nickname-display').textContent = user.displayName || user.email;
 
-                loadGameFromFirebase(user.uid);
+                loadGameFromFirebase(user.uid).catch(error => {
+                    console.error('Save load failed:', error);
+                    window.showYumecanStartupError('저장 데이터를 불러오지 못했습니다. 연결을 확인한 후 다시 시도해 주세요.');
+                });
 
                 // ✨ [추가] 친구 요청 실시간 감시 시작
                 startFriendListener(user.uid);
@@ -2279,7 +2403,8 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
 	// gacha3.html - downloadSaveData 함수 (기존 함수 전체 교체)
 
 function downloadSaveData() {
-    const saveDataString = localStorage.getItem(SAVE_DATA_KEY);
+    if (!currentUser) { alert('로그인 후 백업할 수 있습니다.'); return; }
+    const saveDataString = JSON.stringify(buildGameSnapshot());
     if (!saveDataString) {
         showMessage('저장된 게임 데이터가 없습니다!', 'text-red-400', messageArea);
         return;
@@ -2328,46 +2453,9 @@ function b64_to_utf8(str) {
 }
 
 			function uploadSaveData(file) {
-    const reader = new FileReader();
+    alert('현재 게임은 서버 저장을 사용합니다. 이 화면에서는 백업 파일 복원을 지원하지 않습니다.');
+    return;
 
-    reader.onload = function(event) {
-        try {
-            let encodedData = event.target.result;
-
-            // ✨ 핵심 수정: 양쪽 끝의 공백, 줄바꿈 등을 제거하여 데이터 클리닝 ✨
-            encodedData = encodedData.trim();
-
-            // 1. Base64 안전 디코딩
-            const jsonString = b64_to_utf8(encodedData);
-
-            // 2. JSON 파싱 테스트 (데이터 유효성 검사)
-            const parsedData = JSON.parse(jsonString);
-
-            // 3. 유효성 추가 확인 (예: 인벤토리 키가 있는지 확인)
-            if (!parsedData || !Array.isArray(parsedData.inventory)) {
-                throw new Error("파싱된 데이터 구조가 유효하지 않습니다.");
-            }
-
-            // 4. 유효한 데이터이므로 localStorage에 저장하고 로드
-            localStorage.setItem(SAVE_DATA_KEY, jsonString);
-
-            alert("데이터 로드 성공! 게임이 새로고침됩니다.");
-            location.reload();
-
-        } catch (e) {
-            console.error("데이터 로드 오류:", e);
-            alert(`⚠️ 유효하지 않은 저장 파일입니다. 오류: ${e.message}`);
-            // showMessage는 이 시점에서 DOM이 새로 로드되기 때문에 의미 없습니다.
-            // alert만 표시하고 끝냅니다.
-        }
-    };
-
-    reader.onerror = function() {
-        alert("파일을 읽는 도중 오류가 발생했습니다.");
-    };
-
-    // FileReader는 이 시점에만 호출됩니다.
-    reader.readAsText(file);
 }
 		const SAVE_DATA_KEY = 'gachaGameSaveData_v9';
 const GRID_SIZE = 100;
@@ -2435,7 +2523,6 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let playerInkwells = 0;
 			let playerSsrTickets = 0;
 			let currentSelectedChapter = 0;
-
 
 			let currentEventChoice = null;
 			let isMultiSelectMode = false; // ✨ 다중 선택 모드 상태 추가
@@ -2543,7 +2630,7 @@ const dismantleSelectedButton = document.getElementById('dismantle-selected-butt
             const allTabs = document.querySelectorAll('.tab-button');
             // 모달창을 제외한 메인 뷰들을 자동으로 모두 가져옵니다.
             const allViews = document.querySelectorAll(
-              'main > div:not(#combat-result-modal):not(#card-detail-modal):not(#interactive-story-modal)'
+              'main > div[id$="-view"]' 
             );
             const pullOneButton = document.getElementById('pull-one');
             const pullTenButton = document.getElementById('pull-ten');
@@ -2679,6 +2766,9 @@ const storySubTabArchive = document.getElementById('story-sub-tab-archive'); // 
 
             // [추가] undefined 값을 찾아서 null로 바꿔주는 안전장치 함수
 function removeUndefined(obj) {
+    // Firestore 날짜 타입을 일반 객체로 펼치면 {}가 되어 레이드 날짜가 손실됩니다.
+    if (obj instanceof Date) return new Date(obj.getTime());
+    if (obj && typeof obj.toDate === 'function') return obj;
     // 배열일 경우 내부 요소 재귀 처리
     if (Array.isArray(obj)) {
         return obj.map(v => removeUndefined(v));
@@ -2697,8 +2787,7 @@ function removeUndefined(obj) {
 }
 
 // [수정] 기존 saveGameToFirebase 함수 수정
-async function saveGameToFirebase() {
-    if (!currentUser) return;
+function buildGameSnapshot() {
 
     const currentProfile = playerProfile || {};
 
@@ -2738,6 +2827,8 @@ async function saveGameToFirebase() {
         lastBookmarkUpdate: lastBookmarkUpdateTime || Date.now(),
         achievements: playerAchievements || {},
         stats: playerStats || { totalPulls: 0 },
+        summonHistory: summonHistory,
+        tutorialFinished: playerTutorialFinished,
         clearedStageStories: clearedStageStories || [],
         playerChoices: playerChoices || {},
         collectedCardNames: Array.from(collectedCardNames || []),
@@ -2754,16 +2845,32 @@ async function saveGameToFirebase() {
         rawSaveData.raidLastResetDate = playerRaidLastResetDate;
     }
 
-    // undefined를 null로 변환
-    const finalSaveData = removeUndefined(rawSaveData);
-
-    try {
-        // merge: true 옵션을 추가하여 혹시 모를 필드 삭제 방지 (권장)
-        await db.collection('users').doc(currentUser.uid).set(finalSaveData, { merge: true });
-        console.log("게임 데이터가 Firebase에 저장되었습니다.");
-    } catch (error) {
-        console.error("Firebase 저장 중 오류 발생:", error);
-    }
+    return removeUndefined(rawSaveData);
+}
+let saveQueue = Promise.resolve(true);
+function setSaveStatus(text, state = '') {
+    const status = document.getElementById('save-status');
+    status.textContent = text; status.dataset.state = state;
+    document.getElementById('retry-save').classList.toggle('hidden', state !== 'error');
+}
+function saveGameToFirebase() {
+    if (!currentUser) return Promise.resolve(false);
+    const uid = currentUser.uid;
+    const snapshot = buildGameSnapshot();
+    setSaveStatus('저장 중…');
+    const operation = saveQueue.then(async () => {
+        try {
+            await db.collection('users').doc(uid).set(snapshot, { merge: true });
+            setSaveStatus('저장됨 · ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}));
+            return true;
+        } catch (error) {
+            console.error('Firebase 저장 중 오류 발생:', error);
+            setSaveStatus('저장 실패 · 연결 확인 후 다시 저장', 'error');
+            return false;
+        }
+    });
+    saveQueue = operation;
+    return operation;
 }
 
             // ✅ 이 코드로 기존 loadGame 함수를 통째로 교체해주세요.
@@ -2775,6 +2882,10 @@ async function loadGameFromFirebase(uid) {
     if (doc.exists) {
         console.log("Firebase에서 게임 데이터를 불러옵니다.");
         const savedData = doc.data();
+        summonHistory = Array.isArray(savedData.summonHistory) ? savedData.summonHistory.filter(entry =>
+            entry && Number.isFinite(entry.at) && Array.isArray(entry.cards) && entry.cards.every(card => card && typeof card.name === 'string' && typeof card.rarity === 'string')
+        ).slice(0, 30) : [];
+        renderSummonHistory();
 
         // 1. 기본 정보 로드
         currentPlayerNickname = savedData.nickname || currentUser.displayName || "익명의 탐정";
@@ -2818,7 +2929,7 @@ playerInspHp = savedData.inspHp ?? 0;
         playerBookmarks = savedData.bookmarks ?? MAX_BOOKMARKS;
         lastBookmarkUpdateTime = savedData.lastBookmarkUpdate ?? Date.now();
         playerAchievements = savedData.achievements || {};
-        playerStats = savedData.stats || { totalPulls: 0 };
+        playerStats = { ...(savedData.stats || {}), totalPulls: Number.isFinite(savedData.stats?.totalPulls) ? savedData.stats.totalPulls : 0 };
         clearedStageStories = savedData.clearedStageStories || [];
 
         // ============================================================
@@ -2915,7 +3026,7 @@ playerInspHp = savedData.inspHp ?? 0;
 
 
 function saveGame() {
-    saveGameToFirebase(); // <--- 이 함수가 비동기 호출을 보장해야 합니다.
+    return saveGameToFirebase();
 }
 
 
@@ -3169,11 +3280,14 @@ async function resetGame() {
 // ✅ [수정됨] 탭 전환 함수 (중복 선언 제거 & 상단바 제어 강화)
 // ========================================================
 
-let currentTab = 'home'; // ✨ 이 변수는 스크립트 전체에서 딱 한 번만 선언되어야 합니다!
+// currentTab은 화면 전환과 전역 효과음이 함께 사용하는 단일 상태입니다.
 
 // 2. 안정화된 탭 전환 함수 (거래소이전.html 기반 + 최신 기능 통합)
             function switchTab(tabName) {
                 if (typeof isCombatRunning !== 'undefined' && isCombatRunning) return;
+                if (tabName === 'event-home') tabName = 'event';
+                const destination = document.getElementById(tabName === 'event' ? 'event-home-view' : `${tabName}-view`);
+                if (!destination) return;
 
                 // [초기화] 모든 뷰 숨기기 및 탭 버튼 비활성화
                 if (allViews) {
@@ -3225,6 +3339,7 @@ let currentTab = 'home'; // ✨ 이 변수는 스크립트 전체에서 딱 한 
                 }
 
                 // 전역 변수 업데이트 (중복 선언 방지를 위해 window 객체 사용 권장)
+                currentTab = tabName;
                 window.currentTab = tabName;
 
                 // [데이터 로드] 각 탭에 맞는 최신 데이터 불러오기
@@ -3352,16 +3467,11 @@ function displayHomeView(cycleDialogue = false) {
     const backdropEl = document.getElementById('home-char-backdrop');
 
     if (representativeCharacter) {
-        // ✨ 이미지 요소가 존재하는지 안전하게 먼저 확인합니다.
-        const charImgEl = document.getElementById('home-character-image');
-        if (charImgEl) {
-            charImgEl.src = representativeCharacter.imageUrl;
-        }
-
-        if (homeCharacterContainer) homeCharacterContainer.classList.remove('hidden');
-        if (homeDialogueContainer) homeDialogueContainer.classList.remove('hidden');
-        if (homeDefaultMessage) homeDefaultMessage.classList.add('hidden');
-        if (homeCharacterName) homeCharacterName.textContent = representativeCharacter.name;
+        homeCharacterContainer.classList.remove('hidden');
+        homeDialogueContainer.classList.remove('hidden');
+        homeDefaultMessage.classList.add('hidden');
+        homeCharacterImage.src = representativeCharacter.imageUrl;
+        homeCharacterName.textContent = representativeCharacter.name;
 
         // ✨ [추가] 진영별 컬러 테두리 매핑
         const factionBorderColors = {
@@ -3936,18 +4046,35 @@ function displayEventShopView() {
                 }
             }
 
-            function handlePull(count, cost, gachaType = 'normal') {
-                if (playerInventory.length + count > inventoryCapacity) {
-                    showMessage('서고가 부족합니다!', 'text-yellow-400', messageArea); return;
-                }
-                if (playerCurrency >= cost) {
-                    playerCurrency -= cost;
-                    showMessage(`-💎${cost}`, 'text-red-400', messageArea);
-                    performPulls(count, gachaType);
-                } else {
-                    showMessage('재화가 부족합니다!', 'text-red-400', messageArea);
+            let summonBusy = false;
+            let summonHistory = [];
+            function renderSummonHistory() {
+                const list = document.getElementById('summon-history-list'); list.replaceChildren();
+                if (!summonHistory.length) { const li = document.createElement('li'); li.textContent = '아직 기록된 소환이 없습니다.'; list.append(li); }
+                for (const entry of summonHistory) {
+                    const li = document.createElement('li'); const time = document.createElement('time');
+                    time.textContent = new Date(entry.at).toLocaleString('ko-KR') + ' · ' + (entry.type === 'normal' ? '일반 서가' : entry.type === 'ticket' ? 'SSR 확정권' : '이벤트 서가');
+                    const text = document.createElement('p'); text.textContent = entry.cards.map(card => `[${card.rarity}] ${card.name}`).join(' · ');
+                    li.append(time, text); list.append(li);
                 }
             }
+            function recordSummon(results, type) {
+                summonHistory.unshift({ at: Date.now(), type, cards: results.map(card => ({name:card.name, rarity:card.rarity})) });
+                summonHistory = summonHistory.slice(0, 30); renderSummonHistory();
+            }
+            function handlePull(count, cost, gachaType = 'normal') {
+                if (!currentUser) { showMessage('로그인 후 소환할 수 있습니다.', 'text-yellow-400', messageArea); return; }
+                if (summonBusy) return;
+                if (gachaType === 'event' && (!currentEventInfo || Date.now() < +currentEventInfo.startDate || Date.now() > +currentEventInfo.endDate)) {
+                    showMessage('현재 진행 중인 이벤트 서가가 없습니다.', 'text-yellow-400', messageArea); return;
+                }
+                if (playerInventory.length + count > inventoryCapacity) {
+                    showMessage(`서고 공간이 부족합니다. ${count}칸을 확보해 주세요.`, 'text-yellow-400', messageArea); return;
+                }
+                if (playerCurrency < cost) { showMessage('보석이 부족합니다.', 'text-red-400', messageArea); return; }
+                performPulls(count, gachaType, cost);
+            }
+
 
             function expandInventory() {
                 if (playerCurrency >= EXPAND_COST) {
@@ -3980,9 +4107,9 @@ function displayEventShopView() {
     const buttons = [pullOneButton, pullTenButton, pullOneEventButton, pullTenEventButton];
     buttons.forEach(btn => {
         if (btn && btn.id.includes('ten')) {
-            btn.disabled = playerCurrency < PULL_TEN_COST;
+            btn.disabled = summonBusy || !currentUser || playerCurrency < PULL_TEN_COST || playerInventory.length + 10 > inventoryCapacity;
         } else if (btn) {
-            btn.disabled = playerCurrency < PULL_ONE_COST;
+            btn.disabled = summonBusy || !currentUser || playerCurrency < PULL_ONE_COST || playerInventory.length + 1 > inventoryCapacity;
         }
     });
 
@@ -3992,7 +4119,7 @@ function displayEventShopView() {
     if (ssrPullBtn) {
         if (playerSsrTickets > 0) {
             ssrPullBtn.classList.remove('hidden');
-            ssrPullBtn.disabled = false;
+            ssrPullBtn.disabled = summonBusy || !currentUser || playerInventory.length >= inventoryCapacity;
         } else {
             ssrPullBtn.classList.add('hidden');
             ssrPullBtn.disabled = true;
@@ -4005,9 +4132,13 @@ function displayEventShopView() {
 
 
             function showMessage(message, colorClass, element) {
+    if (!element) return;
+    clearTimeout(element._messageTimer);
+    element.setAttribute('role', 'status');
+    element.setAttribute('aria-live', 'polite');
     element.textContent = message;
-    element.className = `text-center text-lg h-8 mb-4 transition-opacity duration-300 ${colorClass}`;
-    setTimeout(() => { element.textContent = ''; }, 2000); // 2초 후 메시지를 지웁니다.
+    element.className = `text-center text-lg min-h-8 mb-4 transition-opacity duration-300 ${colorClass}`;
+    element._messageTimer = setTimeout(() => { element.textContent = ''; }, 4500); // 2초 후 메시지를 지웁니다.
 }
 
 			function generateUniqueId() {
@@ -4027,40 +4158,56 @@ function addCardToInventory(cardName) {
             collectedCardNames.add(cardName);
         }
 
-        function performPulls(count, gachaType = 'normal') {
-          sfx.playGachaCharge(); // ✨ 가챠 시작 SFX 재생
+        function performPulls(count, gachaType = 'normal', cost = 0) {
+            if (summonBusy) return;
             const results = [];
-            let guaranteedSR = (count === 10);
-
-            for (let i = 0; i < count; i++) {
-                let pulledChar;
-                if (guaranteedSR && i === count - 1 && !results.some(c => c.rarity === 'SR' || c.rarity === 'SSR')) {
-                    pulledChar = pullCharacter(['SR', 'SSR'], gachaType);
-                } else {
-                    pulledChar = pullCharacter(null, gachaType);
+            try {
+                for (let i = 0; i < count; i++) {
+                    const guarantee = count === 10 && i === count - 1 && !results.some(c => c.rarity === 'SR' || c.rarity === 'SSR');
+                    const card = pullCharacter(guarantee ? ['SR', 'SSR'] : null, gachaType);
+                    if (!card || !card.name) throw new Error('비어 있는 소환 대상');
+                    results.push(card);
                 }
-                results.push(pulledChar);
-                addCardToInventory(pulledChar.name);
-                playerStats.totalPulls++;
+            } catch (error) {
+                console.error('Summon pool error:', error);
+                showMessage('소환 목록에 오류가 있어 취소했습니다. 보석은 소모되지 않았습니다.', 'text-yellow-400', messageArea);
+                return;
             }
-
-            // ✨ 3D 연출에 results 배열을 통째로 넘겨서 10개의 와이어프레임이 모두 생성되도록 함
-            play3DGachaAnimation(results, () => {
-                displayResults(results); // 10개 전부 나열
-                updateUI();
-                saveGame();
-                checkAchievements();
-            });
+            summonBusy = true;
+            const discovered = new Set();
+            for (const card of results) {
+                if (!collectedCardNames.has(card.name)) discovered.add(card.name);
+                addCardToInventory(card.name);
+            }
+            playerCurrency -= cost;
+            playerStats.totalPulls += results.length;
+            recordSummon(results, gachaType);
+            updateUI();
+            saveGame();
+            sfx.playGachaCharge();
+            const complete = () => {
+                summonBusy = false;
+                displayResults(results, discovered);
+                updateUI(); checkAchievements();
+            };
+            try { play3DGachaAnimation(results, complete); }
+            catch (error) { console.error('Gacha animation failed:', error); finish3DGachaAnimation(); }
         }
 
+
         // ✨ 10개의 카드가 결과 창에 빠짐없이 전부 출력되도록 보장하는 displayResults 함수
-        function displayResults(pulledCharacters) {
+        function displayResults(pulledCharacters, discovered = new Set()) {
             if (!resultsContainer) return;
             resultsContainer.innerHTML = ''; // 이전 결과 초기화
+            document.getElementById('summon-summary').textContent = `${pulledCharacters.length}장 소환 완료 · 새로 수집한 등장인물 ${discovered.size}종`;
+            const marked = new Set();
 
             // 반복문을 돌며 10장의 카드를 각각 생성해서 그리드에 모두 추가합니다.
             pulledCharacters.forEach((character, index) => {
                 const cardEl = createCard(character, { animationIndex: index, mode: 'gachaResult' });
+                if (discovered.has(character.name) && !marked.has(character.name)) {
+                    cardEl.classList.add('new-discovery'); marked.add(character.name);
+                }
                 resultsContainer.appendChild(cardEl);
             });
         }
@@ -4139,7 +4286,7 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
             }
         }
         // 안전장치: 혹시라도 선택이 안 되면 첫 번째 등급으로 지정
-        if (!selectedRarity) selectedRarity = allowedRarities[0];
+        if (!selectedRarity || totalProb <= 0) throw new Error('확정 등급 확률 설정이 유효하지 않습니다.');
     }
     // --- [여기까지 수정] ---
     else {
@@ -4184,19 +4331,8 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
     return false;
 });
 
-    // 만약 설정 실수로 해당 등급에 뽑을 캐릭터가 하나도 없다면? (안전장치)
-    if (possibleCharacters.length === 0) {
-        console.warn(`경고: ${gachaType} 뽑기의 ${selectedRarity} 등급에 해당하는 캐릭터가 없습니다! N등급으로 대체합니다.`);
-
-        // N등급 캐릭터들을 모두 찾아서 그 중 랜덤으로 하나를 줍니다
-        const nRankChars = characters.filter(c => c.rarity === 'N');
-
-        if (nRankChars.length > 0) {
-            return nRankChars[Math.floor(Math.random() * nRankChars.length)];
-        }
-
-        // (만약 N등급조차 하나도 없다면 어쩔 수 없이 전체 목록의 첫 번째를 줍니다)
-        return characters[0];
+    if (!possibleCharacters.length) {
+        throw new Error(`${gachaType} 서가의 ${selectedRarity} 등급에 소환 가능한 등장인물이 없습니다.`);
     }
 
     // 3. 픽업 캐릭터 확률 적용 (이벤트 뽑기인 경우)
@@ -4247,6 +4383,7 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
             function displayInventory() {
     inventoryStatus.textContent = `${playerInventory.length} / ${inventoryCapacity}`;
     inventoryContainer.innerHTML = '';
+    const searchQuery = document.getElementById('archive-search').value.trim().toLocaleLowerCase('ko-KR');
 
     // ✨ [핵심 헬퍼] 카드의 '진짜 등급'을 판별하는 함수
     // 자식 카드라면 inherited.originalRarity를, 일반 카드라면 원본 데이터의 rarity를 반환
@@ -4290,14 +4427,16 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
         }
 
         // 두 조건 모두 만족해야 함
-        return isRarityMatch && isFactionMatch;
+        const searchText = `${cardInstance.name} ${cardInstance.inherited?.faction || charInfo.faction || ''}`.toLocaleLowerCase('ko-KR');
+        return isRarityMatch && isFactionMatch && (!searchQuery || searchText.includes(searchQuery));
     });
 
+    document.getElementById('archive-search-count').textContent = `${filteredInventory.length}장 표시 · 전체 ${playerInventory.length}장`;
     // 결과가 없을 때 메시지 처리
     if (filteredInventory.length === 0) {
         let emptyMessage = '조건에 맞는 등장인물이 없습니다.';
 
-        if (currentRarityFilter === 'All' && currentFactionFilter === 'all') {
+        if (!searchQuery && currentRarityFilter === 'All' && currentFactionFilter === 'all') {
              emptyMessage = '아직 수집한 등장인물이 없습니다.';
         }
 
@@ -6166,6 +6305,8 @@ function logCombat(message) {
         // ✨ 로그아웃 함수 ✨
         async function logoutUser() {
             try {
+                const saved = await saveGame();
+                if (!saved && currentUser && !confirm('아직 서버에 저장하지 못했습니다. 저장되지 않은 진행을 남기고 로그아웃할까요?')) return;
                 await auth.signOut();
                 alert('로그아웃 되었습니다.');
                 location.reload();
@@ -9463,29 +9604,26 @@ if(marketTabBtn) marketTabBtn.click();
         };
 
 		function handleSsrGuaranteedPull() {
-    if (playerSsrTickets < 1) {
-        showMessage('확정권이 부족합니다!', 'text-red-400', messageArea);
-        return;
+    if (!currentUser || summonBusy) return;
+    if (playerSsrTickets < 1) { showMessage('확정권이 부족합니다!', 'text-red-400', messageArea); return; }
+    if (playerInventory.length >= inventoryCapacity) { showMessage('서고가 부족합니다!', 'text-yellow-400', messageArea); return; }
+    let pulledChar;
+    try {
+        pulledChar = pullCharacter(['SSR'], 'event');
+        if (!pulledChar || pulledChar.rarity !== 'SSR') throw new Error('SSR 소환 대상 없음');
+    } catch (error) {
+        console.error(error);
+        showMessage('SSR 소환 목록을 확인할 수 없어 취소했습니다. 확정권은 소모되지 않았습니다.', 'text-yellow-400', messageArea); return;
     }
-    if (playerInventory.length + 1 > inventoryCapacity) {
-        showMessage('서고가 부족합니다!', 'text-yellow-400', messageArea);
-        return;
-    }
-
-    // 확정권 소모
+    const discovered = new Set(collectedCardNames.has(pulledChar.name) ? [] : [pulledChar.name]);
     playerSsrTickets--;
-
-    // SSR 캐릭터 추첨 (이벤트 풀 기준)
-    // pullCharacter의 첫 번째 인자로 'SSR'만 허용하도록 배열 전달
-    const pulledChar = pullCharacter(['SSR'], 'event');
-
     addCardToInventory(pulledChar.name);
-    displayResults([pulledChar]);
-
-    updateUI();
-    saveGame();
-    showMessage('SSR 확정 소환 완료!', 'text-yellow-300', messageArea);
+    playerStats.totalPulls++;
+    recordSummon([pulledChar], 'ticket');
+    displayResults([pulledChar], discovered);
+    updateUI(); saveGame(); checkAchievements();
 }
+
 
 // 2. 이벤트 리스너 등록 (DOMContentLoaded 내부에 추가)
 document.getElementById('pull-ssr-guaranteed').addEventListener('click', handleSsrGuaranteedPull);
@@ -12255,6 +12393,11 @@ function updateRaidDailyCountUI() {
 // ================== 👆 레이드 시스템 로직 끝 👆 ==================
 
 
+    document.getElementById('archive-search').addEventListener('input', displayInventory);
+    document.getElementById('archive-backup').addEventListener('click', downloadSaveData);
+    document.getElementById('retry-save').addEventListener('click', () => {
+        if (document.getElementById('save-status').dataset.state === 'error') saveGame();
+    });
     }); // <--- DOMContentLoaded 닫는 괄호 (절대 지우지 마세요!)
 
 	// ============================================================
@@ -12376,6 +12519,7 @@ let gacha3D = {
 
 // 1. 다중 3D 가챠 애니메이션 실행 함수 (results 배열을 통째로 받음)
 function play3DGachaAnimation(results, onComplete) {
+    if (window.yumecanSettings.quick || window.yumecanSettings.calm || typeof THREE === 'undefined') { onComplete(); return; }
     gacha3D.onCompleteCallback = onComplete;
     gacha3D.isSkipped = false;
     gacha3D.startTime = Date.now();
@@ -12544,11 +12688,12 @@ function animateMulti3DGacha() {
         finish3DGachaAnimation();
     }
 
-    gacha3D.renderer.render(gacha3D.scene, gacha3D.camera);
+    if (!gacha3D.isSkipped && gacha3D.renderer) gacha3D.renderer.render(gacha3D.scene, gacha3D.camera);
 }
 
 // 4. 정리 및 콜백
 function finish3DGachaAnimation() {
+    if (gacha3D.isSkipped) return;
     if (gacha3D.animId) cancelAnimationFrame(gacha3D.animId);
     gacha3D.isSkipped = true;
 
@@ -12564,9 +12709,11 @@ function finish3DGachaAnimation() {
         });
     }
 
-    if (typeof gacha3D.onCompleteCallback === 'function') {
-        gacha3D.onCompleteCallback();
-    }
+    if (gacha3D.renderer) { gacha3D.renderer.dispose(); gacha3D.renderer = null; }
+    gacha3D.scene = null; gacha3D.animId = null;
+    const callback = gacha3D.onCompleteCallback;
+    gacha3D.onCompleteCallback = null;
+    if (typeof callback === 'function') callback();
 }
 
 function skip3DGachaAnimation() {
@@ -12590,6 +12737,7 @@ let combat3D = {
 
 // 1. 전투 시작 시 3D 기계 코어 배경 실행
 function initCombat3DBackground() {
+    if (typeof THREE === 'undefined' || window.yumecanSettings.calm) return;
     const canvas = document.getElementById('combat-bg-canvas');
     if (!canvas) return;
 
@@ -12642,6 +12790,12 @@ function animateCombat3DBackground() {
 }
 
 function stopCombat3DBackground() {
+    if (combat3D.scene) combat3D.scene.traverse(child => {
+        child.geometry?.dispose();
+        if (Array.isArray(child.material)) child.material.forEach(material => material.dispose());
+        else child.material?.dispose();
+    });
+    combat3D.scene = null; combat3D.coreGroup = null;
     combat3D.isActive = false;
     if (combat3D.animId) cancelAnimationFrame(combat3D.animId);
     if (combat3D.renderer) {
@@ -12652,6 +12806,7 @@ function stopCombat3DBackground() {
 
 // 궁극기/스킬 사용 시 3D 공간 팝업 컷인 연출 함수 (대사 포함)
 async function playUltimateCutin(card, skill) {
+  if (window.yumecanSettings.calm) return;
   sfx.playSkillUltimate();
     const cutinLayer = document.getElementById('combat-3d-cutin');
     const cardWrapper = document.getElementById('cutin-card-wrapper');
@@ -12694,7 +12849,7 @@ document.addEventListener('click', (e) => {
 // 메인 메뉴 버튼 마우스오버 시 휩 사운드 자동 연동
 document.addEventListener('mouseover', (e) => {
     const btn = e.target.closest('button');
-    if (btn && window.currentTab === 'home' && (btn.id.startsWith('btn-lobby-') || btn.onclick)) {
+    if (btn && !btn.contains(e.relatedTarget) && currentTab === 'home' && (btn.id.startsWith('btn-lobby-') || btn.onclick)) {
         sfx.playWhipHover();
     }
 });
