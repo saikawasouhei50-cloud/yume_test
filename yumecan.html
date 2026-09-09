@@ -581,7 +581,46 @@ body button.bg-yellow-400 [class*="text-"],body button.bg-yellow-500 [class*="te
 #archive-search-count{color:#6b7480!important}
 #home-view .dream-text-button{min-height:44px}
 .dream-menu-item:hover,.dream-dock button:hover,.dream-shortcuts button:hover{border-color:#9298a0}
-</style></head>
+</style><style id="dream-pastel-factions">
+[data-faction]{--faction-bg:#e9eaf0;--faction-ink:#545968;--faction-border:#c1c5d0}
+[data-faction="탐정"]{--faction-bg:#dcecff;--faction-ink:#37577c;--faction-border:#a8c7e8}
+[data-faction="조수"]{--faction-bg:#e5f1d7;--faction-ink:#486337;--faction-border:#b8cf9f}
+[data-faction="범인"]{--faction-bg:#ffe1da;--faction-ink:#7d443b;--faction-border:#e5b4a9}
+[data-faction="히어로"]{--faction-bg:#e1e2ff;--faction-ink:#514a83;--faction-border:#b7b8e8}
+[data-faction="빌런"]{--faction-bg:#e0e6ed;--faction-ink:#425367;--faction-border:#aebac9}
+[data-faction="마법사"]{--faction-bg:#efdef9;--faction-ink:#6b4582;--faction-border:#d2b4e3}
+[data-faction="초대객"]{--faction-bg:#ffead6;--faction-ink:#78532c;--faction-border:#e8c59e}
+[data-faction="도박사"]{--faction-bg:#f7efc5;--faction-ink:#706022;--faction-border:#dace8e}
+[data-faction="사제"]{--faction-bg:#d7f0e9;--faction-ink:#32675b;--faction-border:#9ecfbe}
+[data-faction="악마"]{--faction-bg:#f9dce9;--faction-ink:#7b405c;--faction-border:#dfabc2}
+[data-faction="기타"]{--faction-bg:#e9eaf0;--faction-ink:#545968;--faction-border:#c1c5d0}
+
+/* Higher specificity than the monochrome utility palette; future badges use the same tokens. */
+html body .faction-mark[data-faction],html body .faction-btn[data-faction]{background:var(--faction-bg)!important;background-image:none!important;color:var(--faction-ink)!important;border:1px solid var(--faction-border)!important;box-shadow:none!important;border-radius:7px!important;font-weight:700;letter-spacing:0!important}
+html body .faction-mark[data-faction]{padding:3px 7px;line-height:1.4}
+html body .faction-btn[data-faction]{min-height:34px}
+html body .faction-btn[aria-pressed="true"]{outline:2px solid var(--faction-ink)!important;outline-offset:1px}
+html body #combat-in-progress-view [id^="combat-card-"]{background:linear-gradient(160deg,var(--faction-bg) 0%,#f9fafc 80%)!important;border:1px solid var(--faction-border)!important;border-radius:12px!important;padding:5px!important;box-shadow:0 3px 12px #444b5a09!important}
+html body #combat-in-progress-view [id^="combat-card-"]>div:first-child{background:transparent!important}
+html body #combat-in-progress-view [id^="combat-card-"] img{opacity:1!important;filter:none!important}
+html body #combat-in-progress-view .combat-card-name{color:#303b4b!important;background:#ffffffbb!important;border-radius:5px;padding:4px 3px;margin:3px 0 5px;font-size:11px;line-height:1.4;font-weight:700;width:100%;text-align:center;white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:36px;text-shadow:none!important}
+html body #combat-in-progress-view .combat-faction{font-size:9px;align-self:flex-start;margin:2px 0}
+html body #combat-in-progress-view [id^="player-hp-text-"]{font-size:10px!important;line-height:1.4!important;color:#4b5868!important;transform:none!important;margin:3px 0!important}
+html body #combat-in-progress-view .hp-bar-background{background:#dce2e9!important;border:0!important}
+html body #combat-in-progress-view .hp-bar-foreground{background:#8bafad!important}
+html body #combat-in-progress-view .hp-bar-foreground.bg-red-500{background:#c88383!important}
+/* The cut-in is a light, faction-tinted sheet, not the older dark overlay. */
+html body #combat-3d-cutin{background:rgba(240,243,249,.88)!important;color:#354052!important;backdrop-filter:blur(10px)}
+html body #combat-3d-cutin #cutin-card-wrapper{background:linear-gradient(155deg,var(--faction-bg),#fff 80%)!important;border:1px solid var(--faction-border)!important;border-radius:20px!important;padding:18px 24px!important;width:min(90%,440px);max-height:95%;box-shadow:0 12px 40px #555e7017!important}
+html body #combat-3d-cutin #cutin-card-wrapper>.absolute{display:none!important}
+html body #combat-3d-cutin #cutin-character-img{background:transparent!important;border:0!important;max-height:32vh;max-width:100%;filter:none!important;border-radius:12px!important;margin-bottom:8px}
+html body #combat-3d-cutin #cutin-character-name{color:#344052!important;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:6px}
+html body #combat-3d-cutin #cutin-faction{font-size:11px;margin-bottom:8px}
+html body #combat-3d-cutin #cutin-skill-name{background:#ffffffbf!important;color:var(--faction-ink)!important;border:0!important;border-radius:10px!important;font-family:inherit;letter-spacing:0!important;font-size:22px!important;line-height:1.4;padding:8px 14px}
+html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;color:#4f5b6c!important;border:0!important;letter-spacing:0!important;font-size:14px!important;line-height:1.65;font-weight:500}
+@media(max-width:767px){html body #combat-in-progress-view .combat-card-name{font-size:10px;min-height:32px}html body #combat-in-progress-view [id^="player-hp-text-"]{font-size:9px!important}html body #combat-in-progress-view .combat-faction{font-size:8px;padding:2px 5px}html body #combat-3d-cutin #cutin-skill-name{font-size:18px!important}html body #combat-3d-cutin #cutin-dialogue{font-size:12px!important}html body #combat-3d-cutin #cutin-character-name{font-size:12px}html body #combat-3d-cutin #cutin-card-wrapper{padding:14px 18px!important}}
+</style>
+</head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
@@ -1027,18 +1066,18 @@ body button.bg-yellow-400 [class*="text-"],body button.bg-yellow-500 [class*="te
         </button>
 
         <div id="faction-filter-options" class="hidden absolute top-full right-0 mt-2 w-72 bg-gray-900/95 border border-gray-600 rounded-lg shadow-xl z-50 p-2 grid grid-cols-4 gap-1 backdrop-blur-sm">
-            <button onclick="setFactionFilter('all')" class="faction-btn col-span-4 bg-gray-700 hover:bg-gray-600 text-white text-[10px] py-1.5 rounded mb-1 border border-gray-500">
+            <button data-faction="all" onclick="setFactionFilter('all')" class="faction-btn col-span-4 bg-gray-700 hover:bg-gray-600 text-white text-[10px] py-1.5 rounded mb-1 border border-gray-500">
                 🔄 전체 (필터 해제)
             </button>
-            <button onclick="setFactionFilter('탐정')" class="faction-btn bg-blue-500 hover:bg-blue-600 text-white text-[10px] py-1 rounded shadow-sm">탐정</button>
-            <button onclick="setFactionFilter('범인')" class="faction-btn bg-red-500 hover:bg-red-600 text-white text-[10px] py-1 rounded shadow-sm">범인</button>
-            <button onclick="setFactionFilter('히어로')" class="faction-btn bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded shadow-sm">히어로</button>
-            <button onclick="setFactionFilter('빌런')" class="faction-btn bg-gray-800 hover:bg-gray-900 text-white text-[10px] py-1 rounded shadow-sm border border-gray-600">빌런</button>
-            <button onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-600 hover:bg-purple-700 text-white text-[10px] py-1 rounded shadow-sm">마법사</button>
-            <button onclick="setFactionFilter('초대객')" class="faction-btn bg-orange-400 hover:bg-orange-500 text-white text-[10px] py-1 rounded shadow-sm">초대객</button>
-            <button onclick="setFactionFilter('도박사')" class="faction-btn bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] py-1 rounded shadow-sm">도박사</button>
-            <button onclick="setFactionFilter('사제')" class="faction-btn bg-teal-500 hover:bg-teal-600 text-white text-[10px] py-1 rounded shadow-sm">사제</button>
-            <button onclick="setFactionFilter('악마')" class="faction-btn bg-rose-900 hover:bg-rose-950 text-white text-[10px] py-1 rounded shadow-sm border border-rose-800">악마</button>
+            <button data-faction="탐정" onclick="setFactionFilter('탐정')" class="faction-btn bg-blue-500 hover:bg-blue-600 text-white text-[10px] py-1 rounded shadow-sm">탐정</button>
+            <button data-faction="범인" onclick="setFactionFilter('범인')" class="faction-btn bg-red-500 hover:bg-red-600 text-white text-[10px] py-1 rounded shadow-sm">범인</button>
+            <button data-faction="히어로" onclick="setFactionFilter('히어로')" class="faction-btn bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded shadow-sm">히어로</button>
+            <button data-faction="빌런" onclick="setFactionFilter('빌런')" class="faction-btn bg-gray-800 hover:bg-gray-900 text-white text-[10px] py-1 rounded shadow-sm border border-gray-600">빌런</button>
+            <button data-faction="마법사" onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-600 hover:bg-purple-700 text-white text-[10px] py-1 rounded shadow-sm">마법사</button>
+            <button data-faction="초대객" onclick="setFactionFilter('초대객')" class="faction-btn bg-orange-400 hover:bg-orange-500 text-white text-[10px] py-1 rounded shadow-sm">초대객</button>
+            <button data-faction="도박사" onclick="setFactionFilter('도박사')" class="faction-btn bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] py-1 rounded shadow-sm">도박사</button>
+            <button data-faction="사제" onclick="setFactionFilter('사제')" class="faction-btn bg-teal-500 hover:bg-teal-600 text-white text-[10px] py-1 rounded shadow-sm">사제</button>
+            <button data-faction="악마" onclick="setFactionFilter('악마')" class="faction-btn bg-rose-900 hover:bg-rose-950 text-white text-[10px] py-1 rounded shadow-sm border border-rose-800">악마</button>
         </div>
     </div>
 </div>
@@ -1099,6 +1138,8 @@ body button.bg-yellow-400 [class*="text-"],body button.bg-yellow-500 [class*="te
                         <div id="cutin-card-wrapper" class="relative transform scale-0 transition-transform duration-300 flex flex-col items-center max-w-lg px-4 text-center">
                             <div class="absolute -inset-4 border-2 border-cyan-400 animate-ping opacity-40"></div>
                             <img id="cutin-character-img" src="" class="max-h-[45vh] object-contain drop-shadow-[0_0_30px_rgba(0,255,255,0.8)] border-2 border-cyan-400 bg-black/80 mb-3">
+                            <p id="cutin-character-name"></p>
+                            <span id="cutin-faction" class="faction-mark"></span>
                             <div id="cutin-skill-name" class="font-tech font-black text-2xl md:text-4xl text-cyan-400 tracking-[0.2em] bg-black/90 px-6 py-1.5 border-l-4 border-cyan-400"></div>
                             <!-- ✨ [추가] 컷인 대사 출력 영역 -->
                             <div id="cutin-dialogue" class="mt-2 text-sm md:text-lg text-gray-200 font-bold bg-black/80 px-4 py-1.5 border border-gray-700 tracking-wide italic"></div>
@@ -6922,24 +6963,15 @@ function startStageCombat(chapterIndex, stageIndex) {
             const glowClass = `rarity-glow-${card.rarity}`;
 
             // ✨ [추가] 진영별 배경 그라데이션 및 테두리 스타일 매핑
-            const factionBgStyles = {
-                '탐정': 'background: linear-gradient(135deg, #1e3a8a, #0b0c10); border-color: #3b82f6;',
-                '조수': 'background: linear-gradient(135deg, #065f46, #0b0c10); border-color: #10b981;',
-                '범인': 'background: linear-gradient(135deg, #991b1b, #0b0c10); border-color: #ef4444;',
-                '히어로': 'background: linear-gradient(135deg, #3730a3, #0b0c10); border-color: #6366f1;',
-                '빌런': 'background: linear-gradient(135deg, #1f2937, #0b0c10); border-color: #4b5563;',
-                '마법사': 'background: linear-gradient(135deg, #581c87, #0b0c10); border-color: #a855f7;',
-                '초대객': 'background: linear-gradient(135deg, #c2410c, #0b0c10); border-color: #f97316;',
-                '도박사': 'background: linear-gradient(135deg, #854d0e, #0b0c10); border-color: #eab308;',
-                '사제': 'background: linear-gradient(135deg, #115e59, #0b0c10); border-color: #14b8a6;',
-                '악마': 'background: linear-gradient(135deg, #4c0519, #0b0c10); border-color: #f43f5e;'
-            };
-            const customStyle = factionBgStyles[card.faction] || 'background: linear-gradient(135deg, #1f2833, #0b0c10); border-color: #45a29e;';
+            // Colors now come from the shared faction palette instead of dark inline gradients.
+            const customStyle = '';
 
             // ✨ 진영별 커스텀 스타일(배경 및 테두리)을 인라인으로 적용
             cardEl.className = 'relative w-[28%] p-0.5 rounded-lg border shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
             cardEl.style.cssText = customStyle;
             cardEl.id = `combat-card-${index}`;
+            cardEl.dataset.faction = card.faction || '기타';
+            cardEl.title = card.name;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
 
@@ -6949,7 +6981,8 @@ function startStageCombat(chapterIndex, stageIndex) {
                 <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-75 origin-top-right"></div>
             </div>
 
-            <p class="font-bold text-[8px] md:text-[10px] truncate w-full text-center ${rarityColor} mb-0.5">${card.name}</p>
+            <span class="faction-mark combat-faction" data-faction="${card.faction || '기타'}">${card.faction || '기타'}</span>
+            <p class="combat-card-name">${card.name}</p>
 
             <div class="w-full hp-bar-background rounded-full h-1 md:h-1.5 bg-gray-600">
                 <div id="player-hp-bar-${index}" class="hp-bar-foreground h-1 md:h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
@@ -7665,7 +7698,7 @@ function createCard(character, options = {}) {
         }
 
         // 진영 배지 (오른쪽 끝)
-                const factionBadge = `<span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-1 rounded-sm ${factionColors[displayFaction] || 'bg-gray-500'} z-10">${displayFaction}</span>`;
+                const factionBadge = `<span data-faction="${displayFaction}" class="faction-mark absolute top-2 right-2 text-[10px] font-bold px-2 py-1 rounded-sm ${factionColors[displayFaction] || 'bg-gray-500'} z-10">${displayFaction}</span>`;
 
                 card.innerHTML = `
                     ${levelBadgeHTML}
@@ -7796,6 +7829,7 @@ function getSkillDescription(skill) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = displayFaction;
+    factionEl.dataset.faction = displayFaction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
@@ -7804,6 +7838,7 @@ function getSkillDescription(skill) {
 
     // ✨ [수정됨] 끊겨있던 코드를 복구했습니다. (백틱과 변수가 정확히 닫혀야 합니다)
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
+    factionEl.classList.add('faction-mark');
 
     // ▼▼▼ [부모 정보 표시 로직] ▼▼▼
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
@@ -8263,12 +8298,14 @@ function openCollectionCardModal(cardBaseName) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = character.faction;
+    factionEl.dataset.faction = character.faction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[character.faction] || 'bg-gray-500'}`;
+    factionEl.classList.add('faction-mark');
 
     // 4. 기본 스탯 표시
     document.getElementById('detail-stat-hp').textContent = character.stats.hp;
@@ -12590,12 +12627,14 @@ function openTradeCardDetail(tradeId) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = displayFaction;
+    factionEl.dataset.faction = displayFaction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
+    factionEl.classList.add('faction-mark');
 
     // --- 부모 정보 표시 (자식 카드일 경우) ---
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
@@ -13457,8 +13496,10 @@ function setFactionFilter(faction) {
     document.querySelectorAll('.faction-btn').forEach(btn => {
         if (btn.innerText.includes(faction) || (faction === 'all' && btn.innerText.includes('전체'))) {
             btn.classList.add('ring-2', 'ring-white'); // 선택됨 표시
+            btn.setAttribute('aria-pressed', 'true');
         } else {
             btn.classList.remove('ring-2', 'ring-white');
+            btn.setAttribute('aria-pressed', 'false');
         }
     });
 
@@ -13786,6 +13827,12 @@ async function playUltimateCutin(card, skill) {
     if (!cutinLayer || !cardWrapper) return;
 
     // 캐릭터 이미지, 스킬 이름, 스킬 대사 매핑
+    cardWrapper.dataset.faction = card.faction || '기타';
+    document.getElementById('cutin-character-name').textContent = card.name;
+    const factionBadge = document.getElementById('cutin-faction');
+    factionBadge.dataset.faction = card.faction || '기타';
+    factionBadge.textContent = card.faction || '기타';
+    charImg.alt = card.name;
     charImg.src = card.cardImageUrl || card.imageUrl || '';
     skillNameEl.textContent = skill.name;
 
