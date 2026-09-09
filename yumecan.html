@@ -383,7 +383,10 @@ h1, h2, h3, h4 { line-height: 1.3; }
 #rogue-report { scroll-margin-top: 80px; }
 @media(max-width:767px) { .rg-choice-heading h3 { font-size: 15px; } .rg-choice-heading p { font-size: 12px; } }
 </style>
-</head>
+<style id="rogue-exclusive-equipment">
+.rg-loot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:10px}.rg-loot-card{padding:14px;border:1px solid #45516b;border-radius:9px;background:#172135}.rg-loot-card strong{font-size:13px;color:#d8c7ff}.rg-loot-card p{font-size:12px;margin:6px 0;color:#c2d1e4}.rg-loot-card small,.rg-loot-empty{font-size:11px;color:#acbbcf}.rg-loot-card[data-rarity="SSR"],#equipment-list-container>[data-rarity="SSR"]{border-color:#9d7943}.rg-loot-card[data-rarity="SSR"] strong{color:#f2cf87}.rg-loot-card[data-rarity="UR"],#equipment-list-container>[data-rarity="UR"]{border-color:#d084b4;background:#302039}.rg-loot-card[data-rarity="UR"] strong{color:#ffc3e5}.rg-exclusive-label{color:#d6b5f1;font-size:10px;margin:3px 0}
+@media(max-width:767px){.rg-loot-card strong{font-size:12px}.rg-loot-card p{font-size:11px}}
+</style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
@@ -1628,7 +1631,7 @@ h1, h2, h3, h4 { line-height: 1.3; }
  <div class="rg-heading"><div><span class="rg-kicker">ROGUELIKE EXPEDITION / VOL. 02</span><h2>폐기된 서고</h2><p>버려진 이야기 속에서, 살아 돌아올 결말을 고르세요.</p></div><span class="rg-edition">3개 구역<br><b>12층 탐사</b></span></div>
  <div id="rogue-lobby">
   <div class="rg-intro"><span class="rg-kicker">EVERY CHOICE LEAVES A TRACE</span><h3>어떤 이야기를<br>완성하시겠어요?</h3><p>정예에 도전해 유물을 얻거나, 쉼터에 머물러 다음 장을 준비하세요.<br>세 계열의 영감을 모으면 새로운 공명 효과가 열립니다.</p></div>
-  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p></div></div>
+  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p><div id="rogue-report-loot" class="rg-loot-grid"></div></div></div>
  </div>
  <div id="rogue-active" class="hidden">
   <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><p id="rogue-phase" role="status"></p></div>
@@ -1640,11 +1643,13 @@ h1, h2, h3, h4 { line-height: 1.3; }
    <div id="rogue-choices" class="rg-choices" role="group" aria-labelledby="rogue-choice-title" aria-describedby="rogue-choice-hint"></div>
    <section class="rg-panel"><h3>동행 중인 등장인물</h3><div id="rogue-team-status" class="rg-team"></div></section>
    <section class="rg-panel"><h3>영감과 공명 <small>같은 계열 3개 획득 시 발동 · 중복 포함</small></h3><div id="rogue-resonance" class="rg-resonances"></div><div id="rogue-buffs-list" class="rg-tags"></div></section>
+   <section class="rg-panel"><h3>발견한 전용 장비 <small>귀환·전멸 시에도 정산하여 영구 획득</small></h3><div id="rogue-loot" class="rg-loot-grid"></div></section>
    <section class="rg-panel"><h3>탐사 유물</h3><div id="rogue-relics" class="rg-tags"></div></section>
    <details class="rg-panel"><summary>이번 탐사의 기록</summary><ol id="rogue-log"></ol></details>
    <button id="rogue-retire" onclick="endRoguelikeRun()" class="rg-secondary">귀환하고 현재 보상 정산</button>
   </div></div>
  </div>
+<details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 4층 보스: 장비 50%, SR. 8층 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
  <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 휴식·상점·사건은 전투 보상을 주지 않습니다. 귀환·전멸 모두 누적 보상을 지급하며 정산은 한 번만 처리합니다.</p><p>경로·후보·선택 결과는 계정에 자동 저장됩니다. 저장된 탐사는 다시 접속한 뒤 이 화면에서 이어갑니다. 전투 중 연결이 끊기면 같은 경로의 전투 시작 시점부터 재도전합니다. 저장 실패 표시는 상단에서 확인하고 다시 저장해 주세요.</p><p>적의 능력치는 입장 당시 편성의 평균 체력·방어력과 합산 공격력에 맞춰 정해집니다. 입장 후 얻은 강화에 따라 적이 추가로 강해지지는 않습니다. 보스는 3턴마다 강한 공격을 하며, 8·12층 보스는 광역 공격을 합니다.</p></details>
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
@@ -2910,7 +2915,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
-        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[]}; }
+        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
@@ -2971,6 +2976,8 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
             if(!valid){console.warn('Invalid rogue checkpoint ignored');return;}
             rogueState=JSON.parse(JSON.stringify(r));
+            rogueState.loot=Array.isArray(r.loot)?r.loot.filter(e=>e&&typeof e.id==='string'&&equipmentTemplates.some(t=>t.id===e.templateId&&t.source==='rogue')):[];
+            rogueState.lootedNodes=Array.isArray(r.lootedNodes)?r.lootedNodes.filter(id=>typeof id==='string'):[];
             if(rogueState.phase==='combat'){rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;rogueLog('연결이 끊긴 전투를 시작 시점부터 다시 진행합니다.');}
             if(['rest','shop','event','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
         }
@@ -3026,6 +3033,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             document.getElementById('rogue-record').textContent=`최고 ${rogueMeta.best}/12층 · 완주 ${rogueMeta.clears}회 · 도전 ${rogueMeta.runs}회`;
             const report=document.getElementById('rogue-report');
             report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}`:'';
+            document.getElementById('rogue-report-loot').innerHTML=rogueLootMarkup(rogueMeta.last?.equipment);
             document.getElementById('rogue-start-button').disabled=rogueBusy;
             if(!rogueState.active){revealRogueStep();return;}
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
@@ -3038,6 +3046,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             document.getElementById('rogue-buffs-list').innerHTML=rogueState.buffs.map(id=>{const b=rogueBuffPool.find(b=>b.id===id);return b?`<span title="${rogueEscape(b.desc)}">${b.name}</span>`:'';}).join('')||'<span>아직 획득한 영감이 없습니다.</span>';
             document.getElementById('rogue-relics').innerHTML=rogueState.relics.map(id=>{const r=rogueRelics.find(r=>r.id===id);return r?`<span title="${r.desc}">${r.name} · ${r.desc}</span>`:'';}).join('');
             document.getElementById('rogue-log').innerHTML=rogueState.history.map(t=>`<li>${rogueEscape(t)}</li>`).join('');
+            document.getElementById('rogue-loot').innerHTML=rogueLootMarkup(rogueState.loot)||'<p class="rg-loot-empty">정예와 보스를 처치하면 전용 장비를 발견할 수 있어요.</p>';
             document.getElementById('rogue-retire').disabled=rogueBusy||rogueState.phase==='combat';
             const prompts = {
                 route: ['다음 선택지를 고르세요', '아래 경로 중 하나를 골라 다음 층 탐사를 진행하세요.'],
@@ -3051,6 +3060,8 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const prompt = prompts[rogueState.phase] || prompts.route;
             document.getElementById('rogue-choice-title').textContent = prompt[0];
             document.getElementById('rogue-choice-hint').textContent = prompt[1];
+            const found=(rogueState.loot||[]).filter(e=>e.acquiredFloor===rogueState.floor);
+            if(found.length&&['buff','relic'].includes(rogueState.phase))document.getElementById('rogue-choice-hint').textContent += ' 장비 발견: '+found.map(e=>{const t=equipmentTemplates.find(t=>t.id===e.templateId);return t?`[${t.rarity}] ${t.name}`:'';}).join(', ')+' — 탐사 종료 시 영구 획득!';
             renderRogueChoices();
             revealRogueStep();
         }
@@ -3066,6 +3077,8 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 for(const node of rogueState.map[rogueState.floor-1]) {
                     const info=rogueNodeInfo[node.type];let detail=info[1];
                     if(['battle','elite','boss'].includes(node.type)){const m=rogueEnemyPlan(node);detail+=`\n${m.name}\nHP ${m.stats.hp} · ATK ${m.stats.atk} · DEF ${m.stats.def}\n${m.rogueTactic}`;}
+                    if(node.type==='elite')detail+='\n장비 드롭 25% · 획득 시 SR 90% / SSR 10%';
+                    if(node.type==='boss')detail+=rogueState.floor===12?'\n전용 장비 확정 · SSR 85% / UR 15%':rogueState.floor===8?'\n장비 드롭 75% · 획득 시 SR 65% / SSR 35%':'\n장비 드롭 50% · SR';
                     add(info[0],detail,()=>chooseRogueNode(node.id),Boolean(rogueState.retryNode&&rogueState.retryNode!==node.id));
                 }
             } else if(phase==='buff'||phase==='relic') {
@@ -3187,11 +3200,37 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             if(action==='collect')rogueState.shards+=35;
             rogueLog(`${rogueState.floor}층 선택 완료`);advanceRogueFloor();await roguePersist();
         }
+        function rollRogueEquipment() {
+            const node=rogueState.node;
+            if(!rogueState.active||!node||!['elite','boss'].includes(node.type))return null;
+            rogueState.loot=rogueState.loot||[];rogueState.lootedNodes=rogueState.lootedNodes||[];
+            if(rogueState.lootedNodes.includes(node.id))return null;
+            rogueState.lootedNodes.push(node.id);
+            const floor=rogueState.floor;
+            const chance=node.type==='elite'?.25:floor===12?1:floor===8?.75:.50;
+            if(rogueRand()>=chance)return null;
+            const rarityRoll=rogueRand();
+            const rarity=node.type==='elite'?(rarityRoll<.90?'SR':'SSR'):floor===12?(rarityRoll<.85?'SSR':'UR'):floor===8?(rarityRoll<.65?'SR':'SSR'):'SR';
+            const pool=equipmentTemplates.filter(t=>t.source==='rogue'&&t.rarity===rarity);
+            const template=pool[Math.floor(rogueRand()*pool.length)];
+            if(!template)return null;
+            const loot={id:generateEqId(),templateId:template.id,equippedTo:null,source:'rogue',acquiredFloor:floor,runId:rogueState.runId};
+            rogueState.loot.push(loot);
+            rogueLog(`장비 발견! [${rarity}] ${template.name} · 귀환/탐사 종료 시 영구 획득`);
+            return loot;
+        }
+        function rogueLootMarkup(items) {
+            return (items||[]).map(item=>{
+                const t=equipmentTemplates.find(t=>t.id===item.templateId);if(!t)return '';
+                return `<div class="rg-loot-card" data-rarity="${rogueEscape(t.rarity)}"><strong>${t.icon} [${t.rarity}] ${rogueEscape(t.name)}</strong><p>${rogueEscape(t.desc)}</p><small>폐기된 서고 전용 · ${item.acquiredFloor||'?'}층에서 발견</small></div>`;
+            }).join('');
+        }
         function completeRogueCombat(victory,deck) {
             if(!rogueState.active||rogueState.phase!=='combat')return;
             if(Array.isArray(deck))rogueState.team.forEach((c,i)=>{const hp=deck[i]?.stats?.hp;c.stats.hp=Number.isFinite(hp)?Math.max(0,Math.min(c.maxHp,hp)):c.stats.hp;});
             if(!victory){settleRogueRun('탐사 종료');roguePersist();return;}
             rogueState.wins++;
+            rollRogueEquipment();
             if(rogueState.node.type==='boss')rogueState.bosses++;
             rogueState.shards+=({battle:25,elite:45,boss:60}[rogueState.node.type]||0)+(rogueState.relics.includes('compass')?10:0);
             if(rogueState.relics.includes('needle'))rogueHeal(.08);
@@ -3207,10 +3246,12 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             if(!rogueState.active)return false;
             const gems=rogueState.wins*10+rogueState.bosses*20,pens=rogueState.wins*50,ink=Math.floor(rogueState.wins/3);
             rogueState.active=false;rogueState.phase='settled';
+            const equipment=(rogueState.loot||[]).filter(item=>!playerEquipment.some(e=>e.id===item.id));
+            playerEquipment.push(...equipment.map(item=>({...item,equippedTo:null})));
             playerCurrency+=gems;playerFountainPens+=pens;playerInkwells+=ink;
             rogueMeta.best=Math.max(rogueMeta.best,rogueState.cleared);
             if(result==='완주')rogueMeta.clears++;
-            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId};
+            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId,equipment:(rogueState.loot||[]).map(item=>({...item}))};
             updateUI();updateRogueUI();return true;
         }
         async function endRoguelikeRun(reason='retire') {
@@ -3403,7 +3444,13 @@ let playerRaidLastResetDate = null;
     { id: 'eq_fountainpen', name: '고급 만년필', type: 'atk_pct', bonus: 0.1, desc: '공격력 +10%', rarity: 'R', icon: '🖋️' },
     { id: 'eq_magnifier', name: '탐정의 돋보기', type: 'hp_pct', bonus: 0.15, desc: '체력 +15%', rarity: 'SR', icon: '🔍' },
     { id: 'eq_trenchcoat', name: '방탄 트렌치코트', type: 'def_pct', bonus: 0.2, desc: '방어력 +20%', rarity: 'SSR', icon: '🧥' },
-    { id: 'eq_goldnib', name: '순금 펜촉', type: 'atk_pct', bonus: 0.25, desc: '공격력 +25%', rarity: 'SSR', icon: '✨' }
+    { id: 'eq_goldnib', name: '순금 펜촉', type: 'atk_pct', bonus: 0.25, desc: '공격력 +25%', rarity: 'SSR', icon: '✨' },
+{"id": "rg_nib", "name": "금서의 펜촉", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.18, "hp": 0, "defense": 0.08}, "desc": "공격력 +18% · 방어력 +8%", "icon": "🖋️"},
+{"id": "rg_binding", "name": "불멸의 장정", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0, "hp": 0.25, "defense": 0.1}, "desc": "체력 +25% · 방어력 +10%", "icon": "📕"},
+{"id": "rg_lens", "name": "진실의 교정경", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.12, "hp": 0.18, "defense": 0}, "desc": "공격력 +12% · 체력 +18%", "icon": "🔍"},
+{"id": "rg_hourglass", "name": "역행하는 모래시계", "rarity": "SSR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.3, "hp": 0, "defense": 0.15}, "desc": "공격력 +30% · 방어력 +15%", "icon": "⌛"},
+{"id": "rg_seal", "name": "침묵의 봉인서", "rarity": "SSR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0, "hp": 0.4, "defense": 0.25}, "desc": "체력 +40% · 방어력 +25%", "icon": "📜"},
+{"id": "rg_lastpen", "name": "종언을 쓰는 펜", "rarity": "UR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.42, "hp": 0.25, "defense": 0.2}, "desc": "공격력 +42% · 체력 +25% · 방어력 +20%", "icon": "✒️"}
 			];
 
 			// 고유 장비 ID 생성 함수
@@ -5069,6 +5116,11 @@ function addCardToInventory(cardName) {
                             if (tmpl.type === 'atk_pct') finalAtk = Math.floor(finalAtk * (1 + tmpl.bonus));
                             if (tmpl.type === 'def_pct') finalDef = Math.floor(finalDef * (1 + tmpl.bonus));
                             if (tmpl.type === 'hp_pct') finalHp = Math.floor(finalHp * (1 + tmpl.bonus));
+                            if (tmpl.modifiers) {
+                                finalAtk = Math.floor(finalAtk * (1 + (tmpl.modifiers.atk || 0)));
+                                finalHp = Math.floor(finalHp * (1 + (tmpl.modifiers.hp || 0)));
+                                finalDef = Math.floor(finalDef * (1 + (tmpl.modifiers.defense || 0)));
+                            }
                         }
                     }
                 }
@@ -7407,7 +7459,8 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
 
                 // 장비 드롭 보상 추가
                 if (Math.random() < 0.20) {
-                    const randomTmpl = equipmentTemplates[Math.floor(Math.random() * equipmentTemplates.length)];
+                    const normalEquipmentPool = equipmentTemplates.filter(t => t.source !== 'rogue');
+                    const randomTmpl = normalEquipmentPool[Math.floor(Math.random() * normalEquipmentPool.length)];
                     const newEq = { id: generateEqId(), templateId: randomTmpl.id, equippedTo: null };
                     playerEquipment.push(newEq);
                     rewardsList.push({ icon: randomTmpl.icon || '📦', name: randomTmpl.name, count: '획득', color: 'border-green-500 bg-green-950/30 text-green-300' });
@@ -7922,7 +7975,7 @@ function updateEquipmentSlotUI(cardInstance) {
             iconEl.classList.remove('grayscale', 'opacity-50');
             nameEl.textContent = `[${tmpl.rarity}] ${tmpl.name}`;
             nameEl.className = 'text-sm font-bold text-green-300';
-            descEl.textContent = tmpl.desc;
+            descEl.textContent = tmpl.desc + (tmpl.source === 'rogue' ? ' · 폐기된 서고 전용' : '');
             unequipBtn.classList.remove('hidden');
             return;
         }
@@ -7947,10 +8000,14 @@ window.openEquipmentModal = function() {
     const availableEqs = playerEquipment.filter(eq => !eq.equippedTo || eq.equippedTo === currentDetailCardId);
 
     if (availableEqs.length === 0) {
-        listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화에서 획득하세요.</p>';
+        listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화 또는 폐기된 서고의 정예·보스에게서 획득하세요.</p>';
     } else {
-        availableEqs.forEach(eq => {
+        availableEqs.sort((a,b)=>{
+            const order={N:0,R:1,SR:2,SSR:3,UR:4};
+            return (order[equipmentTemplates.find(t=>t.id===b.templateId)?.rarity]||0)-(order[equipmentTemplates.find(t=>t.id===a.templateId)?.rarity]||0);
+        }).forEach(eq => {
             const tmpl = equipmentTemplates.find(t => t.id === eq.templateId);
+            if (!tmpl) return;
             const isEquippedToMe = eq.equippedTo === currentDetailCardId;
 
             const btn = document.createElement('div');
@@ -7965,6 +8022,11 @@ window.openEquipmentModal = function() {
                 </div>
                 <button class="gacha-button text-xs py-1 px-4">${isEquippedToMe ? '유지' : '장착'}</button>
             `;
+            btn.dataset.rarity=tmpl.rarity;
+            if(tmpl.source==='rogue'){
+                const badge=document.createElement('p');badge.className='rg-exclusive-label';badge.textContent='폐기된 서고 전용';
+                btn.querySelector('.font-bold').after(badge);
+            }
             btn.onclick = () => equipItem(eq.id);
             listContainer.appendChild(btn);
         });
@@ -7977,7 +8039,7 @@ window.equipItem = function(eqId) {
     const cardInstance = playerInventory.find(c => c.id === currentDetailCardId);
     const targetEq = playerEquipment.find(e => e.id === eqId);
 
-    if (cardInstance && targetEq) {
+    if (cardInstance && targetEq && (!targetEq.equippedTo || targetEq.equippedTo === cardInstance.id)) {
         // 기존 장비가 있었다면 해제 처리
         if (cardInstance.equippedItem) {
             const oldEq = playerEquipment.find(e => e.id === cardInstance.equippedItem);
