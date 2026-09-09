@@ -386,19 +386,214 @@ h1, h2, h3, h4 { line-height: 1.3; }
 <style id="rogue-exclusive-equipment">
 .rg-loot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:10px}.rg-loot-card{padding:14px;border:1px solid #45516b;border-radius:9px;background:#172135}.rg-loot-card strong{font-size:13px;color:#d8c7ff}.rg-loot-card p{font-size:12px;margin:6px 0;color:#c2d1e4}.rg-loot-card small,.rg-loot-empty{font-size:11px;color:#acbbcf}.rg-loot-card[data-rarity="SSR"],#equipment-list-container>[data-rarity="SSR"]{border-color:#9d7943}.rg-loot-card[data-rarity="SSR"] strong{color:#f2cf87}.rg-loot-card[data-rarity="UR"],#equipment-list-container>[data-rarity="UR"]{border-color:#d084b4;background:#302039}.rg-loot-card[data-rarity="UR"] strong{color:#ffc3e5}.rg-exclusive-label{color:#d6b5f1;font-size:10px;margin:3px 0}
 @media(max-width:767px){.rg-loot-card strong{font-size:12px}.rg-loot-card p{font-size:11px}}
+</style>
+<style id="dream-monochrome-theme">
+:root{color-scheme:light;--dream-ink:#303237;--dream-muted:#666970;--dream-line:#dddfe2;--dream-panel:rgba(255,255,255,.85);--dream-soft:#f0f1f2;--archive-accent:#656970}
+html{background:#eeeff0;scroll-padding-top:80px}
+body{background:radial-gradient(ellipse at 20% 8%,#fff 0,transparent 55%),linear-gradient(155deg,#f7f7f7,#e5e7e9)!important;background-attachment:fixed!important;color:var(--dream-ink)!important;padding:24px!important;align-items:center;letter-spacing:-.018em}
+body>.hud-scanline-container{max-width:1200px!important;padding:30px!important;border:1px solid #fff!important;border-radius:24px!important;background:rgba(255,255,255,.66)!important;box-shadow:0 20px 80px #3a404010!important;backdrop-filter:blur(20px);overflow:visible!important}
+.hud-scanline-container::after,.gacha-button::before{display:none!important}
+body>.hud-scanline-container>.absolute{display:none}
+body [class*="shadow-"]{box-shadow:none!important}
+body [class*="drop-shadow-"]{filter:none!important}
+body [class*="bg-black"],body [class*="bg-gray"],body [class*="bg-[#"],body [class*="bg-white"]{background-color:var(--dream-panel)!important}
+body [class*="bg-gradient"]{background-image:none!important}
+body [class*="text-[#"],body .text-white,body .text-black{color:var(--dream-ink)!important}
+body [class*="border-[#"],body [class*="border-white"]{border-color:var(--dream-line)!important}
+body .rounded-full{border-radius:999px!important}body .rounded-xl,body .rounded-2xl{border-radius:16px!important}body .rounded-lg,body .rounded-md,body .rounded-sm{border-radius:10px!important}
+body button,body a,body input,body select{ -webkit-tap-highlight-color:transparent}
+body button{text-transform:none!important;letter-spacing:0!important;transition:background-color .18s,border-color .18s,box-shadow .18s}
+body button:focus-visible,body summary:focus-visible,body input:focus-visible,body select:focus-visible{outline:2px solid #5c6068!important;outline-offset:3px}
+body input:not([type=checkbox]):not([type=radio]),body select,body textarea{background:#fff!important;color:#303237!important;border:1px solid #d9dbde!important;border-radius:10px!important;box-shadow:none!important}
+body input::placeholder,body textarea::placeholder{color:#7b7e84!important}
+body .gacha-button,body .tab-button,body .sub-tab-button{background:#fff!important;color:#373a40!important;border:1px solid #d6d9dd!important;border-radius:10px!important;box-shadow:none!important}
+body .gacha-button:hover:not(:disabled),body .tab-button:hover,body .sub-tab-button:hover{background:#eaeced!important;border-color:#91959d!important;color:#22252a!important}
+body .tab-button.active,body .sub-tab-button.active{background:#373b42!important;border-color:#373b42!important;color:#fff!important}
+body button:disabled{opacity:.45!important}
+body .animate-pulse,body .animate-ping{animation:none!important}
+#global-header{border-color:#dcdfe2!important;align-items:center;margin-bottom:16px!important;padding-bottom:18px!important}
+#global-header h1{font-size:32px;letter-spacing:.03em!important;color:#303238!important}#global-header h1 span{color:#858991!important}
+#global-header p{color:#73767d!important}#global-header .archive-settings summary{border-color:#d9dce0;color:#4c5057;background:#fff;border-radius:999px;font-size:12px}
+.archive-settings-panel{background:#fff!important;border:1px solid #dedfe3!important;box-shadow:0 12px 40px #30343d18!important;z-index:100}
+.archive-settings label,.archive-settings small{color:#575b64!important}.archive-settings input{accent-color:#50545b}
+#save-status{color:#70737a!important}#save-status[data-state=error],#retry-save{color:#8c3b3b!important}
+#global-info-bar{background:transparent!important;border:0!important;padding:0!important;margin-bottom:14px!important}
+#global-currency-bar{justify-content:flex-start!important;border-bottom:1px solid #dcdfe2;padding-bottom:16px;gap:8px!important;margin-bottom:12px!important}
+#global-currency-bar>div{background:#fff!important;border:1px solid #e0e2e5!important;border-radius:999px!important;padding:7px 12px!important;font-weight:500}#global-currency-bar>div>span:first-child{color:#787c83!important;font-size:10px;letter-spacing:.06em}
+#global-home-button{background:#fff!important;color:#444!important;border-color:#ddd!important;border-radius:999px!important;box-shadow:0 3px 18px #2221!important}
+#message-area{margin-bottom:8px!important;font-size:12px!important}
+/* Lobby: character stage and navigation have independent flow on small screens. */
+#home-view.dream-home{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:20px;height:auto!important;min-height:0!important;background:none!important;border:0!important;overflow:visible!important}
+#home-view.hidden{display:none!important}
+.dream-scene{position:relative;min-height:520px;border:1px solid #fff;border-radius:20px;background:radial-gradient(ellipse at 48% 42%,#fff 0,#f4f5f6 50%,#e6e8eb 100%);overflow:hidden}
+.dream-caption{position:absolute;top:28px;left:28px;z-index:2;pointer-events:none}.dream-caption>span,.dream-scene-footer{font:500 9px 'Space Grotesk',sans-serif;letter-spacing:.14em;color:#797d84}.dream-caption h2{font-size:23px;font-weight:500;margin:9px 0 7px;letter-spacing:-.04em}.dream-caption p{font-size:12px;color:#6d7279}
+#home-character-container.dream-character{position:absolute;inset:70px 0 25px;display:flex;align-items:center;justify-content:center;width:100%;height:auto;margin:0!important;transform:none!important;cursor:pointer}
+#home-character-container.hidden{display:none!important}#home-char-backdrop{display:none!important}
+#home-character-image{width:100%;height:100%;max-height:none!important;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 16px 20px #44444414)!important;margin:0!important}
+#home-dialogue-container.dream-dialogue{position:absolute;bottom:18px;left:24px;right:24px;width:auto!important;background:rgba(255,255,255,.9)!important;border:1px solid #fff!important;border-radius:14px!important;backdrop-filter:blur(12px);padding:16px 18px!important;box-shadow:0 6px 30px #4444440b!important;z-index:4}
+.dream-speaker{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.dream-speaker>span{font-size:9px;color:#747980}#home-character-name{font-size:12px!important;font-weight:700;letter-spacing:0!important;color:#363b42!important}#home-character-dialogue{font-size:13px!important;line-height:1.8;color:#4c5057!important}
+.dream-scene-footer{position:absolute;left:28px;bottom:15px;font-size:8px}.dream-empty{position:absolute;top:47%;left:30px;right:30px;transform:translateY(-30%);text-align:center;color:#62666d}.dream-empty>span{font:500 10px 'Space Grotesk';letter-spacing:.18em;color:#858990}.dream-empty p{font-size:24px;font-weight:300;line-height:1.6;margin:16px}.dream-text-button{font-size:12px;padding:10px;border-bottom:1px solid #b3b7bd}
+.dream-menu{display:flex;flex-direction:column;gap:14px;padding-top:10px}.dream-menu-title>span{font:500 10px 'Space Grotesk';letter-spacing:.15em;color:#747880}.dream-menu-title p{font-size:16px;font-weight:500;margin-top:6px}.dream-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dream-menu-item{position:relative;min-height:132px;padding:18px 14px;text-align:left;border:1px solid #dfe1e4;border-radius:14px;background:#ffffffa8;overflow:hidden}.dream-menu-item:hover{background:#fff;box-shadow:0 5px 18px #4545450a}.dream-menu-index{display:block;font:500 8px 'Space Grotesk';letter-spacing:.06em;color:#7c8087}.dream-menu-item strong{display:block;font-size:19px;font-weight:600;margin-top:20px}.dream-menu-item small{display:block;font-size:10px;color:#686e76;margin-top:5px}.dream-arrow{position:absolute;right:13px;top:13px;color:#6e737a;font-size:16px}
+.dream-menu-item.dream-feature{grid-column:1/-1;min-height:150px;background:#373b41;color:#fff;border-color:#373b41}.dream-feature .dream-menu-index,.dream-feature small,.dream-feature .dream-arrow{color:#d1d4d9}.dream-feature strong{font-size:24px;font-weight:500;margin-top:25px}.dream-menu-item:last-child{grid-column:1/-1;min-height:90px}.dream-menu-item:last-child strong{margin-top:10px}.dream-shortcuts{display:flex;gap:8px;justify-content:space-between;margin-top:auto}.dream-shortcuts button{flex:1;font-size:11px;border:1px solid #dadde1;border-radius:999px;padding:10px 6px;background:#ffffff90;color:#555a62}
+.dream-explore{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.dream-explore button{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:6px;border:1px solid #dcdee2;border-radius:14px;background:#ffffffbd;padding:20px;min-height:120px}.dream-explore button>span{font:500 9px 'Space Grotesk';letter-spacing:.1em;color:#7c8087}.dream-explore button>strong{font-weight:600;font-size:19px;color:#353940}.dream-explore button>small{font-size:11px;color:#737880}.dream-explore button>b{position:absolute;top:18px;right:18px;font-size:20px;color:#81868d;font-weight:400}.dream-explore button:hover{background:#fff;border-color:#9298a0}
+.dream-bottom{grid-column:1/-1;display:flex;gap:20px;align-items:center;justify-content:space-between;padding:6px 0}.dream-bottom #event-banner{display:flex;gap:12px;align-items:center;padding:12px 0!important;border:0!important;background:transparent!important;color:#41464e!important;max-width:50%}.dream-bottom #event-banner>span{font-size:10px;color:#7c8189!important}.dream-bottom #event-banner strong{font-size:12px;font-weight:500;text-align:left}.dream-dock{display:flex;gap:8px}.dream-dock button{position:relative;padding:12px 14px;border-radius:999px;background:#ffffff8c;border:1px solid #dee0e3;font-size:11px;color:#50565f}.dream-badge{position:absolute;top:-3px;right:-3px;background:#484d55;color:#fff;border-radius:50%;font-size:8px;width:14px;height:14px}
+
+body [class^="text-gray-"],
+body [class*=" text-gray-"],
+body [class^="text-slate-"],
+body [class*=" text-slate-"],
+body [class^="text-zinc-"],
+body [class*=" text-zinc-"],
+body [class^="text-neutral-"],
+body [class*=" text-neutral-"],
+body [class^="text-stone-"],
+body [class*=" text-stone-"],
+body [class^="text-cyan-"],
+body [class*=" text-cyan-"],
+body [class^="text-blue-"],
+body [class*=" text-blue-"],
+body [class^="text-indigo-"],
+body [class*=" text-indigo-"],
+body [class^="text-purple-"],
+body [class*=" text-purple-"],
+body [class^="text-violet-"],
+body [class*=" text-violet-"],
+body [class^="text-pink-"],
+body [class*=" text-pink-"],
+body [class^="text-rose-"],
+body [class*=" text-rose-"],
+body [class^="text-red-"],
+body [class*=" text-red-"],
+body [class^="text-yellow-"],
+body [class*=" text-yellow-"],
+body [class^="text-amber-"],
+body [class*=" text-amber-"],
+body [class^="text-orange-"],
+body [class*=" text-orange-"],
+body [class^="text-green-"],
+body [class*=" text-green-"],
+body [class^="text-emerald-"],
+body [class*=" text-emerald-"],
+body [class^="text-teal-"],
+body [class*=" text-teal-"]{color:var(--dream-ink)!important;}
+body [class^="bg-gray-"],
+body [class*=" bg-gray-"],
+body [class^="bg-slate-"],
+body [class*=" bg-slate-"],
+body [class^="bg-zinc-"],
+body [class*=" bg-zinc-"],
+body [class^="bg-neutral-"],
+body [class*=" bg-neutral-"],
+body [class^="bg-stone-"],
+body [class*=" bg-stone-"],
+body [class^="bg-cyan-"],
+body [class*=" bg-cyan-"],
+body [class^="bg-blue-"],
+body [class*=" bg-blue-"],
+body [class^="bg-indigo-"],
+body [class*=" bg-indigo-"],
+body [class^="bg-purple-"],
+body [class*=" bg-purple-"],
+body [class^="bg-violet-"],
+body [class*=" bg-violet-"],
+body [class^="bg-pink-"],
+body [class*=" bg-pink-"],
+body [class^="bg-rose-"],
+body [class*=" bg-rose-"],
+body [class^="bg-red-"],
+body [class*=" bg-red-"],
+body [class^="bg-yellow-"],
+body [class*=" bg-yellow-"],
+body [class^="bg-amber-"],
+body [class*=" bg-amber-"],
+body [class^="bg-orange-"],
+body [class*=" bg-orange-"],
+body [class^="bg-green-"],
+body [class*=" bg-green-"],
+body [class^="bg-emerald-"],
+body [class*=" bg-emerald-"],
+body [class^="bg-teal-"],
+body [class*=" bg-teal-"]{background-color:var(--dream-panel)!important;}
+body [class^="border-gray-"],
+body [class*=" border-gray-"],
+body [class^="border-slate-"],
+body [class*=" border-slate-"],
+body [class^="border-zinc-"],
+body [class*=" border-zinc-"],
+body [class^="border-neutral-"],
+body [class*=" border-neutral-"],
+body [class^="border-stone-"],
+body [class*=" border-stone-"],
+body [class^="border-cyan-"],
+body [class*=" border-cyan-"],
+body [class^="border-blue-"],
+body [class*=" border-blue-"],
+body [class^="border-indigo-"],
+body [class*=" border-indigo-"],
+body [class^="border-purple-"],
+body [class*=" border-purple-"],
+body [class^="border-violet-"],
+body [class*=" border-violet-"],
+body [class^="border-pink-"],
+body [class*=" border-pink-"],
+body [class^="border-rose-"],
+body [class*=" border-rose-"],
+body [class^="border-red-"],
+body [class*=" border-red-"],
+body [class^="border-yellow-"],
+body [class*=" border-yellow-"],
+body [class^="border-amber-"],
+body [class*=" border-amber-"],
+body [class^="border-orange-"],
+body [class*=" border-orange-"],
+body [class^="border-green-"],
+body [class*=" border-green-"],
+body [class^="border-emerald-"],
+body [class*=" border-emerald-"],
+body [class^="border-teal-"],
+body [class*=" border-teal-"]{border-color:var(--dream-line)!important;}
+/* Reusable surfaces: collection, gacha, dialogs, combat and the expedition. */
+body [class*="rarity-"]:not(img){background:#fff!important;border-color:#d0d4d9!important;box-shadow:0 4px 16px #34384007!important}
+body .rarity-SR:not(img){border-top:2px solid #92979e!important}body .rarity-SSR:not(img){border-top:3px double #555c66!important}
+body [class*="rarity-glow-"]{filter:none!important}
+body .tab-button,body .sub-tab-button{padding:9px 16px}.font-tech{letter-spacing:.035em!important}
+#results-container{background:#f2f3f4!important;border:1px solid #dddfe3!important;border-radius:16px!important}#results-container:empty::before{color:#727780}
+body #pull-ten,body #pull-ten-event{background:#3c4149!important;color:#fff!important;border-color:#3c4149!important}
+.archive-eyebrow,.archive-intro p{color:#747982!important}.archive-note{background:#edeff1!important;border-color:#9198a1!important;color:#575e68!important;border-radius:8px}#summon-summary{color:#545b64!important}#archive-history{border-color:#d9dce1;background:#fff}#archive-history summary{color:#4e5560}#archive-history li{border-color:#e2e4e7}#archive-history time{color:#737a83}
+body .new-discovery::after{background:#474e58;color:#fff;border:1px solid #fff}.revision-stars{background:#fff!important;color:#444!important;border-color:#bbb!important;box-shadow:none!important}
+body .fixed.inset-0{background:rgba(236,238,241,.9)!important;backdrop-filter:blur(12px)}
+body .fixed.inset-0>div:not(canvas){border-color:#dadde2!important;box-shadow:0 16px 60px #30384316!important}
+#loading-overlay{background:#f2f3f5f5!important;color:#4b525d!important}#loading-overlay>div{font-size:24px!important;letter-spacing:-.02em!important;font-family:inherit!important}#loading-overlay>p{letter-spacing:0!important}
+body #toast-notification{background:#454c55!important;color:#fff!important;border:1px solid #fff;box-shadow:0 8px 28px #343a4322!important}
+body .hp-bar-background{background:#dddfe2!important;border-color:#d1d5da!important}body .hp-bar-foreground{background:#737f8a!important;box-shadow:none!important}body .hp-bar-foreground.bg-red-500{background:#986e6e!important}
+#roguelike-view{--rg-accent:#575e68;--rg-line:#dce0e4;color:#373d46!important}.rg-heading,.rg-panel,.rg-map-row,#rogue-log li{border-color:#dce0e4!important}.rg-panel,.rg-status,.rg-choice,.rg-loot-card{background:#ffffffce!important;border-color:#dce0e4!important;color:#404751!important;box-shadow:none!important}.rg-heading h2,.rg-intro h3{font-weight:500;letter-spacing:-.04em}.rg-intro{background:linear-gradient(120deg,#fff,#e9ebef)!important;border-color:#fff!important}.rg-kicker,.rg-edition,.rg-heading p,.rg-intro p{color:#707985!important}.rg-panel h3,.rg-panel label,.rg-panel summary,.rg-rules summary{color:#4d5764!important}.rg-panel small,.rg-rules,.rg-choice span,.rg-status>div:nth-child(2),.rg-tags span,#rogue-log,#rogue-report{color:#667180!important}.rg-status b,.rg-status p,.rg-edition b,.rg-choice strong,#rogue-record{color:#3f4c5d!important}.rg-choice:hover:not(:disabled){background:#e9edf1!important;border-color:#8e99a7!important}.rg-map-row{color:#717c8c}.rg-map-row.current{color:#303c4c;background:#e4e8ed}.rg-map-node.taken{color:#45576a}.rg-resonance{border-color:#dce1e6;background:#f9fafb}.rg-resonance b{color:#5e6c7c}.rg-resonance.lit{border-color:#8592a2;background:#e7ebef}.rg-resonance.lit b{color:#354454}.rg-tags span{border-color:#dbe0e5;background:#f9fafb}.rg-member progress{accent-color:#7b899b}.rg-member img{background:#eef0f3}.rg-primary{background:#424c5a!important;color:#fff!important}.rg-secondary{background:#f7f8fa!important;color:#5f6c7b!important;border-color:#d6dce3!important}.rg-choice-heading{background:#e8ecf0!important;border-color:#8693a3!important}.rg-choice-heading h3,.rg-choice-heading p{color:#475568!important}.rg-loot-card strong{color:#59687c!important}.rg-loot-card p,.rg-loot-card small,.rg-loot-empty,.rg-exclusive-label{color:#6c7888!important}.rg-loot-card[data-rarity=SSR]{border-top:2px solid #8995a3!important}.rg-loot-card[data-rarity=UR]{border:3px double #68788c!important;background:#e9edf3!important}
+.startup-panel{background:#fff!important;border-color:#d6dce3!important;color:#45505f!important}.startup-panel p{color:#6b7584!important}.startup-panel button{background:#424d5b!important;color:#fff!important}
+/* Animated 3D canvases retain readable captions on their own dark scenes. */
+body #gacha-3d-modal,body #combat-3d-cutin,body #combat-start-overlay{background:#171b21ef!important;color:#fff!important}
+body #gacha-3d-modal [class*="text-"],body #combat-3d-cutin [class*="text-"],body #combat-start-overlay [class*="text-"]{color:#f2f4f6!important}
+#combat-bg-canvas,#gacha-canvas{filter:grayscale(1);opacity:.65}
+@media(max-width:767px){body{padding:10px!important}body>.hud-scanline-container{padding:18px 12px!important;border-radius:18px!important}#global-header h1{font-size:24px!important}#global-currency-bar{gap:5px!important}#global-currency-bar>div{padding:6px 8px!important}#home-view.dream-home{grid-template-columns:1fr;gap:16px}.dream-scene{min-height:380px;border-radius:16px}.dream-caption{top:20px;left:20px}.dream-caption h2{font-size:20px}.dream-caption p{font-size:11px}.dream-caption>span{font-size:8px}#home-character-container.dream-character{inset:62px 0 20px}#home-dialogue-container.dream-dialogue{bottom:16px;left:14px;right:14px;padding:12px 14px!important}#home-character-dialogue{font-size:12px!important}.dream-scene-footer{left:20px;font-size:7px}.dream-empty p{font-size:21px}.dream-menu{padding:0;gap:10px}.dream-menu-title{display:flex;align-items:center;justify-content:space-between}.dream-menu-title p{font-size:13px;margin:0}.dream-menu-title>span{font-size:9px}.dream-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dream-menu-item,.dream-menu-item.dream-feature,.dream-menu-item:last-child{grid-column:auto;min-height:105px;padding:14px}.dream-menu-item strong,.dream-feature strong{font-size:18px!important;margin-top:14px!important}.dream-menu-item small{font-size:10px}.dream-menu-index{font-size:8px}.dream-shortcuts{margin:0}.dream-shortcuts button{min-height:42px}.dream-explore{grid-template-columns:1fr;gap:8px}.dream-explore button{min-height:76px;padding:14px 18px;display:grid;grid-template-columns:105px 1fr;align-items:center;gap:4px 12px}.dream-explore button>span{font-size:8px}.dream-explore button>strong{font-size:17px;grid-row:2}.dream-explore button>small{font-size:11px;grid-row:1/3;grid-column:2;padding-right:18px}.dream-explore button>b{right:14px;top:25px;font-size:18px}.dream-bottom{flex-direction:column;gap:8px;align-items:stretch}.dream-bottom #event-banner{max-width:100%;width:100%;padding:12px!important;border:1px solid #dce0e5!important;border-radius:12px;background:#ffffff95!important}.dream-bottom #event-banner>strong{flex:1}.dream-dock{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.dream-dock button{padding:12px 8px;min-height:44px}.rg-heading h2{font-size:25px}.rg-primary,.rg-secondary{min-height:44px}}
+@media(prefers-reduced-motion:reduce){body button{transition:none!important}}
+</style>
+<style id="dream-state-clarity">
+body button.bg-yellow-400,body button.bg-yellow-500,body button.bg-blue-500,body button.bg-purple-600,body button[aria-selected="true"]{background:#454c56!important;color:#fff!important;border-color:#454c56!important}
+body button.bg-yellow-400 [class*="text-"],body button.bg-yellow-500 [class*="text-"],body button[aria-selected="true"] [class*="text-"]{color:#fff!important}
+#archive-search-count{color:#6b7480!important}
+#home-view .dream-text-button{min-height:44px}
+.dream-menu-item:hover,.dream-dock button:hover,.dream-shortcuts button:hover{border-color:#9298a0}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
     <button id="global-home-button" onclick="switchTab('home')"
         class="hidden fixed top-4 left-4 z-[9999] gacha-button py-2 px-4 flex items-center gap-2">
-        <span class="font-tech text-cyan-400">SYS_RET</span>
-        <span class="hidden md:inline font-bold">로비 복귀</span>
+        <span class="font-tech text-cyan-400">←</span>
+        <span class="hidden md:inline font-bold">로비로</span>
     </button>
 
     <div id="loading-overlay" class="fixed inset-0 bg-[#0b0c10]/95 flex flex-col justify-center items-center z-50">
-        <div class="text-[#66fcf1] font-tech text-4xl font-black tracking-widest animate-pulse">SYSTEM_LOADING...</div>
-        <p class="text-gray-500 mt-2 font-tech text-xs tracking-widest">ESTABLISHING SECURE CONNECTION</p>
+        <div class="text-[#66fcf1] font-tech text-4xl font-black tracking-widest animate-pulse">잠시, 꿈을 잇는 중</div>
+        <p class="text-gray-500 mt-2 font-tech text-xs tracking-widest">당신의 이야기를 불러오고 있어요</p>
     </div>
 
     <!-- 텍티컬 메인 프레임 -->
@@ -412,7 +607,7 @@ h1, h2, h3, h4 { line-height: 1.3; }
                 <h1 class="text-3xl md:text-5xl font-black tracking-widest font-tech text-white">
                     YUMECAN<span class="text-cyan-400">_</span>
                 </h1>
-                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">CHARACTER ARCHIVE / 당신의 이야기가 모이는 곳</p>
+                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">A QUIET PLACE FOR YOUR STORIES</p>
             </div>
             <div>
               <details class="archive-settings"><summary>환경 설정</summary><div class="archive-settings-panel">
@@ -437,7 +632,7 @@ h1, h2, h3, h4 { line-height: 1.3; }
             </div>
 
             <div id="logged-in-view" class="hidden flex items-center gap-4 justify-center w-full md:w-auto">
-                <p class="font-bold text-xs md:text-sm text-gray-400">COMMANDER. <span id="nickname-display" class="text-cyan-400 font-tech tracking-wider text-base"></span></p>
+                <p class="font-bold text-xs md:text-sm text-gray-400">어서 오세요, <span id="nickname-display" class="text-cyan-400 font-tech tracking-wider text-base"></span></p>
                 <button id="logout-button" class="gacha-button border-red-600 text-red-500 py-1 px-3 text-xs">로그아웃</button>
             </div>
         </div>
@@ -469,148 +664,44 @@ h1, h2, h3, h4 { line-height: 1.3; }
         <main>
             <div id="message-area" class="text-center font-bold text-sm tracking-wide h-8 mb-4 transition-opacity duration-300 font-tech"></div>
 
-            <div id="home-view" class="relative w-full h-[85vh] overflow-hidden bg-black/20 border border-gray-800">
-                        <!-- ✨ 누락되었던 대표 캐릭터 미설정 안내 메시지 추가 ✨ -->
-                            <div id="home-default-message" class="absolute inset-0 flex items-center justify-center text-cyan-500/40 font-tech text-xl md:text-3xl tracking-[0.3em] font-black z-0 pointer-events-none">
-                                NO REPRESENTATIVE SELECTED
-                            </div>
-                        <!-- 캐릭터 일러스트 영역 (왼쪽으로 밀고 최대 크기를 줄여 폭 조정) -->
-                            <div class="absolute inset-0 flex items-center justify-start z-0 pb-44 md:pb-0 md:pl-4 md:-translate-y-12 pointer-events-none">
+<div id="home-view" class="dream-home">
+ <div class="dream-scene">
+  <div class="dream-caption"><span>BETWEEN SLEEP & STORIES</span><h2>꿈이 머무는 서가</h2><p>오늘은 어떤 이야기를 펼쳐볼까요?</p></div>
+  <div id="home-default-message" class="dream-empty"><span>YOUR STORY BEGINS HERE</span><p>당신의 꿈에 등장할<br>캐릭터를 만나보세요.</p><button class="dream-text-button" onclick="switchTab('inventory')">서고에서 대표 캐릭터 선택 ↗</button></div>
+  <div id="home-character-container" class="dream-character hidden">
+   <div id="home-char-backdrop" class="hidden"></div>
+   <img id="home-character-image" src="" alt="대표 캐릭터">
+   <div id="home-dialogue-container" class="dream-dialogue hidden"><div class="dream-speaker"><p id="home-character-name"></p><span>작은 대화</span></div><p id="home-character-dialogue"></p></div>
+  </div>
+  <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
+ </div>
+ <nav class="dream-menu" aria-label="주요 메뉴">
+  <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
+  <div class="dream-menu-grid">
+   <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="dream-menu-item dream-feature"><span class="dream-menu-index">01 / SUMMON</span><strong>새로운 만남</strong><small>소환 · 다음 이야기의 주인공</small><span class="dream-arrow">↗</span></button>
+   <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="dream-menu-item"><span class="dream-menu-index">02 / COLLECTION</span><strong>서고</strong><small>모아둔 등장인물</small><span class="dream-arrow">↗</span></button>
+   <button id="btn-lobby-deck" onclick="switchTab('deck')" class="dream-menu-item"><span class="dream-menu-index">03 / TEAM</span><strong>편찬</strong><small>함께할 편성</small><span class="dream-arrow">↗</span></button>
+   <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="dream-menu-item"><span class="dream-menu-index">04 / INSPIRE</span><strong>영감</strong><small>새로운 가능성</small><span class="dream-arrow">↗</span></button>
+  </div>
+  <div class="dream-shortcuts"><button onclick="switchTab('story')">스토리</button><button onclick="switchTab('trade')" style="position:relative">교환소<span id="trade-badge" class="hidden dream-badge">N</span></button><button onclick="switchTab('myroom')">마이룸</button></div>
+ </nav>
+ <div class="dream-explore" aria-label="탐사 메뉴">
+  <button id="btn-lobby-combat" onclick="switchTab('combat')"><span>CHAPTER</span><strong>안정화</strong><small>흐트러진 이야기를 찾아서</small><b>↗</b></button>
+  <button onclick="switchTab('roguelike')"><span>EXPEDITION</span><strong>폐기된 서고</strong><small>매번 달라지는 12층의 꿈</small><b>↗</b></button>
+  <button onclick="switchTab('dispatch')"><span>DISPATCH</span><strong>현장 조사</strong><small>다녀올 곳을 정해볼까요</small><b>↗</b></button>
+ </div>
+ <div class="dream-bottom">
+  <button id="event-banner" onclick="switchTab('event-home')"><span>EVENT /</span><strong id="event-banner-text">이벤트 확인</strong><span>↗</span></button>
+  <nav class="dream-dock" aria-label="보조 메뉴">
+   <button onclick="switchTab('friends')">친구<span id="main-friend-badge" class="hidden dream-badge">N</span></button>
+   <button onclick="switchTab('collection')">도감</button>
+   <button onclick="switchTab('achievements')">업적<span id="achievement-badge" class="hidden dream-badge">N</span></button>
+   <button onclick="switchTab('profile')">프로필</button>
+  </nav>
+ </div>
+</div>
 
-                            <!-- ✨ 전체 영역 컨테이너 -->
-                            <!-- ✨ 전체 영역 컨테이너 -->
-                            <!-- ✨ 전체 영역 컨테이너 (위치 및 밸런스 정돈) -->
-                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[2%] -translate-y-4 md:-translate-y-6">
-
-                                                    <!-- ✨ 1. 훨씬 크고 시원하게 넓어진 네온 밴드 백드롭 프레임 -->
-                                                    <div id="home-char-backdrop" class="absolute w-96 h-[420px] md:w-[480px] md:h-[540px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
-
-                                                    <!-- ✨ 2. 대표 캐릭터 일러스트 -->
-                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[50%] md:max-h-[70%] object-contain drop-shadow-2xl transition-all relative z-10 mb-4">
-
-                                                    <!-- ✨ 3. 배너와 겹치지 않게 정돈된 스토리 대화창 -->
-                                                    <div id="home-dialogue-container" class="absolute bottom-[16%] md:bottom-[14%] bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-4 md:p-5 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[320px] md:w-[460px] hidden transition-opacity duration-300 z-20 backdrop-blur-md rounded-sm">
-                                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
-                                                            <p id="home-character-name" class="font-bold text-cyan-400 text-xs md:text-sm tracking-widest font-tech uppercase"></p>
-                                                            <span class="font-tech text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
-                                                        </div>
-                                                        <p id="home-character-dialogue" class="text-xs md:text-sm leading-relaxed text-gray-100 font-medium"></p>
-                                                    </div>
-                                                </div>
-
-                <!-- 텍티컬 로비 메뉴 (사선형) -->
-                <div class="absolute z-20 pointer-events-none bottom-[6.5rem] left-0 w-full flex flex-row items-end justify-center gap-2 px-2 md:top-4 md:bottom-28 md:left-auto md:right-0 md:w-1/3 md:min-w-[280px] md:flex-col md:items-end md:gap-2 md:pr-8">
-
-                    <button id="btn-lobby-deck" onclick="switchTab('deck')" class="pointer-events-auto
-                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
-                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
-                            border border-gray-700 border-l-4 border-l-cyan-500 gap-1 md:gap-3">
-                        <span class="transform skew-x-12 font-tech text-cyan-500 text-xs md:text-sm opacity-70">01</span>
-                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">편찬</span>
-                    </button>
-
-                    <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="pointer-events-auto
-                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
-                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
-                            border border-gray-700 border-l-4 border-l-yellow-500 gap-1 md:gap-3">
-                        <span class="transform skew-x-12 font-tech text-yellow-500 text-xs md:text-sm opacity-70">02</span>
-                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">서고</span>
-                    </button>
-
-                    <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="pointer-events-auto
-                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
-                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
-                            border border-gray-700 border-l-4 border-l-purple-500 gap-1 md:gap-3">
-                        <span class="transform skew-x-12 font-tech text-purple-500 text-xs md:text-sm opacity-70">03</span>
-                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">영감</span>
-                    </button>
-
-
-                    <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="pointer-events-auto
-                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
-                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
-                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
-                            border border-gray-700 border-l-4 border-l-red-500 gap-1 md:gap-3">
-                        <span class="transform skew-x-12 font-tech text-red-500 text-xs md:text-sm opacity-70">04</span>
-                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">소환</span>
-                    </button>
-
-                    <!-- 미니 메뉴 라인 -->
-                    <div class="flex gap-2 w-full justify-center md:justify-end mt-2">
-                        <button onclick="switchTab('story')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">스토리</button>
-                        <button onclick="switchTab('trade')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5 relative">
-                            교환<span id="trade-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                        </button>
-                        <button onclick="switchTab('myroom')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">객실</button>
-                    </div>
-
-                    <!-- 거대 전투(안정화) 버튼 -->
-                    <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group mt-4
-                            w-full h-16 md:h-24
-                            bg-red-700 text-white font-black transform -skew-x-12
-                            hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
-                            flex items-center justify-center overflow-hidden relative">
-                        <span class="transform skew-x-12 inline-block text-lg md:text-3xl tracking-widest z-10">안정화</span>
-                        <span class="absolute right-[-10px] bottom-[-10px] text-5xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
-                    </button>
-                    <!-- 로그라이크(폐기된 서고) 버튼 -->
-                    <button onclick="switchTab('roguelike')" class="pointer-events-auto group mt-2
-                            w-full h-12 md:h-16
-                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
-                            flex items-center justify-center overflow-hidden relative">
-                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">폐기된 서고</span>
-                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
-                    </button>
-                    <!-- 현장 조사 파견 버튼 -->
-                    <button onclick="switchTab('dispatch')" class="pointer-events-auto group mt-2
-                            w-full h-12 md:h-16
-                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
-                            hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
-                            flex items-center justify-center overflow-hidden relative">
-                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">현장 조사</span>
-                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
-                    </button>
-                </div>
-
-
-
-                <!-- 하단 부가 기능 및 이벤트 배너 -->
-                <div class="absolute bottom-4 left-0 w-full px-2 md:px-6 flex justify-between items-end z-10 pointer-events-none">
-                    <div class="pointer-events-auto">
-                        <button id="event-banner" onclick="switchTab('event-home')" class="bg-[#12151c]/90 text-white px-4 py-2 md:px-8 md:py-3 border-l-4 border-cyan-400 hover:bg-gray-800 transition-colors flex items-center gap-3">
-                            <span class="text-cyan-400 font-tech text-xl md:text-2xl animate-pulse">SYS_EVT</span>
-                            <div class="text-left">
-                                <p class="text-[10px] text-gray-500 font-tech tracking-widest">ACTIVE EVENT</p>
-                                <p id="event-banner-text" class="font-bold text-xs md:text-sm tracking-wide">이벤트 확인</p>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div class="flex gap-1 md:gap-2 pointer-events-auto bg-black/60 p-1 md:p-2 border border-gray-800">
-                        <button onclick="switchTab('friends')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
-                            <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                            FRIENDS
-                        </button>
-                        <button onclick="switchTab('collection')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">ARCHIVE</button>
-                        <button onclick="switchTab('achievements')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
-                            <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
-                            ACHIEVE
-                        </button>
-                        <button onclick="switchTab('profile')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">PROFILE</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-			<div id="event-home-view" class="hidden">
+<div id="event-home-view" class="hidden">
     <div class="flex flex-col md:flex-row gap-6">
 
         <div class="md:w-1/2 flex flex-col gap-4">
