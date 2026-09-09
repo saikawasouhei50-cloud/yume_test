@@ -383,256 +383,19 @@ h1, h2, h3, h4 { line-height: 1.3; }
 #rogue-report { scroll-margin-top: 80px; }
 @media(max-width:767px) { .rg-choice-heading h3 { font-size: 15px; } .rg-choice-heading p { font-size: 12px; } }
 </style>
-<style id="rogue-exclusive-equipment">
-.rg-loot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:10px}.rg-loot-card{padding:14px;border:1px solid #45516b;border-radius:9px;background:#172135}.rg-loot-card strong{font-size:13px;color:#d8c7ff}.rg-loot-card p{font-size:12px;margin:6px 0;color:#c2d1e4}.rg-loot-card small,.rg-loot-empty{font-size:11px;color:#acbbcf}.rg-loot-card[data-rarity="SSR"],#equipment-list-container>[data-rarity="SSR"]{border-color:#9d7943}.rg-loot-card[data-rarity="SSR"] strong{color:#f2cf87}.rg-loot-card[data-rarity="UR"],#equipment-list-container>[data-rarity="UR"]{border-color:#d084b4;background:#302039}.rg-loot-card[data-rarity="UR"] strong{color:#ffc3e5}.rg-exclusive-label{color:#d6b5f1;font-size:10px;margin:3px 0}
-@media(max-width:767px){.rg-loot-card strong{font-size:12px}.rg-loot-card p{font-size:11px}}
-</style>
-<style id="dream-monochrome-theme">
-:root{color-scheme:light;--dream-ink:#303237;--dream-muted:#666970;--dream-line:#dddfe2;--dream-panel:rgba(255,255,255,.85);--dream-soft:#f0f1f2;--archive-accent:#656970}
-html{background:#eeeff0;scroll-padding-top:80px}
-body{background:radial-gradient(ellipse at 20% 8%,#fff 0,transparent 55%),linear-gradient(155deg,#f7f7f7,#e5e7e9)!important;background-attachment:fixed!important;color:var(--dream-ink)!important;padding:24px!important;align-items:center;letter-spacing:-.018em}
-body>.hud-scanline-container{max-width:1200px!important;padding:30px!important;border:1px solid #fff!important;border-radius:24px!important;background:rgba(255,255,255,.66)!important;box-shadow:0 20px 80px #3a404010!important;backdrop-filter:blur(20px);overflow:visible!important}
-.hud-scanline-container::after,.gacha-button::before{display:none!important}
-body>.hud-scanline-container>.absolute{display:none}
-body [class*="shadow-"]{box-shadow:none!important}
-body [class*="drop-shadow-"]{filter:none!important}
-body [class*="bg-black"],body [class*="bg-gray"],body [class*="bg-[#"],body [class*="bg-white"]{background-color:var(--dream-panel)!important}
-body [class*="bg-gradient"]{background-image:none!important}
-body [class*="text-[#"],body .text-white,body .text-black{color:var(--dream-ink)!important}
-body [class*="border-[#"],body [class*="border-white"]{border-color:var(--dream-line)!important}
-body .rounded-full{border-radius:999px!important}body .rounded-xl,body .rounded-2xl{border-radius:16px!important}body .rounded-lg,body .rounded-md,body .rounded-sm{border-radius:10px!important}
-body button,body a,body input,body select{ -webkit-tap-highlight-color:transparent}
-body button{text-transform:none!important;letter-spacing:0!important;transition:background-color .18s,border-color .18s,box-shadow .18s}
-body button:focus-visible,body summary:focus-visible,body input:focus-visible,body select:focus-visible{outline:2px solid #5c6068!important;outline-offset:3px}
-body input:not([type=checkbox]):not([type=radio]),body select,body textarea{background:#fff!important;color:#303237!important;border:1px solid #d9dbde!important;border-radius:10px!important;box-shadow:none!important}
-body input::placeholder,body textarea::placeholder{color:#7b7e84!important}
-body .gacha-button,body .tab-button,body .sub-tab-button{background:#fff!important;color:#373a40!important;border:1px solid #d6d9dd!important;border-radius:10px!important;box-shadow:none!important}
-body .gacha-button:hover:not(:disabled),body .tab-button:hover,body .sub-tab-button:hover{background:#eaeced!important;border-color:#91959d!important;color:#22252a!important}
-body .tab-button.active,body .sub-tab-button.active{background:#373b42!important;border-color:#373b42!important;color:#fff!important}
-body button:disabled{opacity:.45!important}
-body .animate-pulse,body .animate-ping{animation:none!important}
-#global-header{border-color:#dcdfe2!important;align-items:center;margin-bottom:16px!important;padding-bottom:18px!important}
-#global-header h1{font-size:32px;letter-spacing:.03em!important;color:#303238!important}#global-header h1 span{color:#858991!important}
-#global-header p{color:#73767d!important}#global-header .archive-settings summary{border-color:#d9dce0;color:#4c5057;background:#fff;border-radius:999px;font-size:12px}
-.archive-settings-panel{background:#fff!important;border:1px solid #dedfe3!important;box-shadow:0 12px 40px #30343d18!important;z-index:100}
-.archive-settings label,.archive-settings small{color:#575b64!important}.archive-settings input{accent-color:#50545b}
-#save-status{color:#70737a!important}#save-status[data-state=error],#retry-save{color:#8c3b3b!important}
-#global-info-bar{background:transparent!important;border:0!important;padding:0!important;margin-bottom:14px!important}
-#global-currency-bar{justify-content:flex-start!important;border-bottom:1px solid #dcdfe2;padding-bottom:16px;gap:8px!important;margin-bottom:12px!important}
-#global-currency-bar>div{background:#fff!important;border:1px solid #e0e2e5!important;border-radius:999px!important;padding:7px 12px!important;font-weight:500}#global-currency-bar>div>span:first-child{color:#787c83!important;font-size:10px;letter-spacing:.06em}
-#global-home-button{background:#fff!important;color:#444!important;border-color:#ddd!important;border-radius:999px!important;box-shadow:0 3px 18px #2221!important}
-#message-area{margin-bottom:8px!important;font-size:12px!important}
-/* Lobby: character stage and navigation have independent flow on small screens. */
-#home-view.dream-home{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:20px;height:auto!important;min-height:0!important;background:none!important;border:0!important;overflow:visible!important}
-#home-view.hidden{display:none!important}
-.dream-scene{position:relative;min-height:520px;border:1px solid #fff;border-radius:20px;background:radial-gradient(ellipse at 48% 42%,#fff 0,#f4f5f6 50%,#e6e8eb 100%);overflow:hidden}
-.dream-caption{position:absolute;top:28px;left:28px;z-index:2;pointer-events:none}.dream-caption>span,.dream-scene-footer{font:500 9px 'Space Grotesk',sans-serif;letter-spacing:.14em;color:#797d84}.dream-caption h2{font-size:23px;font-weight:500;margin:9px 0 7px;letter-spacing:-.04em}.dream-caption p{font-size:12px;color:#6d7279}
-#home-character-container.dream-character{position:absolute;inset:70px 0 25px;display:flex;align-items:center;justify-content:center;width:100%;height:auto;margin:0!important;transform:none!important;cursor:pointer}
-#home-character-container.hidden{display:none!important}#home-char-backdrop{display:none!important}
-#home-character-image{width:100%;height:100%;max-height:none!important;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 16px 20px #44444414)!important;margin:0!important}
-#home-dialogue-container.dream-dialogue{position:absolute;bottom:18px;left:24px;right:24px;width:auto!important;background:rgba(255,255,255,.9)!important;border:1px solid #fff!important;border-radius:14px!important;backdrop-filter:blur(12px);padding:16px 18px!important;box-shadow:0 6px 30px #4444440b!important;z-index:4}
-.dream-speaker{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.dream-speaker>span{font-size:9px;color:#747980}#home-character-name{font-size:12px!important;font-weight:700;letter-spacing:0!important;color:#363b42!important}#home-character-dialogue{font-size:13px!important;line-height:1.8;color:#4c5057!important}
-.dream-scene-footer{position:absolute;left:28px;bottom:15px;font-size:8px}.dream-empty{position:absolute;top:47%;left:30px;right:30px;transform:translateY(-30%);text-align:center;color:#62666d}.dream-empty>span{font:500 10px 'Space Grotesk';letter-spacing:.18em;color:#858990}.dream-empty p{font-size:24px;font-weight:300;line-height:1.6;margin:16px}.dream-text-button{font-size:12px;padding:10px;border-bottom:1px solid #b3b7bd}
-.dream-menu{display:flex;flex-direction:column;gap:14px;padding-top:10px}.dream-menu-title>span{font:500 10px 'Space Grotesk';letter-spacing:.15em;color:#747880}.dream-menu-title p{font-size:16px;font-weight:500;margin-top:6px}.dream-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dream-menu-item{position:relative;min-height:132px;padding:18px 14px;text-align:left;border:1px solid #dfe1e4;border-radius:14px;background:#ffffffa8;overflow:hidden}.dream-menu-item:hover{background:#fff;box-shadow:0 5px 18px #4545450a}.dream-menu-index{display:block;font:500 8px 'Space Grotesk';letter-spacing:.06em;color:#7c8087}.dream-menu-item strong{display:block;font-size:19px;font-weight:600;margin-top:20px}.dream-menu-item small{display:block;font-size:10px;color:#686e76;margin-top:5px}.dream-arrow{position:absolute;right:13px;top:13px;color:#6e737a;font-size:16px}
-.dream-menu-item.dream-feature{grid-column:1/-1;min-height:150px;background:#373b41;color:#fff;border-color:#373b41}.dream-feature .dream-menu-index,.dream-feature small,.dream-feature .dream-arrow{color:#d1d4d9}.dream-feature strong{font-size:24px;font-weight:500;margin-top:25px}.dream-menu-item:last-child{grid-column:1/-1;min-height:90px}.dream-menu-item:last-child strong{margin-top:10px}.dream-shortcuts{display:flex;gap:8px;justify-content:space-between;margin-top:auto}.dream-shortcuts button{flex:1;font-size:11px;border:1px solid #dadde1;border-radius:999px;padding:10px 6px;background:#ffffff90;color:#555a62}
-.dream-explore{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.dream-explore button{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:6px;border:1px solid #dcdee2;border-radius:14px;background:#ffffffbd;padding:20px;min-height:120px}.dream-explore button>span{font:500 9px 'Space Grotesk';letter-spacing:.1em;color:#7c8087}.dream-explore button>strong{font-weight:600;font-size:19px;color:#353940}.dream-explore button>small{font-size:11px;color:#737880}.dream-explore button>b{position:absolute;top:18px;right:18px;font-size:20px;color:#81868d;font-weight:400}.dream-explore button:hover{background:#fff;border-color:#9298a0}
-.dream-bottom{grid-column:1/-1;display:flex;gap:20px;align-items:center;justify-content:space-between;padding:6px 0}.dream-bottom #event-banner{display:flex;gap:12px;align-items:center;padding:12px 0!important;border:0!important;background:transparent!important;color:#41464e!important;max-width:50%}.dream-bottom #event-banner>span{font-size:10px;color:#7c8189!important}.dream-bottom #event-banner strong{font-size:12px;font-weight:500;text-align:left}.dream-dock{display:flex;gap:8px}.dream-dock button{position:relative;padding:12px 14px;border-radius:999px;background:#ffffff8c;border:1px solid #dee0e3;font-size:11px;color:#50565f}.dream-badge{position:absolute;top:-3px;right:-3px;background:#484d55;color:#fff;border-radius:50%;font-size:8px;width:14px;height:14px}
-
-body [class^="text-gray-"],
-body [class*=" text-gray-"],
-body [class^="text-slate-"],
-body [class*=" text-slate-"],
-body [class^="text-zinc-"],
-body [class*=" text-zinc-"],
-body [class^="text-neutral-"],
-body [class*=" text-neutral-"],
-body [class^="text-stone-"],
-body [class*=" text-stone-"],
-body [class^="text-cyan-"],
-body [class*=" text-cyan-"],
-body [class^="text-blue-"],
-body [class*=" text-blue-"],
-body [class^="text-indigo-"],
-body [class*=" text-indigo-"],
-body [class^="text-purple-"],
-body [class*=" text-purple-"],
-body [class^="text-violet-"],
-body [class*=" text-violet-"],
-body [class^="text-pink-"],
-body [class*=" text-pink-"],
-body [class^="text-rose-"],
-body [class*=" text-rose-"],
-body [class^="text-red-"],
-body [class*=" text-red-"],
-body [class^="text-yellow-"],
-body [class*=" text-yellow-"],
-body [class^="text-amber-"],
-body [class*=" text-amber-"],
-body [class^="text-orange-"],
-body [class*=" text-orange-"],
-body [class^="text-green-"],
-body [class*=" text-green-"],
-body [class^="text-emerald-"],
-body [class*=" text-emerald-"],
-body [class^="text-teal-"],
-body [class*=" text-teal-"]{color:var(--dream-ink)!important;}
-body [class^="bg-gray-"],
-body [class*=" bg-gray-"],
-body [class^="bg-slate-"],
-body [class*=" bg-slate-"],
-body [class^="bg-zinc-"],
-body [class*=" bg-zinc-"],
-body [class^="bg-neutral-"],
-body [class*=" bg-neutral-"],
-body [class^="bg-stone-"],
-body [class*=" bg-stone-"],
-body [class^="bg-cyan-"],
-body [class*=" bg-cyan-"],
-body [class^="bg-blue-"],
-body [class*=" bg-blue-"],
-body [class^="bg-indigo-"],
-body [class*=" bg-indigo-"],
-body [class^="bg-purple-"],
-body [class*=" bg-purple-"],
-body [class^="bg-violet-"],
-body [class*=" bg-violet-"],
-body [class^="bg-pink-"],
-body [class*=" bg-pink-"],
-body [class^="bg-rose-"],
-body [class*=" bg-rose-"],
-body [class^="bg-red-"],
-body [class*=" bg-red-"],
-body [class^="bg-yellow-"],
-body [class*=" bg-yellow-"],
-body [class^="bg-amber-"],
-body [class*=" bg-amber-"],
-body [class^="bg-orange-"],
-body [class*=" bg-orange-"],
-body [class^="bg-green-"],
-body [class*=" bg-green-"],
-body [class^="bg-emerald-"],
-body [class*=" bg-emerald-"],
-body [class^="bg-teal-"],
-body [class*=" bg-teal-"]{background-color:var(--dream-panel)!important;}
-body [class^="border-gray-"],
-body [class*=" border-gray-"],
-body [class^="border-slate-"],
-body [class*=" border-slate-"],
-body [class^="border-zinc-"],
-body [class*=" border-zinc-"],
-body [class^="border-neutral-"],
-body [class*=" border-neutral-"],
-body [class^="border-stone-"],
-body [class*=" border-stone-"],
-body [class^="border-cyan-"],
-body [class*=" border-cyan-"],
-body [class^="border-blue-"],
-body [class*=" border-blue-"],
-body [class^="border-indigo-"],
-body [class*=" border-indigo-"],
-body [class^="border-purple-"],
-body [class*=" border-purple-"],
-body [class^="border-violet-"],
-body [class*=" border-violet-"],
-body [class^="border-pink-"],
-body [class*=" border-pink-"],
-body [class^="border-rose-"],
-body [class*=" border-rose-"],
-body [class^="border-red-"],
-body [class*=" border-red-"],
-body [class^="border-yellow-"],
-body [class*=" border-yellow-"],
-body [class^="border-amber-"],
-body [class*=" border-amber-"],
-body [class^="border-orange-"],
-body [class*=" border-orange-"],
-body [class^="border-green-"],
-body [class*=" border-green-"],
-body [class^="border-emerald-"],
-body [class*=" border-emerald-"],
-body [class^="border-teal-"],
-body [class*=" border-teal-"]{border-color:var(--dream-line)!important;}
-/* Reusable surfaces: collection, gacha, dialogs, combat and the expedition. */
-body [class*="rarity-"]:not(img){background:#fff!important;border-color:#d0d4d9!important;box-shadow:0 4px 16px #34384007!important}
-body .rarity-SR:not(img){border-top:2px solid #92979e!important}body .rarity-SSR:not(img){border-top:3px double #555c66!important}
-body [class*="rarity-glow-"]{filter:none!important}
-body .tab-button,body .sub-tab-button{padding:9px 16px}.font-tech{letter-spacing:.035em!important}
-#results-container{background:#f2f3f4!important;border:1px solid #dddfe3!important;border-radius:16px!important}#results-container:empty::before{color:#727780}
-body #pull-ten,body #pull-ten-event{background:#3c4149!important;color:#fff!important;border-color:#3c4149!important}
-.archive-eyebrow,.archive-intro p{color:#747982!important}.archive-note{background:#edeff1!important;border-color:#9198a1!important;color:#575e68!important;border-radius:8px}#summon-summary{color:#545b64!important}#archive-history{border-color:#d9dce1;background:#fff}#archive-history summary{color:#4e5560}#archive-history li{border-color:#e2e4e7}#archive-history time{color:#737a83}
-body .new-discovery::after{background:#474e58;color:#fff;border:1px solid #fff}.revision-stars{background:#fff!important;color:#444!important;border-color:#bbb!important;box-shadow:none!important}
-body .fixed.inset-0{background:rgba(236,238,241,.9)!important;backdrop-filter:blur(12px)}
-body .fixed.inset-0>div:not(canvas){border-color:#dadde2!important;box-shadow:0 16px 60px #30384316!important}
-#loading-overlay{background:#f2f3f5f5!important;color:#4b525d!important}#loading-overlay>div{font-size:24px!important;letter-spacing:-.02em!important;font-family:inherit!important}#loading-overlay>p{letter-spacing:0!important}
-body #toast-notification{background:#454c55!important;color:#fff!important;border:1px solid #fff;box-shadow:0 8px 28px #343a4322!important}
-body .hp-bar-background{background:#dddfe2!important;border-color:#d1d5da!important}body .hp-bar-foreground{background:#737f8a!important;box-shadow:none!important}body .hp-bar-foreground.bg-red-500{background:#986e6e!important}
-#roguelike-view{--rg-accent:#575e68;--rg-line:#dce0e4;color:#373d46!important}.rg-heading,.rg-panel,.rg-map-row,#rogue-log li{border-color:#dce0e4!important}.rg-panel,.rg-status,.rg-choice,.rg-loot-card{background:#ffffffce!important;border-color:#dce0e4!important;color:#404751!important;box-shadow:none!important}.rg-heading h2,.rg-intro h3{font-weight:500;letter-spacing:-.04em}.rg-intro{background:linear-gradient(120deg,#fff,#e9ebef)!important;border-color:#fff!important}.rg-kicker,.rg-edition,.rg-heading p,.rg-intro p{color:#707985!important}.rg-panel h3,.rg-panel label,.rg-panel summary,.rg-rules summary{color:#4d5764!important}.rg-panel small,.rg-rules,.rg-choice span,.rg-status>div:nth-child(2),.rg-tags span,#rogue-log,#rogue-report{color:#667180!important}.rg-status b,.rg-status p,.rg-edition b,.rg-choice strong,#rogue-record{color:#3f4c5d!important}.rg-choice:hover:not(:disabled){background:#e9edf1!important;border-color:#8e99a7!important}.rg-map-row{color:#717c8c}.rg-map-row.current{color:#303c4c;background:#e4e8ed}.rg-map-node.taken{color:#45576a}.rg-resonance{border-color:#dce1e6;background:#f9fafb}.rg-resonance b{color:#5e6c7c}.rg-resonance.lit{border-color:#8592a2;background:#e7ebef}.rg-resonance.lit b{color:#354454}.rg-tags span{border-color:#dbe0e5;background:#f9fafb}.rg-member progress{accent-color:#7b899b}.rg-member img{background:#eef0f3}.rg-primary{background:#424c5a!important;color:#fff!important}.rg-secondary{background:#f7f8fa!important;color:#5f6c7b!important;border-color:#d6dce3!important}.rg-choice-heading{background:#e8ecf0!important;border-color:#8693a3!important}.rg-choice-heading h3,.rg-choice-heading p{color:#475568!important}.rg-loot-card strong{color:#59687c!important}.rg-loot-card p,.rg-loot-card small,.rg-loot-empty,.rg-exclusive-label{color:#6c7888!important}.rg-loot-card[data-rarity=SSR]{border-top:2px solid #8995a3!important}.rg-loot-card[data-rarity=UR]{border:3px double #68788c!important;background:#e9edf3!important}
-.startup-panel{background:#fff!important;border-color:#d6dce3!important;color:#45505f!important}.startup-panel p{color:#6b7584!important}.startup-panel button{background:#424d5b!important;color:#fff!important}
-/* Animated 3D canvases retain readable captions on their own dark scenes. */
-body #gacha-3d-modal,body #combat-3d-cutin,body #combat-start-overlay{background:#171b21ef!important;color:#fff!important}
-body #gacha-3d-modal [class*="text-"],body #combat-3d-cutin [class*="text-"],body #combat-start-overlay [class*="text-"]{color:#f2f4f6!important}
-#combat-bg-canvas,#gacha-canvas{filter:grayscale(1);opacity:.65}
-@media(max-width:767px){body{padding:10px!important}body>.hud-scanline-container{padding:18px 12px!important;border-radius:18px!important}#global-header h1{font-size:24px!important}#global-currency-bar{gap:5px!important}#global-currency-bar>div{padding:6px 8px!important}#home-view.dream-home{grid-template-columns:1fr;gap:16px}.dream-scene{min-height:380px;border-radius:16px}.dream-caption{top:20px;left:20px}.dream-caption h2{font-size:20px}.dream-caption p{font-size:11px}.dream-caption>span{font-size:8px}#home-character-container.dream-character{inset:62px 0 20px}#home-dialogue-container.dream-dialogue{bottom:16px;left:14px;right:14px;padding:12px 14px!important}#home-character-dialogue{font-size:12px!important}.dream-scene-footer{left:20px;font-size:7px}.dream-empty p{font-size:21px}.dream-menu{padding:0;gap:10px}.dream-menu-title{display:flex;align-items:center;justify-content:space-between}.dream-menu-title p{font-size:13px;margin:0}.dream-menu-title>span{font-size:9px}.dream-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dream-menu-item,.dream-menu-item.dream-feature,.dream-menu-item:last-child{grid-column:auto;min-height:105px;padding:14px}.dream-menu-item strong,.dream-feature strong{font-size:18px!important;margin-top:14px!important}.dream-menu-item small{font-size:10px}.dream-menu-index{font-size:8px}.dream-shortcuts{margin:0}.dream-shortcuts button{min-height:42px}.dream-explore{grid-template-columns:1fr;gap:8px}.dream-explore button{min-height:76px;padding:14px 18px;display:grid;grid-template-columns:105px 1fr;align-items:center;gap:4px 12px}.dream-explore button>span{font-size:8px}.dream-explore button>strong{font-size:17px;grid-row:2}.dream-explore button>small{font-size:11px;grid-row:1/3;grid-column:2;padding-right:18px}.dream-explore button>b{right:14px;top:25px;font-size:18px}.dream-bottom{flex-direction:column;gap:8px;align-items:stretch}.dream-bottom #event-banner{max-width:100%;width:100%;padding:12px!important;border:1px solid #dce0e5!important;border-radius:12px;background:#ffffff95!important}.dream-bottom #event-banner>strong{flex:1}.dream-dock{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.dream-dock button{padding:12px 8px;min-height:44px}.rg-heading h2{font-size:25px}.rg-primary,.rg-secondary{min-height:44px}}
-@media(prefers-reduced-motion:reduce){body button{transition:none!important}}
-</style>
-<style id="dream-state-clarity">
-body button.bg-yellow-400,body button.bg-yellow-500,body button.bg-blue-500,body button.bg-purple-600,body button[aria-selected="true"]{background:#454c56!important;color:#fff!important;border-color:#454c56!important}
-body button.bg-yellow-400 [class*="text-"],body button.bg-yellow-500 [class*="text-"],body button[aria-selected="true"] [class*="text-"]{color:#fff!important}
-#archive-search-count{color:#6b7480!important}
-#home-view .dream-text-button{min-height:44px}
-.dream-menu-item:hover,.dream-dock button:hover,.dream-shortcuts button:hover{border-color:#9298a0}
-</style><style id="dream-pastel-factions">
-[data-faction]{--faction-bg:#e9eaf0;--faction-ink:#545968;--faction-border:#c1c5d0}
-[data-faction="탐정"]{--faction-bg:#dcecff;--faction-ink:#37577c;--faction-border:#a8c7e8}
-[data-faction="조수"]{--faction-bg:#e5f1d7;--faction-ink:#486337;--faction-border:#b8cf9f}
-[data-faction="범인"]{--faction-bg:#ffe1da;--faction-ink:#7d443b;--faction-border:#e5b4a9}
-[data-faction="히어로"]{--faction-bg:#e1e2ff;--faction-ink:#514a83;--faction-border:#b7b8e8}
-[data-faction="빌런"]{--faction-bg:#e0e6ed;--faction-ink:#425367;--faction-border:#aebac9}
-[data-faction="마법사"]{--faction-bg:#efdef9;--faction-ink:#6b4582;--faction-border:#d2b4e3}
-[data-faction="초대객"]{--faction-bg:#ffead6;--faction-ink:#78532c;--faction-border:#e8c59e}
-[data-faction="도박사"]{--faction-bg:#f7efc5;--faction-ink:#706022;--faction-border:#dace8e}
-[data-faction="사제"]{--faction-bg:#d7f0e9;--faction-ink:#32675b;--faction-border:#9ecfbe}
-[data-faction="악마"]{--faction-bg:#f9dce9;--faction-ink:#7b405c;--faction-border:#dfabc2}
-[data-faction="기타"]{--faction-bg:#e9eaf0;--faction-ink:#545968;--faction-border:#c1c5d0}
-
-/* Higher specificity than the monochrome utility palette; future badges use the same tokens. */
-html body .faction-mark[data-faction],html body .faction-btn[data-faction]{background:var(--faction-bg)!important;background-image:none!important;color:var(--faction-ink)!important;border:1px solid var(--faction-border)!important;box-shadow:none!important;border-radius:7px!important;font-weight:700;letter-spacing:0!important}
-html body .faction-mark[data-faction]{padding:3px 7px;line-height:1.4}
-html body .faction-btn[data-faction]{min-height:34px}
-html body .faction-btn[aria-pressed="true"]{outline:2px solid var(--faction-ink)!important;outline-offset:1px}
-html body #combat-in-progress-view [id^="combat-card-"]{background:linear-gradient(160deg,var(--faction-bg) 0%,#f9fafc 80%)!important;border:1px solid var(--faction-border)!important;border-radius:12px!important;padding:5px!important;box-shadow:0 3px 12px #444b5a09!important}
-html body #combat-in-progress-view [id^="combat-card-"]>div:first-child{background:transparent!important}
-html body #combat-in-progress-view [id^="combat-card-"] img{opacity:1!important;filter:none!important}
-html body #combat-in-progress-view .combat-card-name{color:#303b4b!important;background:#ffffffbb!important;border-radius:5px;padding:4px 3px;margin:3px 0 5px;font-size:11px;line-height:1.4;font-weight:700;width:100%;text-align:center;white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:36px;text-shadow:none!important}
-html body #combat-in-progress-view .combat-faction{font-size:9px;align-self:flex-start;margin:2px 0}
-html body #combat-in-progress-view [id^="player-hp-text-"]{font-size:10px!important;line-height:1.4!important;color:#4b5868!important;transform:none!important;margin:3px 0!important}
-html body #combat-in-progress-view .hp-bar-background{background:#dce2e9!important;border:0!important}
-html body #combat-in-progress-view .hp-bar-foreground{background:#8bafad!important}
-html body #combat-in-progress-view .hp-bar-foreground.bg-red-500{background:#c88383!important}
-/* The cut-in is a light, faction-tinted sheet, not the older dark overlay. */
-html body #combat-3d-cutin{background:rgba(240,243,249,.88)!important;color:#354052!important;backdrop-filter:blur(10px)}
-html body #combat-3d-cutin #cutin-card-wrapper{background:linear-gradient(155deg,var(--faction-bg),#fff 80%)!important;border:1px solid var(--faction-border)!important;border-radius:20px!important;padding:18px 24px!important;width:min(90%,440px);max-height:95%;box-shadow:0 12px 40px #555e7017!important}
-html body #combat-3d-cutin #cutin-card-wrapper>.absolute{display:none!important}
-html body #combat-3d-cutin #cutin-character-img{background:transparent!important;border:0!important;max-height:32vh;max-width:100%;filter:none!important;border-radius:12px!important;margin-bottom:8px}
-html body #combat-3d-cutin #cutin-character-name{color:#344052!important;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:6px}
-html body #combat-3d-cutin #cutin-faction{font-size:11px;margin-bottom:8px}
-html body #combat-3d-cutin #cutin-skill-name{background:#ffffffbf!important;color:var(--faction-ink)!important;border:0!important;border-radius:10px!important;font-family:inherit;letter-spacing:0!important;font-size:22px!important;line-height:1.4;padding:8px 14px}
-html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;color:#4f5b6c!important;border:0!important;letter-spacing:0!important;font-size:14px!important;line-height:1.65;font-weight:500}
-@media(max-width:767px){html body #combat-in-progress-view .combat-card-name{font-size:10px;min-height:32px}html body #combat-in-progress-view [id^="player-hp-text-"]{font-size:9px!important}html body #combat-in-progress-view .combat-faction{font-size:8px;padding:2px 5px}html body #combat-3d-cutin #cutin-skill-name{font-size:18px!important}html body #combat-3d-cutin #cutin-dialogue{font-size:12px!important}html body #combat-3d-cutin #cutin-character-name{font-size:12px}html body #combat-3d-cutin #cutin-card-wrapper{padding:14px 18px!important}}
-</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
     <button id="global-home-button" onclick="switchTab('home')"
         class="hidden fixed top-4 left-4 z-[9999] gacha-button py-2 px-4 flex items-center gap-2">
-        <span class="font-tech text-cyan-400">←</span>
-        <span class="hidden md:inline font-bold">로비로</span>
+        <span class="font-tech text-cyan-400">SYS_RET</span>
+        <span class="hidden md:inline font-bold">로비 복귀</span>
     </button>
 
     <div id="loading-overlay" class="fixed inset-0 bg-[#0b0c10]/95 flex flex-col justify-center items-center z-50">
-        <div class="text-[#66fcf1] font-tech text-4xl font-black tracking-widest animate-pulse">잠시, 꿈을 잇는 중</div>
-        <p class="text-gray-500 mt-2 font-tech text-xs tracking-widest">당신의 이야기를 불러오고 있어요</p>
+        <div class="text-[#66fcf1] font-tech text-4xl font-black tracking-widest animate-pulse">SYSTEM_LOADING...</div>
+        <p class="text-gray-500 mt-2 font-tech text-xs tracking-widest">ESTABLISHING SECURE CONNECTION</p>
     </div>
 
     <!-- 텍티컬 메인 프레임 -->
@@ -646,7 +409,7 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
                 <h1 class="text-3xl md:text-5xl font-black tracking-widest font-tech text-white">
                     YUMECAN<span class="text-cyan-400">_</span>
                 </h1>
-                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">A QUIET PLACE FOR YOUR STORIES</p>
+                <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">CHARACTER ARCHIVE / 당신의 이야기가 모이는 곳</p>
             </div>
             <div>
               <details class="archive-settings"><summary>환경 설정</summary><div class="archive-settings-panel">
@@ -671,7 +434,7 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
             </div>
 
             <div id="logged-in-view" class="hidden flex items-center gap-4 justify-center w-full md:w-auto">
-                <p class="font-bold text-xs md:text-sm text-gray-400">어서 오세요, <span id="nickname-display" class="text-cyan-400 font-tech tracking-wider text-base"></span></p>
+                <p class="font-bold text-xs md:text-sm text-gray-400">COMMANDER. <span id="nickname-display" class="text-cyan-400 font-tech tracking-wider text-base"></span></p>
                 <button id="logout-button" class="gacha-button border-red-600 text-red-500 py-1 px-3 text-xs">로그아웃</button>
             </div>
         </div>
@@ -703,44 +466,148 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
         <main>
             <div id="message-area" class="text-center font-bold text-sm tracking-wide h-8 mb-4 transition-opacity duration-300 font-tech"></div>
 
-<div id="home-view" class="dream-home">
- <div class="dream-scene">
-  <div class="dream-caption"><span>BETWEEN SLEEP & STORIES</span><h2>꿈이 머무는 서가</h2><p>오늘은 어떤 이야기를 펼쳐볼까요?</p></div>
-  <div id="home-default-message" class="dream-empty"><span>YOUR STORY BEGINS HERE</span><p>당신의 꿈에 등장할<br>캐릭터를 만나보세요.</p><button class="dream-text-button" onclick="switchTab('inventory')">서고에서 대표 캐릭터 선택 ↗</button></div>
-  <div id="home-character-container" class="dream-character hidden">
-   <div id="home-char-backdrop" class="hidden"></div>
-   <img id="home-character-image" src="" alt="대표 캐릭터">
-   <div id="home-dialogue-container" class="dream-dialogue hidden"><div class="dream-speaker"><p id="home-character-name"></p><span>작은 대화</span></div><p id="home-character-dialogue"></p></div>
-  </div>
-  <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
- </div>
- <nav class="dream-menu" aria-label="주요 메뉴">
-  <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
-  <div class="dream-menu-grid">
-   <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="dream-menu-item dream-feature"><span class="dream-menu-index">01 / SUMMON</span><strong>새로운 만남</strong><small>소환 · 다음 이야기의 주인공</small><span class="dream-arrow">↗</span></button>
-   <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="dream-menu-item"><span class="dream-menu-index">02 / COLLECTION</span><strong>서고</strong><small>모아둔 등장인물</small><span class="dream-arrow">↗</span></button>
-   <button id="btn-lobby-deck" onclick="switchTab('deck')" class="dream-menu-item"><span class="dream-menu-index">03 / TEAM</span><strong>편찬</strong><small>함께할 편성</small><span class="dream-arrow">↗</span></button>
-   <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="dream-menu-item"><span class="dream-menu-index">04 / INSPIRE</span><strong>영감</strong><small>새로운 가능성</small><span class="dream-arrow">↗</span></button>
-  </div>
-  <div class="dream-shortcuts"><button onclick="switchTab('story')">스토리</button><button onclick="switchTab('trade')" style="position:relative">교환소<span id="trade-badge" class="hidden dream-badge">N</span></button><button onclick="switchTab('myroom')">마이룸</button></div>
- </nav>
- <div class="dream-explore" aria-label="탐사 메뉴">
-  <button id="btn-lobby-combat" onclick="switchTab('combat')"><span>CHAPTER</span><strong>안정화</strong><small>흐트러진 이야기를 찾아서</small><b>↗</b></button>
-  <button onclick="switchTab('roguelike')"><span>EXPEDITION</span><strong>폐기된 서고</strong><small>매번 달라지는 12층의 꿈</small><b>↗</b></button>
-  <button onclick="switchTab('dispatch')"><span>DISPATCH</span><strong>현장 조사</strong><small>다녀올 곳을 정해볼까요</small><b>↗</b></button>
- </div>
- <div class="dream-bottom">
-  <button id="event-banner" onclick="switchTab('event-home')"><span>EVENT /</span><strong id="event-banner-text">이벤트 확인</strong><span>↗</span></button>
-  <nav class="dream-dock" aria-label="보조 메뉴">
-   <button onclick="switchTab('friends')">친구<span id="main-friend-badge" class="hidden dream-badge">N</span></button>
-   <button onclick="switchTab('collection')">도감</button>
-   <button onclick="switchTab('achievements')">업적<span id="achievement-badge" class="hidden dream-badge">N</span></button>
-   <button onclick="switchTab('profile')">프로필</button>
-  </nav>
- </div>
-</div>
+            <div id="home-view" class="relative w-full h-[85vh] overflow-hidden bg-black/20 border border-gray-800">
+                        <!-- ✨ 누락되었던 대표 캐릭터 미설정 안내 메시지 추가 ✨ -->
+                            <div id="home-default-message" class="absolute inset-0 flex items-center justify-center text-cyan-500/40 font-tech text-xl md:text-3xl tracking-[0.3em] font-black z-0 pointer-events-none">
+                                NO REPRESENTATIVE SELECTED
+                            </div>
+                        <!-- 캐릭터 일러스트 영역 (왼쪽으로 밀고 최대 크기를 줄여 폭 조정) -->
+                            <div class="absolute inset-0 flex items-center justify-start z-0 pb-44 md:pb-0 md:pl-4 md:-translate-y-12 pointer-events-none">
 
-<div id="event-home-view" class="hidden">
+                            <!-- ✨ 전체 영역 컨테이너 -->
+                            <!-- ✨ 전체 영역 컨테이너 -->
+                            <!-- ✨ 전체 영역 컨테이너 (위치 및 밸런스 정돈) -->
+                                                <div id="home-character-container" class="relative h-full flex flex-col items-center justify-center pointer-events-auto cursor-pointer transition-transform duration-300 ml-[-2%] md:ml-[2%] -translate-y-4 md:-translate-y-6">
+
+                                                    <!-- ✨ 1. 훨씬 크고 시원하게 넓어진 네온 밴드 백드롭 프레임 -->
+                                                    <div id="home-char-backdrop" class="absolute w-96 h-[420px] md:w-[480px] md:h-[540px] rounded-sm border opacity-40 pointer-events-none transition-all duration-300"></div>
+
+                                                    <!-- ✨ 2. 대표 캐릭터 일러스트 -->
+                                                    <img id="home-character-image" src="" alt="대표 캐릭터" class="max-h-[50%] md:max-h-[70%] object-contain drop-shadow-2xl transition-all relative z-10 mb-4">
+
+                                                    <!-- ✨ 3. 배너와 겹치지 않게 정돈된 스토리 대화창 -->
+                                                    <div id="home-dialogue-container" class="absolute bottom-[16%] md:bottom-[14%] bg-[#12151c]/95 border-l-4 border-cyan-400 border-t border-b border-r border-gray-700 text-gray-200 p-4 md:p-5 shadow-[0_0_25px_rgba(0,0,0,0.9)] w-[320px] md:w-[460px] hidden transition-opacity duration-300 z-20 backdrop-blur-md rounded-sm">
+                                                        <div class="flex items-center justify-between mb-1 border-b border-gray-800 pb-1">
+                                                            <p id="home-character-name" class="font-bold text-cyan-400 text-xs md:text-sm tracking-widest font-tech uppercase"></p>
+                                                            <span class="font-tech text-[9px] text-gray-500 tracking-widest">SECURE_CH.01</span>
+                                                        </div>
+                                                        <p id="home-character-dialogue" class="text-xs md:text-sm leading-relaxed text-gray-100 font-medium"></p>
+                                                    </div>
+                                                </div>
+
+                <!-- 텍티컬 로비 메뉴 (사선형) -->
+                <div class="absolute z-20 pointer-events-none bottom-[6.5rem] left-0 w-full flex flex-row items-end justify-center gap-2 px-2 md:top-4 md:bottom-28 md:left-auto md:right-0 md:w-1/3 md:min-w-[280px] md:flex-col md:items-end md:gap-2 md:pr-8">
+
+                    <button id="btn-lobby-deck" onclick="switchTab('deck')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-cyan-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-cyan-500 text-xs md:text-sm opacity-70">01</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">편찬</span>
+                    </button>
+
+                    <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-yellow-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-yellow-500 text-xs md:text-sm opacity-70">02</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">서고</span>
+                    </button>
+
+                    <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-purple-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-purple-500 text-xs md:text-sm opacity-70">03</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">영감</span>
+                    </button>
+
+
+                    <button id="btn-lobby-gacha" onclick="switchTab('gacha')" class="pointer-events-auto
+                            w-24 flex-1 h-14 text-sm md:flex-none md:w-[90%] md:max-w-[280px] md:h-16 md:text-xl
+                            bg-gray-900/90 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-gray-800 hover:text-white transition-all shadow-lg
+                            flex flex-col md:flex-row items-center justify-center md:justify-start md:pl-6
+                            border border-gray-700 border-l-4 border-l-red-500 gap-1 md:gap-3">
+                        <span class="transform skew-x-12 font-tech text-red-500 text-xs md:text-sm opacity-70">04</span>
+                        <span class="transform skew-x-12 text-sm md:text-lg tracking-widest">소환</span>
+                    </button>
+
+                    <!-- 미니 메뉴 라인 -->
+                    <div class="flex gap-2 w-full justify-center md:justify-end mt-2">
+                        <button onclick="switchTab('story')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">스토리</button>
+                        <button onclick="switchTab('trade')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5 relative">
+                            교환<span id="trade-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                        </button>
+                        <button onclick="switchTab('myroom')" class="pointer-events-auto gacha-button text-[10px] md:text-xs py-1 px-3 md:py-2 md:px-5">객실</button>
+                    </div>
+
+                    <!-- 거대 전투(안정화) 버튼 -->
+                    <button id="btn-lobby-combat" onclick="switchTab('combat')" class="pointer-events-auto group mt-4
+                            w-full h-16 md:h-24
+                            bg-red-700 text-white font-black transform -skew-x-12
+                            hover:bg-red-600 transition-all border-2 border-red-500 shadow-[4px_4px_0px_rgba(255,0,0,0.5)]
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-lg md:text-3xl tracking-widest z-10">안정화</span>
+                        <span class="absolute right-[-10px] bottom-[-10px] text-5xl md:text-6xl font-tech text-black opacity-30 transform skew-x-12 z-0">COMBAT</span>
+                    </button>
+                    <!-- 로그라이크(폐기된 서고) 버튼 -->
+                    <button onclick="switchTab('roguelike')" class="pointer-events-auto group mt-2
+                            w-full h-12 md:h-16
+                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-cyan-900/50 hover:text-cyan-400 transition-all border border-gray-700 hover:border-cyan-500 shadow-md
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">폐기된 서고</span>
+                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-cyan-500 opacity-10 transform skew-x-12 z-0">ROGUELIKE</span>
+                    </button>
+                    <!-- 현장 조사 파견 버튼 -->
+                    <button onclick="switchTab('dispatch')" class="pointer-events-auto group mt-2
+                            w-full h-12 md:h-16
+                            bg-gray-900 text-gray-300 font-bold transform -skew-x-12
+                            hover:bg-purple-900/50 hover:text-purple-400 transition-all border border-gray-700 hover:border-purple-500 shadow-md
+                            flex items-center justify-center overflow-hidden relative">
+                        <span class="transform skew-x-12 inline-block text-sm md:text-xl tracking-widest z-10">현장 조사</span>
+                        <span class="absolute right-[-5px] bottom-[-10px] text-4xl md:text-5xl font-tech text-purple-500 opacity-10 transform skew-x-12 z-0">DISPATCH</span>
+                    </button>
+                </div>
+
+
+
+                <!-- 하단 부가 기능 및 이벤트 배너 -->
+                <div class="absolute bottom-4 left-0 w-full px-2 md:px-6 flex justify-between items-end z-10 pointer-events-none">
+                    <div class="pointer-events-auto">
+                        <button id="event-banner" onclick="switchTab('event-home')" class="bg-[#12151c]/90 text-white px-4 py-2 md:px-8 md:py-3 border-l-4 border-cyan-400 hover:bg-gray-800 transition-colors flex items-center gap-3">
+                            <span class="text-cyan-400 font-tech text-xl md:text-2xl animate-pulse">SYS_EVT</span>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-500 font-tech tracking-widest">ACTIVE EVENT</p>
+                                <p id="event-banner-text" class="font-bold text-xs md:text-sm tracking-wide">이벤트 확인</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="flex gap-1 md:gap-2 pointer-events-auto bg-black/60 p-1 md:p-2 border border-gray-800">
+                        <button onclick="switchTab('friends')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
+                            <span id="main-friend-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                            FRIENDS
+                        </button>
+                        <button onclick="switchTab('collection')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">ARCHIVE</button>
+                        <button onclick="switchTab('achievements')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400 relative">
+                            <span id="achievement-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] px-1 animate-pulse">N</span>
+                            ACHIEVE
+                        </button>
+                        <button onclick="switchTab('profile')" class="gacha-button text-[10px] md:text-xs py-1 px-2 md:px-4 text-gray-400">PROFILE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+			<div id="event-home-view" class="hidden">
     <div class="flex flex-col md:flex-row gap-6">
 
         <div class="md:w-1/2 flex flex-col gap-4">
@@ -1066,18 +933,18 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
         </button>
 
         <div id="faction-filter-options" class="hidden absolute top-full right-0 mt-2 w-72 bg-gray-900/95 border border-gray-600 rounded-lg shadow-xl z-50 p-2 grid grid-cols-4 gap-1 backdrop-blur-sm">
-            <button data-faction="all" onclick="setFactionFilter('all')" class="faction-btn col-span-4 bg-gray-700 hover:bg-gray-600 text-white text-[10px] py-1.5 rounded mb-1 border border-gray-500">
+            <button onclick="setFactionFilter('all')" class="faction-btn col-span-4 bg-gray-700 hover:bg-gray-600 text-white text-[10px] py-1.5 rounded mb-1 border border-gray-500">
                 🔄 전체 (필터 해제)
             </button>
-            <button data-faction="탐정" onclick="setFactionFilter('탐정')" class="faction-btn bg-blue-500 hover:bg-blue-600 text-white text-[10px] py-1 rounded shadow-sm">탐정</button>
-            <button data-faction="범인" onclick="setFactionFilter('범인')" class="faction-btn bg-red-500 hover:bg-red-600 text-white text-[10px] py-1 rounded shadow-sm">범인</button>
-            <button data-faction="히어로" onclick="setFactionFilter('히어로')" class="faction-btn bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded shadow-sm">히어로</button>
-            <button data-faction="빌런" onclick="setFactionFilter('빌런')" class="faction-btn bg-gray-800 hover:bg-gray-900 text-white text-[10px] py-1 rounded shadow-sm border border-gray-600">빌런</button>
-            <button data-faction="마법사" onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-600 hover:bg-purple-700 text-white text-[10px] py-1 rounded shadow-sm">마법사</button>
-            <button data-faction="초대객" onclick="setFactionFilter('초대객')" class="faction-btn bg-orange-400 hover:bg-orange-500 text-white text-[10px] py-1 rounded shadow-sm">초대객</button>
-            <button data-faction="도박사" onclick="setFactionFilter('도박사')" class="faction-btn bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] py-1 rounded shadow-sm">도박사</button>
-            <button data-faction="사제" onclick="setFactionFilter('사제')" class="faction-btn bg-teal-500 hover:bg-teal-600 text-white text-[10px] py-1 rounded shadow-sm">사제</button>
-            <button data-faction="악마" onclick="setFactionFilter('악마')" class="faction-btn bg-rose-900 hover:bg-rose-950 text-white text-[10px] py-1 rounded shadow-sm border border-rose-800">악마</button>
+            <button onclick="setFactionFilter('탐정')" class="faction-btn bg-blue-500 hover:bg-blue-600 text-white text-[10px] py-1 rounded shadow-sm">탐정</button>
+            <button onclick="setFactionFilter('범인')" class="faction-btn bg-red-500 hover:bg-red-600 text-white text-[10px] py-1 rounded shadow-sm">범인</button>
+            <button onclick="setFactionFilter('히어로')" class="faction-btn bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] py-1 rounded shadow-sm">히어로</button>
+            <button onclick="setFactionFilter('빌런')" class="faction-btn bg-gray-800 hover:bg-gray-900 text-white text-[10px] py-1 rounded shadow-sm border border-gray-600">빌런</button>
+            <button onclick="setFactionFilter('마법사')" class="faction-btn bg-purple-600 hover:bg-purple-700 text-white text-[10px] py-1 rounded shadow-sm">마법사</button>
+            <button onclick="setFactionFilter('초대객')" class="faction-btn bg-orange-400 hover:bg-orange-500 text-white text-[10px] py-1 rounded shadow-sm">초대객</button>
+            <button onclick="setFactionFilter('도박사')" class="faction-btn bg-yellow-600 hover:bg-yellow-700 text-white text-[10px] py-1 rounded shadow-sm">도박사</button>
+            <button onclick="setFactionFilter('사제')" class="faction-btn bg-teal-500 hover:bg-teal-600 text-white text-[10px] py-1 rounded shadow-sm">사제</button>
+            <button onclick="setFactionFilter('악마')" class="faction-btn bg-rose-900 hover:bg-rose-950 text-white text-[10px] py-1 rounded shadow-sm border border-rose-800">악마</button>
         </div>
     </div>
 </div>
@@ -1138,8 +1005,6 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
                         <div id="cutin-card-wrapper" class="relative transform scale-0 transition-transform duration-300 flex flex-col items-center max-w-lg px-4 text-center">
                             <div class="absolute -inset-4 border-2 border-cyan-400 animate-ping opacity-40"></div>
                             <img id="cutin-character-img" src="" class="max-h-[45vh] object-contain drop-shadow-[0_0_30px_rgba(0,255,255,0.8)] border-2 border-cyan-400 bg-black/80 mb-3">
-                            <p id="cutin-character-name"></p>
-                            <span id="cutin-faction" class="faction-mark"></span>
                             <div id="cutin-skill-name" class="font-tech font-black text-2xl md:text-4xl text-cyan-400 tracking-[0.2em] bg-black/90 px-6 py-1.5 border-l-4 border-cyan-400"></div>
                             <!-- ✨ [추가] 컷인 대사 출력 영역 -->
                             <div id="cutin-dialogue" class="mt-2 text-sm md:text-lg text-gray-200 font-bold bg-black/80 px-4 py-1.5 border border-gray-700 tracking-wide italic"></div>
@@ -1763,7 +1628,7 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
  <div class="rg-heading"><div><span class="rg-kicker">ROGUELIKE EXPEDITION / VOL. 02</span><h2>폐기된 서고</h2><p>버려진 이야기 속에서, 살아 돌아올 결말을 고르세요.</p></div><span class="rg-edition">3개 구역<br><b>12층 탐사</b></span></div>
  <div id="rogue-lobby">
   <div class="rg-intro"><span class="rg-kicker">EVERY CHOICE LEAVES A TRACE</span><h3>어떤 이야기를<br>완성하시겠어요?</h3><p>정예에 도전해 유물을 얻거나, 쉼터에 머물러 다음 장을 준비하세요.<br>세 계열의 영감을 모으면 새로운 공명 효과가 열립니다.</p></div>
-  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p><div id="rogue-report-loot" class="rg-loot-grid"></div></div></div>
+  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p></div></div>
  </div>
  <div id="rogue-active" class="hidden">
   <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><p id="rogue-phase" role="status"></p></div>
@@ -1775,13 +1640,11 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
    <div id="rogue-choices" class="rg-choices" role="group" aria-labelledby="rogue-choice-title" aria-describedby="rogue-choice-hint"></div>
    <section class="rg-panel"><h3>동행 중인 등장인물</h3><div id="rogue-team-status" class="rg-team"></div></section>
    <section class="rg-panel"><h3>영감과 공명 <small>같은 계열 3개 획득 시 발동 · 중복 포함</small></h3><div id="rogue-resonance" class="rg-resonances"></div><div id="rogue-buffs-list" class="rg-tags"></div></section>
-   <section class="rg-panel"><h3>발견한 전용 장비 <small>귀환·전멸 시에도 정산하여 영구 획득</small></h3><div id="rogue-loot" class="rg-loot-grid"></div></section>
    <section class="rg-panel"><h3>탐사 유물</h3><div id="rogue-relics" class="rg-tags"></div></section>
    <details class="rg-panel"><summary>이번 탐사의 기록</summary><ol id="rogue-log"></ol></details>
    <button id="rogue-retire" onclick="endRoguelikeRun()" class="rg-secondary">귀환하고 현재 보상 정산</button>
   </div></div>
  </div>
-<details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 4층 보스: 장비 50%, SR. 8층 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
  <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 휴식·상점·사건은 전투 보상을 주지 않습니다. 귀환·전멸 모두 누적 보상을 지급하며 정산은 한 번만 처리합니다.</p><p>경로·후보·선택 결과는 계정에 자동 저장됩니다. 저장된 탐사는 다시 접속한 뒤 이 화면에서 이어갑니다. 전투 중 연결이 끊기면 같은 경로의 전투 시작 시점부터 재도전합니다. 저장 실패 표시는 상단에서 확인하고 다시 저장해 주세요.</p><p>적의 능력치는 입장 당시 편성의 평균 체력·방어력과 합산 공격력에 맞춰 정해집니다. 입장 후 얻은 강화에 따라 적이 추가로 강해지지는 않습니다. 보스는 3턴마다 강한 공격을 하며, 8·12층 보스는 광역 공격을 합니다.</p></details>
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
@@ -3047,7 +2910,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
-        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[]}; }
+        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
@@ -3108,8 +2971,6 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
             if(!valid){console.warn('Invalid rogue checkpoint ignored');return;}
             rogueState=JSON.parse(JSON.stringify(r));
-            rogueState.loot=Array.isArray(r.loot)?r.loot.filter(e=>e&&typeof e.id==='string'&&equipmentTemplates.some(t=>t.id===e.templateId&&t.source==='rogue')):[];
-            rogueState.lootedNodes=Array.isArray(r.lootedNodes)?r.lootedNodes.filter(id=>typeof id==='string'):[];
             if(rogueState.phase==='combat'){rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;rogueLog('연결이 끊긴 전투를 시작 시점부터 다시 진행합니다.');}
             if(['rest','shop','event','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
         }
@@ -3165,7 +3026,6 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             document.getElementById('rogue-record').textContent=`최고 ${rogueMeta.best}/12층 · 완주 ${rogueMeta.clears}회 · 도전 ${rogueMeta.runs}회`;
             const report=document.getElementById('rogue-report');
             report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}`:'';
-            document.getElementById('rogue-report-loot').innerHTML=rogueLootMarkup(rogueMeta.last?.equipment);
             document.getElementById('rogue-start-button').disabled=rogueBusy;
             if(!rogueState.active){revealRogueStep();return;}
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
@@ -3178,7 +3038,6 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             document.getElementById('rogue-buffs-list').innerHTML=rogueState.buffs.map(id=>{const b=rogueBuffPool.find(b=>b.id===id);return b?`<span title="${rogueEscape(b.desc)}">${b.name}</span>`:'';}).join('')||'<span>아직 획득한 영감이 없습니다.</span>';
             document.getElementById('rogue-relics').innerHTML=rogueState.relics.map(id=>{const r=rogueRelics.find(r=>r.id===id);return r?`<span title="${r.desc}">${r.name} · ${r.desc}</span>`:'';}).join('');
             document.getElementById('rogue-log').innerHTML=rogueState.history.map(t=>`<li>${rogueEscape(t)}</li>`).join('');
-            document.getElementById('rogue-loot').innerHTML=rogueLootMarkup(rogueState.loot)||'<p class="rg-loot-empty">정예와 보스를 처치하면 전용 장비를 발견할 수 있어요.</p>';
             document.getElementById('rogue-retire').disabled=rogueBusy||rogueState.phase==='combat';
             const prompts = {
                 route: ['다음 선택지를 고르세요', '아래 경로 중 하나를 골라 다음 층 탐사를 진행하세요.'],
@@ -3192,8 +3051,6 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const prompt = prompts[rogueState.phase] || prompts.route;
             document.getElementById('rogue-choice-title').textContent = prompt[0];
             document.getElementById('rogue-choice-hint').textContent = prompt[1];
-            const found=(rogueState.loot||[]).filter(e=>e.acquiredFloor===rogueState.floor);
-            if(found.length&&['buff','relic'].includes(rogueState.phase))document.getElementById('rogue-choice-hint').textContent += ' 장비 발견: '+found.map(e=>{const t=equipmentTemplates.find(t=>t.id===e.templateId);return t?`[${t.rarity}] ${t.name}`:'';}).join(', ')+' — 탐사 종료 시 영구 획득!';
             renderRogueChoices();
             revealRogueStep();
         }
@@ -3209,8 +3066,6 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 for(const node of rogueState.map[rogueState.floor-1]) {
                     const info=rogueNodeInfo[node.type];let detail=info[1];
                     if(['battle','elite','boss'].includes(node.type)){const m=rogueEnemyPlan(node);detail+=`\n${m.name}\nHP ${m.stats.hp} · ATK ${m.stats.atk} · DEF ${m.stats.def}\n${m.rogueTactic}`;}
-                    if(node.type==='elite')detail+='\n장비 드롭 25% · 획득 시 SR 90% / SSR 10%';
-                    if(node.type==='boss')detail+=rogueState.floor===12?'\n전용 장비 확정 · SSR 85% / UR 15%':rogueState.floor===8?'\n장비 드롭 75% · 획득 시 SR 65% / SSR 35%':'\n장비 드롭 50% · SR';
                     add(info[0],detail,()=>chooseRogueNode(node.id),Boolean(rogueState.retryNode&&rogueState.retryNode!==node.id));
                 }
             } else if(phase==='buff'||phase==='relic') {
@@ -3332,37 +3187,11 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             if(action==='collect')rogueState.shards+=35;
             rogueLog(`${rogueState.floor}층 선택 완료`);advanceRogueFloor();await roguePersist();
         }
-        function rollRogueEquipment() {
-            const node=rogueState.node;
-            if(!rogueState.active||!node||!['elite','boss'].includes(node.type))return null;
-            rogueState.loot=rogueState.loot||[];rogueState.lootedNodes=rogueState.lootedNodes||[];
-            if(rogueState.lootedNodes.includes(node.id))return null;
-            rogueState.lootedNodes.push(node.id);
-            const floor=rogueState.floor;
-            const chance=node.type==='elite'?.25:floor===12?1:floor===8?.75:.50;
-            if(rogueRand()>=chance)return null;
-            const rarityRoll=rogueRand();
-            const rarity=node.type==='elite'?(rarityRoll<.90?'SR':'SSR'):floor===12?(rarityRoll<.85?'SSR':'UR'):floor===8?(rarityRoll<.65?'SR':'SSR'):'SR';
-            const pool=equipmentTemplates.filter(t=>t.source==='rogue'&&t.rarity===rarity);
-            const template=pool[Math.floor(rogueRand()*pool.length)];
-            if(!template)return null;
-            const loot={id:generateEqId(),templateId:template.id,equippedTo:null,source:'rogue',acquiredFloor:floor,runId:rogueState.runId};
-            rogueState.loot.push(loot);
-            rogueLog(`장비 발견! [${rarity}] ${template.name} · 귀환/탐사 종료 시 영구 획득`);
-            return loot;
-        }
-        function rogueLootMarkup(items) {
-            return (items||[]).map(item=>{
-                const t=equipmentTemplates.find(t=>t.id===item.templateId);if(!t)return '';
-                return `<div class="rg-loot-card" data-rarity="${rogueEscape(t.rarity)}"><strong>${t.icon} [${t.rarity}] ${rogueEscape(t.name)}</strong><p>${rogueEscape(t.desc)}</p><small>폐기된 서고 전용 · ${item.acquiredFloor||'?'}층에서 발견</small></div>`;
-            }).join('');
-        }
         function completeRogueCombat(victory,deck) {
             if(!rogueState.active||rogueState.phase!=='combat')return;
             if(Array.isArray(deck))rogueState.team.forEach((c,i)=>{const hp=deck[i]?.stats?.hp;c.stats.hp=Number.isFinite(hp)?Math.max(0,Math.min(c.maxHp,hp)):c.stats.hp;});
             if(!victory){settleRogueRun('탐사 종료');roguePersist();return;}
             rogueState.wins++;
-            rollRogueEquipment();
             if(rogueState.node.type==='boss')rogueState.bosses++;
             rogueState.shards+=({battle:25,elite:45,boss:60}[rogueState.node.type]||0)+(rogueState.relics.includes('compass')?10:0);
             if(rogueState.relics.includes('needle'))rogueHeal(.08);
@@ -3378,12 +3207,10 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             if(!rogueState.active)return false;
             const gems=rogueState.wins*10+rogueState.bosses*20,pens=rogueState.wins*50,ink=Math.floor(rogueState.wins/3);
             rogueState.active=false;rogueState.phase='settled';
-            const equipment=(rogueState.loot||[]).filter(item=>!playerEquipment.some(e=>e.id===item.id));
-            playerEquipment.push(...equipment.map(item=>({...item,equippedTo:null})));
             playerCurrency+=gems;playerFountainPens+=pens;playerInkwells+=ink;
             rogueMeta.best=Math.max(rogueMeta.best,rogueState.cleared);
             if(result==='완주')rogueMeta.clears++;
-            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId,equipment:(rogueState.loot||[]).map(item=>({...item}))};
+            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId};
             updateUI();updateRogueUI();return true;
         }
         async function endRoguelikeRun(reason='retire') {
@@ -3576,13 +3403,7 @@ let playerRaidLastResetDate = null;
     { id: 'eq_fountainpen', name: '고급 만년필', type: 'atk_pct', bonus: 0.1, desc: '공격력 +10%', rarity: 'R', icon: '🖋️' },
     { id: 'eq_magnifier', name: '탐정의 돋보기', type: 'hp_pct', bonus: 0.15, desc: '체력 +15%', rarity: 'SR', icon: '🔍' },
     { id: 'eq_trenchcoat', name: '방탄 트렌치코트', type: 'def_pct', bonus: 0.2, desc: '방어력 +20%', rarity: 'SSR', icon: '🧥' },
-    { id: 'eq_goldnib', name: '순금 펜촉', type: 'atk_pct', bonus: 0.25, desc: '공격력 +25%', rarity: 'SSR', icon: '✨' },
-{"id": "rg_nib", "name": "금서의 펜촉", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.18, "hp": 0, "defense": 0.08}, "desc": "공격력 +18% · 방어력 +8%", "icon": "🖋️"},
-{"id": "rg_binding", "name": "불멸의 장정", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0, "hp": 0.25, "defense": 0.1}, "desc": "체력 +25% · 방어력 +10%", "icon": "📕"},
-{"id": "rg_lens", "name": "진실의 교정경", "rarity": "SR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.12, "hp": 0.18, "defense": 0}, "desc": "공격력 +12% · 체력 +18%", "icon": "🔍"},
-{"id": "rg_hourglass", "name": "역행하는 모래시계", "rarity": "SSR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.3, "hp": 0, "defense": 0.15}, "desc": "공격력 +30% · 방어력 +15%", "icon": "⌛"},
-{"id": "rg_seal", "name": "침묵의 봉인서", "rarity": "SSR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0, "hp": 0.4, "defense": 0.25}, "desc": "체력 +40% · 방어력 +25%", "icon": "📜"},
-{"id": "rg_lastpen", "name": "종언을 쓰는 펜", "rarity": "UR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.42, "hp": 0.25, "defense": 0.2}, "desc": "공격력 +42% · 체력 +25% · 방어력 +20%", "icon": "✒️"}
+    { id: 'eq_goldnib', name: '순금 펜촉', type: 'atk_pct', bonus: 0.25, desc: '공격력 +25%', rarity: 'SSR', icon: '✨' }
 			];
 
 			// 고유 장비 ID 생성 함수
@@ -5248,11 +5069,6 @@ function addCardToInventory(cardName) {
                             if (tmpl.type === 'atk_pct') finalAtk = Math.floor(finalAtk * (1 + tmpl.bonus));
                             if (tmpl.type === 'def_pct') finalDef = Math.floor(finalDef * (1 + tmpl.bonus));
                             if (tmpl.type === 'hp_pct') finalHp = Math.floor(finalHp * (1 + tmpl.bonus));
-                            if (tmpl.modifiers) {
-                                finalAtk = Math.floor(finalAtk * (1 + (tmpl.modifiers.atk || 0)));
-                                finalHp = Math.floor(finalHp * (1 + (tmpl.modifiers.hp || 0)));
-                                finalDef = Math.floor(finalDef * (1 + (tmpl.modifiers.defense || 0)));
-                            }
                         }
                     }
                 }
@@ -6963,15 +6779,24 @@ function startStageCombat(chapterIndex, stageIndex) {
             const glowClass = `rarity-glow-${card.rarity}`;
 
             // ✨ [추가] 진영별 배경 그라데이션 및 테두리 스타일 매핑
-            // Colors now come from the shared faction palette instead of dark inline gradients.
-            const customStyle = '';
+            const factionBgStyles = {
+                '탐정': 'background: linear-gradient(135deg, #1e3a8a, #0b0c10); border-color: #3b82f6;',
+                '조수': 'background: linear-gradient(135deg, #065f46, #0b0c10); border-color: #10b981;',
+                '범인': 'background: linear-gradient(135deg, #991b1b, #0b0c10); border-color: #ef4444;',
+                '히어로': 'background: linear-gradient(135deg, #3730a3, #0b0c10); border-color: #6366f1;',
+                '빌런': 'background: linear-gradient(135deg, #1f2937, #0b0c10); border-color: #4b5563;',
+                '마법사': 'background: linear-gradient(135deg, #581c87, #0b0c10); border-color: #a855f7;',
+                '초대객': 'background: linear-gradient(135deg, #c2410c, #0b0c10); border-color: #f97316;',
+                '도박사': 'background: linear-gradient(135deg, #854d0e, #0b0c10); border-color: #eab308;',
+                '사제': 'background: linear-gradient(135deg, #115e59, #0b0c10); border-color: #14b8a6;',
+                '악마': 'background: linear-gradient(135deg, #4c0519, #0b0c10); border-color: #f43f5e;'
+            };
+            const customStyle = factionBgStyles[card.faction] || 'background: linear-gradient(135deg, #1f2833, #0b0c10); border-color: #45a29e;';
 
             // ✨ 진영별 커스텀 스타일(배경 및 테두리)을 인라인으로 적용
             cardEl.className = 'relative w-[28%] p-0.5 rounded-lg border shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
             cardEl.style.cssText = customStyle;
             cardEl.id = `combat-card-${index}`;
-            cardEl.dataset.faction = card.faction || '기타';
-            cardEl.title = card.name;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
 
@@ -6981,8 +6806,7 @@ function startStageCombat(chapterIndex, stageIndex) {
                 <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-75 origin-top-right"></div>
             </div>
 
-            <span class="faction-mark combat-faction" data-faction="${card.faction || '기타'}">${card.faction || '기타'}</span>
-            <p class="combat-card-name">${card.name}</p>
+            <p class="font-bold text-[8px] md:text-[10px] truncate w-full text-center ${rarityColor} mb-0.5">${card.name}</p>
 
             <div class="w-full hp-bar-background rounded-full h-1 md:h-1.5 bg-gray-600">
                 <div id="player-hp-bar-${index}" class="hp-bar-foreground h-1 md:h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
@@ -7583,8 +7407,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
 
                 // 장비 드롭 보상 추가
                 if (Math.random() < 0.20) {
-                    const normalEquipmentPool = equipmentTemplates.filter(t => t.source !== 'rogue');
-                    const randomTmpl = normalEquipmentPool[Math.floor(Math.random() * normalEquipmentPool.length)];
+                    const randomTmpl = equipmentTemplates[Math.floor(Math.random() * equipmentTemplates.length)];
                     const newEq = { id: generateEqId(), templateId: randomTmpl.id, equippedTo: null };
                     playerEquipment.push(newEq);
                     rewardsList.push({ icon: randomTmpl.icon || '📦', name: randomTmpl.name, count: '획득', color: 'border-green-500 bg-green-950/30 text-green-300' });
@@ -7698,7 +7521,7 @@ function createCard(character, options = {}) {
         }
 
         // 진영 배지 (오른쪽 끝)
-                const factionBadge = `<span data-faction="${displayFaction}" class="faction-mark absolute top-2 right-2 text-[10px] font-bold px-2 py-1 rounded-sm ${factionColors[displayFaction] || 'bg-gray-500'} z-10">${displayFaction}</span>`;
+                const factionBadge = `<span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-1 rounded-sm ${factionColors[displayFaction] || 'bg-gray-500'} z-10">${displayFaction}</span>`;
 
                 card.innerHTML = `
                     ${levelBadgeHTML}
@@ -7829,7 +7652,6 @@ function getSkillDescription(skill) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = displayFaction;
-    factionEl.dataset.faction = displayFaction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
@@ -7838,7 +7660,6 @@ function getSkillDescription(skill) {
 
     // ✨ [수정됨] 끊겨있던 코드를 복구했습니다. (백틱과 변수가 정확히 닫혀야 합니다)
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
-    factionEl.classList.add('faction-mark');
 
     // ▼▼▼ [부모 정보 표시 로직] ▼▼▼
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
@@ -8101,7 +7922,7 @@ function updateEquipmentSlotUI(cardInstance) {
             iconEl.classList.remove('grayscale', 'opacity-50');
             nameEl.textContent = `[${tmpl.rarity}] ${tmpl.name}`;
             nameEl.className = 'text-sm font-bold text-green-300';
-            descEl.textContent = tmpl.desc + (tmpl.source === 'rogue' ? ' · 폐기된 서고 전용' : '');
+            descEl.textContent = tmpl.desc;
             unequipBtn.classList.remove('hidden');
             return;
         }
@@ -8126,14 +7947,10 @@ window.openEquipmentModal = function() {
     const availableEqs = playerEquipment.filter(eq => !eq.equippedTo || eq.equippedTo === currentDetailCardId);
 
     if (availableEqs.length === 0) {
-        listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화 또는 폐기된 서고의 정예·보스에게서 획득하세요.</p>';
+        listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화에서 획득하세요.</p>';
     } else {
-        availableEqs.sort((a,b)=>{
-            const order={N:0,R:1,SR:2,SSR:3,UR:4};
-            return (order[equipmentTemplates.find(t=>t.id===b.templateId)?.rarity]||0)-(order[equipmentTemplates.find(t=>t.id===a.templateId)?.rarity]||0);
-        }).forEach(eq => {
+        availableEqs.forEach(eq => {
             const tmpl = equipmentTemplates.find(t => t.id === eq.templateId);
-            if (!tmpl) return;
             const isEquippedToMe = eq.equippedTo === currentDetailCardId;
 
             const btn = document.createElement('div');
@@ -8148,11 +7965,6 @@ window.openEquipmentModal = function() {
                 </div>
                 <button class="gacha-button text-xs py-1 px-4">${isEquippedToMe ? '유지' : '장착'}</button>
             `;
-            btn.dataset.rarity=tmpl.rarity;
-            if(tmpl.source==='rogue'){
-                const badge=document.createElement('p');badge.className='rg-exclusive-label';badge.textContent='폐기된 서고 전용';
-                btn.querySelector('.font-bold').after(badge);
-            }
             btn.onclick = () => equipItem(eq.id);
             listContainer.appendChild(btn);
         });
@@ -8165,7 +7977,7 @@ window.equipItem = function(eqId) {
     const cardInstance = playerInventory.find(c => c.id === currentDetailCardId);
     const targetEq = playerEquipment.find(e => e.id === eqId);
 
-    if (cardInstance && targetEq && (!targetEq.equippedTo || targetEq.equippedTo === cardInstance.id)) {
+    if (cardInstance && targetEq) {
         // 기존 장비가 있었다면 해제 처리
         if (cardInstance.equippedItem) {
             const oldEq = playerEquipment.find(e => e.id === cardInstance.equippedItem);
@@ -8298,14 +8110,12 @@ function openCollectionCardModal(cardBaseName) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = character.faction;
-    factionEl.dataset.faction = character.faction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[character.faction] || 'bg-gray-500'}`;
-    factionEl.classList.add('faction-mark');
 
     // 4. 기본 스탯 표시
     document.getElementById('detail-stat-hp').textContent = character.stats.hp;
@@ -12627,14 +12437,12 @@ function openTradeCardDetail(tradeId) {
 
     const factionEl = document.getElementById('detail-card-faction');
     factionEl.textContent = displayFaction;
-    factionEl.dataset.faction = displayFaction;
     const factionColors = {
         '탐정': 'bg-blue-500 text-white', '조수': 'bg-green-500 text-white', '범인': 'bg-red-500 text-white',
         '히어로': 'bg-indigo-600 text-white', '빌런': 'bg-gray-800 text-white', '마법사': 'bg-purple-600 text-white',
         '초대객': 'bg-orange-400 text-white', '도박사': 'bg-yellow-600 text-white', '사제': 'bg-teal-500 text-white', '악마': 'bg-rose-900 text-white'
     };
     factionEl.className = `font-bold text-lg px-3 py-1 rounded-full ${factionColors[displayFaction] || 'bg-gray-500'}`;
-    factionEl.classList.add('faction-mark');
 
     // --- 부모 정보 표시 (자식 카드일 경우) ---
     const parentsWrapper = document.getElementById('detail-parents-wrapper');
@@ -13496,10 +13304,8 @@ function setFactionFilter(faction) {
     document.querySelectorAll('.faction-btn').forEach(btn => {
         if (btn.innerText.includes(faction) || (faction === 'all' && btn.innerText.includes('전체'))) {
             btn.classList.add('ring-2', 'ring-white'); // 선택됨 표시
-            btn.setAttribute('aria-pressed', 'true');
         } else {
             btn.classList.remove('ring-2', 'ring-white');
-            btn.setAttribute('aria-pressed', 'false');
         }
     });
 
@@ -13827,12 +13633,6 @@ async function playUltimateCutin(card, skill) {
     if (!cutinLayer || !cardWrapper) return;
 
     // 캐릭터 이미지, 스킬 이름, 스킬 대사 매핑
-    cardWrapper.dataset.faction = card.faction || '기타';
-    document.getElementById('cutin-character-name').textContent = card.name;
-    const factionBadge = document.getElementById('cutin-faction');
-    factionBadge.dataset.faction = card.faction || '기타';
-    factionBadge.textContent = card.faction || '기타';
-    charImg.alt = card.name;
     charImg.src = card.cardImageUrl || card.imageUrl || '';
     skillNameEl.textContent = skill.name;
 
