@@ -376,6 +376,13 @@ h1, h2, h3, h4 { line-height: 1.3; }
  .rg-intro h3 { font-size: 22px; }
 }
 </style>
+<style id="rogue-choice-navigation">
+.rg-choice-heading { margin: 0 0 14px; padding: 14px 16px; border-left: 3px solid #cbb9ff; border-radius: 6px; background: #242337; scroll-margin-top: 80px; }
+.rg-choice-heading h3 { color: #ece4ff; font-size: 17px; font-weight: 700; margin-bottom: 5px; }
+.rg-choice-heading p { color: #bec7db; font-size: 13px; line-height: 1.6; }
+#rogue-report { scroll-margin-top: 80px; }
+@media(max-width:767px) { .rg-choice-heading h3 { font-size: 15px; } .rg-choice-heading p { font-size: 12px; } }
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1621,12 +1628,16 @@ h1, h2, h3, h4 { line-height: 1.3; }
  <div class="rg-heading"><div><span class="rg-kicker">ROGUELIKE EXPEDITION / VOL. 02</span><h2>폐기된 서고</h2><p>버려진 이야기 속에서, 살아 돌아올 결말을 고르세요.</p></div><span class="rg-edition">3개 구역<br><b>12층 탐사</b></span></div>
  <div id="rogue-lobby">
   <div class="rg-intro"><span class="rg-kicker">EVERY CHOICE LEAVES A TRACE</span><h3>어떤 이야기를<br>완성하시겠어요?</h3><p>정예에 도전해 유물을 얻거나, 쉼터에 머물러 다음 장을 준비하세요.<br>세 계열의 영감을 모으면 새로운 공명 효과가 열립니다.</p></div>
-  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status"></p></div></div>
+  <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p></div></div>
  </div>
  <div id="rogue-active" class="hidden">
   <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><p id="rogue-phase" role="status"></p></div>
   <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small>매 층 하나의 경로 선택<br>4 · 8 · 12층은 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
-   <div id="rogue-choices" class="rg-choices"></div>
+   <div id="rogue-choice-heading" class="rg-choice-heading" tabindex="-1">
+    <h3 id="rogue-choice-title">다음 선택지를 고르세요</h3>
+    <p id="rogue-choice-hint" aria-live="polite"></p>
+   </div>
+   <div id="rogue-choices" class="rg-choices" role="group" aria-labelledby="rogue-choice-title" aria-describedby="rogue-choice-hint"></div>
    <section class="rg-panel"><h3>동행 중인 등장인물</h3><div id="rogue-team-status" class="rg-team"></div></section>
    <section class="rg-panel"><h3>영감과 공명 <small>같은 계열 3개 획득 시 발동 · 중복 포함</small></h3><div id="rogue-resonance" class="rg-resonances"></div><div id="rogue-buffs-list" class="rg-tags"></div></section>
    <section class="rg-panel"><h3>탐사 유물</h3><div id="rogue-relics" class="rg-tags"></div></section>
@@ -2903,6 +2914,31 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
+        let rogueVisibleStep = '';
+        let rogueScrollFrame = null;
+        function revealRogueStep() {
+            const view = document.getElementById('roguelike-view');
+            if (!view || view.classList.contains('hidden') || isCombatRunning || rogueState.phase === 'combat') return;
+            const active = rogueState.active;
+            if (!active && !rogueMeta.last) return;
+            const step = active ? `${rogueState.runId}:${rogueState.floor}:${rogueState.phase}` : `${rogueMeta.last.runId}:report`;
+            // Saving, healing purchases, and normal UI refreshes must not pull the user back up.
+            if (step === rogueVisibleStep) return;
+            rogueVisibleStep = step;
+            if (rogueScrollFrame !== null) cancelAnimationFrame(rogueScrollFrame);
+            const targetId = active ? 'rogue-choice-heading' : 'rogue-report';
+            // Wait for the combat view to disappear and the new choices to settle into layout.
+            rogueScrollFrame = requestAnimationFrame(() => {
+                rogueScrollFrame = requestAnimationFrame(() => {
+                    rogueScrollFrame = null;
+                    if (step !== rogueVisibleStep || view.classList.contains('hidden') || isCombatRunning) return;
+                    const target = document.getElementById(targetId);
+                    if (!target) return;
+                    target.focus({ preventScroll: true });
+                    target.scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' });
+                });
+            });
+        }
         function rogueEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
         function rogueRand() { let x=rogueState.seed|0; x^=x<<13;x^=x>>>17;x^=x<<5;rogueState.seed=x>>>0;return (x>>>0)/4294967296; }
         function rogueShuffle(items) { const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(rogueRand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
@@ -2991,7 +3027,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const report=document.getElementById('rogue-report');
             report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}`:'';
             document.getElementById('rogue-start-button').disabled=rogueBusy;
-            if(!rogueState.active)return;
+            if(!rogueState.active){revealRogueStep();return;}
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
             document.getElementById('rogue-shards').textContent=rogueState.shards;
             document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'어떤 결말을 쓰시겠어요?'}[rogueState.phase]);
@@ -3003,7 +3039,20 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             document.getElementById('rogue-relics').innerHTML=rogueState.relics.map(id=>{const r=rogueRelics.find(r=>r.id===id);return r?`<span title="${r.desc}">${r.name} · ${r.desc}</span>`:'';}).join('');
             document.getElementById('rogue-log').innerHTML=rogueState.history.map(t=>`<li>${rogueEscape(t)}</li>`).join('');
             document.getElementById('rogue-retire').disabled=rogueBusy||rogueState.phase==='combat';
+            const prompts = {
+                route: ['다음 선택지를 고르세요', '아래 경로 중 하나를 골라 다음 층 탐사를 진행하세요.'],
+                buff: ['전투 승리! 다음 선택지를 고르세요', '아래 영감 중 하나를 선택하면 탐사를 계속할 수 있어요.'],
+                relic: ['유물을 하나 고르세요', '이번 탐사에 적용할 유물을 선택하면 다음 층으로 이어집니다.'],
+                rest: ['쉼터에서 할 일을 고르세요', '회복·퇴고·부활 중 하나를 선택할 수 있어요.'],
+                shop: ['필요한 보급품을 고르세요', '구매를 마쳤다면 ‘행상인을 떠난다’를 눌러 진행하세요.'],
+                event: ['다음 선택지를 고르세요', '각 선택의 효과를 확인하고 이야기를 이어가세요.'],
+                combat: ['교전 진행 중', '전투가 끝나면 이곳에서 다음 선택지를 고를 수 있어요.']
+            };
+            const prompt = prompts[rogueState.phase] || prompts.route;
+            document.getElementById('rogue-choice-title').textContent = prompt[0];
+            document.getElementById('rogue-choice-hint').textContent = prompt[1];
             renderRogueChoices();
+            revealRogueStep();
         }
         function rogueChoiceButton(title,desc,callback,disabled=false) {
             const b=document.createElement('button');b.type='button';b.className='rg-choice';b.disabled=rogueBusy||disabled;
