@@ -623,6 +623,55 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
 <style id="combat-log-follow">
 #combat-log-container { overflow-y: auto; overflow-anchor: none; overscroll-behavior-y: contain; scroll-behavior: auto !important; }
 </style>
+<style id="mobile-deck-visibility">
+#deck-slots-container > .equipped-deck-card { min-width:0; display:flex; flex-direction:column; gap:5px; }
+#deck-slots-container .deck-slot-meta { display:flex; flex-wrap:wrap; justify-content:center; gap:4px; padding:5px 0; margin-top:auto; }
+#deck-slots-container .deck-slot-meta > span { position:static!important; transform:none!important; white-space:nowrap; font-size:10px!important; line-height:1.4; padding:3px 5px; border:1px solid #dce1e8; border-radius:6px; background:#eff2f6; color:#4c596a; }
+#deck-slots-container .equipped-deck-card > .relative > img { width:100%; height:140px; object-fit:contain; background:#f8f9fb; }
+#deck-slots-container .equipped-deck-card .truncate { white-space:normal; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; min-height:34px; line-height:1.45; }
+#deck-slots-container .equipped-deck-card > button { margin-top:0; min-height:40px; }
+@media(max-width:767px) {
+ #deck-view > div:first-child > button { position:static!important; margin:10px auto; }
+ #deck-slots-container { grid-template-columns:repeat(3,minmax(0,1fr))!important; gap:10px!important; padding:10px!important; align-items:stretch; }
+ #deck-slots-container .equipped-deck-card { padding:8px!important; transform:none!important; }
+ #deck-slots-container .equipped-deck-card > .relative > img { height:125px; margin-bottom:6px; }
+ #deck-slots-container .equipped-deck-card .truncate { font-size:11px!important; }
+ #deck-slots-container .equipped-deck-card .font-tech { font-size:14px!important; line-height:1.3; }
+ #deck-slots-container .deck-slot { min-height:240px; border-style:dashed; font-size:12px; color:#738093; background:#f7f9fb; }
+ #deck-slots-container .equipped-deck-card > button { min-height:44px; font-size:12px!important; }
+}
+@media(max-width:479px) {
+ #deck-slots-container { grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:10px!important; padding:8px!important; }
+}
+</style>
+
+<style id="manual-combat-style">
+#battle-controls{position:relative;z-index:12;margin-top:14px;padding:16px;border:1px solid #dce0e7;border-radius:18px;background:rgba(250,251,253,.97);color:#303846}
+.battle-heading{display:flex;justify-content:space-between;gap:10px;align-items:center}
+#battle-controls button{min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid #cbd2de;background:#fff;color:#303846;font:inherit;font-size:13px;line-height:1.5;cursor:pointer;white-space:normal;overflow-wrap:anywhere;text-align:left}
+#battle-controls button:hover:not(:disabled){background:#e9edf7;border-color:#9caac4}
+#battle-controls button:focus-visible{outline:3px solid #7b8fb4;outline-offset:2px}
+#battle-controls button:disabled{opacity:.5;cursor:not-allowed}
+#battle-controls #battle-auto[aria-pressed="true"]{background:#465369;color:white}
+#battle-order{display:flex;gap:6px;overflow-x:auto;padding:10px 0;overscroll-behavior-x:contain}
+.battle-order-item{flex:0 0 auto;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:8px;background:#edf0f5;padding:5px 8px;font-size:11px}
+.battle-order-item.is-current{background:#dfe6f7;box-shadow:inset 0 0 0 1px #96a8cc;font-weight:700}
+.battle-order-item.is-done{opacity:.45}
+#battle-status{font-size:14px;font-weight:700;line-height:1.6;margin:5px 0 10px;overflow-wrap:anywhere}
+#battle-options{display:flex;flex-wrap:wrap;gap:8px}
+#battle-options button{flex:1 1 180px}
+.battle-confirm{flex-basis:100%;font-size:13px;line-height:1.7;color:#7b4e52}
+.battle-help{margin-top:10px;font-size:11px;line-height:1.7;color:#626e7e}.battle-help summary{cursor:pointer}.battle-help p{margin-top:6px}
+#combat-player-deck .battle-active{outline:3px solid #9baed2;outline-offset:3px;box-shadow:0 0 22px #a8bad44d!important}
+@media(max-width:767px){
+#battle-controls{padding:12px;margin-top:10px;border-radius:14px}
+#battle-options button{flex:1 1 130px;font-size:12px;padding:9px 10px}
+#battle-status{font-size:12px}
+#combat-player-deck [id^="combat-card-"]>div:first-child{aspect-ratio:1/1!important;max-height:100px}
+#combat-player-deck{gap:6px!important;padding:6px!important}
+#combat-player-deck .combat-card-name{font-size:10px!important;line-height:1.35!important}
+}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1155,6 +1204,13 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
                     <div id="combat-monster-area" class="col-span-2 flex flex-col items-center"></div>
                 </div>
 
+                <section id="battle-controls" aria-label="전투 행동 선택">
+                    <div class="battle-heading"><strong id="battle-round">1턴</strong><button type="button" id="battle-auto" aria-pressed="false">자동 진행 OFF</button></div>
+                    <div id="battle-order" aria-label="이번 턴 행동 순서"></div>
+                    <p id="battle-status" role="status" aria-live="polite">전투 준비 중…</p>
+                    <div id="battle-options"></div>
+                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10~50%를 무작위로 회복합니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 아래 1x·2x·4x는 연출 속도입니다.</p></details>
+                </section>
                 <div class="relative z-10 flex justify-end items-center gap-2 mt-4 font-tech">
                     <button id="speed-1x" class="speed-button active gacha-button py-1 px-3 text-xs">1x</button>
                     <button id="speed-2x" class="speed-button gacha-button py-1 px-3 text-xs">2x</button>
@@ -1952,6 +2008,7 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
                 grade: row.grade, // 혹은 row.rarity
                 rarity: row.rarity,
                 publishTarget: row.publish_target,
+                speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 0,
                 
                 stats: { 
                     hp: Number(row.hp) || 100, 
@@ -1974,7 +2031,7 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
         // ✨ value를 power로 변경
         power: parseFloat(row.skill1_power) || 1.0, 
         type: row.skill1_type || 'damage',
-        cooldown: 3
+        cooldown: row.skill1_cooldown ?? row.skill1_turn_limit ?? 3
     },
     // [1] 두 번째 스킬
     {
@@ -1983,7 +2040,8 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
         dialogue: row.skill2_dialogue,
         // ✨ value를 power로 변경
         power: parseFloat(row.skill2_power) || 0.0, 
-        type: row.skill2_type
+        type: row.skill2_type,
+        cooldown: row.skill2_cooldown ?? row.skill2_turn_limit ?? 3
     }
 ].filter(skill => skill.name),
                 deathDialogue: row.deathDialogue,
@@ -1999,6 +2057,7 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
         const mKey = row.key || row.name;
         monsters[mKey] = {
             name: row.name,
+            speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 0,
             stats: { hp: Number(row.hp), atk: Number(row.atk), def: Number(row.def) },
             imageUrl: row.imageUrl,
             // ▼▼▼ [추가] 광역 공격 여부 체크 ▼▼▼
@@ -3159,7 +3218,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const aoe=boss&&f>=8;
             return {name:boss?({4:'제1봉인 · 지워진 문지기',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
                 stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
-                rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
+                speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
         }
         function updateRogueUI() {
             const lobby=document.getElementById('rogue-lobby');if(!lobby)return;
@@ -6861,6 +6920,11 @@ function startStageCombat(chapterIndex, stageIndex) {
 				async function startCombat(indices, type) {
     if(isCombatRunning)return;
     isCombatRunning = true;
+    cancelBattleSession();
+    const session = {active:true, auto:false, pending:null, round:0, damage:0};
+    battleSession = session;
+    window.currentCombatIndices = indices;
+    window.currentCombatType = type;
     // ✨ [추가] 전투 진입 텍티컬 경고 연출 재생
     const startOverlay = document.getElementById('combat-start-overlay');
     if (startOverlay) {
@@ -6869,7 +6933,7 @@ function startStageCombat(chapterIndex, stageIndex) {
         startOverlay.classList.add('hidden');
     }
 
-    isCombatRunning = true;
+    if (!session.active || session !== battleSession || !isCombatRunning) return;
     setCombatSpeed(1);
 
     let monsterData;
@@ -6877,6 +6941,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     if (type === 'raid') {
         monsterData = JSON.parse(JSON.stringify({
             name: raidBossData.name,
+            speed: raidBossData.speed ?? 0,
             stats: { hp: raidBossData.currentHp, atk: raidBossData.atk, def: raidBossData.def },
             imageUrl: raidBossData.imageUrl,
             isAoE: true
@@ -7014,7 +7079,15 @@ function startStageCombat(chapterIndex, stageIndex) {
 
     // 4. 전투 루프 실행
     initCombat3DBackground();
-    await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type);
+    try {
+        await runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type, session);
+    } catch (error) {
+        console.error('전투 처리 오류', error);
+        if (session.active && session === battleSession) {
+            endCombat(false, {indices,type}, session.damage, combatDeck);
+            alert('전투 처리 중 오류가 발생해 종료했습니다. 다시 진입해 주세요.');
+        }
+    }
 }
 
 
@@ -7022,227 +7095,264 @@ function startStageCombat(chapterIndex, stageIndex) {
 
             const delay = ms => new Promise(res => setTimeout(res, ms / combatSpeedMultiplier));
 
-            // ✅ [수정됨] runCombatLoop: 5턴 지속 효과 및 턴 관리 로직 적용
-async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type) {
-    const originalMonsterDef = monsterData.stats.def; // 몬스터 기본 방어력 백업
-    const originalMonsterAtk = monsterData.stats.atk; // 몬스터 기본 공격력 백업
-    let totalDamageDealt = 0;
-    let rogueTurn = 0;
-
-    while (monsterData.stats.hp > 0 && combatDeck.some(c => c.stats.hp > 0)) {
-        if (!isCombatRunning) return;
-
-        if(type==='rogue' && monsterData.rogueBoss) {
-            rogueTurn++;
-            monsterData.rogueStrongTurn=rogueTurn%3===0;
-            logCombat(rogueTurn%3===0?'봉인 수호자가 강공을 준비합니다! 이번 턴 공격력 +40%.':`수호자의 다음 강공까지 ${3-rogueTurn%3}턴.`);
+// Manual combat: one action per living actor per round. Ties preserve deck order, enemy last.
+let battleSession = null;
+function battleSpeed(actor) {
+    const n = Number(actor.speed ?? actor.stats?.speed ?? 0);
+    return Number.isFinite(n) ? n : 0;
+}
+function battleCooldown(skill) {
+    const value = skill.cooldown ?? skill.turnLimit ?? skill.turn_limit;
+    if (value == null || String(value).trim() === '') return 3;
+    const n = Number(value);
+    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 3;
+}
+function cancelBattleSession() {
+    if (!battleSession) return;
+    battleSession.active = false;
+    const pending = battleSession.pending;
+    battleSession.pending = null;
+    if (pending) pending.resolve(null);
+    document.getElementById('battle-options')?.replaceChildren();
+}
+function battleOrder(deck, enemy) {
+    return [...deck.map((actor, index) => ({actor, index})), {actor: enemy, index: -1}]
+        .filter(entry => entry.actor.stats.hp > 0)
+        .sort((a,b) => battleSpeed(b.actor) - battleSpeed(a.actor));
+}
+function battleRemaining(card, index) {
+    return Math.max(0, (card._readyAt[index] || 0) - card._actions);
+}
+function battleAutoAction(card) {
+    if (card.stats.hp < card.maxHp * .35) return {type: 'rest'};
+    const skills = card.skills || [];
+    const ready = skills.map((skill,index) => ({skill,index})).filter(({skill,index}) =>
+        battleRemaining(card,index) === 0 && (skill.type !== 'heal' || card.stats.hp < card.maxHp * .7));
+    const pick = ready.find(({skill}) => ['damage','true_damage','vampire'].includes(skill.type)) || ready[0];
+    return pick ? {type:'skill', index:pick.index} : {type:'normal'};
+}
+function battleRecalculate(actor) {
+    actor.stats.atk = Math.floor(actor._baseAtk * actor.activeEffects.reduce((n,e) =>
+        n * (['buff_atk','debuff_atk','sacrifice_atk'].includes(e.type) ? e.value : 1), 1));
+    actor.stats.def = Math.floor(actor._baseDef * actor.activeEffects.reduce((n,e) =>
+        n * (e.type === 'debuff_def' ? e.value : 1), 1));
+}
+function battleHeal(card, amount) {
+    const before = card.stats.hp;
+    card.stats.hp = Math.min(card.maxHp, before + Math.max(0, Math.floor(amount)));
+    return card.stats.hp - before;
+}
+function battleSacrifice(card, target) {
+    if (!target || target === card || target.stats.hp <= 0 || card.stats.hp <= 0) return false;
+    card.stats.hp = 0;
+    // Refresh a single +20% effect: multiple sacrifices do not multiply it.
+    target.activeEffects = target.activeEffects.filter(e => e.type !== 'sacrifice_atk');
+    target.activeEffects.push({type:'sacrifice_atk', value:1.2, turns:null, name:'희생 · 공격력 +20%'});
+    battleRecalculate(target);
+    return true;
+}
+function renderBattleOrder(session, order, position) {
+    document.getElementById('battle-round').textContent = `${session.round}턴 · ${position+1} / ${order.length} 행동`;
+    const list = document.getElementById('battle-order');
+    list.replaceChildren();
+    order.forEach((entry,index) => {
+        const item = document.createElement('span');
+        item.className = 'battle-order-item' + (index === position ? ' is-current' : '') +
+            (index < position || entry.actor.stats.hp <= 0 ? ' is-done' : '');
+        item.textContent = `${index+1}. ${entry.index < 0 ? '적 · ' : ''}${entry.actor.name} · SPD ${battleSpeed(entry.actor)}`;
+        item.title = item.textContent;
+        if (index === position) item.setAttribute('aria-current','step');
+        list.appendChild(item);
+    });
+}
+function requestBattleAction(session, card, deck) {
+    const status = document.getElementById('battle-status');
+    status.textContent = `${card.name}의 차례 · HP ${card.stats.hp}/${card.maxHp} · 행동을 선택하세요`;
+    if (session.auto) return Promise.resolve(battleAutoAction(card));
+    return new Promise(resolve => {
+        const pending = {resolve, card};
+        session.pending = pending;
+        const options = document.getElementById('battle-options');
+        const valid = () => session.active && session === battleSession && session.pending === pending;
+        const choose = action => {
+            if (!valid()) return;
+            session.pending = null;
+            options.replaceChildren();
+            resolve(action);
+        };
+        pending.choose = choose;
+        const button = (label, callback, disabled = false) => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.textContent = label; b.disabled = disabled;
+            b.addEventListener('click', () => {if (valid()) callback();}); options.appendChild(b);
+        };
+        const root = () => {
+            options.replaceChildren();
+            button('공격 · 일반 / 스킬', attack);
+            button('휴식 · 최대 HP 10~50% 회복', () => choose({type:'rest'}));
+            button('희생 · 아군 공격력 +20%', targets, !deck.some(c => c !== card && c.stats.hp > 0));
+        };
+        const attack = () => {
+            options.replaceChildren();
+            button('일반 공격', () => choose({type:'normal'}));
+            (card.skills || []).forEach((skill,index) => {
+                const wait = battleRemaining(card,index);
+                button(`${skill.name} · ${wait ? `내 차례 ${wait}회 대기` : `사용 가능 / 재사용 ${battleCooldown(skill)}회`}`,
+                    () => choose({type:'skill',index}), wait > 0);
+                options.lastElementChild.title = skill.desc || skill.name;
+            });
+            button('뒤로', root);
+        };
+        const targets = () => {
+            options.replaceChildren();
+            deck.forEach((target,index) => {
+                if (target === card || target.stats.hp <= 0) return;
+                button(`${target.name} · HP ${target.stats.hp}/${target.maxHp}`, () => {
+                    options.replaceChildren();
+                    const text = document.createElement('p');
+                    text.className = 'battle-confirm';
+                    text.textContent = `${card.name}의 HP가 0이 됩니다. ${target.name}에게 이번 전투 동안 공격력 +20%를 부여할까요? (동일 버프 중첩 불가)`;
+                    options.appendChild(text);
+                    button('희생 확정', () => choose({type:'sacrifice',target:index}));
+                    button('취소', root);
+                });
+            });
+            button('뒤로', root);
+        };
+        root();
+    });
+}
+function syncBattleAuto(session) {
+    const button = document.getElementById('battle-auto');
+    button.textContent = session.auto ? '자동 진행 ON' : '자동 진행 OFF';
+    button.setAttribute('aria-pressed', String(session.auto));
+}
+async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type, session) {
+    const alive = () => session === battleSession && session.active && isCombatRunning;
+    const ongoing = () => monsterData.stats.hp > 0 && combatDeck.some(c => c.stats.hp > 0);
+    const status = document.getElementById('battle-status');
+    const refresh = () => {
+        updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+        combatDeck.forEach((c,i) => {
+            const el = document.getElementById(`combat-card-${i}`);
+            el?.classList.toggle('grayscale', c.stats.hp <= 0);
+            el?.classList.toggle('opacity-50', c.stats.hp <= 0);
+        });
+    };
+    [...combatDeck,monsterData].forEach((card,i) => {
+        card._baseAtk = card.stats.atk; card._baseDef = card.stats.def;
+        card._actions = 0; card._readyAt = []; card.activeEffects = [];
+        card.maxHp = i < combatDeck.length ? originalBonusDeck[i].stats.hp : (card.maxHp || card.stats.hp);
+    });
+    session.deck = combatDeck;
+    syncBattleAuto(session);
+    document.getElementById('battle-auto').onclick = () => {
+        if (!alive()) return;
+        session.auto = !session.auto;
+        syncBattleAuto(session);
+        if (session.auto && session.pending) session.pending.choose(battleAutoAction(session.pending.card));
+    };
+    refresh();
+    logCombat('수동 전투 시작 · 높은 스피드부터 행동합니다. 동률이면 편성 순서, 마지막에 적이 행동합니다.');
+    while (alive() && ongoing()) {
+        session.round++;
+        logCombat(`<strong>── ${session.round}턴 ──</strong>`);
+        if (type === 'rogue' && monsterData.rogueBoss) {
+            monsterData.rogueStrongTurn = session.round % 3 === 0;
+            logCombat(monsterData.rogueStrongTurn ? '수호자의 강공! 이번 턴 공격력 +40%.' : `수호자의 다음 강공까지 ${3-session.round%3}턴.`);
         }
-        // ===============================================
-        // 1. 플레이어 턴
-        // ===============================================
-        for (let i = 0; i < combatDeck.length; i++) {
-            if (!isCombatRunning) return;
-
-            const card = combatDeck[i];
-
-            // ✨ [신규] 턴 시작 시 지속 효과 체크 (플레이어)
-            if (card.stats.hp > 0 && card.activeEffects) {
-                // 효과 지속시간 감소 및 만료 처리
-                for (let j = card.activeEffects.length - 1; j >= 0; j--) {
-                    card.activeEffects[j].turns--;
-                    if (card.activeEffects[j].turns <= 0) {
-                        // 효과 만료: 스탯 원복
-                        const effect = card.activeEffects[j];
-                        if (effect.type === 'buff_atk') {
-                            // 단순 나눗셈으로 복구 (부동소수점 오차 있을 수 있으나 게임 규모상 허용)
-                            card.stats.atk = Math.floor(card.stats.atk / effect.value);
-                            logCombat(`<span class="text-gray-400">${card.name}의 공격력 증가 효과가 끝났습니다.</span>`);
-                        }
-                        // 배열에서 제거
-                        card.activeEffects.splice(j, 1);
-                    }
-                }
-                updateCombatUI(combatDeck, originalBonusDeck, monsterData); // 아이콘 갱신
-            }
-
-            if (card.stats.hp > 0) {
-                // 턴 대기 (카드 활성화 시각효과)
-                const cardEl = document.getElementById(`combat-card-${i}`);
-                if (cardEl) {
-                    cardEl.classList.add('ring-4', 'ring-yellow-400', 'scale-105', 'z-10');
-                    await delay(600);
-                    cardEl.classList.remove('ring-4', 'ring-yellow-400', 'scale-105', 'z-10');
-                } else {
-                    await delay(600);
-                }
-
-                if (!isCombatRunning) return;
-
-                const monsterImage = document.getElementById('combat-monster-image');
-
-                // 스킬 사용 여부 결정
-                const useUltimate = card.rarity === 'SSR' && Math.random() < 0.25;
-                const useSkill = Math.random() < 0.4;
-                let skillToUse = null;
-
-                if (useUltimate && card.skills.length > 1) skillToUse = card.skills[1];
-                else if (useSkill) skillToUse = card.skills[0];
-
+        const order = battleOrder(combatDeck, monsterData);
+        for (let position = 0; position < order.length; position++) {
+            if (!alive()) return;
+            if (!ongoing()) break;
+            const {actor:card,index:i} = order[position];
+            if (card.stats.hp <= 0) continue;
+            card._actions++;
+            renderBattleOrder(session, order, position);
+            // Only effects already present at action start lose a duration charge.
+            const ticking = card.activeEffects.filter(e => e.turns != null);
+            const cardEl = i >= 0 ? document.getElementById(`combat-card-${i}`) : null;
+            cardEl?.classList.add('battle-active');
+            if (i >= 0) {
+                const action = await requestBattleAction(session,card,combatDeck);
+                if (!alive() || !action) return;
+                status.textContent = `${card.name} 행동 중…`;
+                document.getElementById('battle-options').replaceChildren();
+                await delay(250);
+                if (!alive()) return;
                 let damage = 0;
-
-                if (skillToUse) {
-                                    logCombat(`<strong>${card.name}</strong>의 스킬! <span class="text-yellow-300">"${skillToUse.name}"</span>`);
-
-                                    // ✨ [추가] 궁극기(SSR 혹은 확률적 발동) 또는 일반 스킬 사용 시 3D 팝업 컷인 실행
-                                    await playUltimateCutin(card, skillToUse); // ✨ 객체 전체를 넘겨서 dialogue도 함께 쓰게 함
-
-                                    await delay(400);
-                                    if (!isCombatRunning) return;
-
-                                    logCombat(`<em>"${skillToUse.dialogue}"</em>`);
-
-                    // --- 스킬 효과 계산 ---
-                    if (skillToUse.type === 'true_damage') {
-                        damage = Math.floor(card.stats.atk * skillToUse.power);
-                        logCombat(`방어력을 무시한 강력한 일격!`);
-                    } else if (skillToUse.type === 'heal') {
-                        damage = 0;
-                        const healAmount = Math.floor(card.stats.atk * skillToUse.power);
-                        const maxHp = originalBonusDeck[i].stats.hp;
-                        card.stats.hp = Math.min(maxHp, card.stats.hp + healAmount);
-                        logCombat(`<strong>${card.name}</strong>이(가) 체력을 ${healAmount} 회복했습니다!`);
-
-                    } else if (skillToUse.type === 'vampire') {
-                        damage = Math.max(1, Math.floor(card.stats.atk * skillToUse.power) - monsterData.stats.def);
-                        const healedAmount = Math.floor(damage * 0.5);
-                        const maxHp = originalBonusDeck[i].stats.hp;
-                        card.stats.hp = Math.min(maxHp, card.stats.hp + healedAmount);
-                        logCombat(`<strong>${card.name}</strong>이(가) ${healedAmount}의 체력을 흡수했습니다!`);
-
-                    } else if (skillToUse.type === 'debuff_def') {
-                        // ✨ [수정] 방어력 감소 (5턴 지속)
-                        // 몬스터에게 효과 적용
-                        monsterData.stats.def = Math.max(0, Math.floor(monsterData.stats.def * 0.8));
-                        monsterData.activeEffects.push({ type: 'debuff_def', turns: 5, value: 0.8, name: '방어력↓' });
-                        logCombat(`<strong>${monsterData.name}</strong>의 방어력이 감소했습니다! (5턴)`);
-
-                    } else if (skillToUse.type === 'debuff_atk') {
-                        // ✨ [수정] 공격력 감소 (5턴 지속)
-                        monsterData.stats.atk = Math.max(0, Math.floor(monsterData.stats.atk * 0.9));
-                        monsterData.activeEffects.push({ type: 'debuff_atk', turns: 5, value: 0.9, name: '공격력↓' });
-                        logCombat(`<strong>${monsterData.name}</strong>의 공격력이 감소했습니다! (5턴)`);
-
-                    } else if (skillToUse.type === 'buff_atk') {
-                        // ✨ [수정] 공격력 증가 (5턴 지속)
-                        const multiplier = 1.1; // 10% 증가
-                        card.stats.atk = Math.floor(card.stats.atk * multiplier);
-                        card.activeEffects.push({ type: 'buff_atk', turns: 5, value: multiplier, name: '공격력↑' });
-                        logCombat(`<strong>${card.name}</strong>의 공격력이 상승했습니다! (5턴)`);
-
+                if (action.type === 'rest') {
+                    const percent = 10 + Math.floor(Math.random()*41);
+                    const healed = battleHeal(card, Math.max(1, Math.floor(card.maxHp*percent/100)));
+                    logCombat(`${card.name} 휴식 · 최대 HP의 ${percent}% 회복 → 실제 회복 ${healed}`);
+                } else if (action.type === 'sacrifice') {
+                    const target = combatDeck[action.target];
+                    if (battleSacrifice(card,target)) logCombat(`${card.name} 희생 · HP 0 → ${target.name} 공격력 +20% (이번 전투)`);
+                } else if (action.type === 'skill') {
+                    const skill = card.skills[action.index];
+                    if (!skill || battleRemaining(card,action.index) > 0) throw new Error('사용할 수 없는 스킬입니다.');
+                    card._readyAt[action.index] = card._actions + battleCooldown(skill) + 1;
+                    logCombat(`<strong>${card.name}</strong>의 스킬 · ${skill.name}`);
+                    await playUltimateCutin(card,skill);
+                    if (!alive()) return;
+                    if (skill.dialogue) logCombat(`<em>“${skill.dialogue}”</em>`);
+                    const power = Number.isFinite(Number(skill.power)) ? Number(skill.power) : 1;
+                    if (skill.type === 'heal') {
+                        logCombat(`${card.name} 체력 ${battleHeal(card,card.stats.atk*power)} 회복`);
+                    } else if (['debuff_def','debuff_atk','buff_atk'].includes(skill.type)) {
+                        const target = skill.type === 'buff_atk' ? card : monsterData;
+                        const value = skill.type === 'buff_atk' ? 1.1 : skill.type === 'debuff_atk' ? .9 : .8;
+                        target.activeEffects.push({type:skill.type, value, turns:5, name:skill.name});
+                        battleRecalculate(target);
+                        logCombat(`${target.name} · ${skill.type === 'buff_atk' ? '공격력 +10%' : skill.type === 'debuff_atk' ? '공격력 -10%' : '방어력 -20%'} (대상의 행동 5회)`);
                     } else {
-                        // 일반 데미지 스킬
-                        damage = Math.max(1, Math.floor(card.stats.atk * skillToUse.power) - monsterData.stats.def);
+                        damage = Math.max(1,Math.floor(card.stats.atk*power) - (skill.type === 'true_damage' ? 0 : monsterData.stats.def));
+                        if (skill.type === 'vampire') logCombat(`${card.name} 체력 ${battleHeal(card,Math.min(damage,monsterData.stats.hp)*.5)} 흡수`);
                     }
-
                 } else {
-                    logCombat(`<strong>${card.name}</strong>의 일반 공격!`);
-                    damage = Math.max(1, card.stats.atk - monsterData.stats.def);
+                    damage = Math.max(1, card.stats.atk-monsterData.stats.def);
+                    logCombat(`<strong>${card.name}</strong>의 일반 공격`);
                 }
-
                 if (damage > 0) {
-                    monsterData.stats.hp = Math.max(0, monsterData.stats.hp - damage);
-                    totalDamageDealt += damage;
-                    logCombat(`<strong>${monsterData.name}</strong>에게 ${damage}의 데미지!`);
-
-                    if (monsterImage) {
-                        monsterImage.classList.add('shake-animation');
-                        setTimeout(() => monsterImage.classList.remove('shake-animation'), 300 / combatSpeedMultiplier);
-                    }
-                    updateCombatUI(combatDeck, originalBonusDeck, monsterData);
-                }
-
-                if (monsterData.stats.hp <= 0) break;
-            }
-        }
-
-        if (monsterData.stats.hp <= 0) break;
-
-        // ===============================================
-        // 2. 몬스터 턴
-        // ===============================================
-        await delay(1000);
-        if (!isCombatRunning) return;
-
-        // ✨ [신규] 몬스터 턴 시작 시 지속 효과 체크
-        if (monsterData.activeEffects) {
-             for (let j = monsterData.activeEffects.length - 1; j >= 0; j--) {
-                monsterData.activeEffects[j].turns--;
-                if (monsterData.activeEffects[j].turns <= 0) {
-                    const effect = monsterData.activeEffects[j];
-                    if (effect.type === 'debuff_def') {
-                        monsterData.stats.def = originalMonsterDef; // 원상복구 (단순화: 기본값으로 리셋)
-                        logCombat(`<span class="text-gray-400">${monsterData.name}의 방어력 감소 효과가 끝났습니다.</span>`);
-                    } else if (effect.type === 'debuff_atk') {
-                        monsterData.stats.atk = originalMonsterAtk;
-                         logCombat(`<span class="text-gray-400">${monsterData.name}의 공격력 감소 효과가 끝났습니다.</span>`);
-                    }
-                    monsterData.activeEffects.splice(j, 1);
-                }
-            }
-            updateCombatUI(combatDeck, originalBonusDeck, monsterData);
-        }
-
-        const alivePlayers = combatDeck.filter(c => c.stats.hp > 0);
-
-        if (alivePlayers.length > 0) {
-            if (monsterData.isAoE) {
-                logCombat(`<strong>${monsterData.name}</strong>의 <span class="text-red-400 font-bold">광역 공격!</span>`);
-                for (const targetCard of alivePlayers) {
-                    const damage = Math.max(1, Math.floor(monsterData.stats.atk * (monsterData.rogueStrongTurn ? 1.4 : 1)) - targetCard.stats.def);
-                    const hpBeforeAttack = targetCard.stats.hp;
-                    targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
-                    logCombat(`- <strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
-
-                    if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
-                        await delay(200);
-                        if (!isCombatRunning) return;
-                        if (targetCard.deathDialogue) logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
-
-                        // 카드 사망 처리 (흑백)
-                        const deadCardEl = document.getElementById(`combat-card-${combatDeck.indexOf(targetCard)}`);
-                        if(deadCardEl) deadCardEl.classList.add('grayscale', 'opacity-50');
-                    }
+                    const actualDamage = Math.min(damage,monsterData.stats.hp);
+                    monsterData.stats.hp = Math.max(0,monsterData.stats.hp-damage);
+                    session.damage += actualDamage;
+                    logCombat(`${monsterData.name}에게 ${actualDamage} 피해`);
                 }
             } else {
-                const targetCard = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
-                logCombat(`<strong>${monsterData.name}</strong>의 공격!`);
-                const damage = Math.max(1, Math.floor(monsterData.stats.atk * (monsterData.rogueStrongTurn ? 1.4 : 1)) - targetCard.stats.def);
-                const hpBeforeAttack = targetCard.stats.hp;
-                targetCard.stats.hp = Math.max(0, targetCard.stats.hp - damage);
-                logCombat(`<strong>${targetCard.name}</strong>에게 ${damage}의 데미지!`);
-
-                if (targetCard.stats.hp <= 0 && hpBeforeAttack > 0) {
-                    await delay(400);
-                    if (!isCombatRunning) return;
-                    if (targetCard.deathDialogue) logCombat(`<strong>${targetCard.name}</strong>: <em>"${targetCard.deathDialogue}"</em>`);
-
-                    const deadCardEl = document.getElementById(`combat-card-${combatDeck.indexOf(targetCard)}`);
-                    if(deadCardEl) deadCardEl.classList.add('grayscale', 'opacity-50');
+                status.textContent = `${monsterData.name}의 차례 · ${monsterData.isAoE ? '전체 공격' : '단일 공격'}${monsterData.rogueStrongTurn ? ' / 강공 +40%' : ''}`;
+                document.getElementById('battle-options').replaceChildren();
+                await delay(650);
+                if (!alive()) return;
+                const living = combatDeck.filter(c => c.stats.hp > 0);
+                const targets = monsterData.isAoE ? living : [living[Math.floor(Math.random()*living.length)]];
+                logCombat(`${monsterData.name}의 ${monsterData.isAoE ? '광역 ' : ''}공격`);
+                for (const target of targets) {
+                    const damage = Math.max(1,Math.floor(card.stats.atk*(card.rogueStrongTurn ? 1.4 : 1))-target.stats.def);
+                    target.stats.hp = Math.max(0,target.stats.hp-damage);
+                    logCombat(`${target.name}에게 ${damage} 피해${target.stats.hp <= 0 ? ' · 전투 불능' : ''}`);
+                    if (target.stats.hp <= 0 && target.deathDialogue) logCombat(`${target.name}: “${target.deathDialogue}”`);
                 }
             }
-            updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+            ticking.forEach(effect => effect.turns--);
+            card.activeEffects = card.activeEffects.filter(effect => effect.turns == null || effect.turns > 0);
+            battleRecalculate(card);
+            refresh();
+            cardEl?.classList.remove('battle-active');
+            await delay(350);
+            if (!alive()) return;
         }
-    } // while 루프 종료
-
-    await delay(1000);
-    if (!isCombatRunning) return;
-
-    // 전투 종료 시 임시 스탯 복구 (안전장치)
-    monsterData.stats.def = originalMonsterDef;
-
-    if (isCombatRunning) {
-        endCombat(monsterData.stats.hp <= 0, {indices: indices, type: type}, totalDamageDealt, combatDeck);
     }
+    if (!alive()) return;
+    status.textContent = monsterData.stats.hp <= 0 ? '승리 · 전투 종료' : '패배 · 전투 종료';
+    await delay(500);
+    if (!alive()) return;
+    // Temporary combat effects never leak into later dungeon encounters.
+    [...combatDeck,monsterData].forEach(card => {
+        card.stats.atk = card._baseAtk; card.stats.def = card._baseDef; card.activeEffects = [];
+        delete card._baseAtk; delete card._baseDef; delete card._actions; delete card._readyAt;
+    });
+    endCombat(monsterData.stats.hp <= 0, {indices,type}, session.damage, combatDeck);
 }
 
 function logCombat(message) {
@@ -7396,10 +7506,10 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
                         const icon = document.createElement('div');
                         let iconChar = '⚡';
                         let bgClass = 'bg-gray-600';
-                        if (effect.type === 'buff_atk') { iconChar = '⚔️↑'; bgClass = 'bg-red-600'; }
+                        if (effect.type === 'buff_atk' || effect.type === 'sacrifice_atk') { iconChar = '⚔️↑'; bgClass = 'bg-red-600'; }
                         else if (effect.type === 'buff_def') { iconChar = '🛡️↑'; bgClass = 'bg-blue-600'; }
                         icon.className = `${bgClass} text-white text-[10px] px-1 rounded shadow animate-pulse font-bold`;
-                        icon.innerHTML = `${iconChar} <span class="text-[9px]">${effect.turns}턴</span>`;
+                        icon.innerHTML = `${iconChar} <span class="text-[9px]">${effect.turns == null ? '+20% · 전투 중' : effect.turns+'회'}</span>`;
                         iconContainer.appendChild(icon);
                     });
                 }
@@ -7435,7 +7545,7 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
                 let bgClass = 'bg-orange-600';
                 if (effect.type === 'debuff_def') { iconChar = '🛡️↓'; bgClass = 'bg-purple-600'; }
                 icon.className = `${bgClass} text-white text-[10px] px-1 rounded shadow animate-pulse font-bold`;
-                icon.innerHTML = `${iconChar} <span class="text-[9px]">${effect.turns}턴</span>`;
+                icon.innerHTML = `${iconChar} <span class="text-[9px]">${effect.turns == null ? '+20% · 전투 중' : effect.turns+'회'}</span>`;
                 monsterIconContainer.appendChild(icon);
             });
         }
@@ -7514,6 +7624,7 @@ if (!hasStoryToShow) {
 }
 
 function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null) {
+    cancelBattleSession();
     stopCombat3DBackground();
 
     isCombatRunning = false;
@@ -7734,6 +7845,22 @@ function createCard(character, options = {}) {
             </div>
             ${actionButtonsHTML}
         `;
+
+    if (mode === 'deckSlot' && cardInstance) {
+        card.classList.add('equipped-deck-card');
+        const metadata = document.createElement('div');
+        metadata.className = 'deck-slot-meta';
+        const faction = card.querySelector('.faction-mark');
+        if (faction) metadata.appendChild(faction);
+        card.querySelectorAll('.level-badge, .revision-stars').forEach(badge => badge.remove());
+        const level = document.createElement('span');
+        level.textContent = `퇴고 +${cardInstance.level || 0}`;
+        const revision = document.createElement('span');
+        revision.textContent = `개정 ${cardInstance.revision || 0}`;
+        metadata.append(level, revision);
+        const action = card.querySelector('[data-action="remove-from-deck"]');
+        card.insertBefore(metadata, action);
+    }
 
     if (cardInstance && mode !== 'collection') {
         card.dataset.uniqueId = cardInstance.id;
@@ -13295,7 +13422,8 @@ function fleeCombat() {
     // 이미 전투가 끝난 상태라면 무시
     if (!isCombatRunning) return;
 
-    if (!window.currentCombatIndices || !window.currentCombatType) {
+    if (window.currentCombatIndices == null || !window.currentCombatType) {
+        cancelBattleSession();
         console.error("전투 정보가 유실되었습니다. 홈으로 돌아갑니다.");
         isCombatRunning = false;
         switchTab('home');
@@ -13310,7 +13438,7 @@ function fleeCombat() {
     endCombat(false, {
         indices: window.currentCombatIndices,
         type: window.currentCombatType
-    }, 0);
+    }, battleSession?.damage || 0, battleSession?.deck || null);
 }
 
 function startIntroTutorial() {
