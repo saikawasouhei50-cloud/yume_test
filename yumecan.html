@@ -672,7 +672,14 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
 #combat-player-deck .combat-card-name{font-size:10px!important;line-height:1.35!important}
 }
 </style>
-</head>
+<style id="skill-readability-style">
+#battle-options .battle-skill-effect{display:block;font-size:12px;font-weight:400;line-height:1.65;margin-top:7px;color:#465264;white-space:normal;overflow-wrap:anywhere}
+#battle-options .battle-skill-cooldown{display:block;font-size:11px;font-weight:600;line-height:1.5;margin-top:9px;color:#59647b}
+#battle-options .battle-skill-button{flex:1 1 230px}
+#battle-controls #battle-options .battle-skill-button:disabled{opacity:1;background:#eef0f4;color:#626d7d;border-color:#d9dee7}
+#battle-options .battle-skill-button strong{display:block;line-height:1.5}
+@media(max-width:600px){#battle-options .battle-skill-button{flex-basis:100%}}
+</style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
@@ -1648,10 +1655,11 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
                             <div class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-gray-500"></div>
                                 <h3 class="font-tech text-gray-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">BASE STATS // 능력치</h3>
-                                <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                                     <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">HP</p><p id="detail-stat-hp" class="font-tech font-bold text-lg text-white"></p></div>
                                     <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">ATK</p><p id="detail-stat-atk" class="font-tech font-bold text-lg text-white"></p></div>
                                     <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">DEF</p><p id="detail-stat-def" class="font-tech font-bold text-lg text-white"></p></div>
+                                    <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">SPD · 스피드</p><p id="detail-stat-speed" class="font-tech font-bold text-lg text-white"></p></div>
                                 </div>
                             </div>
 
@@ -7167,7 +7175,7 @@ function renderBattleOrder(session, order, position) {
 }
 function requestBattleAction(session, card, deck) {
     const status = document.getElementById('battle-status');
-    status.textContent = `${card.name}의 차례 · HP ${card.stats.hp}/${card.maxHp} · 행동을 선택하세요`;
+    status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp} · 행동을 선택하세요`;
     if (session.auto) return Promise.resolve(battleAutoAction(card));
     return new Promise(resolve => {
         const pending = {resolve, card};
@@ -7185,6 +7193,7 @@ function requestBattleAction(session, card, deck) {
             const b = document.createElement('button');
             b.type = 'button'; b.textContent = label; b.disabled = disabled;
             b.addEventListener('click', () => {if (valid()) callback();}); options.appendChild(b);
+            return b;
         };
         const root = () => {
             options.replaceChildren();
@@ -7194,12 +7203,26 @@ function requestBattleAction(session, card, deck) {
         };
         const attack = () => {
             options.replaceChildren();
-            button('일반 공격', () => choose({type:'normal'}));
+            const normal = button('일반 공격', () => choose({type:'normal'}));
+            const normalDesc = document.createElement('span');
+            normalDesc.className = 'battle-skill-effect';
+            normalDesc.textContent = '적 1명에게 공격력에서 적 방어력을 뺀 피해를 줍니다(최소 1). 재사용 대기 없음.';
+            normal.appendChild(normalDesc);
             (card.skills || []).forEach((skill,index) => {
                 const wait = battleRemaining(card,index);
-                button(`${skill.name} · ${wait ? `내 차례 ${wait}회 대기` : `사용 가능 / 재사용 ${battleCooldown(skill)}회`}`,
-                    () => choose({type:'skill',index}), wait > 0);
-                options.lastElementChild.title = skill.desc || skill.name;
+                const skillButton = button('', () => choose({type:'skill',index}), wait > 0);
+                skillButton.classList.add('battle-skill-button');
+                const title = document.createElement('strong');
+                title.textContent = skill.name;
+                const effect = document.createElement('span');
+                effect.className = 'battle-skill-effect';
+                effect.textContent = describeSkillEffect(skill);
+                const cooldown = document.createElement('span');
+                cooldown.className = 'battle-skill-cooldown';
+                cooldown.textContent = `${wait ? `사용 불가 · 내 차례 ${wait}회 대기` : '사용 가능'} / 사용 후 내 차례 ${battleCooldown(skill)}회 재사용 대기`;
+                skillButton.appendChild(title);
+                skillButton.appendChild(effect);
+                skillButton.appendChild(cooldown);
             });
             button('뒤로', root);
         };
@@ -7889,37 +7912,24 @@ function createCard(character, options = {}) {
 }
 
             // ✅ [수정됨] getSkillDescription: 5턴 지속 문구 반영
+// Explain executed effects, not spreadsheet prose that can disagree with the engine.
+function describeSkillEffect(skill) {
+    const power = Number.isFinite(Number(skill.power)) ? Number(skill.power) : 1;
+    const percent = Math.round(power * 1000) / 10;
+    const damage = `적 1명에게 공격력 ${percent}%에서 적 방어력을 뺀 피해를 줍니다(최소 1).`;
+    switch (skill.type) {
+        case 'heal': return `자신의 HP를 공격력 ${percent}%만큼 회복합니다. 최대 HP를 넘지 않습니다.`;
+        case 'true_damage': return `적 1명의 방어력을 무시하고 공격력 ${percent}% 피해를 줍니다(최소 1).`;
+        case 'vampire': return damage + ' 실제로 깎은 적 HP의 50%만큼 자신의 HP를 회복합니다.';
+        case 'buff_atk': return '자신의 공격력 +10%. 자신의 다음 행동 5회 동안 유지됩니다.';
+        case 'debuff_atk': return '적의 공격력 -10%. 적이 행동 5회를 마칠 때까지 유지됩니다.';
+        case 'debuff_def': return '적의 방어력 -20%. 적이 행동 5회를 마칠 때까지 유지됩니다.';
+        case 'buff_def': return damage + ' 현재 방어력 증가 효과는 구현되어 있지 않습니다.';
+        default: return damage;
+    }
+}
 function getSkillDescription(skill) {
-    // 1. 구글 시트나 데이터 파일에 적어둔 '커스텀 설명'이 있다면 그걸 최우선으로 보여줌
-    if (skill.desc && skill.desc !== "") {
-        return skill.desc;
-    }
-
-    // 2. 커스텀 설명이 없으면, 스킬 타입에 따라 자동 생성
-    const powerPercent = Math.round(skill.power * 100); // 예: 1.5 -> 150
-
-    switch(skill.type) {
-        case 'damage':
-            return `적에게 공격력의 ${powerPercent}% 만큼 피해를 줍니다.`;
-        case 'heal':
-            return `자신의 체력을 공격력의 ${powerPercent}% 만큼 회복합니다.`;
-        case 'vampire':
-            return `적을 공격하고 피해량의 50%를 체력으로 흡수합니다.`;
-        case 'true_damage':
-            return `적의 방어력을 무시하고 공격력의 ${powerPercent}% 피해를 줍니다.`;
-
-        // ▼▼▼ 여기 설명들이 변경되었습니다 (1턴 -> 5턴) ▼▼▼
-        case 'buff_atk':
-            return `자신의 공격력이 5턴 동안 10% 증가합니다.`;
-        case 'debuff_atk':
-            return `적의 공격력을 5턴 동안 10% 감소시킵니다.`;
-        case 'debuff_def':
-            return `적의 방어력을 5턴 동안 20% 감소시킵니다.`;
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-        default:
-            return '특별한 효과를 가진 스킬입니다.'; // 타입을 모를 때 나오는 기본 문구
-    }
+    return describeSkillEffect(skill) + ` 사용 후 자신의 다음 ${battleCooldown(skill)}차례 동안 재사용 불가.`;
 }
 
             let currentDetailCardId = null;
@@ -8024,6 +8034,7 @@ function getSkillDescription(skill) {
     document.getElementById('detail-stat-hp').textContent = currentStats.hp;
     document.getElementById('detail-stat-atk').textContent = currentStats.atk;
     document.getElementById('detail-stat-def').textContent = currentStats.def;
+    document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
     // --- 3. 스킬 및 스토리 표시 ---
     const skillsContainer = document.getElementById('detail-skills-container');
@@ -8039,7 +8050,7 @@ function getSkillDescription(skill) {
             // 스킬 박스를 사이버펑크 UI로 변경 (왼쪽 띠 강조)
             skillEl.className = 'bg-black/40 border border-gray-800 border-l-2 p-3 mb-2 ' + (isUltimate ? 'border-l-yellow-500' : 'border-l-cyan-500');
 
-            const description = skill.desc ? skill.desc : getSkillDescription(skill);
+            const description = getSkillDescription(skill);
 
             skillEl.innerHTML = `
                 <h4 class="font-tech text-xs tracking-wider mb-1 ${isUltimate ? 'text-yellow-400' : 'text-cyan-400'}">
@@ -8447,6 +8458,7 @@ function openCollectionCardModal(cardBaseName) {
     document.getElementById('detail-stat-hp').textContent = character.stats.hp;
     document.getElementById('detail-stat-atk').textContent = character.stats.atk;
     document.getElementById('detail-stat-def').textContent = character.stats.def;
+    document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
     // 5. 스킬 표시
     const skillsContainer = document.getElementById('detail-skills-container');
@@ -8456,7 +8468,7 @@ function openCollectionCardModal(cardBaseName) {
         const skillEl = document.createElement('div');
         skillEl.className = 'bg-black/20 p-3 rounded-lg';
 
-        const description = skill.desc ? skill.desc : getSkillDescription(skill);
+        const description = getSkillDescription(skill);
 
         skillEl.innerHTML = `
             <h4 class="font-bold ${isUltimate ? 'text-yellow-300' : 'text-white'}">
@@ -12812,6 +12824,7 @@ function openTradeCardDetail(tradeId) {
     document.getElementById('detail-stat-hp').textContent = currentStats.hp;
     document.getElementById('detail-stat-atk').textContent = currentStats.atk;
     document.getElementById('detail-stat-def').textContent = currentStats.def;
+    document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
     // --- 스킬 표시 (유전 스킬 포함) ---
     const skillsContainer = document.getElementById('detail-skills-container');
@@ -12823,7 +12836,7 @@ function openTradeCardDetail(tradeId) {
         const skillEl = document.createElement('div');
         skillEl.className = 'bg-black/20 p-3 rounded-lg';
 
-        const description = skill.desc ? skill.desc : getSkillDescription(skill);
+        const description = getSkillDescription(skill);
 
         skillEl.innerHTML = `
             <h4 class="font-bold ${isUltimate ? 'text-yellow-300' : 'text-white'}">
