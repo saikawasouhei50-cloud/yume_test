@@ -30,6 +30,26 @@ window.showYumecanStartupError = function(message) {
   const retry = document.createElement('button'); retry.textContent = '다시 연결'; retry.onclick = () => location.reload();
   panel.append(title, detail, retry); overlay.append(panel); overlay.classList.remove('hidden');
 };
+window.yumecanStartupDone = false;
+window.yumecanStartupPhase = '화면과 로그인 모듈 준비';
+window.finishYumecanStartup = function() {
+  window.yumecanStartupDone = true;
+  clearTimeout(window.yumecanStartupTimer);
+};
+function reportYumecanStartupFailure(error) {
+  if (window.yumecanStartupDone) return;
+  const show = () => window.showYumecanStartupError(
+    `${window.yumecanStartupPhase} 중 문제가 발생했습니다. ${error?.message || '연결을 확인한 뒤 다시 시도해 주세요.'}`);
+  if (document.getElementById('loading-overlay')) show();
+  else document.addEventListener('DOMContentLoaded', show, {once:true});
+}
+window.addEventListener('error', event => {if (event.error) reportYumecanStartupFailure(event.error);});
+window.addEventListener('unhandledrejection', event => reportYumecanStartupFailure(event.reason));
+document.addEventListener('DOMContentLoaded', () => {
+  window.yumecanStartupTimer = setTimeout(() => {
+    reportYumecanStartupFailure(new Error('응답이 지연되고 있습니다. Wi-Fi 또는 모바일 데이터 연결을 바꿔 다시 연결해 주세요.'));
+  }, 35000);
+});
 document.addEventListener('DOMContentLoaded', () => {
   for (const key of ['muted','quick','calm']) {
     const input = document.getElementById('pref-' + key);
@@ -682,6 +702,20 @@ html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;colo
 </style><style id="collections-style">
 .collection-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}.collection-toolbar input:not([type="checkbox"]){flex:1 1 200px;min-width:0}.collection-toolbar select,.collection-toolbar button,.collection-toolbar input:not([type="checkbox"]),#profile-nameplate-select{padding:11px;border:1px solid #d4d9e2;border-radius:12px;background:#fff;color:#354050;font:inherit;font-size:13px;min-height:44px}.collection-toolbar label{font-size:12px}.collection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.collection-item{padding:16px;border:1px solid #dce0e6;border-radius:16px;background:#fafbfd;color:#354050}.collection-item strong{display:block;font-size:14px}.collection-item b{display:block;margin-top:8px;font-size:18px}.collection-item p{font-size:12px;line-height:1.7;margin-top:8px;overflow-wrap:anywhere}.profile-nameplate{display:inline-block;padding:6px 12px;border:1px solid #b9c4d8;border-radius:20px;background:#e9edf7;color:#4a5770;font-size:12px;margin-top:8px}.profile-nameplate:empty{display:none}
 #achievements-container>div{gap:12px}#achievements-container button{flex-shrink:0;min-height:44px}@media(max-width:600px){#achievements-container>div{flex-direction:column;align-items:stretch}#achievements-container h3{font-size:15px}#achievements-container p{font-size:12px;line-height:1.7}}
+</style><style id="rarity-frames-v2">
+[data-rarity="N"]{--tier-border:#a1aab8;--tier-ink:#526070;--tier-wash:#f0f2f5}
+[data-rarity="R"]{--tier-border:#82b3de;--tier-ink:#326692;--tier-wash:#edf6ff}
+[data-rarity="SR"]{--tier-border:#b397d6;--tier-ink:#765095;--tier-wash:#f6efff}
+[data-rarity="SSR"]{--tier-border:#d2ad65;--tier-ink:#856123;--tier-wash:#fff8e8}
+body div.rarity-N[data-rarity],body div.rarity-R[data-rarity],body div.rarity-SR[data-rarity],body div.rarity-SSR[data-rarity]{background:linear-gradient(180deg,var(--tier-wash),#fff 55%)!important;border:2px solid var(--tier-border)!important;border-top-width:5px!important;box-shadow:0 4px 14px #4146540a!important}
+body div.rarity-SSR[data-rarity]{border-style:double!important;border-width:4px!important;border-top-width:6px!important}
+body #combat-player-deck>div[data-rarity]{border:2px solid var(--tier-border)!important;border-top-width:5px!important}
+body #combat-player-deck>div[data-rarity="SSR"]{border-style:double!important;border-width:4px!important}
+body #detail-card-image[data-rarity]{border:4px solid var(--tier-border)!important;border-radius:12px}
+body #detail-card-image[data-rarity="SSR"]{border:6px double var(--tier-border)!important}
+body #detail-card-rarity[data-rarity]{color:var(--tier-ink)!important;background:var(--tier-wash)!important;border:1px solid var(--tier-border);border-radius:8px;padding:3px 9px}
+body div[data-rarity]>div>p.font-tech.font-black,body .combat-rarity-label{color:var(--tier-ink)!important;background:var(--tier-wash)!important;border-radius:5px;display:inline-block;padding:1px 6px;text-shadow:none!important}
+.combat-rarity-label{font-size:10px;font-weight:800;margin:2px 0;line-height:1.5}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1980,9 +2014,17 @@ async function loadGameData() {
         // const GOOGLE_SHEET_URL = "..."; 
 
         // 자동으로 맨 위에 적은 GOOGLE_SHEET_URL을 가져옵니다.
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`); 
-        const data = await response.json();
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 25000);
+        let data;
+        try {
+            const response = await fetch(GOOGLE_SHEET_URL, {signal:controller.signal});
+            if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`);
+            data = await response.json();
+        } catch (error) {
+            if (error.name === 'AbortError') throw new Error('캐릭터 데이터 서버가 25초 안에 응답하지 않았습니다.');
+            throw error;
+        } finally { clearTimeout(timer); }
 		
 		if (data.systemMails) {
             systemMails = data.systemMails.map(row => ({
@@ -2814,10 +2856,11 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         fleeCombat();
     }
 });
+    window.yumecanStartupPhase = '캐릭터 데이터 불러오기';
     try { await loadGameData(); }
     catch (error) {
         console.error('Game data initialization failed:', error);
-        window.showYumecanStartupError('캐릭터 데이터를 불러오지 못했습니다. 인터넷 연결과 데이터 파일을 확인해 주세요.');
+        reportYumecanStartupFailure(error);
         return;
     }
 	checkEndedEvents();
@@ -2825,6 +2868,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
     const enterMultiModeButton = document.getElementById('enter-multi-mode');
 
         // --- 인증 상태 감지 리스너 ---
+        window.yumecanStartupPhase = '로그인 상태 확인';
         auth.onAuthStateChanged(user => {
             const loginView = document.getElementById('login-view');
             const loggedInView = document.getElementById('logged-in-view');
@@ -2835,9 +2879,10 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 loggedInView.classList.remove('hidden');
                 document.getElementById('nickname-display').textContent = user.displayName || user.email;
 
+                window.yumecanStartupPhase = '계정 데이터 불러오기';
                 loadGameFromFirebase(user.uid).catch(error => {
                     console.error('Save load failed:', error);
-                    window.showYumecanStartupError('저장 데이터를 불러오지 못했습니다. 연결을 확인한 후 다시 시도해 주세요.');
+                    reportYumecanStartupFailure(error);
                 });
 
                 // ✨ [추가] 친구 요청 실시간 감시 시작
@@ -2855,6 +2900,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
 
                 // ================== 👇 4. 로딩 상태 비활성화 👇 ==================
                 // 로딩 화면을 숨겨서 로그인/회원가입을 할 수 있도록 합니다.
+                window.finishYumecanStartup();
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.body.classList.remove('loading');
                 // ===============================================================
@@ -4086,7 +4132,8 @@ playerInspHp = savedData.inspHp ?? 0;
         if (!card.id) card.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
     });
 
-    await checkAndProcessSystemMails(uid);
+    // Mail delivery must not block entry on a slow mobile connection.
+    checkAndProcessSystemMails(uid).catch(error => console.error('우편 확인 지연:', error));
 
     updateUI();
     updateRaidDailyCountUI();
@@ -4096,6 +4143,7 @@ playerInspHp = savedData.inspHp ?? 0;
     checkAndSpawnRaidBoss();
     updateAchievementBadge();
 
+    window.finishYumecanStartup();
     document.getElementById('loading-overlay').classList.add('hidden');
     document.body.classList.remove('loading');
 	if (playerTutorialFinished === false) {
@@ -7141,6 +7189,7 @@ function startStageCombat(chapterIndex, stageIndex) {
             cardEl.style.cssText = customStyle;
             cardEl.id = `combat-card-${index}`;
             cardEl.dataset.faction = card.faction || '기타';
+            cardEl.dataset.rarity = card.rarity || 'N';
             cardEl.title = card.name;
 
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
@@ -7151,6 +7200,7 @@ function startStageCombat(chapterIndex, stageIndex) {
                 <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-75 origin-top-right"></div>
             </div>
 
+            <span class="combat-rarity-label">${card.rarity || 'N'}</span>
             <span class="faction-mark combat-faction" data-faction="${card.faction || '기타'}">${card.faction || '기타'}</span>
             <p class="combat-card-name">${card.name}</p>
 
@@ -7881,6 +7931,7 @@ function createCard(character, options = {}) {
 
     // 카드 생성
     const card = document.createElement('div');
+    card.dataset.rarity = displayRarity;
     card.className = `rarity-${displayRarity} relative text-center rounded-lg shadow-md p-2 transform transition-transform duration-300 hover:scale-105 cursor-pointer`;
     card.title = character.name;
 
@@ -8052,6 +8103,8 @@ function getSkillDescription(skill) {
     }
 
     rarityEl.textContent = displayRarity;
+    document.getElementById('detail-card-image').dataset.rarity = rarityEl.textContent;
+    rarityEl.dataset.rarity = rarityEl.textContent;
     // 다크 테마에 맞춰 밝고 형광빛이 도는 색상으로 교체
     const rarityColor = {
         'N': 'text-gray-300',
@@ -8534,6 +8587,8 @@ function openCollectionCardModal(cardBaseName) {
 
     const rarityEl = document.getElementById('detail-card-rarity');
     rarityEl.textContent = character.rarity;
+    document.getElementById('detail-card-image').dataset.rarity = rarityEl.textContent;
+    rarityEl.dataset.rarity = rarityEl.textContent;
     const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[character.rarity];
     rarityEl.className = `font-bold text-2xl ${rarityColor}`;
 
@@ -12861,6 +12916,8 @@ function openTradeCardDetail(tradeId) {
     }
 
     rarityEl.textContent = displayRarity;
+    document.getElementById('detail-card-image').dataset.rarity = rarityEl.textContent;
+    rarityEl.dataset.rarity = rarityEl.textContent;
     const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[displayRarity];
     rarityEl.className = `font-bold text-2xl ${rarityColor}`;
 
