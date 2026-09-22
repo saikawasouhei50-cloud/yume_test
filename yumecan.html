@@ -696,6 +696,39 @@ body #detail-card-image[data-rarity="SSR"]{border:6px double var(--tier-border)!
 body #detail-card-rarity[data-rarity]{color:var(--tier-ink)!important;background:var(--tier-wash)!important;border:1px solid var(--tier-border);border-radius:8px;padding:3px 9px}
 body div[data-rarity]>div>p.font-tech.font-black,body .combat-rarity-label{color:var(--tier-ink)!important;background:var(--tier-wash)!important;border-radius:5px;display:inline-block;padding:1px 6px;text-shadow:none!important}
 .combat-rarity-label{font-size:10px;font-weight:800;margin:2px 0;line-height:1.5}
+</style><style id="compact-battle-layout">
+/* Combat-only layout: natural arena height keeps the action panel below every card. */
+html body #combat-arena{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;gap:24px;height:auto;max-height:none;padding:8px;overflow:visible}
+html body #combat-player-deck{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:start;align-content:start;gap:10px!important;padding:5px!important;width:100%;max-width:none;overflow:visible;min-width:0}
+html body #combat-player-deck>.compact-combat-card{grid-column:span 2;width:auto;min-width:0;height:auto;margin:0!important;padding:7px;display:flex;flex-direction:column;align-items:stretch;box-sizing:border-box}
+html body #combat-player-deck>.compact-combat-card:nth-child(4):nth-last-child(2){grid-column:2/span 2}
+html body #combat-player-deck>.compact-combat-card:nth-child(5):last-child{grid-column:4/span 2}
+html body #combat-player-deck .compact-combat-card .combat-portrait{height:100px;min-height:0;max-height:none!important;width:100%;aspect-ratio:auto!important;flex:none;margin:0}
+html body #combat-player-deck .compact-combat-card .combat-portrait>img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;opacity:1}
+html body #combat-player-deck .combat-card-tags{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;min-height:23px;margin-top:2px}
+html body #combat-player-deck .combat-card-tags>span{margin:0;align-self:auto;line-height:1.4;font-size:9px;padding:2px 5px}
+html body #combat-in-progress-view #combat-player-deck .combat-card-name{min-height:34px;height:34px;margin:4px 0 6px;padding:2px 3px;font-size:11px!important;line-height:15px!important;flex:none}
+html body #combat-player-deck [id^="player-hp-text-"]{font-size:10px!important;line-height:14px;margin-top:4px;transform:none}
+html body #combat-monster-area{width:100%;min-width:0;min-height:260px;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px solid #dce0e6;border-radius:18px;padding:20px;box-sizing:border-box;align-self:center}
+html body #combat-monster-area>h3{font-size:23px!important;margin:0 0 10px;white-space:normal}
+html body #combat-monster-area>div.relative:not(.hp-bar-background){flex-grow:0;margin-bottom:14px}
+html body #combat-monster-image{height:160px;width:auto;max-width:100%;object-fit:contain}
+html body #battle-controls{margin-top:18px;position:relative}
+@media(max-width:767px){
+html body #combat-arena{grid-template-columns:minmax(0,1fr);gap:12px;padding:2px}
+html body #combat-monster-area{grid-row:1;min-height:130px;padding:12px;display:grid;grid-template-columns:88px minmax(0,1fr);column-gap:12px;text-align:center}
+html body #combat-monster-area>h3{grid-column:2;grid-row:1;font-size:17px!important;margin:0 0 6px}
+html body #combat-monster-area>div.relative:not(.hp-bar-background){grid-column:1;grid-row:1/span 2;margin:0}
+html body #combat-monster-area>.hp-bar-background{grid-column:2;grid-row:2;width:100%;max-width:none;align-self:start}
+html body #combat-monster-image{height:90px}
+html body #combat-player-deck{gap:7px!important}
+html body #combat-player-deck>.compact-combat-card{padding:5px}
+html body #combat-player-deck .compact-combat-card .combat-portrait{height:64px}
+html body #combat-player-deck .combat-card-tags{gap:3px;min-height:19px}
+html body #combat-player-deck .combat-card-tags>span{font-size:8px;padding:1px 3px}
+html body #combat-in-progress-view #combat-player-deck .combat-card-name{height:32px;min-height:32px;font-size:10px!important;line-height:14px!important;margin:3px 0 5px}
+html body #combat-player-deck [id^="player-hp-text-"]{font-size:9px!important;line-height:12px}
+}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1223,7 +1256,7 @@ body div[data-rarity]>div>p.font-tech.font-black,body .combat-rarity-label{color
                     </div>
 
                 <!-- 기존 전투 요소 (z-10을 주어 3D 배경 위로 배치) -->
-                <div class="relative z-10 grid grid-cols-3 gap-4 items-center">
+                <div id="combat-arena" class="relative z-10">
                     <div id="combat-player-deck" class="col-span-1 space-y-2"></div>
                     <div id="combat-monster-area" class="col-span-2 flex flex-col items-center"></div>
                 </div>
@@ -7127,17 +7160,17 @@ function startStageCombat(chapterIndex, stageIndex) {
     combatLog.innerHTML = '';
 
     // 1) 전체 컨테이너 설정
-    const container = combatInProgressView.querySelector('.grid');
+    const container = document.getElementById('combat-arena');
     if (container) {
-        container.className = "flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-center h-full max-h-[550px]";
+        container.className = "relative z-10 compact-combat-arena";
     }
 
     // 2) 플레이어 덱 영역 (좌측)
-    combatPlayerDeck.className = "w-full md:w-1/2 md:max-w-md flex flex-wrap justify-center content-center gap-1.5 md:gap-2 order-2 md:order-1 overflow-hidden p-2";
+    combatPlayerDeck.className = "compact-combat-team";
     combatPlayerDeck.innerHTML = '';
 
     // 3) 몬스터 영역 (우측)
-    combatMonsterArea.className = "w-full md:w-1/2 flex flex-col items-center justify-center bg-black/40 rounded-xl p-4 order-1 md:order-2 border border-white/10 min-h-[180px]";
+    combatMonsterArea.className = "compact-combat-enemy";
 
     // 플레이어 덱 UI 그리기
     combatDeck.forEach((card, index) => {
@@ -7151,7 +7184,7 @@ function startStageCombat(chapterIndex, stageIndex) {
             const customStyle = '';
 
             // ✨ 진영별 커스텀 스타일(배경 및 테두리)을 인라인으로 적용
-            cardEl.className = 'relative w-[28%] p-0.5 rounded-lg border shadow-md flex flex-col items-center transition-transform hover:scale-105 hover:z-10';
+            cardEl.className = 'compact-combat-card relative rounded-lg border';
             cardEl.style.cssText = customStyle;
             cardEl.id = `combat-card-${index}`;
             cardEl.dataset.faction = card.faction || '기타';
@@ -7161,13 +7194,13 @@ function startStageCombat(chapterIndex, stageIndex) {
         const rarityColor = { 'N': 'text-gray-400', 'R': 'text-blue-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' }[card.rarity];
 
         cardEl.innerHTML = `
-            <div class="relative w-full aspect-[2/3] overflow-hidden rounded mb-0.5">
+            <div class="combat-portrait relative overflow-hidden rounded">
                 <img src="${card.cardImageUrl}" class="w-full h-full object-cover opacity-90 ${glowClass}">
                 <div id="effect-icons-${index}" class="absolute top-0.5 right-0.5 flex flex-col gap-0.5 items-end transform scale-75 origin-top-right"></div>
             </div>
 
-            <span class="combat-rarity-label">${card.rarity || 'N'}</span>
-            <span class="faction-mark combat-faction" data-faction="${card.faction || '기타'}">${card.faction || '기타'}</span>
+            <div class="combat-card-tags"><span class="combat-rarity-label">${card.rarity || 'N'}</span>
+            <span class="faction-mark combat-faction" data-faction="${card.faction || '기타'}">${card.faction || '기타'}</span></div>
             <p class="combat-card-name">${card.name}</p>
 
             <div class="w-full hp-bar-background rounded-full h-1 md:h-1.5 bg-gray-600">
