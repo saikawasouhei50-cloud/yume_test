@@ -10,12 +10,13 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-window.yumecanSettings = { muted: false, quick: false, calm: matchMedia('(prefers-reduced-motion: reduce)').matches };
+window.yumecanSettings = { muted: false, quick: false, autoBattle: false, battleSpeed: 1, calm: matchMedia('(prefers-reduced-motion: reduce)').matches };
 try { const saved = JSON.parse(localStorage.getItem('yumecan.preferences.v1') || '{}');
-  for (const key of ['muted', 'quick', 'calm']) if (typeof saved[key] === 'boolean') window.yumecanSettings[key] = saved[key];
+  for (const key of ['muted', 'quick', 'calm', 'autoBattle']) if (typeof saved[key] === 'boolean') window.yumecanSettings[key] = saved[key];
+  if ([1,2,4].includes(saved.battleSpeed)) window.yumecanSettings.battleSpeed = saved.battleSpeed;
 } catch (_) {}
 window.setYumecanPreference = function(key, value) {
-  window.yumecanSettings[key] = Boolean(value);
+  window.yumecanSettings[key] = key === 'battleSpeed' ? ([1,2,4].includes(Number(value)) ? Number(value) : 1) : Boolean(value);
   document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
   try { localStorage.setItem('yumecan.preferences.v1', JSON.stringify(window.yumecanSettings)); } catch (_) {}
 };
@@ -31,11 +32,14 @@ window.showYumecanStartupError = function(message) {
   panel.append(title, detail, retry); overlay.append(panel); overlay.classList.remove('hidden');
 };
 document.addEventListener('DOMContentLoaded', () => {
-  for (const key of ['muted','quick','calm']) {
+  for (const key of ['muted','quick','calm','autoBattle']) {
     const input = document.getElementById('pref-' + key);
     input.checked = window.yumecanSettings[key];
     input.addEventListener('change', () => window.setYumecanPreference(key, input.checked));
   }
+  const speed = document.getElementById('pref-battleSpeed');
+  speed.value = String(window.yumecanSettings.battleSpeed);
+  speed.addEventListener('change', () => window.setYumecanPreference('battleSpeed', speed.value));
 });
 </script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -778,7 +782,24 @@ html body :is(#furniture-shop-modal,#furniture-storage-modal,#profile-card-selec
 html body .dream-secondary-menu .menu-page-heading{margin-bottom:18px}.inspiration-pair{gap:9px;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);padding:14px}.inspiration-pair p{font-size:10px!important}.inspiration-plus{font-size:24px}html body #breeding-view .breeding-slot{height:192px}html body #breeding-inventory-container{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.inspiration-result{padding:16px}html body #trade-register-view>div{padding:14px!important}html body #trade-inventory-container{grid-template-columns:repeat(2,minmax(0,1fr));max-height:330px}
 .friends-dashboard,.profile-dashboard,.character-archive-layout{grid-template-columns:minmax(0,1fr);gap:14px}html body .friends-dashboard>div{min-height:0;padding:16px!important}.friends-dashboard #friend-list-container{max-height:300px;min-height:80px}html body #friend-search-result{align-items:flex-start}html body #friend-search-result>div{min-width:0;max-width:100%}html body #friend-search-result p{overflow-wrap:anywhere}.character-archive-nav{max-height:260px;padding:14px}html body #collection-character-detail-view{padding:15px!important}html body #collection-profile-image{width:100%;height:180px;max-width:230px;margin:auto}html body #collection-default-message{min-height:130px}
 html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:14px;align-items:center}html body .profile-dashboard>div:first-child>div{grid-row:1/span 2;max-width:120px;margin:0}html body #profile-rep-name{grid-column:2;font-size:12px!important}.profile-card-change{grid-column:2;margin:0;font-size:11px!important}html body .profile-dashboard>div:nth-child(2){padding:16px!important}html body .dream-secondary-menu :is(input:not([type="checkbox"]),textarea,select){font-size:16px}html body .dream-secondary-menu #profile-nameplate-select{font-size:14px}.room-toolbar{gap:8px;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}html body .room-toolbar button{font-size:12px!important;padding:10px!important}html body .dream-secondary-menu :is(#main-story-container,#event-archive-container,#trade-list-container){padding:8px!important}html body #collection-container{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
-</style></head>
+</style>
+<style id="archive-playback-room-refresh">
+.battle-playback{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.battle-speed-group{display:flex;gap:4px;padding:4px;border:1px solid #dce2ec;border-radius:14px;background:#f0f3f8}
+html body .battle-speed-group .speed-button{min-width:42px;min-height:40px;padding:6px 10px!important;margin:0!important;border-radius:10px!important}.battle-heading{flex-wrap:wrap;gap:12px}
+.archive-group-filter{display:grid;gap:8px;position:sticky;top:-16px;background:#f7f9fc;padding:12px 0 16px;z-index:2}.archive-group-filter label{font-size:12px;color:#778395;font-weight:600}
+html body #archive-group-select{width:100%;min-width:0;max-width:100%;padding:12px 8px;border:1px solid #dce2eb;border-radius:12px;background:#fff;color:#455267;font-size:13px;text-overflow:ellipsis}
+html body #collection-character-list>button{padding:12px!important;margin-bottom:6px!important;font-size:14px;border-radius:12px!important}
+html body #pref-battleSpeed{padding:7px 12px;margin-left:auto;border:1px solid #dce2eb;border-radius:9px;background:white;color:#455267}
+.room-summary{display:flex;justify-content:space-between;gap:12px;padding:14px 4px;color:#748195;font-size:13px}.room-summary>span:first-child{font-weight:700;color:#455267}
+.room-tools-panel{margin:18px auto 0;padding:22px;border:1px solid #e0e5ee;border-radius:20px;background:linear-gradient(120deg,#fafbfe,#f1f5f9)}
+.room-tools-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.room-tools-heading h3{font-size:18px;font-weight:700;color:#455267;margin-top:5px}#room-mode-label{font-size:12px;padding:7px 12px;border-radius:30px;background:#e4efeb;color:#4b7467}
+#room-mode-hint{font-size:13px;line-height:1.7;color:#7c8797;margin:10px 0 16px}.room-tools-panel .room-toolbar{margin:0;padding:0;border:0;background:none;max-width:none;justify-content:flex-start}
+html body .room-tools-panel .room-toolbar button{border-radius:12px!important;min-height:46px;padding:10px 18px!important;box-shadow:none!important}
+html body #myroom-view.room-is-editing .room-wrapper{border-color:#9eafca;box-shadow:0 0 0 3px #a8bad526}html body .room-is-editing #room-mode-label{background:#e3eaf7;color:#536b95}
+html body #myroom-view #furniture-shop-modal>div,html body #myroom-view #furniture-storage-modal>div{border-radius:20px;padding:24px;max-height:85dvh;overflow-y:auto}
+@media(max-width:640px){.battle-playback{gap:7px}.battle-heading{align-items:flex-start}.battle-playback #battle-auto{padding:9px 12px;font-size:12px}.battle-speed-group{gap:2px}html body .battle-speed-group .speed-button{min-width:36px;min-height:38px;padding:5px 8px!important}.room-tools-panel{padding:16px}.room-tools-panel .room-toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}html body .room-tools-panel .room-toolbar button{font-size:12px!important;padding:10px 8px!important}.room-summary{font-size:12px}.character-archive-nav{max-height:310px}.archive-group-filter{top:-14px}}
+</style>
+</head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
@@ -811,6 +832,8 @@ html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:
                 <label><input id="pref-muted" type="checkbox">효과음 끄기</label>
                 <label><input id="pref-quick" type="checkbox">소환 연출 건너뛰기</label>
                 <label><input id="pref-calm" type="checkbox">움직임 줄이기</label>
+                <label><input id="pref-autoBattle" type="checkbox">항상 자동 진행</label>
+                <label>기본 전투 배속 <select id="pref-battleSpeed"><option value="1">1x</option><option value="2">2x</option><option value="4">4x</option></select></label><small>전투 설정은 다음 전투부터 적용됩니다.</small>
                 <button id="archive-backup" class="gacha-button" type="button" style="padding:8px 12px;width:100%">현재 데이터 백업</button>
                 <small>화면·소리 설정은 이 기기에 저장됩니다.</small>
               </div></details>
@@ -1242,16 +1265,16 @@ html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:
                 </div>
 
                 <section id="battle-controls" aria-label="전투 행동 선택">
-                    <div class="battle-heading"><strong id="battle-round">1턴</strong><button type="button" id="battle-auto" aria-pressed="false">자동 진행 OFF</button></div>
+                    <div class="battle-heading"><strong id="battle-round">1턴</strong><div class="battle-playback"><button type="button" id="battle-auto" aria-pressed="false">자동 진행 OFF</button><div class="battle-speed-group" role="group" aria-label="전투 배속">                    <button id="speed-1x" class="speed-button active gacha-button py-1 px-3 text-xs">1x</button>
+                    <button id="speed-2x" class="speed-button gacha-button py-1 px-3 text-xs">2x</button>
+                    <button id="speed-4x" class="speed-button gacha-button py-1 px-3 text-xs">4x</button>
+</div></div></div>
                     <div id="battle-order" aria-label="이번 턴 행동 순서"></div>
                     <p id="battle-status" role="status" aria-live="polite">전투 준비 중…</p>
                     <div id="battle-options"></div>
-                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10~50%를 무작위로 회복합니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 아래 1x·2x·4x는 연출 속도입니다.</p></details>
+                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10~50%를 무작위로 회복합니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
                 </section>
                 <div class="relative z-10 flex justify-end items-center gap-2 mt-4 font-tech">
-                    <button id="speed-1x" class="speed-button active gacha-button py-1 px-3 text-xs">1x</button>
-                    <button id="speed-2x" class="speed-button gacha-button py-1 px-3 text-xs">2x</button>
-                    <button id="speed-4x" class="speed-button gacha-button py-1 px-3 text-xs">4x</button>
                     <button id="combat-run-button" class="gacha-button py-1 px-3 text-xs border-yellow-600 text-yellow-500 ml-2">항복</button>
                 </div>
 
@@ -1529,7 +1552,7 @@ html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:
 </div>
                 
 
-                <div class="room-wrapper">
+                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -1544,7 +1567,7 @@ html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:
             #room-layer > * { pointer-events: auto; } </style>
         </div>
 
-    </div> </div> <div class="room-toolbar">
+    </div> </div> <div class="room-tools-panel"><div class="room-tools-heading"><div><span class="menu-eyebrow">ROOM STUDIO</span><h3>나의 공간 꾸미기</h3></div><span id="room-mode-label">휴식 중</span></div><p id="room-mode-hint">방문객을 초대하고 좋아하는 가구로 방을 꾸며보세요.</p><div class="room-toolbar">
     <button onclick="openMyRoomCharacterSelector()" class="gacha-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-6 rounded-full text-xs md:text-base transition-all shadow-md">
         👥 방문객 관리
     </button>
@@ -1562,6 +1585,7 @@ html body .profile-dashboard>div:first-child{display:grid;grid-template-columns:
     </button>
 </div>
 
+</div>
 <div id="furniture-storage-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
     <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full">
         <h3 class="text-2xl font-bold text-purple-300 mb-4">가구 보관함</h3>
@@ -4788,25 +4812,18 @@ function displayCollectionView() {
     const charListContainer = document.getElementById('collection-character-list');
     charListContainer.innerHTML = '';
 
-    // 1. [탭 버튼 영역]
-    const tabContainer = document.createElement('div');
-    tabContainer.className = 'flex flex-wrap gap-2 mb-4 justify-center';
-
-    COLLECTION_GROUPS.forEach(groupName => {
-        const tabBtn = document.createElement('button');
-        const isActive = (groupName === currentCollectionGroup);
-        tabBtn.className = `px-3 py-1 rounded-full text-xs font-bold transition-all ${
-            isActive ? 'bg-yellow-400 text-black shadow-lg scale-105' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-        }`;
-        tabBtn.textContent = groupName;
-        tabBtn.onclick = (e) => {
-            e.stopPropagation();
-            currentCollectionGroup = groupName;
-            displayCollectionView();
-        };
-        tabContainer.appendChild(tabBtn);
+    const filter = document.createElement('div');
+    filter.className = 'archive-group-filter';
+    const label = document.createElement('label');
+    label.htmlFor = 'archive-group-select'; label.textContent = '챕터 선택';
+    const select = document.createElement('select'); select.id = 'archive-group-select';
+    COLLECTION_GROUPS.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name; option.textContent = name; select.appendChild(option);
     });
-    charListContainer.appendChild(tabContainer);
+    select.value = currentCollectionGroup;
+    select.onchange = () => { currentCollectionGroup = select.value; displayCollectionView(); };
+    filter.append(label, select); charListContainer.appendChild(filter);
 
     // 2. [캐릭터 목록] 생성
     const collectedBaseNames = new Set();
@@ -4850,7 +4867,7 @@ function displayCollectionView() {
             button.textContent = isCollected ? profile.name : '?????';
             button.dataset.baseName = baseName;
 
-            button.onclick = () => displayCharacterDetail(baseName);
+            // The list delegates clicks to displayCharacterDetail.
 
             charListContainer.appendChild(button);
         });
@@ -5851,6 +5868,15 @@ function getGridPosFromScreen(screenX, screenY) {
 
 // ================== ✨ 수정된 displayMyRoom (전체 코드) ✨ ==================
 function displayMyRoom() {
+    const editing = typeof isEditMode !== 'undefined' && isEditMode;
+    const roomView = document.getElementById('myroom-view');
+    roomView.classList.toggle('room-is-editing', editing);
+    document.getElementById('room-mode-label').textContent = editing ? '배치 중' : '휴식 중';
+    document.getElementById('room-mode-hint').textContent = editing
+        ? '가구를 끌어서 옮기세요. 보관함에서 가구를 꺼내고, 완료 후 배치 완료를 눌러주세요.'
+        : '방문객 관리에서 함께 지낼 인물을 선택하세요. 배치 모드에서 가구를 꾸밀 수 있어요.';
+    document.getElementById('room-summary-counts').textContent = `방문객 ${(playerRoom.characters || []).length}명 · 배치 가구 ${(playerRoom.furniture || []).length}개`;
+
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
 
@@ -6673,7 +6699,7 @@ let dragOffsetY = 0;
 
     if (isEditMode) {
         // [ON] 배치 모드 켜짐
-        btn.textContent = '✅ 저장 완료';
+        btn.textContent = '✓ 배치 완료';
         btn.classList.replace('bg-blue-500', 'bg-green-600');
         if(storageBtn) storageBtn.classList.remove('hidden');
         document.querySelectorAll('.chibi-character').forEach(el => el.classList.add('hidden'));
@@ -7097,9 +7123,11 @@ function challengeStage(chapterIndex, stageIndex) {
                 const allSpeedButtons = document.querySelectorAll('.speed-button');
                 allSpeedButtons.forEach(btn => {
                     btn.classList.remove('active');
+                    btn.setAttribute('aria-pressed', 'false');
                     btn.classList.add('bg-gray-600');
                     btn.classList.remove('bg-blue-500');
                 });
+                document.getElementById(`speed-${speed}x`).setAttribute('aria-pressed', 'true');
                 document.getElementById(`speed-${speed}x`).classList.add('active', 'bg-blue-500');
                 document.getElementById(`speed-${speed}x`).classList.remove('bg-gray-600');
             }
@@ -7127,7 +7155,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     if(isCombatRunning)return;
     isCombatRunning = true;
     cancelBattleSession();
-    const session = {active:true, auto:false, pending:null, round:0, damage:0};
+    const session = {active:true, auto:window.yumecanSettings.autoBattle, pending:null, round:0, damage:0};
     battleSession = session;
     window.currentCombatIndices = indices;
     window.currentCombatType = type;
@@ -7140,7 +7168,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     }
 
     if (!session.active || session !== battleSession || !isCombatRunning) return;
-    setCombatSpeed(1);
+    setCombatSpeed(window.yumecanSettings.battleSpeed);
 
     let monsterData;
 
