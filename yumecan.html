@@ -5922,6 +5922,7 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
             const cardElement = createCard(character, { animationIndex: index, mode: 'inventory', instance: cardInstance });
             if (isMultiSelectMode) {
                 cardElement.classList.add('multi-select-card');
+                cardElement.setAttribute('aria-pressed',String(selectedCardsToDismantle.has(cardInstance.id)));
                 const isInDeck = playerDeck.some(deckCard => deckCard.id === cardInstance.id);
                 if (isInDeck) {
                     cardElement.classList.add('opacity-40', 'cursor-not-allowed', 'bg-red-900/30');
@@ -8973,6 +8974,16 @@ function updateMultiSelectUI() {
     dismantleSelectedButton.disabled = summary.cards.length === 0;
     document.getElementById('clear-dismantle-selection').disabled=selectedCardsToDismantle.size===0;
 }
+function updateDismantleCardSelection(cardElement) {
+    const selected=selectedCardsToDismantle.has(cardElement.dataset.uniqueId);
+    cardElement.classList.toggle('border-4',selected);
+    cardElement.classList.toggle('border-yellow-400',selected);
+    cardElement.classList.toggle('bg-blue-900/50',selected);
+    cardElement.classList.toggle('border',!selected);
+    cardElement.classList.toggle('border-gray-500',!selected);
+    cardElement.classList.toggle('bg-black/20',!selected);
+    cardElement.setAttribute('aria-pressed',String(selected));
+}
 function getDismantleSelection() {
     const deckIds=new Set(playerDeck.map(card=>card.id));
     const cards=playerInventory.filter(card=>selectedCardsToDismantle.has(card.id) && !deckIds.has(card.id) && findCharacter(card.name));
@@ -9991,7 +10002,14 @@ document.getElementById('event-view').addEventListener('click', (e) => {
 enterMultiModeButton.addEventListener('click', enterMultiSelectMode);
 exitMultiModeButton.addEventListener('click', exitMultiSelectMode);
 dismantleSelectedButton.addEventListener('click', dismantleMultipleCards);
-document.getElementById('clear-dismantle-selection').addEventListener('click',()=>{selectedCardsToDismantle.clear();displayInventory();});
+document.getElementById('clear-dismantle-selection').addEventListener('click',()=>{
+    selectedCardsToDismantle.clear();
+    const deckIds=new Set(playerDeck.map(deckCard=>deckCard.id));
+    inventoryContainer.querySelectorAll('.multi-select-card').forEach(card=>{
+        if(!deckIds.has(card.dataset.uniqueId))updateDismantleCardSelection(card);
+    });
+    updateMultiSelectUI();
+});
 document.getElementById('cancel-dismantle-confirm').addEventListener('click',()=>document.getElementById('dismantle-confirm-modal').classList.add('hidden'));
 document.getElementById('confirm-dismantle-action').addEventListener('click',confirmDismantleMultipleCards);
 document.getElementById('dismantle-confirm-modal').addEventListener('click',e=>{if(e.target.id==='dismantle-confirm-modal')e.currentTarget.classList.add('hidden');});
@@ -10023,9 +10041,12 @@ document.getElementById('select-all-filtered-button').addEventListener('click', 
     // 렌더링된 목록을 기준으로 검색, 등급, 진영 필터를 모두 반영합니다.
     inventoryContainer.querySelectorAll('[data-unique-id]').forEach(element=>{
         const id=element.dataset.uniqueId;
-        if(!deckIds.has(id))selectedCardsToDismantle.add(id);
+        if(!deckIds.has(id)){
+            selectedCardsToDismantle.add(id);
+            updateDismantleCardSelection(element);
+        }
     });
-    displayInventory();
+    updateMultiSelectUI();
 });
 
 // ✨ 카드 상세 모달에서 단일 파쇄
@@ -10256,7 +10277,8 @@ cardClickableContainers.forEach(container => {
              } else {
                  selectedCardsToDismantle.add(cardUniqueId);
              }
-             displayInventory(); // 선택 상태 UI 업데이트
+             updateDismantleCardSelection(cardElement);
+             updateMultiSelectUI();
              return; // 다중 선택 후 종료
         }
 
