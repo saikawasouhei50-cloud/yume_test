@@ -1981,6 +1981,40 @@ let CURRENT_EVENT_ID = null;
 // ==========================================
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby0Tq97edWMchBrVf10sr233P33UMlKFdMsxWvA94eeM7VQ8A10ejyDTGgOf34CoY5TVg/exec";
 
+// Public master data only; account saves are never stored in this cache.
+// Bump this key when the client changes its data schema.
+const MASTER_CACHE_KEY = 'yumecan.master.v1';
+const MASTER_CACHE_TTL = 5 * 60 * 1000;
+let masterCache = null;
+let masterRequest = null;
+function validMasterData(data) {
+    return data && Array.isArray(data.characters || data.Characters) &&
+        (data.characters || data.Characters).length > 0;
+}
+async function requestMasterData() {
+    if (!masterCache) {
+        try {
+            const saved = JSON.parse(localStorage.getItem(MASTER_CACHE_KEY));
+            if (saved && saved.source === GOOGLE_SHEET_URL && validMasterData(saved.data)) masterCache = saved;
+        } catch (_) { /* Disabled storage or damaged cache: use the network. */ }
+    }
+    const age = masterCache ? Date.now() - masterCache.at : Infinity;
+    if (age >= 0 && age < MASTER_CACHE_TTL) return masterCache.data;
+    if (masterRequest) return masterRequest;
+    masterRequest = (async () => {
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`);
+        const data = await response.json();
+        if (!validMasterData(data)) throw new Error('캐릭터 데이터가 올바르지 않습니다.');
+        masterCache = {source: GOOGLE_SHEET_URL, at: Date.now(), data};
+        try { localStorage.setItem(MASTER_CACHE_KEY, JSON.stringify(masterCache)); }
+        catch (_) { /* Quota exceeded: the in-memory cache still works. */ }
+        return data;
+    })();
+    try { return await masterRequest; }
+    finally { masterRequest = null; }
+}
+
 // 2. 데이터를 가져와서 변수에 채워넣는 함수
 async function loadGameData() {
     try {
@@ -1997,9 +2031,7 @@ async function loadGameData() {
         // const GOOGLE_SHEET_URL = "..."; 
 
         // 자동으로 맨 위에 적은 GOOGLE_SHEET_URL을 가져옵니다.
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`); 
-        const data = await response.json();
+        const data = await requestMasterData();
 		
 		if (data.systemMails) {
             systemMails = data.systemMails.map(row => ({
@@ -2831,6 +2863,19 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         fleeCombat();
     }
 });
+    // Start the account read alongside the independent master-data request.
+    const startupSavePrefetch = new Promise(resolve => {
+        let unsubscribe;
+        unsubscribe = auth.onAuthStateChanged(user => {
+            if (unsubscribe) unsubscribe();
+            if (!user) { resolve(null); return; }
+            db.collection('users').doc(user.uid).get().then(
+                doc => resolve({uid: user.uid, doc}),
+                error => resolve({uid: user.uid, error})
+            );
+        }, () => resolve(null));
+    });
+    let startupSaveConsumed = false;
     try { await loadGameData(); }
     catch (error) {
         console.error('Game data initialization failed:', error);
@@ -3977,7 +4022,10 @@ function saveGameToFirebase() {
            // ✅ 이 코드로 기존 loadGameFromFirebase 함수를 통째로 교체해주세요.
 async function loadGameFromFirebase(uid) {
     const docRef = db.collection('users').doc(uid);
-    const doc = await docRef.get();
+    const prefetched = startupSaveConsumed ? null : await startupSavePrefetch;
+    startupSaveConsumed = true;
+    if (prefetched?.uid === uid && prefetched.error) throw prefetched.error;
+    const doc = prefetched?.uid === uid ? prefetched.doc : await docRef.get();
 
     if (doc.exists) {
         console.log("Firebase에서 게임 데이터를 불러옵니다.");
@@ -4119,8 +4167,8 @@ playerInspHp = savedData.inspHp ?? 0;
         // 튜토리얼 안 끝났으면 0장 시작
         startIntroTutorial();
     } else {
-        // 끝났으면 홈으로 이동
-        switchTab('home');
+        // Home has already been rendered above.
+
     }
 }
 
@@ -4239,7 +4287,10 @@ async function resetGame() {
     }
 }
 
+let achievementDefinitionCache = null;
+let achievementCharacterSource = null;
 function expandedAchievements() {
+    if (achievementDefinitionCache && achievementCharacterSource === characters) return achievementDefinitionCache;
     const extra = [
         ['collection_50','두꺼워진 서고','서로 다른 카드 50종 보유',s=>new Set(s.inventory.map(c=>c.name)).size>=50],
         ['collection_100','백 가지 이야기','서로 다른 카드 100종 보유',s=>new Set(s.inventory.map(c=>c.name)).size>=100],
@@ -4263,7 +4314,9 @@ function expandedAchievements() {
             category:'character',nameplate:title,reward:{},
             condition:s=>s.inventory.some(c=>c.baseName===name && c.rarity==='SSR' && c.level>=9 && (!master||c.revision>=5))});
     }
-    return [...achievements,...extra];
+    achievementCharacterSource = characters;
+    achievementDefinitionCache = [...achievements,...extra];
+    return achievementDefinitionCache;
 }
 function nameplateFor(profile, earned) {
     const id=profile?.nameplateId;
@@ -8739,22 +8792,23 @@ function updateMultiSelectUI() {
             }
 
             // [수정] 캐릭터 검색 함수 (이름으로 못 찾으면 baseName으로 재검색)
+let characterIndexSource = null;
+let characterNameIndex = new Map();
+let characterBaseIndex = new Map();
 function findCharacter(name) {
     if (!name) return undefined;
-
-    const targetName = name.trim(); // 앞뒤 공백 제거 안전장치
-
-    // 1. 전체 이름(name)으로 먼저 찾기
-    // 예: "[히어로] 아카이 츠키토" vs "[히어로] 아카이 츠키토" (일치)
-    let found = characters.find(c => c.name === targetName);
-
-    // 2. 없으면 기본 이름(baseName)으로 찾기
-    // 예: "아카이 츠키토" vs "[히어로] 아카이 츠키토" (불일치) -> baseName 확인 -> (일치!)
-    if (!found) {
-        found = characters.find(c => c.baseName === targetName);
+    if (characterIndexSource !== characters) {
+        characterNameIndex = new Map();
+        characterBaseIndex = new Map();
+        for (const card of characters) {
+            // Preserve the original Array.find first-match semantics.
+            if (!characterNameIndex.has(card.name)) characterNameIndex.set(card.name, card);
+            if (!characterBaseIndex.has(card.baseName)) characterBaseIndex.set(card.baseName, card);
+        }
+        characterIndexSource = characters;
     }
-
-    return found;
+    const key = name.trim();
+    return characterNameIndex.get(key) || characterBaseIndex.get(key);
 }
 
             function displayStoryView() {
@@ -12179,15 +12233,16 @@ function startPeriodicMailCheck(uid) {
     // 이미 타이머가 돌고 있다면 중복 실행 방지
     if (window.mailCheckInterval) clearInterval(window.mailCheckInterval);
 
-    console.log("📮 자동 우편 체크 시스템이 가동되었습니다. (1분 주기)");
+    console.log("📮 자동 우편 체크 시스템이 가동되었습니다. (5분 주기)");
+    let mailCheckRunning = false;
 
     window.mailCheckInterval = setInterval(async () => {
-        if (!uid) return;
-
+        if (mailCheckRunning || document.hidden || currentUser?.uid !== uid) return;
+        mailCheckRunning = true;
         try {
-            // 1. 구글 시트 데이터 몰래 새로고침
-            const response = await fetch(GOOGLE_SHEET_URL);
-            const data = await response.json();
+            // The existing server exposes one full payload. Share its cache/request.
+            const data = await requestMasterData();
+            if (currentUser?.uid !== uid) return;
 
             // 날짜 변환 헬퍼 (내부용)
             const parseDate = (dateStr) => {
@@ -12213,8 +12268,10 @@ function startPeriodicMailCheck(uid) {
 
         } catch (e) {
             console.warn("자동 우편 체크 중 오류(네트워크 등):", e);
+        } finally {
+            mailCheckRunning = false;
         }
-    }, 60 * 1000); // 60초(1분) 마다 실행
+    }, MASTER_CACHE_TTL); // Hidden tabs skip polling; no overlapping requests.
 }
 // yumecan.html - <script> 섹션 (loadRaidRankingData 함수 근처에 추가)
 
