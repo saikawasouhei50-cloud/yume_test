@@ -903,6 +903,13 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
 .archive-confirm-actions{justify-content:flex-end}
 @media(max-width:700px){.profile-title-selects{grid-template-columns:1fr}.archive-dismantle-panel{padding:15px}.archive-dismantle-bottom{align-items:stretch}.archive-dismantle-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.archive-dismantle-actions button{width:100%}.archive-confirm-card{padding:20px}}
 </style>
+<style id="shared-inspiration-dispatch-filters">
+#dispatch-select-modal>div{overflow-y:auto;min-height:0}
+#dispatch-filters,#breeding-filters{margin:12px 0;background:#f7f9fc;color:#455267}
+#dispatch-filters{flex:none}
+#dispatch-candidate-list{min-height:120px}
+#dispatch-candidate-list [role="button"]:focus-visible{outline:3px solid #96a8cc;outline-offset:2px}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -2004,13 +2011,6 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
 
                         <div id="dispatch-condition-info" class="bg-black/40 border border-gray-800 p-3 mb-3 text-xs text-gray-300">
                                     <!-- 조건 안내 -->
-                                </div>
-
-                                <!-- ✨ [추가] 파견 후보 정렬 버튼 그룹 -->
-                                <div class="flex gap-1 mb-3 text-[10px] font-tech">
-                                    <button onclick="sortDispatchCandidates('rarity')" class="gacha-button py-1 px-3 border-gray-700 text-gray-300">등급순</button>
-                                    <button onclick="sortDispatchCandidates('level')" class="gacha-button py-1 px-3 border-gray-700 text-gray-300">레벨순</button>
-                                    <button onclick="sortDispatchCandidates('name')" class="gacha-button py-1 px-3 border-gray-700 text-gray-300">이름순</button>
                                 </div>
 
                                 <!-- 남는 캐릭터(덱에 없는 캐릭터) 선택 목록 -->
@@ -4747,7 +4747,6 @@ window.displayWarehouse=displayWarehouse;
 
             // 전역 스코프에 등록
             window.switchTab = switchTab;
-            window.sortDispatchCandidates = sortDispatchCandidates;
 
 // ✅ [신규] 이벤트 탭 전용 전환 함수 (확실하게 하나만 보여줌)
 function switchEventSubTab(tabName) {
@@ -9098,41 +9097,25 @@ function findCharacter(name) {
     }
 }
 
-// 현재 파견 후보 목록과 정렬 상태를 저장하는 변수
+// 현재 파견 후보 목록. 검색·필터·정렬 상태는 공용 카드 필터가 관리합니다.
 let currentDispatchCandidates = [];
-let currentDispatchSortOrder = 'rarity'; // 기본 정렬: 등급순
 
 // 1. 후보 목록을 받아 화면에 그려주는 전용 함수
 function renderDispatchCandidateList() {
     const listContainer = document.getElementById('dispatch-candidate-list');
     if (!listContainer) return;
-    listContainer.innerHTML = '';
-
-    if (currentDispatchCandidates.length === 0) {
-        listContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 py-4">파견 가능한 여유 인원이 없습니다.<br>(전투 덱에 포함되지 않은 카드만 파견 가능)</p>';
+    listContainer.replaceChildren();
+    const visible=selectFilteredCards('dispatch',listContainer,currentDispatchCandidates,renderDispatchCandidateList);
+    if(!currentDispatchCandidates.length){
+        listContainer.replaceChildren();
+        const empty=document.createElement('p');empty.className='col-span-full text-center text-gray-500 py-4';
+        empty.textContent='파견 가능한 여유 인원이 없습니다. 편찬 중이거나 다른 조사에 파견된 카드는 제외됩니다.';
+        listContainer.appendChild(empty);
         return;
     }
 
-    // 정렬 적용
-    const rarityOrder = { 'SSR': 4, 'SR': 3, 'R': 2, 'N': 1 };
-
-    currentDispatchCandidates.sort((a, b) => {
-        const charA = findCharacter(a.name);
-        const charB = findCharacter(b.name);
-        if (!charA || !charB) return 0;
-
-        if (currentDispatchSortOrder === 'level') {
-            return (b.level - a.level) || (rarityOrder[charB.rarity] - rarityOrder[charA.rarity]) || a.name.localeCompare(b.name);
-        } else if (currentDispatchSortOrder === 'name') {
-            return a.name.localeCompare(b.name) || (b.level - a.level);
-        } else {
-            // 기본: 등급순
-            return (rarityOrder[charB.rarity] - rarityOrder[charA.rarity]) || (b.level - a.level) || a.name.localeCompare(b.name);
-        }
-    });
-
     // 화면 그리기
-    currentDispatchCandidates.forEach(cardInstance => {
+    visible.forEach(cardInstance => {
         const charData = findCharacter(cardInstance.name);
         if (!charData) return;
 
@@ -9145,7 +9128,8 @@ function renderDispatchCandidateList() {
                 : 'border-gray-800 bg-black/40 hover:border-gray-600'
         }`;
 
-        el.onclick = () => {
+        el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed',String(isSelected));
+        const toggle=() => {
             if (selectedDispatchCardIds.has(cardInstance.id)) {
                 selectedDispatchCardIds.delete(cardInstance.id);
             } else {
@@ -9155,27 +9139,33 @@ function renderDispatchCandidateList() {
                 selectedDispatchCardIds.add(cardInstance.id);
             }
             document.getElementById('dispatch-selected-count').textContent = selectedDispatchCardIds.size;
-            renderDispatchCandidateList(); // 선택 상태 실시간 반영을 위해 리렌더링
+            const selected=selectedDispatchCardIds.has(cardInstance.id);
+            el.classList.toggle('investigation-candidate-selected',selected);
+            el.classList.toggle('border-purple-400',selected);
+            el.classList.toggle('bg-purple-950/40',selected);
+            el.classList.toggle('ring-2',selected);
+            el.classList.toggle('ring-purple-500',selected);
+            el.classList.toggle('border-gray-800',!selected);
+            el.classList.toggle('bg-black/40',!selected);
+            el.setAttribute('aria-pressed',String(selected));
         };
+        el.onclick=toggle;
+        el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
 
         const rarityColors = { 'N': 'text-gray-400', 'R': 'text-cyan-400', 'SR': 'text-purple-400', 'SSR': 'text-yellow-400' };
+        const realRarity=cardInstance.inherited?.originalRarity||charData.rarity;
+        const realFaction=cardInstance.inherited?.faction||charData.faction;
 
         el.innerHTML = `
             <div class="aspect-[2/3] overflow-hidden rounded-sm mb-1 relative">
                 <img src="${charData.imageUrl}" class="w-full h-full object-cover">
-                <span class="absolute top-1 right-1 font-tech font-bold text-[9px] px-1 bg-black/70 ${rarityColors[charData.rarity] || 'text-white'}">${charData.rarity}</span>
+                <span class="absolute top-1 right-1 font-tech font-bold text-[9px] px-1 bg-black/70 ${rarityColors[realRarity] || 'text-white'}">${realRarity}</span>
             </div>
-            <p class="text-[10px] text-white truncate">${charData.name}</p>
-            <p class="text-[9px] text-cyan-400 font-tech">Lv.${cardInstance.level} // ${charData.faction}</p>
+            <p class="text-[10px] text-white truncate">${dispatchEscape(cardInstance.name)}</p>
+            <p class="text-[9px] text-cyan-400 font-tech">퇴고 +${Number(cardInstance.level)||0} // ${dispatchEscape(realFaction)}</p>
         `;
         listContainer.appendChild(el);
     });
-}
-
-// 2. 정렬 버튼을 눌렀을 때 호출되는 함수
-function sortDispatchCandidates(criteria) {
-    currentDispatchSortOrder = criteria;
-    renderDispatchCandidateList();
 }
 
 // 2. 메인 스토리 목록 표시 함수
@@ -12875,29 +12865,14 @@ function renderBreedingInventory() {
         return !inDeck && !isSelected;
     });
 
-    // 정렬 (등급 > 레벨) + ✨[안전장치 추가]✨
-    availableCards.sort((a, b) => {
-        const charA = findCharacter(a.name);
-        const charB = findCharacter(b.name);
-
-        // 🛡️ 데이터가 없는 유령 카드는 맨 뒤로 보냄 (에러 방지)
-        if (!charA && !charB) return 0;
-        if (!charA) return 1;
-        if (!charB) return -1;
-
-        // 등급 가중치가 없으면 0으로 처리
-        const rA = (RARITY_STATS_WEIGHT && RARITY_STATS_WEIGHT[charA.rarity]) ? RARITY_STATS_WEIGHT[charA.rarity] : 0;
-        const rB = (RARITY_STATS_WEIGHT && RARITY_STATS_WEIGHT[charB.rarity]) ? RARITY_STATS_WEIGHT[charB.rarity] : 0;
-
-        return (rB - rA) || (b.level - a.level);
-    });
+    const visible=selectFilteredCards('breeding',container,availableCards,renderBreedingInventory);
 
     if (availableCards.length === 0) {
         container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-4">사용 가능한 원고가 없습니다.<br>(편찬에 등록된 카드는 제외됩니다)</p>';
         return;
     }
 
-    availableCards.forEach(cardInstance => {
+    visible.forEach(cardInstance => {
         const charData = findCharacter(cardInstance.name);
 
         // 🛡️ 데이터 없는 카드는 화면에 그리지 않음
