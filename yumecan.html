@@ -809,6 +809,10 @@ html body .trade-card-thumb{height:112px!important;max-height:112px!important;as
 html body .trade-card-thumb img{display:block;height:100%!important;width:100%!important;max-height:112px!important;object-fit:contain!important;transform:none!important}
 @media(max-width:800px){html body #trade-list-container{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:480px){html body #trade-list-container .trade-market-row{grid-template-columns:56px minmax(0,1fr);gap:10px;padding:12px}html body #trade-list-container .trade-market-thumb{width:56px!important;height:70px!important}.trade-market-actions{grid-column:2;justify-self:end}html body .trade-card-thumb{height:90px!important;max-height:90px!important}html body .trade-card-thumb img{max-height:90px!important}}
+</style><style id="ssr-reveal-style">
+html body dialog.ssr-reveal{border:1px solid #fff;border-radius:26px;padding:0;width:min(680px,94vw);max-height:94dvh;overflow-y:auto;background:linear-gradient(145deg,#fff,var(--ssr-tone));color:#384254;box-shadow:0 24px 100px #39456533}
+.ssr-reveal::backdrop{background:#e5e8f0e8;backdrop-filter:blur(12px)}.ssr-stage{text-align:center;padding:30px;animation:ssrArrival .7s ease-out}.ssr-kicker{font-size:12px;letter-spacing:.2em;color:#9a7834}.ssr-faction{display:table;margin:14px auto;padding:6px 20px;border:1px solid #ffffff;border-radius:30px;background:#ffffff90;font-weight:700}.ssr-portrait{display:block;width:100%;height:min(38vh,310px);object-fit:contain;filter:drop-shadow(0 12px 16px #58678322);margin:auto}.ssr-portrait[hidden]{display:none}.ssr-stage h2{font-size:clamp(18px,4vw,26px);font-weight:700;margin:14px 0}.ssr-stage blockquote{font-size:clamp(14px,3vw,19px);line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;max-height:24vh;overflow-y:auto}.ssr-position{font-size:12px;color:#788295;margin:16px}.ssr-actions{display:flex;justify-content:center;gap:10px}.ssr-actions button{padding:12px 20px;background:#ffffffc9;border:1px solid #d5dce6;border-radius:12px;min-height:44px}.ssr-actions [data-next]{background:#465267;color:white}#summon-share-status{font-size:12px;color:#788295}
+@keyframes ssrArrival{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}.calm-mode .ssr-stage{animation:none}@media(prefers-reduced-motion:reduce){.ssr-stage{animation:none}}@media(max-width:480px){.ssr-stage{padding:20px}.ssr-portrait{height:30vh}}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1066,6 +1070,7 @@ html body .trade-card-thumb img{display:block;height:100%!important;width:100%!i
 </div>
                 <p id="summon-summary" role="status" aria-live="polite"></p>
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
+                <div class="collection-toolbar"><button id="summon-share" type="button" disabled>이번 소환 공유</button><button id="summon-save" type="button" disabled>이미지 저장</button><span id="summon-share-status" role="status"></span></div>
                 <details id="archive-history"><summary>최근 소환 기록 · 최대 30회</summary><ol id="summon-history-list"><li>아직 기록된 소환이 없습니다.</li></ol></details>
             </div>
 
@@ -5449,6 +5454,94 @@ function addCardToInventory(cardName) {
             collectedCardNames.add(cardName);
         }
 
+// SSR presentation and share assets are derived only from the current draw.
+const summonFactionTones = {'히어로':'#e7e1ff','빌런':'#dfe5ef','탐정':'#ddecff','범인':'#f8dfe6','마법사':'#eeddf7','초대객':'#ffecd6','도박사':'#fff0c9','사제':'#dcf3ea','악마':'#f4dce6'};
+function summonQuote(card) {
+    const lines=(card.dialogues||[]).filter(x=>typeof x==='string' && x.trim() && !['...','…'].includes(x.trim()));
+    return lines[0] || (card.skills||[]).find(x=>x.dialogue)?.dialogue || '새로운 이야기가 펼쳐집니다.';
+}
+async function showSsrReveals(cards) {
+    const ssrs=cards.filter(c=>c.rarity==='SSR');
+    if (!ssrs.length || window.yumecanSettings.quick) return;
+    const previous=document.activeElement;
+    const dialog=document.createElement('dialog');dialog.className='ssr-reveal';
+    dialog.innerHTML='<div class="ssr-stage"><span class="ssr-kicker">A NEW CHAPTER · SSR</span><p class="ssr-faction"></p><img class="ssr-portrait" alt=""><h2></h2><blockquote></blockquote><p class="ssr-position"></p><div class="ssr-actions"><button type="button" data-skip>모두 건너뛰기</button><button type="button" data-next>다음</button></div></div>';
+    document.body.appendChild(dialog);let finish;
+    const done=new Promise(resolve=>{finish=resolve;});let index=0;
+    const render=()=>{const card=ssrs[index];dialog.style.setProperty('--ssr-tone',summonFactionTones[card.faction]||'#e9eaf2');
+        dialog.querySelector('.ssr-faction').textContent=card.faction||'미분류';
+        dialog.querySelector('h2').textContent=card.name;
+        dialog.querySelector('blockquote').textContent='“'+summonQuote(card)+'”';
+        const img=dialog.querySelector('img');img.hidden=false;img.onerror=()=>{img.hidden=true;};img.src=card.imageUrl||card.cardImageUrl||'';img.alt=card.name;
+        dialog.querySelector('.ssr-position').textContent=`SSR ${index+1} / ${ssrs.length}`;
+        dialog.querySelector('[data-next]').textContent=index===ssrs.length-1?'결과 보기':'다음 SSR';
+    };
+    dialog.querySelector('[data-next]').onclick=()=>{if(++index<ssrs.length)render();else finish();};
+    dialog.querySelector('[data-skip]').onclick=()=>finish();
+    dialog.addEventListener('cancel',e=>{e.preventDefault();finish();});
+    try {render();dialog.showModal();dialog.querySelector('[data-next]').focus();await done;}
+    finally {dialog.close();dialog.remove();previous?.focus();}
+}
+let summonShareFile=null, summonShareGeneration=0;
+function loadShareImage(src) {
+    return new Promise(resolve=>{
+        if(!src){resolve(null);return;}
+        const img=new Image();img.crossOrigin='anonymous';
+        let settled=false;const end=value=>{if(settled)return;settled=true;clearTimeout(timer);img.onload=img.onerror=null;resolve(value);};
+        const timer=setTimeout(()=>end(null),6000);
+        img.onload=()=>end(img.naturalWidth?img:null);img.onerror=()=>end(null);img.src=src;
+    });
+}
+function shareWrap(ctx,text,x,y,width,lineHeight,maxLines=3) {
+    let line='',lines=[];
+    for(const ch of String(text)){if(ctx.measureText(line+ch).width>width&&line){lines.push(line);line=ch;}else line+=ch;}
+    if(line)lines.push(line);
+    lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(i===maxLines-1&&lines.length>maxLines?l.slice(0,-1)+'…':l,x,y+i*lineHeight));
+}
+async function prepareSummonShare(cards) {
+    const generation=++summonShareGeneration;summonShareFile=null;
+    const share=document.getElementById('summon-share'),save=document.getElementById('summon-save');
+    share.disabled=save.disabled=true;const status=document.getElementById('summon-share-status');status.textContent='공유 이미지 준비 중…';
+    try {
+        const images=await Promise.all(cards.map(c=>loadShareImage(c.cardImageUrl||c.imageUrl)));
+        const cols=Math.min(5,cards.length),rows=Math.ceil(cards.length/cols),tileW=200,tileH=300;
+        const canvas=document.createElement('canvas');canvas.width=cols*tileW+64;canvas.height=rows*tileH+180;
+        const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas unavailable');
+        ctx.fillStyle='#f4f5f9';ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='#384254';ctx.font='bold 28px sans-serif';ctx.fillText('YUMECAN',32,48);
+        ctx.font='16px sans-serif';ctx.fillText(`${cards.length}장 소환 · SSR ${cards.filter(c=>c.rarity==='SSR').length}장`,32,80);
+        cards.forEach((card,i)=>{
+            const x=32+(i%cols)*tileW,y=108+Math.floor(i/cols)*tileH;
+            ctx.fillStyle=summonFactionTones[card.faction]||'#e7eaf0';ctx.fillRect(x,y,tileW-12,tileH-14);
+            ctx.strokeStyle=card.rarity==='SSR'?'#c5a14d':card.rarity==='SR'?'#b098cd':'#bec9d9';ctx.lineWidth=card.rarity==='SSR'?4:2;ctx.strokeRect(x+2,y+2,tileW-16,tileH-18);
+            const img=images[i];if(img){const ratio=Math.min(164/img.naturalWidth,158/img.naturalHeight);ctx.drawImage(img,x+(tileW-12-img.naturalWidth*ratio)/2,y+12,img.naturalWidth*ratio,img.naturalHeight*ratio);}
+            else{ctx.fillStyle='#7c879b';ctx.font='bold 32px sans-serif';ctx.fillText(card.rarity,x+54,y+100);}
+            ctx.fillStyle='#384254';ctx.font='bold 14px sans-serif';ctx.fillText(`${card.rarity} · ${card.faction||'미분류'}`,x+12,y+195);
+            ctx.font='15px sans-serif';shareWrap(ctx,card.name,x+12,y+222,tileW-36,21);
+        });
+        ctx.fillStyle='#7b8493';ctx.font='12px sans-serif';ctx.fillText('꿈속에서 만난 이야기 · YUMECAN',32,canvas.height-24);
+        const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('PNG failed')),'image/png'));
+        if(generation!==summonShareGeneration)return;
+        summonShareFile=new File([blob],'yumecan-summon.png',{type:'image/png'});
+        share.disabled=save.disabled=false;
+        status.textContent=images.some(x=>!x)?'이미지를 불러오지 못한 카드는 이름·등급으로 표시했어요.':'이번 소환 결과를 이미지로 공유할 수 있어요.';
+    } catch(e){if(generation===summonShareGeneration)status.textContent='공유 이미지를 만들지 못했어요.';console.warn(e);}
+}
+function downloadSummonShare() {
+    if(!summonShareFile)return;
+    const url=URL.createObjectURL(summonShareFile),a=document.createElement('a');a.href=url;a.download=summonShareFile.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+document.getElementById('summon-save').onclick=downloadSummonShare;
+document.getElementById('summon-share').onclick=async()=>{
+    if(!summonShareFile)return;
+    const status=document.getElementById('summon-share-status');
+    try {
+        if(navigator.share&&navigator.canShare?.({files:[summonShareFile]})){
+            await navigator.share({files:[summonShareFile],title:'YUMECAN 소환 결과',text:'꿈속에서 만난 등장인물들'});
+        }else {downloadSummonShare();status.textContent='이 브라우저에서는 이미지로 저장해 공유해주세요.';}
+    }catch(e){if(e.name!=='AbortError')status.textContent='공유창을 열지 못했어요. 이미지 저장 버튼을 이용해주세요.';}
+};
+
         function performPulls(count, gachaType = 'normal', cost = 0) {
             if (summonBusy) return;
             const results = [];
@@ -5476,19 +5569,23 @@ function addCardToInventory(cardName) {
             updateUI();
             saveGame();
             sfx.playGachaCharge();
-            const complete = () => {
+            let completed = false;
+            const complete = async () => {
+                if (completed) return; completed = true;
+                try { await showSsrReveals(results); } catch (error) { console.warn('SSR reveal:', error); }
                 summonBusy = false;
                 displayResults(results, discovered);
                 updateUI(); checkAchievements();
             };
             try { play3DGachaAnimation(results, complete); }
-            catch (error) { console.error('Gacha animation failed:', error); finish3DGachaAnimation(); }
+            catch (error) { console.error('Gacha animation failed:', error); finish3DGachaAnimation(); complete(); }
         }
 
 
         // ✨ 10개의 카드가 결과 창에 빠짐없이 전부 출력되도록 보장하는 displayResults 함수
         function displayResults(pulledCharacters, discovered = new Set()) {
             if (!resultsContainer) return;
+            prepareSummonShare(pulledCharacters);
             resultsContainer.innerHTML = ''; // 이전 결과 초기화
             document.getElementById('summon-summary').textContent = `${pulledCharacters.length}장 소환 완료 · 새로 수집한 등장인물 ${discovered.size}종`;
             const marked = new Set();
@@ -5616,13 +5713,6 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
     if (!possibleCharacters.length) throw new Error(`${gachaType} 서가의 ${selectedRarity} 등급에 소환 가능한 등장인물이 없습니다.`);
     return chooseGachaCard(possibleCharacters, gachaType);
 }
-
-            function displayResults(pulledCharacters) {
-                resultsContainer.innerHTML = '';
-                pulledCharacters.forEach((character, index) => {
-                    resultsContainer.appendChild(createCard(character, { animationIndex: index, mode: 'gachaResult' }));
-                });
-            }
 
             function getUniqueInventory() {
                 const cardCounts = playerInventory.reduce((acc, card) => {
@@ -11006,7 +11096,7 @@ if(marketTabBtn) marketTabBtn.click();
             }
         };
 
-		function handleSsrGuaranteedPull() {
+		async function handleSsrGuaranteedPull() {
     if (!currentUser || summonBusy) return;
     if (playerSsrTickets < 1) { showMessage('확정권이 부족합니다!', 'text-red-400', messageArea); return; }
     if (playerInventory.length >= inventoryCapacity) { showMessage('서고가 부족합니다!', 'text-yellow-400', messageArea); return; }
@@ -11023,8 +11113,9 @@ if(marketTabBtn) marketTabBtn.click();
     addCardToInventory(pulledChar.name);
     playerStats.totalPulls++;
     recordSummon([pulledChar], 'ticket');
-    displayResults([pulledChar], discovered);
-    updateUI(); saveGame(); checkAchievements();
+    summonBusy = true; updateUI(); saveGame(); checkAchievements();
+    try { await showSsrReveals([pulledChar]); } catch(error) { console.warn(error); }
+    finally { summonBusy = false; displayResults([pulledChar], discovered); updateUI(); }
 }
 
 
