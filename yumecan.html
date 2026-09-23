@@ -820,6 +820,24 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
 .investigation-team h4{font-size:12px;margin-bottom:10px}.investigation-team>div{max-height:240px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.investigation-member{display:flex;gap:8px;align-items:center;min-width:0;background:#ffffffa0;padding:8px;border-radius:12px}.investigation-member img{width:46px;height:58px;object-fit:contain;flex-shrink:0}.investigation-member strong{font-size:11px;display:block;overflow-wrap:anywhere}.investigation-member small{font-size:10px;color:#7c8797;display:block;margin-top:4px}.investigation-progress progress{width:100%;height:8px;accent-color:#90aabe}.investigation-progress p{font-size:12px;margin-top:6px;color:#61758e}.investigation-card button{padding:12px;border-radius:12px;background:#4e6178;color:white;min-height:44px}.investigation-card button:disabled{opacity:.45}
 .investigation-reports{width:100%;margin-top:24px;border:1px solid #e0e5ed;border-radius:18px;padding:18px}.investigation-reports summary{cursor:pointer;font-size:14px;font-weight:700}#dispatch-report-list{max-height:380px;overflow:auto;font-size:12px;margin-top:14px}.investigation-report{padding:14px 0;border-bottom:1px solid #e1e6ee;line-height:1.8}.investigation-report small{display:block;color:#8a94a2}#dispatch-select-modal>div{border-radius:20px}
 @media(max-width:640px){html body #dispatch-missions-container{grid-template-columns:1fr}.investigation-card{padding:16px}.investigation-card h3{font-size:17px}.investigation-member img{width:38px;height:48px}.investigation-summary{padding:16px;font-size:14px}}
+</style><style id="wide-card-detail">
+.detail-wide-layout{display:flex;flex-direction:column;gap:18px}.detail-wide-layout section{min-width:0}.detail-column-heading{display:none}.detail-wide-panel #close-card-detail{z-index:5;min-width:40px;min-height:40px;border-radius:10px;background:#ffffffed}
+.detail-wide-panel :is(select,#detail-equipment-slot){min-width:0;max-width:100%}.detail-wide-panel :is(#detail-card-name,#eq-slot-name,#eq-slot-desc,#detail-skills-container){overflow-wrap:anywhere}.detail-wide-panel #revision-material-select{width:0;min-width:0;flex:1}.detail-portrait-column>div:first-child{margin-bottom:16px}
+@media(min-width:960px){
+html body #card-detail-modal{padding:24px!important}
+html body #card-detail-modal>.detail-wide-panel{width:min(1400px,96vw)!important;max-width:1400px!important;height:min(860px,92vh);height:min(860px,92dvh);max-height:92dvh!important;overflow:hidden!important;padding:52px 24px 24px!important;border-radius:24px!important}
+.detail-wide-layout{height:100%;min-height:0;display:grid;grid-template-columns:minmax(210px,.8fr) minmax(270px,1fr) minmax(290px,1.1fr);grid-template-areas:"portrait info growth";gap:20px;align-items:stretch}
+.detail-portrait-column{grid-area:portrait}.detail-info-column{grid-area:info}.detail-growth-column{grid-area:growth}
+.detail-wide-layout>section{overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:0 8px 8px 0;scrollbar-width:thin;scrollbar-gutter:stable}
+.detail-column-heading{display:block;font-size:13px;font-weight:700;letter-spacing:.05em;color:#7b8799;padding:4px 0 14px;margin:0}
+html body .detail-portrait-column>div:first-child{width:100%!important;max-width:340px;margin:0 auto 18px;padding:8px!important}
+html body #card-detail-modal #detail-card-image{width:100%!important;height:clamp(200px,35vh,360px)!important;object-fit:contain!important}
+html body #card-detail-modal #detail-card-name{font-size:clamp(18px,1.7vw,25px)!important;letter-spacing:0!important;line-height:1.5}
+.detail-info-column>div,.detail-growth-column>div{margin-top:0!important;margin-bottom:14px!important;border-radius:15px!important;padding:15px!important}
+html body #detail-card-story{height:auto!important;max-height:none!important;overflow:visible!important;min-height:96px;line-height:1.9}
+.detail-growth-column #revision-container>div.flex{gap:8px;flex-wrap:wrap}.detail-growth-column #dismantle-container{gap:8px;flex-wrap:wrap}
+}
+@media(min-width:960px) and (max-width:1140px){.detail-wide-layout{grid-template-columns:210px minmax(0,1fr);grid-template-areas:"portrait info" "portrait growth";overflow-y:auto;align-content:start}.detail-wide-layout>section{overflow:visible}.detail-portrait-column{position:sticky;top:0;align-self:start;max-height:100%;overflow-y:auto!important}.detail-info-column,.detail-growth-column{padding-right:4px}}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1627,24 +1645,14 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
 
 
             <!-- 카드 상세 모달 (텍티컬 테마 적용) -->
-            <div id="card-detail-modal" class="hidden fixed inset-0 bg-[#0b0c10]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div class="bg-[#12151c]/95 border border-gray-700 border-t-2 border-t-cyan-400 shadow-[0_0_30px_rgba(0,0,0,0.9)] max-w-lg w-full relative max-h-[90vh] overflow-y-auto custom-scrollbar p-6 rounded-sm">
-
-                    <!-- 코너 장식 -->
-                    <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400 opacity-50 pointer-events-none"></div>
-                    <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-yellow-500 opacity-50 pointer-events-none"></div>
-
-                    <button id="close-card-detail" class="absolute top-4 right-4 text-gray-500 font-tech text-2xl hover:text-cyan-400 transition-colors z-10">[X]</button>
-
-                    <div class="flex flex-col gap-4 relative z-0 mt-2">
-                        <div class="w-full md:w-3/5 mx-auto bg-black/60 border border-gray-800 p-2 rounded-sm relative">
+<div id="card-detail-modal" class="hidden fixed inset-0 bg-[#0b0c10]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+<div class="detail-wide-panel bg-[#12151c]/95 border border-gray-700 max-w-lg w-full relative max-h-[90vh] overflow-y-auto custom-scrollbar p-6 rounded-sm">
+<button id="close-card-detail" class="absolute top-4 right-4 text-gray-500 font-tech text-2xl hover:text-cyan-400 transition-colors z-10">[X]</button><div class="detail-wide-layout">
+<section class="detail-portrait-column" aria-label="등장인물"><div class="w-full md:w-3/5 mx-auto bg-black/60 border border-gray-800 p-2 rounded-sm relative">
                             <div class="absolute top-1 left-1 w-2 h-2 border-t border-l border-gray-500"></div>
                             <div class="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-gray-500"></div>
                             <img id="detail-card-image" src="" alt="Card Image" class="w-full rounded-sm object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-                        </div>
-
-                        <div class="w-full">
-                            <h2 id="detail-card-name" class="text-2xl md:text-3xl font-black text-center text-white tracking-widest mb-2"></h2>
+                        </div><h2 id="detail-card-name" class="text-2xl md:text-3xl font-black text-center text-white tracking-widest mb-2"></h2>
 
                             <div class="flex items-center justify-center gap-3 mb-4">
                                 <p id="detail-card-rarity" class="font-tech font-bold text-2xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"></p>
@@ -1654,9 +1662,8 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                             <div id="detail-parents-wrapper" class="hidden text-center mb-4 bg-gray-900/50 border border-gray-800 p-3 rounded-sm">
                                 <p class="font-tech text-[10px] text-cyan-500 tracking-widest mb-2 border-b border-gray-700 pb-1">GENETIC ORIGIN // 영감의 원천</p>
                                 <div id="detail-parents-container" class="flex justify-center items-center gap-4"></div>
-                            </div>
-
-                            <div id="enhancement-container" class="bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div></section>
+<section class="detail-growth-column" aria-label="성장 및 장비"><h3 class="detail-column-heading">성장 · 집필 도구</h3><div id="enhancement-container" class="bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-cyan-500"></div>
                                 <h3 class="font-tech text-cyan-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">ENHANCEMENT // 등장인물 퇴고</h3>
                                 <div class="flex items-center justify-between">
@@ -1669,9 +1676,7 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                         <span id="enhancement-cost" class="font-tech text-[10px] text-cyan-300 mt-1"></span>
                                     </button>
                                 </div>
-                            </div>
-
-                            <div id="revision-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div><div id="revision-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-yellow-500"></div>
                                 <h3 class="font-tech text-yellow-500 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">REVISION // 개정판 제작</h3>
                                 <div class="flex justify-between items-center mb-3">
@@ -1695,9 +1700,7 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                         <button id="revise-with-inkwell-button" class="gacha-button py-1 px-3 text-[10px] tracking-widest border-blue-700 text-blue-400">사용</button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div id="publication-container" class="hidden mt-4 bg-gray-900/90 border-l-4 border-yellow-400 p-4 rounded-sm shadow-[0_0_15px_rgba(255,200,0,0.1)]">
+                            </div><div id="publication-container" class="hidden mt-4 bg-gray-900/90 border-l-4 border-yellow-400 p-4 rounded-sm shadow-[0_0_15px_rgba(255,200,0,0.1)]">
                                 <div class="flex justify-between items-center">
                                     <div>
                                         <h3 class="font-tech text-yellow-400 text-sm tracking-widest font-bold mb-1">PUBLICATION // 정식 출판</h3>
@@ -1708,9 +1711,7 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                         출판
                                     </button>
                                 </div>
-                            </div>
-
-                            <div id="equipment-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div><div id="equipment-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                                             <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-green-500"></div>
                                                             <h3 class="font-tech text-green-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">WRITING TOOL // 집필 도구</h3>
                                                             <div id="detail-equipment-slot" class="flex justify-between items-center bg-black/50 p-2 border border-gray-700 rounded-sm cursor-pointer hover:border-green-500 transition-colors" onclick="openEquipmentModal()">
@@ -1723,9 +1724,11 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                                                 </div>
                                                                 <button id="unequip-btn" class="hidden gacha-button py-1 px-3 text-[10px] border-red-700 text-red-500" onclick="event.stopPropagation(); unequipItem();">해제</button>
                                                             </div>
-                                                        </div>
-
-                            <div class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                                                        </div><div id="dismantle-container" class="mt-4 bg-red-900/20 border border-red-900/50 p-3 rounded-sm flex justify-between items-center">
+                                <p class="font-tech text-xs font-bold text-red-500 tracking-widest">DISMANTLE // 파쇄 (재료 회수)</p>
+                                <button id="dismantle-card-button" class="gacha-button border-red-700 text-red-500 py-1 px-3 text-[10px] hover:bg-red-600 hover:text-white">파쇄 실행</button>
+                            </div></section>
+<section class="detail-info-column" aria-label="능력치와 이야기"><h3 class="detail-column-heading">능력 · 이야기</h3><div class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-gray-500"></div>
                                 <h3 class="font-tech text-gray-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">BASE STATS // 능력치</h3>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
@@ -1734,15 +1737,11 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                     <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">DEF</p><p id="detail-stat-def" class="font-tech font-bold text-lg text-white"></p></div>
                                     <div><p class="font-tech text-[10px] text-gray-500 tracking-wider">SPD · 스피드</p><p id="detail-stat-speed" class="font-tech font-bold text-lg text-white"></p></div>
                                 </div>
-                            </div>
-
-                            <div class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div><div class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-red-500"></div>
                                 <h3 class="font-tech text-red-500 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">COMBAT SKILLS // 스킬</h3>
                                 <div id="detail-skills-container" class="space-y-3"></div>
-                            </div>
-
-                            <div id="detail-card-story-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div><div id="detail-card-story-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-purple-500"></div>
                                 <h3 class="font-tech text-purple-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">ARCHIVE RECORD // 등장인물 스토리</h3>
                                 <div id="detail-card-story" class="text-gray-300 text-xs leading-relaxed story-content h-24 overflow-y-auto pr-2"></div>
@@ -1751,16 +1750,8 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
                                     <span id="detail-story-page-indicator" class="font-tech text-[10px] text-gray-500 tracking-widest"></span>
                                     <button id="detail-story-next" class="font-tech text-[10px] text-gray-400 hover:text-cyan-400">NEXT &gt;</button>
                                 </div>
-                            </div>
-
-                            <div id="dismantle-container" class="mt-4 bg-red-900/20 border border-red-900/50 p-3 rounded-sm flex justify-between items-center">
-                                <p class="font-tech text-xs font-bold text-red-500 tracking-widest">DISMANTLE // 파쇄 (재료 회수)</p>
-                                <button id="dismantle-card-button" class="gacha-button border-red-700 text-red-500 py-1 px-3 text-[10px] hover:bg-red-600 hover:text-white">파쇄 실행</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </div></section>
+</div></div></div>
 
 <div id="gacha-pool-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
     <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full relative h-[80vh] flex flex-col border border-yellow-500/50">
