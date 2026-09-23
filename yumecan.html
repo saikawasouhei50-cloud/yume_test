@@ -1272,7 +1272,7 @@ html body #myroom-view #furniture-shop-modal>div,html body #myroom-view #furnitu
                     <div id="battle-order" aria-label="이번 턴 행동 순서"></div>
                     <p id="battle-status" role="status" aria-live="polite">전투 준비 중…</p>
                     <div id="battle-options"></div>
-                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10~50%를 무작위로 회복합니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
+                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10%·20%·30%·40%·50% 중 하나를 회복합니다(확률: 5%·40%·45%·7%·3%). 캐릭터마다 3턴에 한 번 사용할 수 있습니다. 예: 1턴 사용 → 4턴 재사용. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
                 </section>
                 <div class="relative z-10 flex justify-end items-center gap-2 mt-4 font-tech">
                     <button id="combat-run-button" class="gacha-button py-1 px-3 text-xs border-yellow-600 text-yellow-500 ml-2">항복</button>
@@ -7359,8 +7359,26 @@ function battleOrder(deck, enemy) {
 function battleRemaining(card, index) {
     return Math.max(0, (card._readyAt[index] || 0) - card._actions);
 }
+// Rest is available at action 1, then 4, 7... if used immediately.
+function battleRestRemaining(card) {
+    return Math.max(0, (card._restReadyAt || 0) - (card._actions || 0));
+}
+function battleRestPercent(roll = Math.random()) {
+    if (roll < .05) return 10;
+    if (roll < .45) return 20;
+    if (roll < .90) return 30;
+    if (roll < .97) return 40;
+    return 50;
+}
+function battleRest(card) {
+    if (battleRestRemaining(card) > 0) throw new Error('휴식 재사용 대기 중입니다.');
+    const percent = battleRestPercent();
+    const healed = battleHeal(card, Math.max(1, Math.floor(card.maxHp * percent / 100)));
+    card._restReadyAt = card._actions + 3;
+    return {percent, healed};
+}
 function battleAutoAction(card) {
-    if (card.stats.hp < card.maxHp * .35) return {type: 'rest'};
+    if (card.stats.hp < card.maxHp * .35 && battleRestRemaining(card) === 0) return {type: 'rest'};
     const skills = card.skills || [];
     const ready = skills.map((skill,index) => ({skill,index})).filter(({skill,index}) =>
         battleRemaining(card,index) === 0 && (skill.type !== 'heal' || card.stats.hp < card.maxHp * .7));
@@ -7426,7 +7444,12 @@ function requestBattleAction(session, card, deck) {
         const root = () => {
             options.replaceChildren();
             button('공격 · 일반 / 스킬', attack);
-            button('휴식 · 최대 HP 10~50% 회복', () => choose({type:'rest'}));
+            const restWait = battleRestRemaining(card);
+            const restButton = button(restWait ? `휴식 · ${restWait}턴 후 사용 가능` : '휴식 · 주로 최대 HP 20~30% 회복', () => choose({type:'rest'}), restWait > 0);
+            const restInfo = document.createElement('span');
+            restInfo.className = 'battle-skill-cooldown';
+            restInfo.textContent = '3턴에 1회 · 회복량 10/20/30/40/50% (확률 5/40/45/7/3%)';
+            restButton.appendChild(restInfo);
             button('희생 · 아군 공격력 +20%', targets, !deck.some(c => c !== card && c.stats.hp > 0));
         };
         const attack = () => {
@@ -7492,7 +7515,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     };
     [...combatDeck,monsterData].forEach((card,i) => {
         card._baseAtk = card.stats.atk; card._baseDef = card.stats.def;
-        card._actions = 0; card._readyAt = []; card.activeEffects = [];
+        card._actions = 0; card._readyAt = []; card._restReadyAt = 0; card.activeEffects = [];
         card.maxHp = i < combatDeck.length ? originalBonusDeck[i].stats.hp : (card.maxHp || card.stats.hp);
     });
     session.deck = combatDeck;
@@ -7533,9 +7556,8 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 if (!alive()) return;
                 let damage = 0;
                 if (action.type === 'rest') {
-                    const percent = 10 + Math.floor(Math.random()*41);
-                    const healed = battleHeal(card, Math.max(1, Math.floor(card.maxHp*percent/100)));
-                    logCombat(`${card.name} 휴식 · 최대 HP의 ${percent}% 회복 → 실제 회복 ${healed}`);
+                    const {percent, healed} = battleRest(card);
+                    logCombat(`${card.name} 휴식 · 최대 HP의 ${percent}% 회복 → 실제 회복 ${healed} · 3턴 후 재사용 가능`);
                 } else if (action.type === 'sacrifice') {
                     const target = combatDeck[action.target];
                     if (battleSacrifice(card,target)) logCombat(`${card.name} 희생 · HP 0 → ${target.name} 공격력 +20% (이번 전투)`);
@@ -7601,7 +7623,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     // Temporary combat effects never leak into later dungeon encounters.
     [...combatDeck,monsterData].forEach(card => {
         card.stats.atk = card._baseAtk; card.stats.def = card._baseDef; card.activeEffects = [];
-        delete card._baseAtk; delete card._baseDef; delete card._actions; delete card._readyAt;
+        delete card._baseAtk; delete card._baseDef; delete card._actions; delete card._readyAt; delete card._restReadyAt;
     });
     endCombat(monsterData.stats.hp <= 0, {indices,type}, session.damage, combatDeck);
 }
