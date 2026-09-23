@@ -910,6 +910,29 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
 #dispatch-candidate-list{min-height:120px}
 #dispatch-candidate-list [role="button"]:focus-visible{outline:3px solid #96a8cc;outline-offset:2px}
 </style>
+<style id="dream-rewards-v3">
+#home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-menu{grid-column:2;grid-row:1}#home-view .dream-attendance{grid-column:1/-1;grid-row:2}#home-view .dream-explore{grid-row:3}#home-view .dream-bottom{grid-row:4}
+.dream-attendance,.dream-redeem-panel{margin:20px 0;padding:20px;border:1px solid #dce3ec;border-radius:20px;background:linear-gradient(145deg,#f5f8fc,#fff 72%);color:#38465a;box-shadow:0 8px 24px #40506409}
+.dream-attendance{display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,2fr) auto;gap:15px;align-items:center}
+.dream-attendance h3,.dream-redeem-heading h3{font-size:20px;margin:4px 0 6px;font-weight:800;color:#36465a}
+.dream-attendance p,.dream-redeem-heading p,.dream-redeem-box p{font-size:12px;line-height:1.6;color:#748399;margin:0}
+.dream-attendance-days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.dream-attendance-day{font-size:10px;background:#fff;border:1px solid #e0e6ef;padding:8px 5px;border-radius:9px;text-align:center;line-height:1.5}
+.dream-attendance-day.current{border-color:#92a6c6;background:#e8eef9;color:#435b80;font-weight:800}
+html body .dream-attendance button,.dream-redeem-panel button{border:1px solid #cad5e4;border-radius:11px;padding:11px 14px;min-height:44px;background:#52647e;color:#fff;font-size:12px;font-weight:750;cursor:pointer}
+html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{opacity:.45;cursor:not-allowed}
+.dream-redeem-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.dream-redeem-box{border:1px solid #e0e5ee;border-radius:16px;background:#fff;padding:17px;display:grid;gap:10px;align-content:start;min-width:0}
+.dream-redeem-box>strong{font-size:16px}.dream-redeem-box label{font-size:11px;color:#748399;font-weight:700;min-width:0}
+.dream-redeem-box select{display:block;width:100%;min-height:42px;border:1px solid #d9e0e9;border-radius:10px;background:#f9fafc;color:#3a4759;padding:8px;margin-top:5px;font-size:13px;min-width:0;text-overflow:ellipsis}
+.dream-redeem-extra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:13px;padding:13px;border:1px solid #e0e5ee;border-radius:13px;background:#fff;font-size:12px}
+.dream-redeem-extra strong{font-size:14px}.dream-redeem-extra span{margin-right:auto}.dream-redeem-extra button{background:#fff!important;color:#4d617e!important}
+#card-exchange-status{font-size:12px;min-height:18px;color:#536c91;margin:10px 0 0}
+.warehouse-equipment{margin-top:12px;border-top:1px solid #dce3ec;padding-top:10px}.warehouse-equipment summary{cursor:pointer;font-size:12px;font-weight:750;color:#506886;list-style-position:inside}
+.warehouse-equipment-holders{margin-top:9px;max-height:190px;overflow-y:auto;display:grid;gap:5px}.warehouse-equipment-holders>div{background:#fff;border:1px solid #e0e5ec;border-radius:9px;padding:7px 9px;font-size:11px;overflow-wrap:anywhere}
+@media(max-width:767px){#home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-attendance{grid-column:1;grid-row:2}#home-view .dream-menu{grid-column:1;grid-row:3}#home-view .dream-explore{grid-row:4}#home-view .dream-bottom{grid-row:5}}
+@media(max-width:800px){.dream-attendance{grid-template-columns:1fr}.dream-attendance-days{grid-template-columns:repeat(2,minmax(0,1fr))}.dream-redeem-grid{grid-template-columns:1fr}.dream-redeem-panel{padding:15px}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1006,6 +1029,7 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
   </div>
   <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
  </div>
+ <section class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button" onclick="claimDailyAttendance()">오늘 보상 받기</button></section>
  <nav class="dream-menu" aria-label="주요 메뉴">
   <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
   <div class="dream-menu-grid">
@@ -1169,6 +1193,7 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
                 <div class="collection-toolbar"><button id="summon-share" type="button" disabled>이번 소환 공유</button><button id="summon-save" type="button" disabled>이미지 저장</button><span id="summon-share-status" role="status"></span></div>
                 <details id="archive-history"><summary>최근 소환 기록 · 최대 30회</summary><ol id="summon-history-list"><li>아직 기록된 소환이 없습니다.</li></ol></details>
+                <section class="dream-redeem-panel"><div class="dream-redeem-heading"><span class="menu-eyebrow">MEMORY EXCHANGE</span><h3>꿈의 교환</h3><p>소환과 전투로 모은 아이템을 원하는 카드로 교환하세요. 교환 대상은 실제로 존재하는 등급만 표시됩니다.</p></div><div class="dream-redeem-grid"><div class="dream-redeem-box"><strong>꿈의 파편</strong><p>보석 소환 1회마다 1개 · 보유 <b id="dream-fragment-balance">0</b>개</p><label>등급<select id="dream-exchange-rarity" onchange="renderCardExchange()"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><label>교환할 카드<select id="dream-exchange-card" onchange="renderCardExchange()"></select></label><button id="dream-exchange-button" type="button" onclick="exchangeDreamCard()">카드 교환</button></div><div class="dream-redeem-box"><strong>캐릭터의 족적</strong><p>해당 캐릭터가 적일 때 승리 시 30% · 1~3개</p><label>캐릭터<select id="trace-exchange-character" onchange="renderCardExchange()"></select></label><p>보유 <b id="trace-exchange-balance">0</b>개</p><label>등급<select id="trace-exchange-rarity" onchange="renderCardExchange()"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><button id="trace-exchange-button" type="button" onclick="exchangeTraceCard()">카드 교환</button></div></div><div class="dream-redeem-extra"><strong>잊힌 서표</strong><span>폐기된 서고에서 발견 · 보유 <b id="archive-token-balance">0</b>개</span><button type="button" onclick="exchangeArchiveTokens('ink')">8개 → 잉크병 1개</button><button type="button" onclick="exchangeArchiveTokens('fragment')">15개 → 꿈의 파편 5개</button></div><p id="card-exchange-status" role="status" aria-live="polite"></p></section>
             </div>
 
 <div id="breeding-view" class="hidden dream-secondary-menu"><header class="menu-page-heading"><div><span class="menu-eyebrow">INSPIRATION</span><h2>영감</h2><p>두 가지 모티브를 조합해 새로운 가능성을 발견하세요.</p></div></header>
@@ -1520,7 +1545,7 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
 
 <div id="warehouse-view" class="hidden">
 <h2 class="text-2xl font-bold mb-3">창고</h2><p class="mb-3 text-sm">현재 보유 아이템을 한곳에서 확인하세요. 탐사 중인 로그라이크의 임시 영감·유물과 미정산 장비는 탐사 화면에서 확인할 수 있습니다.</p>
-<div class="collection-toolbar"><input id="warehouse-search" placeholder="아이템 이름·효과 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><select id="warehouse-filter" aria-label="아이템 종류" onchange="displayWarehouse()"><option value="">전체</option><option>영감</option><option>장비</option><option>뽑기권</option><option>재료</option><option>재화</option><option>가구</option></select><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
+<div class="collection-toolbar"><input id="warehouse-search" placeholder="아이템 이름·효과 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><select id="warehouse-filter" aria-label="아이템 종류" onchange="displayWarehouse()"><option value="">전체</option><option>영감</option><option>장비</option><option>뽑기권</option><option>재료</option><option>탐사</option><option>재화</option><option>가구</option></select><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
 <p id="warehouse-summary" class="text-sm my-3" role="status"></p><div id="warehouse-list" class="collection-grid"></div>
 <div class="collection-toolbar"><button onclick="switchTab('breeding')">영감의 방</button><button onclick="switchTab('inventory')">카드·장비 관리</button><button onclick="switchTab('gacha')">뽑기</button><button onclick="switchTab('myroom')">마이룸</button></div></div>
 <div id="profile-view" class="hidden dream-secondary-menu"><header class="menu-page-heading"><div><span class="menu-eyebrow">MY PROFILE</span><h2>프로필</h2><p>대표 카드와 명찰로 당신의 취향을 보여주세요.</p></div></header>
@@ -1972,8 +1997,8 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
   <div class="rg-lobby-grid"><div class="rg-panel"><label for="rogue-start-relic">이번 탐사에 가져갈 유물</label><select id="rogue-start-relic"><option value="compass">탐색자의 나침반 · 승리마다 조각 +10</option><option value="needle">제본 바늘 · 승리마다 생존자 체력 8% 회복</option><option value="lens">교정 렌즈 · 영감 새로고침 +2회</option></select><button id="rogue-start-button" onclick="startRoguelike()" class="rg-primary">서고에 진입한다 <span>책갈피 5개</span></button><small>5인 편성 필요 · 능력치와 인연 효과를 입장 시 적용</small></div><div class="rg-panel"><h3>탐사 기록</h3><p id="rogue-record"></p><p id="rogue-report" role="status" tabindex="-1"></p><div id="rogue-report-loot" class="rg-loot-grid"></div></div></div>
  </div>
  <div id="rogue-active" class="hidden">
-  <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><p id="rogue-phase" role="status"></p></div>
-  <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small>매 층 하나의 경로 선택<br>4 · 8 · 12층은 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
+  <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><div><span>발견한 서표</span><b id="rogue-archive-tokens">0</b></div><p id="rogue-phase" role="status"></p></div>
+  <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small id="rogue-map-boss-hint">다음 층의 갈림길은 도착할 때 공개<br>6층 중간 보스 · 12층 최종 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
    <div id="rogue-choice-heading" class="rg-choice-heading" tabindex="-1">
     <h3 id="rogue-choice-title">다음 선택지를 고르세요</h3>
     <p id="rogue-choice-hint" aria-live="polite"></p>
@@ -1987,8 +2012,8 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
    <button id="rogue-retire" onclick="endRoguelikeRun()" class="rg-secondary">귀환하고 현재 보상 정산</button>
   </div></div>
  </div>
-<details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 4층 보스: 장비 50%, SR. 8층 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
- <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 휴식·상점·사건은 전투 보상을 주지 않습니다. 귀환·전멸 모두 누적 보상을 지급하며 정산은 한 번만 처리합니다.</p><p>경로·후보·선택 결과는 계정에 자동 저장됩니다. 저장된 탐사는 다시 접속한 뒤 이 화면에서 이어갑니다. 전투 중 연결이 끊기면 같은 경로의 전투 시작 시점부터 재도전합니다. 저장 실패 표시는 상단에서 확인하고 다시 저장해 주세요.</p><p>적의 능력치는 입장 당시 편성의 평균 체력·방어력과 합산 공격력에 맞춰 정해집니다. 입장 후 얻은 강화에 따라 적이 추가로 강해지지는 않습니다. 보스는 3턴마다 강한 공격을 하며, 8·12층 보스는 광역 공격을 합니다.</p></details>
+<details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 6층 중간 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 최종 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
+ <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 일반 승리 시 잊힌 서표 30% (1개), 정예 승리 시 1~2개, 보스 승리 시 3~5개를 발견합니다. 서표는 귀환·전멸 시 장비와 함께 정산됩니다.</p><p>다음 층의 경로는 층을 올라갈 때 무작위로 열립니다. 6층 중간 보스와 12층 최종 보스만 고정입니다. 진행 중인 탐사 기록과 선택 결과는 계정에 자동 저장됩니다.</p><p>적의 능력치는 입장 당시 편성의 평균 체력·방어력과 합산 공격력에 맞춰 정해집니다. 보스는 3턴마다 강한 공격을 하며, 최종 보스는 광역 공격을 합니다.</p></details>
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
                 <div id="dispatch-view" class="hidden w-full flex flex-col items-center">
@@ -3307,7 +3332,7 @@ function updateDispatchClock() {
             rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
-        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[]}; }
+        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
@@ -3361,13 +3386,15 @@ function updateDispatchClock() {
             rogueState=emptyRogueState();
             if(!r?.active || r.version!==ROGUE_VERSION)return;
             const valid=Array.isArray(r.team)&&r.team.length===5&&r.team.every(c=>c&&typeof c.name==='string'&&c.stats&&['hp','atk','def'].every(k=>Number.isFinite(c.stats[k])&&c.stats[k]>=0)&&Number.isFinite(c.maxHp)&&c.maxHp>0&&c.stats.hp<=c.maxHp)
-                &&Array.isArray(r.map)&&r.map.length===12&&r.map.every(row=>Array.isArray(row)&&row.length>0&&row.length<=3&&row.every(n=>n&&rogueNodeInfo[n.type]&&typeof n.id==='string'))
+                &&Array.isArray(r.map)&&r.map.length===12&&r.map.every(row=>Array.isArray(row)&&row.length<=3&&row.every(n=>n&&rogueNodeInfo[n.type]&&typeof n.id==='string'))
                 &&['route','combat','buff','relic','rest','shop','event'].includes(r.phase)&&Number.isInteger(r.floor)&&r.floor>=1&&r.floor<=12
                 &&['cleared','wins','bosses','shards','rerolls','seed'].every(k=>Number.isFinite(r[k])&&r[k]>=0)
                 &&r.baseline&&['hp','atk','def'].every(k=>Number.isFinite(r.baseline[k])&&r.baseline[k]>0)
                 &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
             if(!valid){console.warn('Invalid rogue checkpoint ignored');return;}
             rogueState=JSON.parse(JSON.stringify(r));
+            rogueState.archiveTokens=safeItemCount(r.archiveTokens);
+            if(!rogueState.map[rogueState.floor-1]?.length)revealRogueFloor(rogueState.floor);
             rogueState.loot=Array.isArray(r.loot)?r.loot.filter(e=>e&&typeof e.id==='string'&&equipmentTemplates.some(t=>t.id===e.templateId&&t.source==='rogue')):[];
             rogueState.lootedNodes=Array.isArray(r.lootedNodes)?r.lootedNodes.filter(id=>typeof id==='string'):[];
             if(rogueState.phase==='combat'){rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;rogueLog('연결이 끊긴 전투를 시작 시점부터 다시 진행합니다.');}
@@ -3375,13 +3402,17 @@ function updateDispatchClock() {
         }
         function displayRoguelikeView() { updateRogueUI(); }
         function makeRogueMap() {
-            const names=Object.keys(monsters).filter(k=>monsters[k]?.stats);
-            const types=['battle','elite','event','shop'];
-            return Array.from({length:12},(_,i)=>{
-                const depth=i+1;
-                const row=depth%4===0?['boss']:depth%4===3?['rest','elite']:depth===1?['battle','event']:rogueShuffle(types).slice(0,2);
-                return row.map((type,j)=>({id:`${depth}-${j}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event:Math.floor(rogueRand()*3)}));
-            });
+            // 다음 층의 경로는 도착했을 때만 생성하고 저장합니다.
+            return Array.from({length:12},(_,i)=>[6,12].includes(i+1)?[makeRogueNode(i+1,'boss',0)]:[]);
+        }
+        function makeRogueNode(floor,type,index){
+            const names=Object.keys(monsters).filter(name=>monsters[name]?.stats);
+            return {id:`${floor}-${index}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event:Math.floor(rogueRand()*3)};
+        }
+        function revealRogueFloor(floor){
+            if(!rogueState.map[floor-1]||rogueState.map[floor-1].length)return;
+            const types=rogueShuffle(['battle','battle','battle','elite','event','rest','shop']);
+            rogueState.map[floor-1]=types.slice(0,2).map((type,index)=>makeRogueNode(floor,type,index));
         }
         async function startRoguelike() {
             if(rogueBusy||isCombatRunning)return;
@@ -3402,6 +3433,7 @@ function updateDispatchClock() {
             rogueState={...emptyRogueState(),active:true,seed:(Date.now()^Math.floor(Math.random()*4294967295))>>>0||1,runId:generateUniqueId(),team};
             rogueState.baseline={hp:team.reduce((n,c)=>n+c.maxHp,0)/5,atk:Math.max(1,team.reduce((n,c)=>n+c.stats.atk,0)),def:Math.max(1,team.reduce((n,c)=>n+c.stats.def,0)/5)};
             rogueState.map=makeRogueMap();
+            revealRogueFloor(1);
             const selected=document.getElementById('rogue-start-relic').value;
             grantRogueRelic(rogueRelics.find(r=>r.id===selected)||rogueRelics[0]);
             playerBookmarks-=5;if(playerBookmarks>=MAX_BOOKMARKS-5)lastBookmarkUpdateTime=Date.now();
@@ -3414,7 +3446,7 @@ function updateDispatchClock() {
             const source=monsters[node.monsterName]||{};
             const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
             const aoe=boss&&f>=8;
-            return {name:boss?({4:'제1봉인 · 지워진 문지기',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
+            return {name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
                 stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
                 speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
         }
@@ -3424,14 +3456,17 @@ function updateDispatchClock() {
             document.getElementById('rogue-active').classList.toggle('hidden',!rogueState.active);
             document.getElementById('rogue-record').textContent=`최고 ${rogueMeta.best}/12층 · 완주 ${rogueMeta.clears}회 · 도전 ${rogueMeta.runs}회`;
             const report=document.getElementById('rogue-report');
-            report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}`:'';
+            report.textContent=rogueMeta.last?`${rogueMeta.last.result} · ${rogueMeta.last.cleared}층 탐사 / ${rogueMeta.last.wins}회 승리 · 보석 ${rogueMeta.last.gems}, 만년필 ${rogueMeta.last.pens}, 잉크병 ${rogueMeta.last.ink}, 잊힌 서표 ${rogueMeta.last.archiveTokens||0}`:'';
             document.getElementById('rogue-report-loot').innerHTML=rogueLootMarkup(rogueMeta.last?.equipment);
             document.getElementById('rogue-start-button').disabled=rogueBusy;
             if(!rogueState.active){revealRogueStep();return;}
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
+            const bossFloors=rogueState.map.flatMap((row,index)=>row.some(node=>node.type==='boss')?[index+1]:[]);
+            document.getElementById('rogue-map-boss-hint').textContent=`${bossFloors.length>2?'진행 중인 기존 경로 유지':'다음 층의 갈림길은 도착할 때 공개'} · ${bossFloors.join(' · ')}층 보스`;
             document.getElementById('rogue-shards').textContent=rogueState.shards;
+            document.getElementById('rogue-archive-tokens').textContent=safeItemCount(rogueState.archiveTokens);
             document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'어떤 결말을 쓰시겠어요?'}[rogueState.phase]);
-            document.getElementById('rogue-map').innerHTML=rogueState.map.map((row,i)=>`<div class="rg-map-row ${i+1===rogueState.floor?'current':''} ${i<rogueState.cleared?'done':''}"><span>${String(i+1).padStart(2,'0')}</span>${row.map(n=>`<span class="rg-map-node ${n.id===rogueState.visited?.[i]?'taken':''}">${rogueNodeInfo[n.type][0]}</span>`).join('<span class="rg-or">/</span>')}</div>`).join('');
+            document.getElementById('rogue-map').innerHTML=rogueState.map.map((row,i)=>`<div class="rg-map-row ${i+1===rogueState.floor?'current':''} ${i<rogueState.cleared?'done':''}"><span>${String(i+1).padStart(2,'0')}</span>${i+1>rogueState.floor&&i>=rogueState.cleared&&![6,12].includes(i+1)?'<span class="rg-map-node">미지의 경로</span>':row.map(n=>`<span class="rg-map-node ${n.id===rogueState.visited?.[i]?'taken':''}">${rogueNodeInfo[n.type][0]}</span>`).join('<span class="rg-or">/</span>')}</div>`).join('');
             document.getElementById('rogue-team-status').innerHTML=rogueState.team.map(c=>`<div class="rg-member ${c.stats.hp<=0?'fallen':''}"><img src="${rogueEscape(c.cardImageUrl||c.imageUrl||'')}" alt="${rogueEscape(c.name)}"><strong>${rogueEscape(c.name)}</strong><progress max="${c.maxHp}" value="${c.stats.hp}" aria-label="${rogueEscape(c.name)} 체력"></progress><small>${Math.ceil(c.stats.hp)} / ${c.maxHp}</small></div>`).join('');
             const counts={};for(const id of rogueState.buffs){const b=rogueBuffPool.find(b=>b.id===id);if(b)counts[b.school]=(counts[b.school]||0)+1;}
             document.getElementById('rogue-resonance').innerHTML=Object.entries(rogueSchools).map(([k,v])=>`<div class="rg-resonance ${rogueState.resonances.includes(k)?'lit':''}"><b>${v} ${counts[k]||0}/3</b><small>${{assault:'3개: 공격력 +25%',guard:'3개: 방어력 +25%, 최대 체력 +10%',renewal:'3개: 승리 시 생존자 체력 10% 회복'}[k]}</small></div>`).join('');
@@ -3470,7 +3505,7 @@ function updateDispatchClock() {
                     const info=rogueNodeInfo[node.type];let detail=info[1];
                     if(['battle','elite','boss'].includes(node.type)){const m=rogueEnemyPlan(node);detail+=`\n${m.name}\nHP ${m.stats.hp} · ATK ${m.stats.atk} · DEF ${m.stats.def}\n${m.rogueTactic}`;}
                     if(node.type==='elite')detail+='\n장비 드롭 25% · 획득 시 SR 90% / SSR 10%';
-                    if(node.type==='boss')detail+=rogueState.floor===12?'\n전용 장비 확정 · SSR 85% / UR 15%':rogueState.floor===8?'\n장비 드롭 75% · 획득 시 SR 65% / SSR 35%':'\n장비 드롭 50% · SR';
+                    if(node.type==='boss')detail+=rogueState.floor===12?'\n전용 장비 확정 · SSR 85% / UR 15%':[6,8].includes(rogueState.floor)?'\n장비 드롭 75% · 획득 시 SR 65% / SSR 35%':'\n장비 드롭 50% · SR';
                     add(info[0],detail,()=>chooseRogueNode(node.id),Boolean(rogueState.retryNode&&rogueState.retryNode!==node.id));
                 }
             } else if(phase==='buff'||phase==='relic') {
@@ -3566,6 +3601,7 @@ function updateDispatchClock() {
             rogueState.visited=rogueState.visited||[];rogueState.visited[rogueState.floor-1]=rogueState.node.id;
             if(rogueState.floor===12){settleRogueRun('완주');return;}
             rogueState.floor++;rogueState.phase='route';rogueState.node=null;rogueState.choices=[];
+            revealRogueFloor(rogueState.floor);
         }
         async function resolveRogueRoom(action) {
             if(rogueBusy||!rogueState.active)return;
@@ -3599,10 +3635,10 @@ function updateDispatchClock() {
             if(rogueState.lootedNodes.includes(node.id))return null;
             rogueState.lootedNodes.push(node.id);
             const floor=rogueState.floor;
-            const chance=node.type==='elite'?.25:floor===12?1:floor===8?.75:.50;
+            const chance=node.type==='elite'?.25:floor===12?1:[6,8].includes(floor)?.75:.50;
             if(rogueRand()>=chance)return null;
             const rarityRoll=rogueRand();
-            const rarity=node.type==='elite'?(rarityRoll<.90?'SR':'SSR'):floor===12?(rarityRoll<.85?'SSR':'UR'):floor===8?(rarityRoll<.65?'SR':'SSR'):'SR';
+            const rarity=node.type==='elite'?(rarityRoll<.90?'SR':'SSR'):floor===12?(rarityRoll<.85?'SSR':'UR'):[6,8].includes(floor)?(rarityRoll<.65?'SR':'SSR'):'SR';
             const pool=equipmentTemplates.filter(t=>t.source==='rogue'&&t.rarity===rarity);
             const template=pool[Math.floor(rogueRand()*pool.length)];
             if(!template)return null;
@@ -3623,6 +3659,14 @@ function updateDispatchClock() {
             if(!victory){settleRogueRun('탐사 종료');roguePersist();return;}
             rogueState.wins++;
             rollRogueEquipment();
+            const nodeType=rogueState.node.type;
+            const marks=nodeType==='boss'?3+Math.floor(rogueRand()*3):nodeType==='elite'?1+Math.floor(rogueRand()*2):rogueRand()<.30?1:0;
+            if(marks){rogueState.archiveTokens+=marks;rogueLog(`잊힌 서표 ${marks}개 발견 · 탐사 종료 시 획득`);}
+            if(nodeType!=='boss'){
+                const source=monsters[rogueState.node.monsterName];
+                const trace=rollCharacterTrace(source?.name||rogueState.node.monsterName,rogueRand);
+                if(trace)rogueLog(`${trace.base}의 족적 ${trace.count}개 획득`);
+            }
             if(rogueState.node.type==='boss')rogueState.bosses++;
             rogueState.shards+=({battle:25,elite:45,boss:60}[rogueState.node.type]||0)+(rogueState.relics.includes('compass')?10:0);
             if(rogueState.relics.includes('needle'))rogueHeal(.08);
@@ -3641,9 +3685,10 @@ function updateDispatchClock() {
             const equipment=(rogueState.loot||[]).filter(item=>!playerEquipment.some(e=>e.id===item.id));
             playerEquipment.push(...equipment.map(item=>({...item,equippedTo:null})));
             playerCurrency+=gems;playerFountainPens+=pens;playerInkwells+=ink;
+            playerArchiveTokens+=safeItemCount(rogueState.archiveTokens);
             rogueMeta.best=Math.max(rogueMeta.best,rogueState.cleared);
             if(result==='완주')rogueMeta.clears++;
-            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,runId:rogueState.runId,equipment:(rogueState.loot||[]).map(item=>({...item}))};
+            rogueMeta.last={result,cleared:rogueState.cleared,wins:rogueState.wins,gems,pens,ink,archiveTokens:safeItemCount(rogueState.archiveTokens),runId:rogueState.runId,equipment:(rogueState.loot||[]).map(item=>({...item}))};
             updateUI();updateRogueUI();return true;
         }
         async function endRoguelikeRun(reason='retire') {
@@ -3806,6 +3851,10 @@ let ownedFurniture = []; // 보유한 가구 목록
             const BOOKMARK_REGEN_TIME = 5 * 60 * 1000; // 5 minutes
             let playerAchievements = {}; // { ach_001: 'unlocked' | 'claimed' }
             let playerStats = { totalPulls: 0 };
+            let playerDreamFragments = 0;
+            let playerCharacterTraces = {};
+            let playerArchiveTokens = 0;
+            let playerAttendance = {lastDate:'',streak:0};
 			let currentInteractiveStory = null; // 이 줄 추가
 			let currentSceneIndex = 0; // 이 줄 추가
 			let currentSortOrder = 'rarity';
@@ -4090,6 +4139,10 @@ function buildGameSnapshot() {
         lastBookmarkUpdate: lastBookmarkUpdateTime || Date.now(),
         achievements: playerAchievements || {},
         stats: playerStats || { totalPulls: 0 },
+        dreamFragments: playerDreamFragments,
+        characterTraces: playerCharacterTraces,
+        archiveTokens: playerArchiveTokens,
+        attendance: playerAttendance,
         summonHistory: summonHistory,
         tutorialFinished: playerTutorialFinished,
         rogueRun: JSON.stringify(rogueState),
@@ -4199,6 +4252,10 @@ playerInspHp = savedData.inspHp ?? 0;
         lastBookmarkUpdateTime = savedData.lastBookmarkUpdate ?? Date.now();
         playerAchievements = savedData.achievements || {};
         playerStats = { ...(savedData.stats || {}), totalPulls: Number.isFinite(savedData.stats?.totalPulls) ? savedData.stats.totalPulls : 0 };
+        playerDreamFragments = Math.max(0, Math.floor(Number(savedData.dreamFragments)||0));
+        playerArchiveTokens = Math.max(0, Math.floor(Number(savedData.archiveTokens)||0));
+        playerCharacterTraces = Object.fromEntries(Object.entries(savedData.characterTraces||{}).filter(([name,count])=>name && Number.isFinite(Number(count)) && Number(count)>0).map(([name,count])=>[name,Math.floor(Number(count))]));
+        playerAttendance = {lastDate:typeof savedData.attendance?.lastDate==='string'?savedData.attendance.lastDate:'',streak:Math.max(0,Math.floor(Number(savedData.attendance?.streak)||0))};
         clearedStageStories = savedData.clearedStageStories || [];
 
         // ============================================================
@@ -4275,6 +4332,7 @@ playerInspHp = savedData.inspHp ?? 0;
     await checkAndProcessSystemMails(uid);
 
     updateUI();
+    renderDailyAttendance();
     updateRaidDailyCountUI();
     checkEventStatus();
     switchTab('home');
@@ -4302,6 +4360,7 @@ function saveGame() {
 
             function initializeNewGameData() {
                 playerDispatches = {}; dispatchReports = [];
+    playerDreamFragments=0;playerCharacterTraces={};playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};
     rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     // ✨ 게임 첫 시작 시 기본 지급 카드에 고유 ID와 레벨 부여
     addCardToInventory('[관리인] Ki');
@@ -4470,6 +4529,113 @@ function previewNameplates() {
     if(!selected.length){preview.textContent='설정된 칭호 없음';return;}
     selected.forEach(select=>{const badge=document.createElement('span');badge.className='profile-nameplate';badge.textContent=select.selectedOptions[0].textContent;preview.appendChild(badge);});
 }
+const MEMORY_EXCHANGE_COSTS={N:30,R:60,SR:100,SSR:200};
+function safeItemCount(value){return Math.max(0,Math.floor(Number(value)||0));}
+function traceBaseForEnemy(enemyName){
+    if(!enemyName)return null;
+    const name=String(enemyName).replace(/^정예\s*·\s*/,'').trim();
+    const match=characters.find(card=>card.name===name||card.baseName===name);
+    return match?.baseName||null;
+}
+function rollCharacterTrace(enemyName,random=Math.random){
+    const base=traceBaseForEnemy(enemyName);
+    if(!base||random()>=.30)return null;
+    const count=1+Math.floor(random()*3);
+    playerCharacterTraces[base]=safeItemCount(playerCharacterTraces[base])+count;
+    return {base,count};
+}
+function renderCardExchange(){
+    const fragment=document.getElementById('dream-fragment-balance');if(!fragment)return;
+    fragment.textContent=playerDreamFragments.toLocaleString();
+    document.getElementById('archive-token-balance').textContent=playerArchiveTokens.toLocaleString();
+    document.querySelectorAll('.dream-redeem-extra button').forEach((button,index)=>{button.disabled=!currentUser||playerArchiveTokens<(index===0?8:15);});
+    const rarity=document.getElementById('dream-exchange-rarity').value;
+    const cardSelect=document.getElementById('dream-exchange-card');
+    const oldName=cardSelect.value;
+    cardSelect.replaceChildren();
+    getGachaCandidates(rarity).sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach(card=>{
+        const option=document.createElement('option');option.value=card.name;option.textContent=card.name;cardSelect.appendChild(option);
+    });
+    if([...cardSelect.options].some(option=>option.value===oldName))cardSelect.value=oldName;
+    const dreamButton=document.getElementById('dream-exchange-button');
+    dreamButton.textContent=`${MEMORY_EXCHANGE_COSTS[rarity]}개로 ${rarity} 카드 교환`;
+    dreamButton.disabled=!currentUser||!cardSelect.value||playerDreamFragments<MEMORY_EXCHANGE_COSTS[rarity]||playerInventory.length>=inventoryCapacity;
+    const baseSelect=document.getElementById('trace-exchange-character');const oldBase=baseSelect.value;
+    baseSelect.replaceChildren();
+    Object.entries(playerCharacterTraces).filter(([name,count])=>safeItemCount(count)>0)
+      .sort(([a],[b])=>a.localeCompare(b,'ko')).forEach(([name,count])=>{
+        const option=document.createElement('option');option.value=name;option.textContent=`${name} · ${safeItemCount(count)}개`;baseSelect.appendChild(option);
+      });
+    if([...baseSelect.options].some(option=>option.value===oldBase))baseSelect.value=oldBase;
+    const base=baseSelect.value;const count=safeItemCount(playerCharacterTraces[base]);
+    document.getElementById('trace-exchange-balance').textContent=count.toLocaleString();
+    const traceRarity=document.getElementById('trace-exchange-rarity').value;
+    const variant=characters.find(card=>card.baseName===base&&card.rarity===traceRarity);
+    const traceButton=document.getElementById('trace-exchange-button');
+    traceButton.textContent=variant?`${MEMORY_EXCHANGE_COSTS[traceRarity]}개로 [${traceRarity}] ${variant.name} 교환`:`해당 등급의 카드 없음`;
+    traceButton.disabled=!currentUser||!variant||count<MEMORY_EXCHANGE_COSTS[traceRarity]||playerInventory.length>=inventoryCapacity;
+}
+function exchangeCardForItems(kind){
+    if(!currentUser)return;
+    const isTrace=kind==='trace';
+    const rarity=document.getElementById(isTrace?'trace-exchange-rarity':'dream-exchange-rarity').value;
+    const cost=MEMORY_EXCHANGE_COSTS[rarity];if(!cost)return;
+    const base=document.getElementById('trace-exchange-character').value;
+    const card=isTrace?characters.find(c=>c.baseName===base&&c.rarity===rarity):getGachaCandidates(rarity).find(c=>c.name===document.getElementById('dream-exchange-card').value);
+    const available=isTrace?safeItemCount(playerCharacterTraces[base]):playerDreamFragments;
+    const status=document.getElementById('card-exchange-status');
+    if(!card||available<cost||playerInventory.length>=inventoryCapacity){status.textContent='교환 대상, 아이템 수량 또는 서고의 빈칸을 확인해 주세요.';renderCardExchange();return;}
+    if(!confirm(`${isTrace?base+'의 족적':'꿈의 파편'} ${cost}개를 사용해 [${rarity}] ${card.name} 카드를 받을까요?`))return;
+    if(isTrace){playerCharacterTraces[base]-=cost;if(!playerCharacterTraces[base])delete playerCharacterTraces[base];}
+    else playerDreamFragments-=cost;
+    addCardToInventory(card.name);
+    status.textContent=`[${rarity}] ${card.name} 획득!`;
+    updateUI();renderCardExchange();saveGame();
+}
+function exchangeDreamCard(){exchangeCardForItems('dream');}
+function exchangeTraceCard(){exchangeCardForItems('trace');}
+function exchangeArchiveTokens(type){
+    if(!currentUser)return;
+    const cost=type==='ink'?8:type==='fragment'?15:0;
+    if(!cost||playerArchiveTokens<cost){document.getElementById('card-exchange-status').textContent='잊힌 서표가 부족합니다.';return;}
+    playerArchiveTokens-=cost;
+    if(type==='ink')playerInkwells++;else playerDreamFragments+=5;
+    document.getElementById('card-exchange-status').textContent=type==='ink'?'잉크병 1개 획득!':'꿈의 파편 5개 획득!';
+    updateUI();renderCardExchange();saveGame();
+}
+const ATTENDANCE_REWARDS=[
+    {name:'만년필 20개',grant:()=>playerFountainPens+=20},
+    {name:'책갈피 1개',grant:()=>playerBookmarks=Math.min(HARD_MAX_BOOKMARKS,playerBookmarks+1)},
+    {name:'보석 30개',grant:()=>playerCurrency+=30},
+    {name:'잉크병 2개',grant:()=>playerInkwells+=2},
+    {name:'꿈의 파편 3개',grant:()=>playerDreamFragments+=3},
+    {name:'만년필 50개',grant:()=>playerFountainPens+=50},
+    {name:'꿈의 파편 10개',grant:()=>playerDreamFragments+=10}
+];
+function koreaDayNumber(now=Date.now()){return Math.floor((now+9*60*60*1000)/86400000);}
+function koreaDateKey(now=Date.now()){return new Date(koreaDayNumber(now)*86400000).toISOString().slice(0,10);}
+function attendancePosition(now=Date.now()){
+    const today=koreaDayNumber(now),last=Date.parse((playerAttendance.lastDate||'')+'T00:00:00Z')/86400000;
+    const same=last===today,consecutive=last===today-1;
+    return {claimed:same,day:same?(Math.max(1,playerAttendance.streak)-1)%7:consecutive?playerAttendance.streak%7:0,streak:consecutive?playerAttendance.streak:0};
+}
+function renderDailyAttendance(){
+    const panel=document.getElementById('attendance-rewards');if(!panel)return;
+    const pos=attendancePosition();panel.replaceChildren();
+    ATTENDANCE_REWARDS.forEach((reward,index)=>{
+        const day=document.createElement('span');day.className='dream-attendance-day'+(index===pos.day?' current':'');
+        day.textContent=`${index+1}일차 · ${reward.name}`;panel.appendChild(day);
+    });
+    document.getElementById('attendance-status').textContent=pos.claimed?`오늘 출석 완료 · ${playerAttendance.streak}일 연속`:`오늘은 ${pos.day+1}일차 보상을 받을 수 있어요.`;
+    const button=document.getElementById('attendance-claim');button.disabled=!currentUser||pos.claimed;button.textContent=pos.claimed?'오늘 출석 완료':'출석 보상 받기';
+}
+function claimDailyAttendance(){
+    if(!currentUser)return;
+    const pos=attendancePosition();if(pos.claimed)return;
+    const reward=ATTENDANCE_REWARDS[pos.day];reward.grant();
+    playerAttendance={lastDate:koreaDateKey(),streak:pos.streak+1};
+    updateUI();renderDailyAttendance();saveGame();
+}
 function displayWarehouse() {
     const query=(document.getElementById('warehouse-search').value||'').trim().toLowerCase();
     const filter=document.getElementById('warehouse-filter').value;
@@ -4480,11 +4646,14 @@ function displayWarehouse() {
         ['잉크병',playerInkwells,'재료','카드 성장 재료'],
         ['책갈피',playerBookmarks,'재화','던전 입장에 사용'],
         ['이벤트 포인트',playerEventPoints,'재화','현재 이벤트 교환소에서 사용'],
+        ['꿈의 파편',playerDreamFragments,'재료','소환 1회마다 1개 · 꿈의 교환에서 등급별 카드와 교환'],
+        ['잊힌 서표',playerArchiveTokens,'탐사','폐기된 서고에서 발견 · 꿈의 교환에서 잉크병 또는 꿈의 파편으로 교환'],
         ['SSR 확정 뽑기권',playerSsrTickets,'뽑기권','뽑기 화면에서 사용'],
         ['공격적 영감',playerInspAtk,'영감','영감의 방에서 사용'],
         ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용'],
         ['끈기있는 영감',playerInspHp,'영감','영감의 방에서 사용']
     ].map(([name,count,category,desc])=>({name,count,category,desc}));
+    for(const [base,count] of Object.entries(playerCharacterTraces))items.push({name:`${base}의 족적`,count:safeItemCount(count),category:'재료',desc:`${base}을(를) 쓰러뜨려 획득 · 꿈의 교환에서 ${base}의 카드로 교환`});
     const equipmentGroups=new Map();
     for(const eq of playerEquipment){
         const key=eq.templateId || eq.id;
@@ -4494,10 +4663,8 @@ function displayWarehouse() {
     for(const [templateId,group] of equipmentGroups){
         const t=equipmentTemplates.find(template=>template.id===templateId);
         const equipped=group.filter(eq=>eq.equippedTo);
-        const names=equipped.map(eq=>playerInventory.find(card=>card.id===eq.equippedTo)?.name||'연결 카드 없음');
-        const uniqueNames=[...new Set(names)];
-        const status=`미장착 ${group.length-equipped.length}개 · 장착 ${equipped.length}개${uniqueNames.length?' ('+uniqueNames.join(', ')+')':''}`;
-        items.push({name:t?.name||'알 수 없는 장비',count:group.length,category:'장비',desc:`${t?.rarity||''} · ${t?.desc||templateId} · ${status}${t?.source==='rogue'?' · 서고 전용':''}`});
+        const status=`미장착 ${group.length-equipped.length}개 · 장착 ${equipped.length}개`;
+        items.push({name:t?.name||'알 수 없는 장비',count:group.length,category:'장비',desc:`${t?.rarity||''} · ${t?.desc||templateId} · ${status}${t?.source==='rogue'?' · 서고 전용':''}`,equipment:group});
     }
     const furnitureCounts=new Map();
     for(const id of ownedFurniture)furnitureCounts.set(id,(furnitureCounts.get(id)||0)+1);
@@ -4509,7 +4676,21 @@ function displayWarehouse() {
         const title=document.createElement('strong');title.textContent=item.name;
         const count=document.createElement('b');count.textContent=`${Number(item.count).toLocaleString()}개`;
         const desc=document.createElement('p');desc.textContent=item.desc;
-        box.append(title,count,desc);list.appendChild(box);
+        box.append(title,count,desc);
+        if(item.equipment){
+            const details=document.createElement('details');details.className='warehouse-equipment';
+            const summary=document.createElement('summary');summary.textContent=`장착 카드 확인 · ${item.equipment.filter(eq=>eq.equippedTo).length} / ${item.equipment.length}개 장착`;details.appendChild(summary);
+            const holders=document.createElement('div');holders.className='warehouse-equipment-holders';
+            for(const eq of item.equipment){
+                const wearer=playerInventory.find(card=>card.id===eq.equippedTo);
+                const label=document.createElement('div');label.textContent=wearer?`장착 · ${wearer.name} (퇴고 +${Number(wearer.level)||0})`:eq.equippedTo?'장착 정보가 없는 카드':'미장착';
+                holders.appendChild(label);
+            }
+            details.appendChild(holders);box.appendChild(details);
+            box.classList.add('warehouse-equipment-card');box.style.cursor='pointer';
+            box.addEventListener('click',event=>{if(!event.target.closest('details'))details.open=!details.open;});
+        }
+        list.appendChild(box);
     }
     if(!visible.length)list.textContent='조건에 맞는 보유 아이템이 없습니다.';
 }
@@ -4726,8 +4907,9 @@ window.displayWarehouse=displayWarehouse;
                 window.currentTab = tabName;
 
                 // [데이터 로드] 각 탭에 맞는 최신 데이터 불러오기
-                if (tabName === 'home') displayHomeView();
+                if (tabName === 'home') {displayHomeView();renderDailyAttendance();}
                 else if (tabName === 'inventory') displayInventory();
+                else if (tabName === 'gacha') renderCardExchange();
                 else if (tabName === 'deck') displayDeckManagement();
                 else if (tabName === 'combat') displayCombatView();
                 else if (tabName === 'collection') displayCollectionView();
@@ -5646,8 +5828,9 @@ document.getElementById('summon-share').onclick=async()=>{
             }
             playerCurrency -= cost;
             playerStats.totalPulls += results.length;
+            playerDreamFragments += results.length;
             recordSummon(results, gachaType);
-            updateUI();
+            updateUI();renderCardExchange();
             saveGame();
             sfx.playGachaCharge();
             let completed = false;
@@ -5668,7 +5851,7 @@ document.getElementById('summon-share').onclick=async()=>{
             if (!resultsContainer) return;
             prepareSummonShare(pulledCharacters);
             resultsContainer.innerHTML = ''; // 이전 결과 초기화
-            document.getElementById('summon-summary').textContent = `${pulledCharacters.length}장 소환 완료 · 새로 수집한 등장인물 ${discovered.size}종`;
+            document.getElementById('summon-summary').textContent = `${pulledCharacters.length}장 소환 완료 · 꿈의 파편 +${pulledCharacters.length} · 새로 수집한 등장인물 ${discovered.size}종`;
             const marked = new Set();
 
             // 반복문을 돌며 10장의 카드를 각각 생성해서 그리드에 모두 추가합니다.
@@ -8157,6 +8340,11 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
                     playerEquipment.push(newEq);
                     rewardsList.push({ icon: randomTmpl.icon || '📦', name: randomTmpl.name, count: '획득', color: 'border-green-500 bg-green-950/30 text-green-300' });
                 }
+            }
+            if(['main_stage','event'].includes(combatInfo.type)){
+                const monsterName=combatInfo.type==='event'?eventDungeons[combatInfo.indices]?.monsterName:mainChapters[combatInfo.indices.chapter]?.stages[combatInfo.indices.stage]?.monsterName;
+                const trace=rollCharacterTrace(monsters[monsterName]?.name||monsterName);
+                if(trace)rewardsList.push({icon:'👣',name:`${trace.base}의 족적`,count:`+${trace.count}`,color:'border-slate-400 bg-slate-100 text-slate-700'});
             }
         } else {
           sfx.playDefeat(); // ✨ 패배 다운톤 효과음 재생
@@ -11194,8 +11382,9 @@ if(marketTabBtn) marketTabBtn.click();
     playerSsrTickets--;
     addCardToInventory(pulledChar.name);
     playerStats.totalPulls++;
+    playerDreamFragments++;
     recordSummon([pulledChar], 'ticket');
-    summonBusy = true; updateUI(); saveGame(); checkAchievements();
+    summonBusy = true; updateUI(); renderCardExchange(); saveGame(); checkAchievements();
     try { await showSsrReveals([pulledChar]); } catch(error) { console.warn(error); }
     finally { summonBusy = false; displayResults([pulledChar], discovered); updateUI(); }
 }
