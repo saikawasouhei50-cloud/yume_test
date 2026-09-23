@@ -838,7 +838,42 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
 .detail-growth-column #revision-container>div.flex{gap:8px;flex-wrap:wrap}.detail-growth-column #dismantle-container{gap:8px;flex-wrap:wrap}
 }
 @media(min-width:960px) and (max-width:1140px){.detail-wide-layout{grid-template-columns:210px minmax(0,1fr);grid-template-areas:"portrait info" "portrait growth";overflow-y:auto;align-content:start}.detail-wide-layout>section{overflow:visible}.detail-portrait-column{position:sticky;top:0;align-self:start;max-height:100%;overflow-y:auto!important}.detail-info-column,.detail-growth-column{padding-right:4px}}
-</style></head>
+</style>
+<style id="mobile-card-detail-fix">
+.detail-mobile-shortcuts{display:none}
+@media(max-width:959px){
+  html body #card-detail-modal{padding:10px!important;align-items:center;justify-content:center}
+  html body #card-detail-modal>.detail-wide-panel{box-sizing:border-box!important;width:100%!important;max-width:min(560px,100%)!important;max-height:calc(100vh - 20px)!important;max-height:calc(100dvh - 20px)!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 16px calc(26px + env(safe-area-inset-bottom))!important;border-radius:18px!important}
+  html body #card-detail-modal #close-card-detail{position:sticky!important;top:0!important;right:auto!important;display:flex;align-items:center;justify-content:center;margin-left:auto;margin-bottom:3px;background:#fff!important;border:1px solid #dce2eb;box-shadow:0 3px 12px #52617415}
+  .detail-mobile-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;position:sticky;top:40px;z-index:4;padding:8px 0;background:#fafbfeef;backdrop-filter:blur(8px)}
+  .detail-mobile-shortcuts button{min-width:0;min-height:40px;padding:7px 3px;border-radius:10px;border:1px solid #dce2eb;background:#fff;color:#4c5d73;font-size:12px;font-weight:700}
+  .detail-mobile-shortcuts button:focus-visible{outline:2px solid #778fb3;outline-offset:2px}
+  .detail-wide-layout{gap:12px!important}.detail-wide-layout section{width:100%;min-width:0}
+  html body #card-detail-modal .detail-portrait-column>div:first-child{width:min(100%,200px)!important;max-width:200px!important;margin:0 auto 10px!important;padding:5px!important}
+  html body #card-detail-modal #detail-card-image{width:100%!important;height:min(165px,23dvh)!important;object-fit:contain!important}
+  html body #card-detail-modal #detail-card-name{font-size:clamp(17px,4.8vw,23px)!important;line-height:1.4;letter-spacing:0!important;margin:4px 0 6px!important}
+  html body #card-detail-modal #detail-card-rarity{font-size:15px!important}
+  .detail-growth-column>div,.detail-info-column>div{box-sizing:border-box;max-width:100%;margin-top:0!important;margin-bottom:12px!important;padding:14px!important;border-radius:14px!important;overflow-wrap:anywhere}
+  #enhancement-container>div.flex,#revision-container>div.flex,#publication-container>div.flex,#dismantle-container{gap:10px;flex-wrap:wrap}
+  #enhancement-container>div.flex>div,#revision-container>div.flex>p{min-width:0;flex:1 1 145px}
+  #enhance-card-button,#publish-card-button,#revise-card-button,#revise-with-inkwell-button{min-height:42px;flex-shrink:0}
+  #revision-container .flex,#equipment-container .flex{min-width:0}
+  #revision-material-select{width:auto!important;min-width:0!important;flex:1 1 140px!important;font-size:16px!important}
+  #detail-card-story{height:auto!important;min-height:90px;max-height:210px;overflow-y:auto}
+}
+@media(max-width:400px){
+  html body #card-detail-modal>.detail-wide-panel{padding-left:12px!important;padding-right:12px!important}
+  .detail-growth-column>div,.detail-info-column>div{padding:12px!important}
+  #revision-container .mb-3>div.flex{flex-direction:column;align-items:stretch}
+  #revision-container .mb-3 #revision-material-select{width:100%!important;flex:none!important;min-height:44px}
+  #revision-container .mb-3 #revise-card-button{width:100%}
+  #enhancement-container>div.flex{align-items:stretch}
+  #enhancement-container>div.flex>div{flex-basis:100%}
+  #enhance-card-button{width:100%}
+  #publication-container button,#dismantle-container button{width:100%}
+}
+</style>
+</head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- 글로벌 복귀 버튼 -->
@@ -1647,7 +1682,13 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
             <!-- 카드 상세 모달 (텍티컬 테마 적용) -->
 <div id="card-detail-modal" class="hidden fixed inset-0 bg-[#0b0c10]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 <div class="detail-wide-panel bg-[#12151c]/95 border border-gray-700 max-w-lg w-full relative max-h-[90vh] overflow-y-auto custom-scrollbar p-6 rounded-sm">
-<button id="close-card-detail" class="absolute top-4 right-4 text-gray-500 font-tech text-2xl hover:text-cyan-400 transition-colors z-10">[X]</button><div class="detail-wide-layout">
+<button id="close-card-detail" class="absolute top-4 right-4 text-gray-500 font-tech text-2xl hover:text-cyan-400 transition-colors z-10" aria-label="카드 상세 닫기">[X]</button>
+<nav class="detail-mobile-shortcuts" aria-label="카드 상세 바로가기">
+    <button type="button" data-detail-target="enhancement-container">퇴고</button>
+    <button type="button" data-detail-target="revision-container">개정</button>
+    <button type="button" data-detail-target="detail-stat-hp">능력치</button>
+    <button type="button" data-detail-target="detail-skills-container">스킬</button>
+</nav><div class="detail-wide-layout">
 <section class="detail-portrait-column" aria-label="등장인물"><div class="w-full md:w-3/5 mx-auto bg-black/60 border border-gray-800 p-2 rounded-sm relative">
                             <div class="absolute top-1 left-1 w-2 h-2 border-t border-l border-gray-500"></div>
                             <div class="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-gray-500"></div>
@@ -1753,6 +1794,18 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
                             </div></section>
 </div></div></div>
 
+<script>
+document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').forEach(button => {
+    button.addEventListener('click', () => {
+        const panel = document.querySelector('#card-detail-modal .detail-wide-panel');
+        const target = document.getElementById(button.dataset.detailTarget);
+        if (!panel || !target) return;
+        const section = target.closest('#enhancement-container, #revision-container, .detail-info-column > div') || target;
+        const top = panel.scrollTop + section.getBoundingClientRect().top - panel.getBoundingClientRect().top - 112;
+        panel.scrollTo({top: Math.max(0, top), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+    });
+});
+</script>
 <div id="gacha-pool-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
     <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full relative h-[80vh] flex flex-col border border-yellow-500/50">
         <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
