@@ -813,6 +813,13 @@ html body .trade-card-thumb img{display:block;height:100%!important;width:100%!i
 html body dialog.ssr-reveal{border:1px solid #fff;border-radius:26px;padding:0;width:min(680px,94vw);max-height:94dvh;overflow-y:auto;background:linear-gradient(145deg,#fff,var(--ssr-tone));color:#384254;box-shadow:0 24px 100px #39456533}
 .ssr-reveal::backdrop{background:#e5e8f0e8;backdrop-filter:blur(12px)}.ssr-stage{text-align:center;padding:30px;animation:ssrArrival .7s ease-out}.ssr-kicker{font-size:12px;letter-spacing:.2em;color:#9a7834}.ssr-faction{display:table;margin:14px auto;padding:6px 20px;border:1px solid #ffffff;border-radius:30px;background:#ffffff90;font-weight:700}.ssr-portrait{display:block;width:100%;height:min(38vh,310px);object-fit:contain;filter:drop-shadow(0 12px 16px #58678322);margin:auto}.ssr-portrait[hidden]{display:none}.ssr-stage h2{font-size:clamp(18px,4vw,26px);font-weight:700;margin:14px 0}.ssr-stage blockquote{font-size:clamp(14px,3vw,19px);line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;max-height:24vh;overflow-y:auto}.ssr-position{font-size:12px;color:#788295;margin:16px}.ssr-actions{display:flex;justify-content:center;gap:10px}.ssr-actions button{padding:12px 20px;background:#ffffffc9;border:1px solid #d5dce6;border-radius:12px;min-height:44px}.ssr-actions [data-next]{background:#465267;color:white}#summon-share-status{font-size:12px;color:#788295}
 @keyframes ssrArrival{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}.calm-mode .ssr-stage{animation:none}@media(prefers-reduced-motion:reduce){.ssr-stage{animation:none}}@media(max-width:480px){.ssr-stage{padding:20px}.ssr-portrait{height:30vh}}
+</style><style id="investigation-refresh">
+#dispatch-view .menu-page-heading{width:100%}.investigation-summary{width:100%;padding:20px;border:1px solid #dbe2ec;border-radius:18px;background:#edf2f8;margin-bottom:20px}.investigation-summary p{font-size:12px;color:#7b8595;margin-top:8px}
+html body #dispatch-missions-container{max-width:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.investigation-card{min-width:0;background:#fafbfe;border:1px solid #dde3ed;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px}.investigation-active{border-color:#a6b9cd;background:linear-gradient(150deg,#fff,#eff4f8)}.investigation-badge{font-size:11px;padding:5px 10px;border-radius:20px;background:#e2e9f3;color:#60738e;display:inline-block}.investigation-card h3{font-size:19px;font-weight:700;margin:12px 0 7px}.investigation-card header p,.investigation-condition{font-size:12px;line-height:1.7;color:#7b8798}.investigation-rewards{padding:13px;background:#fff;border:1px solid #e3e7ee;border-radius:12px}.investigation-rewards small{display:block;font-size:11px;color:#8590a0;margin-bottom:5px}.investigation-rewards strong{font-size:13px}
+.investigation-team h4{font-size:12px;margin-bottom:10px}.investigation-team>div{max-height:240px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.investigation-member{display:flex;gap:8px;align-items:center;min-width:0;background:#ffffffa0;padding:8px;border-radius:12px}.investigation-member img{width:46px;height:58px;object-fit:contain;flex-shrink:0}.investigation-member strong{font-size:11px;display:block;overflow-wrap:anywhere}.investigation-member small{font-size:10px;color:#7c8797;display:block;margin-top:4px}.investigation-progress progress{width:100%;height:8px;accent-color:#90aabe}.investigation-progress p{font-size:12px;margin-top:6px;color:#61758e}.investigation-card button{padding:12px;border-radius:12px;background:#4e6178;color:white;min-height:44px}.investigation-card button:disabled{opacity:.45}
+.investigation-reports{width:100%;margin-top:24px;border:1px solid #e0e5ed;border-radius:18px;padding:18px}.investigation-reports summary{cursor:pointer;font-size:14px;font-weight:700}#dispatch-report-list{max-height:380px;overflow:auto;font-size:12px;margin-top:14px}.investigation-report{padding:14px 0;border-bottom:1px solid #e1e6ee;line-height:1.8}.investigation-report small{display:block;color:#8a94a2}#dispatch-select-modal>div{border-radius:20px}
+@media(max-width:640px){html body #dispatch-missions-container{grid-template-columns:1fr}.investigation-card{padding:16px}.investigation-card h3{font-size:17px}.investigation-member img{width:38px;height:48px}.investigation-summary{padding:16px;font-size:14px}}
 </style></head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1919,15 +1926,13 @@ html body dialog.ssr-reveal{border:1px solid #fff;border-radius:26px;padding:0;w
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
                 <div id="dispatch-view" class="hidden w-full flex flex-col items-center">
-                    <div class="text-center mb-6 w-full border-b border-gray-800 pb-4">
-                        <h2 class="text-3xl md:text-4xl font-black font-tech text-purple-400 tracking-[0.2em] drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">FIELD INVESTIGATION</h2>
-                        <p class="text-xs text-gray-500 tracking-widest mt-1">현장 조사 - 유휴 인력 작전 파견 시스템</p>
-                    </div>
-
+                    <header class="menu-page-heading"><div><span class="menu-eyebrow">FIELD NOTES</span><h2>현장 조사</h2><p>부대를 보내고, 꿈속에 남은 흔적을 모아보세요.</p></div></header>
+                    <div class="investigation-summary"><strong id="dispatch-summary"></strong><p>동시 파견 최대 3개 · 편찬에 없는 카드로 부대 구성 · 보상 수령 시 복귀</p></div>
                     <!-- 파견 작전 슬롯 리스트 -->
                     <div id="dispatch-missions-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
                         <!-- JS로 동적 생성됨 -->
                     </div>
+                    <details class="investigation-reports"><summary>조사 보고서 · 최근 20건</summary><div id="dispatch-report-list"></div></details>
                 </div>
 
                 <!-- 파견 캐릭터 선택 모달 -->
@@ -3049,96 +3054,77 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         // 유저의 파견 상태 저장 객체 (로컬스토리지/파이어베이스 연동을 위해 세팅)
         // playerDispatches = { mission_4h: { endTime: 123456789, dispatchedIds: [...] }, ... }
         let playerDispatches = {};
+        dispatchMissions.push({id:'mission_1h',name:'구역 00: 새벽 골목 순찰',duration:3600000,durationLabel:'1시간',rewards:{fountainPens:30,currency:3},conditionDesc:'조건: 카드 1명 이상 (진영 제한 없음)',checkCondition:team=>team.length>=1},
+        {id:'mission_6h',name:'지원 구역: 기억의 자료실',duration:21600000,durationLabel:'6시간',rewards:{fountainPens:200,currency:30},conditionDesc:'조건: 마법사 또는 사제 1명 이상, 총 퇴고 합 8 이상',checkCondition:team=>team.some(c=>['마법사','사제'].includes(c.inherited?.faction||findCharacter(c.name)?.faction))&&team.reduce((n,c)=>n+(Number(c.level)||0),0)>=8});
 
-        // 파견 뷰 렌더링 함수
-        function displayDispatchView() {
-            const container = document.getElementById('dispatch-missions-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const now = Date.now();
-
-            dispatchMissions.forEach(mission => {
-                const activeData = playerDispatches[mission.id];
-                const isDispatched = activeData && activeData.endTime > now;
-                const isCompleted = activeData && activeData.endTime <= now;
-
-                const card = document.createElement('div');
-                card.className = "bg-gray-900/90 border border-gray-800 p-5 rounded-sm flex flex-col justify-between relative overflow-hidden";
-
-                if (isDispatched) {
-                    // 파견 진행 중
-                    card.classList.add('border-l-4', 'border-l-yellow-500');
-                    card.innerHTML = `
-                        <div>
-                            <span class="font-tech text-[10px] text-yellow-500 tracking-widest">DISPATCHING...</span>
-                            <h3 class="text-lg font-bold text-white mb-2">${mission.name}</h3>
-                            <p class="text-xs text-gray-400 mb-4">${mission.durationLabel} 작전 수행 중</p>
-                        </div>
-                        <div class="bg-black/50 p-3 border border-gray-800 text-center">
-                            <p class="font-tech text-xs text-gray-400 mb-1">REMAINING TIME</p>
-                            <p id="timer-${mission.id}" class="font-tech font-bold text-yellow-400 text-base"></p>
-                        </div>
-                    `;
-                    // 실시간 타이머 작동
-                    startDispatchTimer(mission.id, activeData.endTime);
-
-                } else if (isCompleted) {
-                    // 작전 완료 및 보상 수령 대기 중
-                    card.classList.add('border-l-4', 'border-l-green-500', 'animate-pulse');
-                    card.innerHTML = `
-                        <div>
-                            <span class="font-tech text-[10px] text-green-400 tracking-widest">MISSION COMPLETED</span>
-                            <h3 class="text-lg font-bold text-white mb-2">${mission.name}</h3>
-                            <p class="text-xs text-green-300 mb-4">작전이 성공적으로 종료되었습니다.</p>
-                        </div>
-                        <button onclick="claimDispatchReward('${mission.id}')" class="gacha-button py-2 w-full text-xs border-green-500 text-green-400 hover:bg-green-900/30">보상 수령</button>
-                    `;
-
-                } else {
-                    // 대기 중 (파견 가능)
-                    card.classList.add('border-l-4', 'border-l-purple-500');
-                    card.innerHTML = `
-                        <div>
-                            <span class="font-tech text-[10px] text-purple-400 tracking-widest">READY // ${mission.durationLabel}</span>
-                            <h3 class="text-lg font-bold text-white mb-2">${mission.name}</h3>
-                            <p class="text-[11px] text-gray-400 mb-4 bg-black/30 p-2 border border-gray-800">${mission.conditionDesc}</p>
-                        </div>
-                        <button onclick="openDispatchModal('${mission.id}')" class="gacha-button py-2 w-full text-xs border-purple-500 text-purple-400 hover:bg-purple-900/30">부대 편성</button>
-                    `;
-                }
-                container.appendChild(card);
-            });
-        }
-
-        // 실시간 타이머 도우미
-        function startDispatchTimer(missionId, endTime) {
-            const update = () => {
-                const now = Date.now();
-                const diff = endTime - now;
-                const timerEl = document.getElementById(`timer-${missionId}`);
-                if (!timerEl) return;
-
-                if (diff <= 0) {
-                    timerEl.textContent = "작전 완료됨";
-                    displayDispatchView(); // 화면 갱신해서 수령 버튼으로 변경
-                    return;
-                }
-
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                timerEl.textContent = `${hours}시간 ${minutes}분 ${seconds}초`;
-            };
-            update();
-            setInterval(update, 1000);
-        }
+let dispatchReports = [];
+let dispatchClock = null;
+const dispatchBriefings = {
+ mission_1h:['골목에 남은 흔적을 모으는 짧은 순찰입니다.','주변 탐문','발자국 대조','순찰 기록 정리'],
+ mission_4h:['문을 닫은 상가에서 사라진 원고의 행방을 찾습니다.','상가 진입','증언 수집','원고 흔적 확보'],
+ mission_6h:['흩어진 기록을 복원해 다음 조사를 지원합니다.','자료 분류','문장 복원','자료 인계'],
+ mission_8h:['막차가 끊긴 역에서 수상한 운송 기록을 추적합니다.','역사 잠입','운송 장부 대조','철수 경로 확보'],
+ mission_12h:['안개 속 코어의 움직임을 관측하고 귀환합니다.','안개 경계 진입','코어 반응 관측','관측 기록 회수']
+};
+function dispatchEscape(value) {return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function dispatchRoster(data) {
+ return (data.dispatchedIds||[]).map(id=>{
+  const saved=(data.members||[]).find(c=>c.id===id),inst=playerInventory.find(c=>c.id===id);
+  const base=inst&&findCharacter(inst.name);
+  return saved || {id,name:inst?.name||'기록을 찾을 수 없는 카드',image:base?.cardImageUrl||base?.imageUrl||'',faction:inst?.inherited?.faction||base?.faction||'',level:inst?.level||0};
+ });
+}
+function dispatchRewardText(rewards) {return `만년필 ${rewards.fountainPens||0} · 보석 ${rewards.currency||0}${rewards.inkwells?' · 잉크병 '+rewards.inkwells:''}`;}
+function dispatchProgress(data,mission,now=Date.now()) {
+ const start=Number(data.startTime)||Number(data.endTime)-mission.duration;
+ return Math.max(0,Math.min(100,(now-start)/Math.max(1,Number(data.endTime)-start)*100));
+}
+function displayDispatchView() {
+ clearTimeout(dispatchClock);
+ const container=document.getElementById('dispatch-missions-container');if(!container)return;
+ const now=Date.now(),active=Object.values(playerDispatches),ready=active.filter(d=>d.endTime<=now).length;
+ document.getElementById('dispatch-summary').textContent=`파견 ${active.length} / 3 · 수령 대기 ${ready} · 파견 인원 ${active.reduce((n,d)=>n+(d.dispatchedIds||[]).length,0)}명`;
+ container.replaceChildren();
+ [...dispatchMissions].sort((a,b)=>Number(!!playerDispatches[b.id])-Number(!!playerDispatches[a.id])||a.duration-b.duration).forEach(mission=>{
+  const data=playerDispatches[mission.id],complete=data&&data.endTime<=now,brief=dispatchBriefings[mission.id];
+  const card=document.createElement('article');card.className='investigation-card'+(data?' investigation-active':'');
+  const members=data?dispatchRoster(data):[];
+  card.innerHTML=`<header><span class="investigation-badge">${data?(complete?'귀환 완료':'조사 중'):mission.durationLabel+' 임무'}</span><h3>${dispatchEscape(mission.name)}</h3><p>${dispatchEscape(brief?.[0]||'현장의 단서를 조사합니다.')}</p></header>
+   <div class="investigation-rewards"><small>확정 보상</small><strong>${dispatchRewardText(data?.rewards||mission.rewards)}</strong></div>
+   ${data?`<div class="investigation-team"><h4>파견 부대 · ${members.length}명</h4><div>${members.map(c=>`<div class="investigation-member">${c.image?`<img src="${dispatchEscape(c.image)}" alt="" loading="lazy">`:''}<div><strong>${dispatchEscape(c.name)}</strong><small>${dispatchEscape(c.faction)} · 퇴고 +${Number(c.level)||0}</small></div></div>`).join('')}</div></div>
+    <div class="investigation-progress"><progress id="progress-${mission.id}" max="100" value="${dispatchProgress(data,mission,now)}" aria-label="조사 진행률"></progress><p id="timer-${mission.id}"></p><p id="phase-${mission.id}"></p></div>
+    ${complete?`<button onclick="claimDispatchReward('${mission.id}')">보고서 확인 · 보상 수령</button>`:''}`:
+   `<p class="investigation-condition">${dispatchEscape(mission.conditionDesc)}</p><button onclick="openDispatchModal('${mission.id}')" ${active.length>=3?'disabled':''}>${active.length>=3?'파견 슬롯 사용 중':'부대 편성'}</button>`}`;
+  container.appendChild(card);
+ });
+ const reports=document.getElementById('dispatch-report-list');reports.replaceChildren();
+ if(!dispatchReports.length)reports.textContent='조사를 마치고 보상을 수령하면 보고서가 남습니다.';
+ for(const report of dispatchReports){const item=document.createElement('article');item.className='investigation-report';
+ item.innerHTML=`<strong>${dispatchEscape(report.name)}</strong><small>${new Date(report.at).toLocaleString('ko-KR')}</small><p>${dispatchEscape(report.summary)}</p><p>${dispatchEscape((report.members||[]).map(c=>c.name).join(' · '))}</p><p>${dispatchRewardText(report.rewards||{})}</p>`;reports.appendChild(item);}
+ updateDispatchClock();
+}
+function updateDispatchClock() {
+ clearTimeout(dispatchClock);
+ if(document.getElementById('dispatch-view').classList.contains('hidden'))return;
+ let running=false;
+ for(const mission of dispatchMissions){const data=playerDispatches[mission.id];if(!data)continue;
+ const timer=document.getElementById('timer-'+mission.id);if(!timer)continue;
+ const diff=data.endTime-Date.now(),progress=dispatchProgress(data,mission);
+ const phase=document.getElementById('phase-'+mission.id),bar=document.getElementById('progress-'+mission.id);
+ if(diff<=0){if(timer.dataset.running==='true'){displayDispatchView();return;}timer.textContent='귀환 완료 · 보상을 수령해주세요';phase.textContent='조사 기록 정리가 끝났습니다.';bar.value=100;continue;}
+ running=true;timer.dataset.running='true';const sec=Math.ceil(diff/1000);
+ timer.textContent=`${Math.floor(sec/3600)}시간 ${Math.floor(sec%3600/60)}분 ${sec%60}초 남음 · ${Math.floor(progress)}%`;
+ bar.value=progress;phase.textContent=['① ','② ','③ '][Math.min(2,Math.floor(progress/34))]+(dispatchBriefings[mission.id]?.[1+Math.min(2,Math.floor(progress/34))]||'현장 조사');
+ }
+ if(running)dispatchClock=setTimeout(updateDispatchClock,1000);
+}
 
         // 파견 모달 열기 (덱에 포함되지 않은 남는 인원만 고를 수 있게 함)
         let selectedMissionIdForDispatch = null;
         let selectedDispatchCardIds = new Set();
 
         function openDispatchModal(missionId) {
+            if(playerDispatches[missionId] || Object.keys(playerDispatches).length>=3)return alert('동시 파견은 최대 3개입니다. 완료된 조사 보상을 먼저 수령해주세요.');
             selectedMissionIdForDispatch = missionId;
             selectedDispatchCardIds.clear();
 
@@ -3183,6 +3169,9 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const mission = dispatchMissions.find(m => m.id === selectedMissionIdForDispatch);
             const chosenCards = Array.from(selectedDispatchCardIds).map(id => playerInventory.find(c => c.id === id)).filter(Boolean);
 
+            if (!mission || playerDispatches[mission.id] || Object.keys(playerDispatches).length>=3) return alert('파견 가능한 슬롯을 확인해주세요.');
+            const busyIds = new Set(Object.values(playerDispatches).flatMap(d=>d.dispatchedIds||[]));
+            if (chosenCards.length!==selectedDispatchCardIds.size || chosenCards.some(c=>playerDeck.some(d=>d.id===c.id)||busyIds.has(c.id))) return alert('편성 중이거나 이미 파견된 카드가 있습니다. 다시 선택해주세요.');
             // ✨ [핵심 수정] 파견 조건 검사 로직 추가
             const isConditionMet = mission.checkCondition(chosenCards);
 
@@ -3192,7 +3181,10 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
 
             // 조건 만족 시 정상 출발
             playerDispatches[selectedMissionIdForDispatch] = {
+                startTime: Date.now(),
                 endTime: Date.now() + mission.duration,
+                rewards: {...mission.rewards},
+                members: chosenCards.map(c=>{const base=findCharacter(c.name);return {id:c.id,name:c.name,image:base?.cardImageUrl||base?.imageUrl||'',faction:c.inherited?.faction||base?.faction||'',level:c.level||0};}),
                 dispatchedIds: Array.from(selectedDispatchCardIds)
             };
 
@@ -3207,10 +3199,12 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         function claimDispatchReward(missionId) {
             const mission = dispatchMissions.find(m => m.id === missionId);
             const activeData = playerDispatches[missionId];
-            if (!activeData) return;
+            if (!mission || !activeData || activeData.endTime > Date.now()) return;
 
             // 보상 지급
-            const rewards = mission.rewards;
+            const rewards = activeData.rewards || mission.rewards;
+            dispatchReports.unshift({name:mission.name,at:Date.now(),members:dispatchRoster(activeData),rewards:{...rewards},summary:(dispatchBriefings[mission.id]?.[3]||'조사 기록 회수')+' 완료. 부대 전원이 귀환했습니다.'});
+            dispatchReports=dispatchReports.slice(0,20);
             playerFountainPens += (rewards.fountainPens || 0);
             playerCurrency += (rewards.currency || 0);
             if (rewards.inkwells) playerInkwells += rewards.inkwells;
@@ -4025,6 +4019,7 @@ function buildGameSnapshot() {
         cumulativeEventPoints: playerCumulativeEventPoints || 0,
         raidCumulativeDamage: playerRaidDamage || 0,
         dispatches: playerDispatches || {},
+        dispatchReports: dispatchReports.slice(0,20),
         raidDailyCount: playerRaidDailyCount || 0,
         // ✨ [핵심 수정 1] 누적 데미지 초기화 방지: 보스 ID 필드 추가
         lastRaidSpawnId: (typeof playerLastRaidSpawnId !== 'undefined') ? playerLastRaidSpawnId : 0,
@@ -4161,6 +4156,7 @@ playerInspHp = savedData.inspHp ?? 0;
         purchasedEventItems = savedData.purchasedEventItems || {};
         playerChoices = savedData.playerChoices || {};
         playerDispatches = savedData.dispatches || {};
+        dispatchReports = Array.isArray(savedData.dispatchReports) ? savedData.dispatchReports.filter(r=>r && typeof r.name==='string' && Number.isFinite(r.at)).slice(0,20) : [];
         playerSystemMailHistory = savedData.systemMailHistory || [];
 
         // 4-1. 이벤트 ID 불일치 체크
@@ -4245,6 +4241,7 @@ function saveGame() {
 
 
             function initializeNewGameData() {
+                playerDispatches = {}; dispatchReports = [];
     rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     // ✨ 게임 첫 시작 시 기본 지급 카드에 고유 ID와 레벨 부여
     addCardToInventory('[관리인] Ki');
