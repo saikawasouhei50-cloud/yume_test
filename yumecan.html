@@ -1981,35 +1981,61 @@ let CURRENT_EVENT_ID = null;
 // ==========================================
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby0Tq97edWMchBrVf10sr233P33UMlKFdMsxWvA94eeM7VQ8A10ejyDTGgOf34CoY5TVg/exec";
 
-// Public master data only; account saves are never stored in this cache.
-// Bump this key when the client changes its data schema.
-const MASTER_CACHE_KEY = 'yumecan.master.v1';
+// Public master cache only: account data always comes from Firebase.
+const MASTER_CACHE_KEY = 'yumecan.master.v2';
 const MASTER_CACHE_TTL = 5 * 60 * 1000;
 let masterCache = null;
 let masterRequest = null;
+let masterCheckedAt = 0;
 function validMasterData(data) {
     return data && Array.isArray(data.characters || data.Characters) &&
         (data.characters || data.Characters).length > 0;
+}
+async function fetchSheetData(type) {
+    const url = new URL(GOOGLE_SHEET_URL);
+    url.searchParams.set('type', type);
+    const response = await fetch(url.toString(), {cache: 'no-store'});
+    if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`);
+    const data = await response.json();
+    if (!data || data.error) throw new Error(data?.error || '데이터 응답이 비어 있습니다.');
+    return data;
+}
+async function requestSystemMails() {
+    const data = await fetchSheetData('mail');
+    if (!Array.isArray(data.systemMails)) throw new Error('우편 데이터가 올바르지 않습니다.');
+    return data;
+}
+function rememberMasterData(data) {
+    if (!validMasterData(data)) throw new Error('캐릭터 데이터가 올바르지 않습니다.');
+    masterCache = {source: GOOGLE_SHEET_URL, data};
+    masterCheckedAt = Date.now();
+    try { localStorage.setItem(MASTER_CACHE_KEY, JSON.stringify(masterCache)); }
+    catch (_) { /* Storage disabled/full: use memory for this session. */ }
+    return data;
 }
 async function requestMasterData() {
     if (!masterCache) {
         try {
             const saved = JSON.parse(localStorage.getItem(MASTER_CACHE_KEY));
             if (saved && saved.source === GOOGLE_SHEET_URL && validMasterData(saved.data)) masterCache = saved;
-        } catch (_) { /* Disabled storage or damaged cache: use the network. */ }
+        } catch (_) { /* Ignore a damaged cache. */ }
     }
-    const age = masterCache ? Date.now() - masterCache.at : Infinity;
-    if (age >= 0 && age < MASTER_CACHE_TTL) return masterCache.data;
+    const age = Date.now() - masterCheckedAt;
+    if (masterCache && masterCheckedAt && age >= 0 && age < MASTER_CACHE_TTL) return masterCache.data;
     if (masterRequest) return masterRequest;
     masterRequest = (async () => {
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) throw new Error(`데이터 서버 응답 오류 (${response.status})`);
-        const data = await response.json();
-        if (!validMasterData(data)) throw new Error('캐릭터 데이터가 올바르지 않습니다.');
-        masterCache = {source: GOOGLE_SHEET_URL, at: Date.now(), data};
-        try { localStorage.setItem(MASTER_CACHE_KEY, JSON.stringify(masterCache)); }
-        catch (_) { /* Quota exceeded: the in-memory cache still works. */ }
-        return data;
+        // First visit needs only one full request. Persisted caches are validated each launch.
+        if (!masterCache) return rememberMasterData(await fetchSheetData('all'));
+        const info = await fetchSheetData('version');
+        // Old doGet ignores type and returns the full payload: reuse it immediately.
+        if (validMasterData(info)) return rememberMasterData(info);
+        if (info.apiVersion !== 1 || typeof info.version !== 'string') throw new Error('데이터 버전 응답이 올바르지 않습니다.');
+        if (masterCache.data.version !== info.version) return rememberMasterData(await fetchSheetData('all'));
+        // Cached master data must not hide new/expired system mail.
+        const mail = await requestSystemMails();
+        masterCache.data = {...masterCache.data, systemMails: mail.systemMails};
+        masterCheckedAt = Date.now();
+        return masterCache.data;
     })();
     try { return await masterRequest; }
     finally { masterRequest = null; }
@@ -12240,8 +12266,8 @@ function startPeriodicMailCheck(uid) {
         if (mailCheckRunning || document.hidden || currentUser?.uid !== uid) return;
         mailCheckRunning = true;
         try {
-            // The existing server exposes one full payload. Share its cache/request.
-            const data = await requestMasterData();
+            // Only the system_mails sheet is requested on the new server.
+            const data = await requestSystemMails();
             if (currentUser?.uid !== uid) return;
 
             // 날짜 변환 헬퍼 (내부용)
