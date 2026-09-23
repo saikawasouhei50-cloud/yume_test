@@ -873,6 +873,36 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
   #publication-container button,#dismantle-container button{width:100%}
 }
 </style>
+<style id="profile-warehouse-dismantle-refresh">
+.profile-title-settings{border:1px solid #dfe5ee;border-radius:17px;background:#f8fafd;padding:18px;color:#435168}
+.profile-title-settings h4{font-size:15px;font-weight:750;margin:0 0 8px}
+.profile-title-settings>p{font-size:12px;color:#758397;margin:12px 0 0;line-height:1.6}
+.profile-title-preview,.public-profile-titles{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:31px;color:#8b96a6;font-size:12px}
+.profile-title-settings #profile-nameplate-preview{background:transparent!important;border:0!important;padding:0!important;color:#8b96a6!important}
+.profile-title-preview .profile-nameplate,.public-profile-titles .profile-nameplate{margin:0;background:#e9edf7!important;border:1px solid #c3cde0!important;color:#50617c!important;max-width:100%;overflow-wrap:anywhere}
+.profile-title-selects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.profile-title-selects label{display:block;min-width:0;font-size:11px;font-weight:700;color:#67778e}
+html body .profile-title-selects select{display:block;width:100%;min-width:0;margin-top:5px;padding:9px 28px 9px 10px;border:1px solid #d5ddea;border-radius:11px;background:#fff;color:#35465c;font-size:13px;min-height:44px;text-overflow:ellipsis}
+.archive-dismantle-panel{margin:18px 0;padding:20px;border:1px solid #d8e1ec;border-radius:19px;background:linear-gradient(130deg,#f4f7fb,#fff 65%);color:#36455a;box-shadow:0 8px 28px #3a526708}
+.archive-dismantle-heading,.archive-dismantle-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.archive-dismantle-kicker{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;color:#8c9ab0}
+.archive-dismantle-heading h3{font-size:18px;font-weight:800;margin:5px 0}
+.archive-dismantle-heading p,.archive-confirm-card>p{font-size:12px;line-height:1.6;color:#718096;margin:0}
+.archive-dismantle-count{padding:7px 12px;border-radius:999px;background:#e5ecf8;color:#506687;font-weight:800;font-size:13px;white-space:nowrap}
+.archive-dismantle-bottom{border-top:1px solid #e5eaf1;margin-top:15px;padding-top:15px}
+.archive-dismantle-preview{font-size:13px;font-weight:700;line-height:1.6;color:#50617a;margin:0}
+.archive-dismantle-actions,.archive-confirm-actions{display:flex;flex-wrap:wrap;gap:7px}
+html body .archive-dismantle-actions button,.archive-confirm-actions button{border:1px solid #d3ddea;border-radius:11px;background:#fff;color:#50617a;padding:9px 12px;min-height:42px;font-size:12px;font-weight:700;cursor:pointer}
+html body .archive-dismantle-actions button:disabled{opacity:.45;cursor:not-allowed}
+html body #dismantle-selected-button,html body #confirm-dismantle-action{background:#596d89;color:#fff;border-color:#596d89}
+.archive-confirm-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:#2530449c;z-index:60}
+.archive-confirm-overlay.hidden{display:none}
+.archive-confirm-card{width:min(100%,420px);padding:26px;border-radius:21px;border:1px solid #dce3ec;background:#fff;color:#36455a;box-shadow:0 28px 70px #26344b42}
+.archive-confirm-card h2{font-size:20px;font-weight:800;margin:8px 0}
+.archive-confirm-details{margin:20px 0;border:1px solid #dfe6f0;background:#f4f7fb;border-radius:13px;padding:14px;font-size:13px;font-weight:700;line-height:1.7;overflow-wrap:anywhere}
+.archive-confirm-actions{justify-content:flex-end}
+@media(max-width:700px){.profile-title-selects{grid-template-columns:1fr}.archive-dismantle-panel{padding:15px}.archive-dismantle-bottom{align-items:stretch}.archive-dismantle-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.archive-dismantle-actions button{width:100%}.archive-confirm-card{padding:20px}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1211,28 +1241,10 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
 </div>
 
 
-		<div id="dismantle-multi-ui" class="hidden mt-4 bg-black/30 p-2 md:p-3 rounded-lg space-y-2">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-2">
-
-        <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4 w-full md:w-auto">
-            <p class="text-xs md:text-sm text-gray-300">
-                선택된 카드: <span id="selected-card-count" class="font-bold text-white">0장</span>
-            </p>
-            <button id="select-all-filtered-button" class="gacha-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 md:px-3 rounded-full text-[10px] md:text-sm transition-all">
-                필터된 원고 전체 선택
-            </button>
-        </div>
-
-        <div class="flex justify-center items-center gap-2 w-full md:w-auto">
-            <button id="exit-multi-mode" class="gacha-button bg-gray-500 hover:bg-gray-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded-full shadow-lg text-xs md:text-sm transition-all">
-                나가기
-            </button>
-            <button id="dismantle-selected-button" class="gacha-button bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded-full shadow-lg text-xs md:text-sm transition-all" disabled>
-                선택된 원고 파쇄
-            </button>
-        </div>
-    </div>
-</div>
+		<section id="dismantle-multi-ui" class="hidden archive-dismantle-panel" aria-label="일괄 파쇄">
+    <div class="archive-dismantle-heading"><div><span class="archive-dismantle-kicker">ARCHIVE · DISMANTLE</span><h3>원고 일괄 파쇄</h3><p>카드를 선택해 받을 재료를 미리 확인하세요. 편찬 중인 카드는 선택할 수 없습니다.</p></div><span class="archive-dismantle-count" id="selected-card-count" role="status">0장 선택</span></div>
+    <div class="archive-dismantle-bottom"><p id="dismantle-preview" class="archive-dismantle-preview" aria-live="polite">예상 획득 · 만년필 0개 · 잉크병 0개</p><div class="archive-dismantle-actions"><button type="button" id="select-all-filtered-button">현재 표시된 카드 선택</button><button type="button" id="clear-dismantle-selection">선택 해제</button><button type="button" id="exit-multi-mode">나가기</button><button type="button" id="dismantle-selected-button" disabled>선택한 원고 파쇄</button></div></div>
+</section>
 
 
 <label for="archive-search" style="display:block;margin-top:16px;font-size:13px;color:#bdc8da">서고 검색</label>
@@ -1532,7 +1544,7 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
                 <p class="text-right text-xs text-gray-500 mt-1"><span id="profile-msg-count">0</span>/50</p>
             </div>
 
-            <div><label for="profile-nameplate-select" class="block font-bold mb-2">명찰</label><span id="profile-nameplate-preview" class="profile-nameplate"></span><select id="profile-nameplate-select" class="w-full mt-3 p-3" aria-label="명찰 선택"></select><p class="text-sm mt-2">업적에서 보상을 받으면 명찰을 선택할 수 있습니다. 선택 후 프로필을 저장하세요.</p></div>
+            <div class="profile-title-settings"><h4>칭호 · 최대 3개</h4><div id="profile-nameplate-preview" class="profile-title-preview" aria-live="polite"></div><div class="profile-title-selects"><label>첫 번째 칭호<select id="profile-nameplate-select" class="profile-nameplate-select" aria-label="첫 번째 칭호"></select></label><label>두 번째 칭호<select id="profile-nameplate-select-2" class="profile-nameplate-select" aria-label="두 번째 칭호"></select></label><label>세 번째 칭호<select id="profile-nameplate-select-3" class="profile-nameplate-select" aria-label="세 번째 칭호"></select></label></div><p>업적 보상으로 받은 칭호를 최대 세 개까지 설정할 수 있어요. 선택 후 프로필을 저장하세요.</p></div>
             <button onclick="saveProfileData()" class="gacha-button w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 프로필 저장
             </button>
@@ -1852,6 +1864,9 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
 
                     <button id="close-dismantle-result" class="gacha-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full">확인</button>
                 </div>
+            </div>
+            <div id="dismantle-confirm-modal" class="hidden archive-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="dismantle-confirm-title">
+                <div class="archive-confirm-card"><span class="archive-dismantle-kicker">ARCHIVE · DISMANTLE</span><h2 id="dismantle-confirm-title">선택한 원고를 파쇄할까요?</h2><p>파쇄한 카드는 복구할 수 없습니다.</p><div id="dismantle-confirm-details" class="archive-confirm-details"></div><div class="archive-confirm-actions"><button type="button" id="cancel-dismantle-confirm">취소</button><button type="button" id="confirm-dismantle-action">파쇄하기</button></div></div>
             </div>
 
             <div id="interactive-story-modal" class="hidden fixed inset-0 bg-black/50 flex flex-col justify-end z-40">
@@ -4039,7 +4054,8 @@ function buildGameSnapshot() {
     const safeProfile = {
         repCardId: currentProfile.repCardId || null,
         statusMessage: currentProfile.statusMessage || "",
-        nameplateId: nameplateFor(currentProfile,playerAchievements) ? currentProfile.nameplateId : null
+        nameplateIds: nameplatesFor(currentProfile,playerAchievements).map(item=>item.id),
+        nameplateId: nameplatesFor(currentProfile,playerAchievements)[0]?.id || null
     };
 
     // 저장할 데이터 객체 생성
@@ -4424,19 +4440,35 @@ function expandedAchievements() {
     achievementDefinitionCache = [...achievements,...extra];
     return achievementDefinitionCache;
 }
-function nameplateFor(profile, earned) {
-    const id=profile?.nameplateId;
-    return earned?.[id]==='claimed' ? expandedAchievements().find(a=>a.id===id)?.nameplate || '' : '';
+function nameplatesFor(profile, earned) {
+    const ids=Array.isArray(profile?.nameplateIds) ? profile.nameplateIds : [profile?.nameplateId];
+    const rewards=new Map(expandedAchievements().filter(a=>a.nameplate).map(a=>[a.id,a.nameplate]));
+    return [...new Set(ids)].filter(id=>id && earned?.[id]==='claimed' && rewards.has(id)).slice(0,3).map(id=>({id,label:rewards.get(id)}));
 }
 function renderNameplates() {
-    const select=document.getElementById('profile-nameplate-select');
-    select.replaceChildren();
-    const add=(value,label)=>{const o=document.createElement('option');o.value=value;o.textContent=label;select.appendChild(o);};
-    add('','명찰 없음');
-    expandedAchievements().filter(a=>a.nameplate && playerAchievements[a.id]==='claimed').forEach(a=>add(a.id,a.nameplate));
-    select.value=nameplateFor(playerProfile,playerAchievements)?playerProfile.nameplateId:'';
-    document.getElementById('profile-nameplate-preview').textContent=nameplateFor(playerProfile,playerAchievements)||'명찰 없음';
-    select.onchange=()=>{document.getElementById('profile-nameplate-preview').textContent=select.selectedOptions[0].textContent;};
+    const selects=[...document.querySelectorAll('.profile-nameplate-select')];
+    const earned=expandedAchievements().filter(a=>a.nameplate && playerAchievements[a.id]==='claimed');
+    const chosen=nameplatesFor(playerProfile,playerAchievements);
+    selects.forEach((select,index)=>{
+        select.replaceChildren();
+        const none=document.createElement('option');none.value='';none.textContent='설정 안 함';select.appendChild(none);
+        earned.forEach(a=>{const option=document.createElement('option');option.value=a.id;option.textContent=a.nameplate;select.appendChild(option);});
+        select.value=chosen[index]?.id || '';
+        select.onchange=()=>{
+            if(select.value && selects.some(other=>other!==select && other.value===select.value)) {
+                select.value='';
+                alert('같은 칭호는 한 번만 설정할 수 있어요.');
+            }
+            previewNameplates();
+        };
+    });
+    previewNameplates();
+}
+function previewNameplates() {
+    const preview=document.getElementById('profile-nameplate-preview');preview.replaceChildren();
+    const selected=[...document.querySelectorAll('.profile-nameplate-select')].filter(select=>select.value);
+    if(!selected.length){preview.textContent='설정된 칭호 없음';return;}
+    selected.forEach(select=>{const badge=document.createElement('span');badge.className='profile-nameplate';badge.textContent=select.selectedOptions[0].textContent;preview.appendChild(badge);});
 }
 function displayWarehouse() {
     const query=(document.getElementById('warehouse-search').value||'').trim().toLowerCase();
@@ -4453,16 +4485,25 @@ function displayWarehouse() {
         ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용'],
         ['끈기있는 영감',playerInspHp,'영감','영감의 방에서 사용']
     ].map(([name,count,category,desc])=>({name,count,category,desc}));
+    const equipmentGroups=new Map();
     for(const eq of playerEquipment){
-        const t=equipmentTemplates.find(t=>t.id===eq.templateId);
-        const wearer=playerInventory.find(c=>c.id===eq.equippedTo);
-        items.push({name:t?.name||'알 수 없는 장비',count:1,category:'장비',desc:`${t?.rarity||''} · ${t?.desc||eq.templateId} · ${eq.equippedTo?'장착: '+(wearer?.name||'연결 카드 없음'):'미장착'}${t?.source==='rogue'?' · 서고 전용':''}`});
+        const key=eq.templateId || eq.id;
+        if(!equipmentGroups.has(key))equipmentGroups.set(key,[]);
+        equipmentGroups.get(key).push(eq);
+    }
+    for(const [templateId,group] of equipmentGroups){
+        const t=equipmentTemplates.find(template=>template.id===templateId);
+        const equipped=group.filter(eq=>eq.equippedTo);
+        const names=equipped.map(eq=>playerInventory.find(card=>card.id===eq.equippedTo)?.name||'연결 카드 없음');
+        const uniqueNames=[...new Set(names)];
+        const status=`미장착 ${group.length-equipped.length}개 · 장착 ${equipped.length}개${uniqueNames.length?' ('+uniqueNames.join(', ')+')':''}`;
+        items.push({name:t?.name||'알 수 없는 장비',count:group.length,category:'장비',desc:`${t?.rarity||''} · ${t?.desc||templateId} · ${status}${t?.source==='rogue'?' · 서고 전용':''}`});
     }
     const furnitureCounts=new Map();
     for(const id of ownedFurniture)furnitureCounts.set(id,(furnitureCounts.get(id)||0)+1);
     for(const [id,count] of furnitureCounts){const t=furnitureItems.find(f=>f.id===id);items.push({name:t?.name||String(id),count,category:'가구',desc:'마이룸 보유 가구 (배치된 가구 포함)'});}
     const visible=items.filter(i=>(zero||i.count>0)&&(!filter||filter===i.category)&&(!query||(i.name+' '+i.desc).toLowerCase().includes(query)));
-    document.getElementById('warehouse-summary').textContent=`${visible.length}개 항목 표시 · 장비 ${playerEquipment.length}개 (장착 포함)`;
+    document.getElementById('warehouse-summary').textContent=`${visible.length}개 항목 표시 · 장비 ${equipmentGroups.size}종 / 총 ${playerEquipment.length}개 (장착 포함)`;
     const list=document.getElementById('warehouse-list');list.replaceChildren();
     for(const item of visible){const box=document.createElement('article');box.className='collection-item';
         const title=document.createElement('strong');title.textContent=item.name;
@@ -8913,6 +8954,7 @@ window.endRoguelikeRun = endRoguelikeRun;
 }
 
 function exitMultiSelectMode() {
+    document.getElementById('dismantle-confirm-modal').classList.add('hidden');
     isMultiSelectMode = false;
     selectedCardsToDismantle.clear();
     dismantleMultiUI.classList.add('hidden');
@@ -8925,10 +8967,23 @@ function exitMultiSelectMode() {
 }
 
 function updateMultiSelectUI() {
-    const count = selectedCardsToDismantle.size;
-    selectedCardCountSpan.textContent = `${count}장`;
-    dismantleSelectedButton.disabled = count === 0;
-    dismantleSelectedButton.classList.toggle('bg-red-700', count > 0);
+    const summary=getDismantleSelection();
+    selectedCardCountSpan.textContent = `${summary.cards.length}장 선택`;
+    document.getElementById('dismantle-preview').textContent=`예상 획득 · 만년필 ${summary.fountainPens.toLocaleString()}개 · 잉크병 ${summary.inkwells.toLocaleString()}개`;
+    dismantleSelectedButton.disabled = summary.cards.length === 0;
+    document.getElementById('clear-dismantle-selection').disabled=selectedCardsToDismantle.size===0;
+}
+function getDismantleSelection() {
+    const deckIds=new Set(playerDeck.map(card=>card.id));
+    const cards=playerInventory.filter(card=>selectedCardsToDismantle.has(card.id) && !deckIds.has(card.id) && findCharacter(card.name));
+    return cards.reduce((summary,card)=>{
+        const rarity=card.inherited?.originalRarity || findCharacter(card.name).rarity;
+        const reward=DISMANTLE_REWARDS[rarity] || {fountainPens:0,inkwells:0};
+        summary.cards.push(card);
+        summary.fountainPens+=reward.fountainPens;
+        summary.inkwells+=reward.inkwells;
+        return summary;
+    },{cards:[],fountainPens:0,inkwells:0});
 }
 
 			function dismantleCard(cardId) {
@@ -9435,43 +9490,25 @@ function advanceStory() {
 // gacha3.html - dismantleMultipleCards 함수 (기존 함수 전체 교체)
 
 function dismantleMultipleCards() {
-    if (selectedCardsToDismantle.size === 0) {
+    const summary=getDismantleSelection();
+    if (!summary.cards.length) {
         showMessage('파쇄할 카드를 선택해주세요.', 'text-yellow-400', messageArea);
         return;
     }
-
-    if (!confirm(`선택된 ${selectedCardsToDismantle.size}장의 카드를 파쇄하고 재료를 회수하시겠습니까? (복구 불가)`)) {
-        return;
-    }
-
-    let totalFountainPens = 0;
-    let totalInkwells = 0;
-    let cardsToRemove = [];
-    let cardsInDeck = [];
-
-    // 1. 파쇄할 카드와 보상 계산 (로직 유지)
-    selectedCardsToDismantle.forEach(cardId => {
-        const cardInstance = playerInventory.find(c => c.id === cardId);
-        if (!cardInstance) return;
-
-        if (playerDeck.some(deckCard => deckCard.id === cardId)) {
-            cardsInDeck.push(cardInstance.name);
-        } else {
-            const character = findCharacter(cardInstance.name);
-            const rewards = DISMANTLE_REWARDS[character.rarity];
-            totalFountainPens += rewards.fountainPens;
-            totalInkwells += rewards.inkwells;
-            cardsToRemove.push(cardId);
-        }
-    });
-
-    if (cardsToRemove.length === 0 && cardsInDeck.length > 0) {
-        showMessage('선택된 카드가 모두 덱에 포함되어 파쇄할 수 없습니다.', 'text-red-400', messageArea);
-        return;
-    }
+    document.getElementById('dismantle-confirm-details').textContent=`${summary.cards.length}장 · 만년필 +${summary.fountainPens.toLocaleString()}개 · 잉크병 +${summary.inkwells.toLocaleString()}개`;
+    document.getElementById('dismantle-confirm-modal').classList.remove('hidden');
+    document.getElementById('cancel-dismantle-confirm').focus();
+}
+function confirmDismantleMultipleCards() {
+    document.getElementById('dismantle-confirm-modal').classList.add('hidden');
+    const {cards,fountainPens:totalFountainPens,inkwells:totalInkwells}=getDismantleSelection();
+    if (!cards.length) {updateMultiSelectUI();return;}
+    const cardsToRemove=new Set(cards.map(card=>card.id));
 
     // 2. 파쇄 실행 및 보상 지급
-    playerInventory = playerInventory.filter(card => !cardsToRemove.includes(card.id));
+    playerInventory = playerInventory.filter(card => !cardsToRemove.has(card.id));
+    playerEquipment.forEach(eq=>{if(cardsToRemove.has(eq.equippedTo))eq.equippedTo=null;});
+    if(cardsToRemove.has(playerProfile.repCardId))playerProfile.repCardId=null;
     playerFountainPens += totalFountainPens;
     playerInkwells += totalInkwells;
 
@@ -9492,13 +9529,9 @@ function dismantleMultipleCards() {
         dismantleRewardsList.innerHTML += `<div class="text-xl text-fuchsia-400 font-bold">💧 잉크병: +${totalInkwells}</div>`;
     }
 
-    if (cardsInDeck.length > 0) {
-         dismantleRewardsList.innerHTML += `<div class="text-xs text-red-400 mt-2">(${cardsInDeck.length}장은 덱에 포함되어 파쇄되지 않았습니다.)</div>`;
-    }
-
     // 5. 모달에 최종 메시지 상태 저장
-    if (cardsToRemove.length > 0) {
-        dismantleResultModal.dataset.finalMessage = `총 ${cardsToRemove.length}장의 원고를 파쇄했습니다.`;
+    if (cardsToRemove.size > 0) {
+        dismantleResultModal.dataset.finalMessage = `총 ${cardsToRemove.size}장의 원고를 파쇄했습니다.`;
         dismantleResultModal.dataset.messageColor = 'text-yellow-300';
     } else {
         dismantleResultModal.dataset.finalMessage = '';
@@ -9766,8 +9799,10 @@ function saveProfileData() {
     // 데이터 갱신
     currentPlayerNickname = newNickname;
     playerProfile.statusMessage = newMessage;
-    const selected=document.getElementById('profile-nameplate-select').value;
-    playerProfile.nameplateId=playerAchievements[selected]==='claimed' && expandedAchievements().some(a=>a.id===selected && a.nameplate) ? selected : null;
+    const valid=new Set(expandedAchievements().filter(a=>a.nameplate && playerAchievements[a.id]==='claimed').map(a=>a.id));
+    const selected=[...document.querySelectorAll('.profile-nameplate-select')].map(select=>select.value).filter(Boolean);
+    playerProfile.nameplateIds=[...new Set(selected.filter(id=>valid.has(id)))].slice(0,3);
+    playerProfile.nameplateId=playerProfile.nameplateIds[0] || null;
 
     // UI 갱신 (상단 닉네임 표시 등)
     document.getElementById('nickname-display').textContent = currentPlayerNickname;
@@ -9956,6 +9991,10 @@ document.getElementById('event-view').addEventListener('click', (e) => {
 enterMultiModeButton.addEventListener('click', enterMultiSelectMode);
 exitMultiModeButton.addEventListener('click', exitMultiSelectMode);
 dismantleSelectedButton.addEventListener('click', dismantleMultipleCards);
+document.getElementById('clear-dismantle-selection').addEventListener('click',()=>{selectedCardsToDismantle.clear();displayInventory();});
+document.getElementById('cancel-dismantle-confirm').addEventListener('click',()=>document.getElementById('dismantle-confirm-modal').classList.add('hidden'));
+document.getElementById('confirm-dismantle-action').addEventListener('click',confirmDismantleMultipleCards);
+document.getElementById('dismantle-confirm-modal').addEventListener('click',e=>{if(e.target.id==='dismantle-confirm-modal')e.currentTarget.classList.add('hidden');});
 
 // ✨ 파쇄 결과 모달 닫기
 closeDismantleResultButton.addEventListener('click', () => {
@@ -9980,22 +10019,12 @@ document.getElementById('inventory-filter-buttons').addEventListener('click', (e
 
 // 필터된 원고 전체 선택 버튼 클릭
 document.getElementById('select-all-filtered-button').addEventListener('click', () => {
-    // 현재 화면에 보이는 카드들만 선택 대상으로 합니다.
-    const currentlyVisibleCards = playerInventory.filter(cardInstance => {
-        if (currentRarityFilter === 'All') return true;
-        const character = findCharacter(cardInstance.name);
-        return character && character.rarity === currentRarityFilter;
+    const deckIds=new Set(playerDeck.map(card=>card.id));
+    // 렌더링된 목록을 기준으로 검색, 등급, 진영 필터를 모두 반영합니다.
+    inventoryContainer.querySelectorAll('[data-unique-id]').forEach(element=>{
+        const id=element.dataset.uniqueId;
+        if(!deckIds.has(id))selectedCardsToDismantle.add(id);
     });
-
-    // 덱에 포함되지 않은 카드만 선택 목록에 추가합니다.
-    currentlyVisibleCards.forEach(cardInstance => {
-        const isInDeck = playerDeck.some(deckCard => deckCard.id === cardInstance.id);
-        if (!isInDeck) {
-            selectedCardsToDismantle.add(cardInstance.id);
-        }
-    });
-
-    // 선택 상태를 화면에 즉시 반영합니다.
     displayInventory();
 });
 
@@ -11411,7 +11440,7 @@ async function openOtherUserProfile(initialData) {
                 <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6 py-2">
                     <div class="bg-black/20 p-4 rounded-lg border-l-4 border-indigo-500">
                         <p class="text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">Nickname</p>
-                        <p class="text-white font-bold text-2xl tracking-tight">${nickname}</p><span class="profile-nameplate">${rogueEscape(nameplateFor(userData.profile,userData.achievements))}</span>
+                        <p class="text-white font-bold text-2xl tracking-tight">${nickname}</p><div class="public-profile-titles">${nameplatesFor(userData.profile,userData.achievements).map(title=>`<span class="profile-nameplate">${rogueEscape(title.label)}</span>`).join('')}</div>
                     </div>
                     <div>
                         <p class="text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider ml-1">Status Message</p>
