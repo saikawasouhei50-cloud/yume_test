@@ -2278,6 +2278,8 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
         const mKey = row.key || row.name;
         monsters[mKey] = {
             name: row.name,
+            // Monsters 시트의 baseName은 족적을 지급할 카드 계열입니다.
+            baseName: String(row.baseName || row.base_name || row.characterBaseName || '').trim(),
             speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 0,
             stats: { hp: Number(row.hp), atk: Number(row.atk), def: Number(row.def) },
             imageUrl: row.imageUrl,
@@ -3664,7 +3666,7 @@ function updateDispatchClock() {
             if(marks){rogueState.archiveTokens+=marks;rogueLog(`잊힌 서표 ${marks}개 발견 · 탐사 종료 시 획득`);}
             if(nodeType!=='boss'){
                 const source=monsters[rogueState.node.monsterName];
-                const trace=rollCharacterTrace(source?.name||rogueState.node.monsterName,rogueRand);
+                const trace=rollCharacterTrace(source,rogueRand);
                 if(trace)rogueLog(`${trace.base}의 족적 ${trace.count}개 획득`);
             }
             if(rogueState.node.type==='boss')rogueState.bosses++;
@@ -4531,14 +4533,26 @@ function previewNameplates() {
 }
 const MEMORY_EXCHANGE_COSTS={N:30,R:60,SR:100,SSR:200};
 function safeItemCount(value){return Math.max(0,Math.floor(Number(value)||0));}
-function traceBaseForEnemy(enemyName){
-    if(!enemyName)return null;
-    const name=String(enemyName).replace(/^정예\s*·\s*/,'').trim();
-    const match=characters.find(card=>card.name===name||card.baseName===name);
-    return match?.baseName||null;
+function traceBaseForEnemy(enemy){
+    if(!enemy)return null;
+    const monster=typeof enemy==='string'?{name:enemy}:enemy;
+    const bases=new Set(characters.map(card=>card.baseName).filter(Boolean));
+    // 서로 다른 김기철 계열은 별개의 족적입니다. 명시된 베이스를 우선합니다.
+    const specified=String(monster.baseName||'').trim();
+    if(specified)return bases.has(specified)?specified:null;
+    const name=String(monster.name||'').replace(/^정예\s*·\s*/,'').trim();
+    const matchedByName=new Set(characters.filter(card=>card.name===name||card.baseName===name).map(card=>card.baseName));
+    if(matchedByName.size===1)return [...matchedByName][0];
+    // 예전 Monsters 시트에는 baseName이 없으므로 동일 이미지의 계열만 보정합니다.
+    const image=String(monster.imageUrl||'').trim();
+    if(image){
+        const matchedByImage=new Set(characters.filter(card=>image===card.imageUrl||image===card.cardImageUrl).map(card=>card.baseName));
+        if(matchedByImage.size===1)return [...matchedByImage][0];
+    }
+    return null;
 }
-function rollCharacterTrace(enemyName,random=Math.random){
-    const base=traceBaseForEnemy(enemyName);
+function rollCharacterTrace(enemy,random=Math.random){
+    const base=traceBaseForEnemy(enemy);
     if(!base||random()>=.30)return null;
     const count=1+Math.floor(random()*3);
     playerCharacterTraces[base]=safeItemCount(playerCharacterTraces[base])+count;
@@ -8343,7 +8357,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
             }
             if(['main_stage','event'].includes(combatInfo.type)){
                 const monsterName=combatInfo.type==='event'?eventDungeons[combatInfo.indices]?.monsterName:mainChapters[combatInfo.indices.chapter]?.stages[combatInfo.indices.stage]?.monsterName;
-                const trace=rollCharacterTrace(monsters[monsterName]?.name||monsterName);
+                const trace=rollCharacterTrace(monsters[monsterName]);
                 if(trace)rewardsList.push({icon:'👣',name:`${trace.base}의 족적`,count:`+${trace.count}`,color:'border-slate-400 bg-slate-100 text-slate-700'});
             }
         } else {
