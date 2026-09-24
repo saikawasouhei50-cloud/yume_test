@@ -460,7 +460,8 @@ body .animate-pulse,body .animate-ping{animation:none!important}
 .dream-speaker{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.dream-speaker>span{font-size:9px;color:#747980}#home-character-name{font-size:12px!important;font-weight:700;letter-spacing:0!important;color:#363b42!important}#home-character-dialogue{font-size:13px!important;line-height:1.8;color:#4c5057!important}
 .dream-scene-footer{position:absolute;left:28px;bottom:15px;font-size:8px}.dream-empty{position:absolute;top:47%;left:30px;right:30px;transform:translateY(-30%);text-align:center;color:#62666d}.dream-empty>span{font:500 10px 'Space Grotesk';letter-spacing:.18em;color:#858990}.dream-empty p{font-size:24px;font-weight:300;line-height:1.6;margin:16px}.dream-text-button{font-size:12px;padding:10px;border-bottom:1px solid #b3b7bd}
 .dream-menu{display:flex;flex-direction:column;gap:14px;padding-top:10px}.dream-menu-title>span{font:500 10px 'Space Grotesk';letter-spacing:.15em;color:#747880}.dream-menu-title p{font-size:16px;font-weight:500;margin-top:6px}.dream-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dream-menu-item{position:relative;min-height:132px;padding:18px 14px;text-align:left;border:1px solid #dfe1e4;border-radius:14px;background:#ffffffa8;overflow:hidden}.dream-menu-item:hover{background:#fff;box-shadow:0 5px 18px #4545450a}.dream-menu-index{display:block;font:500 8px 'Space Grotesk';letter-spacing:.06em;color:#7c8087}.dream-menu-item strong{display:block;font-size:19px;font-weight:600;margin-top:20px}.dream-menu-item small{display:block;font-size:10px;color:#686e76;margin-top:5px}.dream-arrow{position:absolute;right:13px;top:13px;color:#6e737a;font-size:16px}
-.dream-menu-item.dream-feature{grid-column:1/-1;min-height:150px;background:#373b41;color:#fff;border-color:#373b41}.dream-feature .dream-menu-index,.dream-feature small,.dream-feature .dream-arrow{color:#d1d4d9}.dream-feature strong{font-size:24px;font-weight:500;margin-top:25px}.dream-menu-item:last-child{grid-column:1/-1;min-height:90px}.dream-menu-item:last-child strong{margin-top:10px}.dream-shortcuts{display:flex;gap:8px;justify-content:space-between;margin-top:auto}.dream-shortcuts button{flex:1;font-size:11px;border:1px solid #dadde1;border-radius:999px;padding:10px 6px;background:#ffffff90;color:#555a62}
+.dream-menu-item.dream-feature{grid-column:1/-1;min-height:150px;background:#373b41;color:#fff;border-color:#373b41}.dream-feature .dream-menu-index,.dream-feature small,.dream-feature .dream-arrow{color:#d1d4d9}.dream-feature strong{font-size:24px;font-weight:500;margin-top:25px}.dream-shortcuts{display:flex;gap:8px;justify-content:space-between;margin-top:auto}.dream-shortcuts button{flex:1;font-size:11px;border:1px solid #dadde1;border-radius:999px;padding:10px 6px;background:#ffffff90;color:#555a62}
+@media(max-width:767px){.dream-menu-grid #btn-lobby-gacha{grid-column:1/-1;min-height:150px}.dream-menu-grid #btn-lobby-gacha strong{font-size:24px!important;margin-top:25px!important}}
 .dream-explore{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.dream-explore button{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:6px;border:1px solid #dcdee2;border-radius:14px;background:#ffffffbd;padding:20px;min-height:120px}.dream-explore button>span{font:500 9px 'Space Grotesk';letter-spacing:.1em;color:#7c8087}.dream-explore button>strong{font-weight:600;font-size:19px;color:#353940}.dream-explore button>small{font-size:11px;color:#737880}.dream-explore button>b{position:absolute;top:18px;right:18px;font-size:20px;color:#81868d;font-weight:400}.dream-explore button:hover{background:#fff;border-color:#9298a0}
 .dream-bottom{grid-column:1/-1;display:flex;gap:20px;align-items:center;justify-content:space-between;padding:6px 0}.dream-bottom #event-banner{display:flex;gap:12px;align-items:center;padding:12px 0!important;border:0!important;background:transparent!important;color:#41464e!important;max-width:50%}.dream-bottom #event-banner>span{font-size:10px;color:#7c8189!important}.dream-bottom #event-banner strong{font-size:12px;font-weight:500;text-align:left}.dream-dock{display:flex;gap:8px}.dream-dock button{position:relative;padding:12px 14px;border-radius:999px;background:#ffffff8c;border:1px solid #dee0e3;font-size:11px;color:#50565f}.dream-badge{position:absolute;top:-3px;right:-3px;background:#484d55;color:#fff;border-radius:50%;font-size:8px;width:14px;height:14px}
 
@@ -1101,8 +1102,9 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
    <button id="btn-lobby-inventory" onclick="switchTab('inventory')" class="dream-menu-item"><span class="dream-menu-index">02 / COLLECTION</span><strong>서고</strong><small>모아둔 등장인물</small><span class="dream-arrow">↗</span></button>
    <button id="btn-lobby-deck" onclick="switchTab('deck')" class="dream-menu-item"><span class="dream-menu-index">03 / TEAM</span><strong>편찬</strong><small>함께할 편성</small><span class="dream-arrow">↗</span></button>
    <button id="btn-lobby-breeding" onclick="switchTab('breeding')" class="dream-menu-item"><span class="dream-menu-index">04 / INSPIRE</span><strong>영감</strong><small>새로운 가능성</small><span class="dream-arrow">↗</span></button>
+   <button id="btn-lobby-myroom" onclick="switchTab('myroom')" class="dream-menu-item"><span class="dream-menu-index">05 / MY ROOM</span><strong>마이룸</strong><small>나만의 작은 공간</small><span class="dream-arrow">↗</span></button>
   </div>
-  <div class="dream-shortcuts"><button onclick="switchTab('story')">스토리</button><button onclick="switchTab('trade')" style="position:relative">교환소<span id="trade-badge" class="hidden dream-badge">N</span></button><button onclick="switchTab('myroom')">마이룸</button></div>
+  <div class="dream-shortcuts"><button onclick="switchTab('story')">스토리</button><button onclick="switchTab('trade')" style="position:relative">교환소<span id="trade-badge" class="hidden dream-badge">N</span></button></div>
  </nav>
  <div class="dream-explore" aria-label="탐사 메뉴">
   <button id="btn-lobby-combat" onclick="switchTab('combat')"><span>CHAPTER</span><strong>안정화</strong><small>흐트러진 이야기를 찾아서</small><b>↗</b></button>
@@ -4932,27 +4934,58 @@ function attendancePosition(now=Date.now()){
     const same=last===today,consecutive=last===today-1;
     return {claimed:same,day:same?(Math.max(1,playerAttendance.streak)-1)%7:consecutive?playerAttendance.streak%7:0,streak:consecutive?playerAttendance.streak:0};
 }
+let attendanceSavePending=false;
+let attendanceSaveError='';
 function renderDailyAttendance(){
     const panel=document.getElementById('attendance-rewards');if(!panel)return;
     const pos=attendancePosition();panel.replaceChildren();
-    document.getElementById('home-attendance').classList.toggle('hidden',pos.claimed);
-    document.getElementById('home-view').classList.toggle('attendance-claimed',pos.claimed);
+    document.getElementById('home-attendance').classList.toggle('hidden',pos.claimed&&!attendanceSavePending);
+    document.getElementById('home-view').classList.toggle('attendance-claimed',pos.claimed&&!attendanceSavePending);
     ATTENDANCE_REWARDS.forEach((reward,index)=>{
         const day=document.createElement('span');day.className='dream-attendance-day'+(index===pos.day?' current':'');
         day.textContent=`${index+1}일차 · ${reward.name}`;panel.appendChild(day);
     });
-    document.getElementById('attendance-status').textContent=pos.claimed?`오늘 출석 완료 · ${playerAttendance.streak}일 연속`:`오늘은 ${pos.day+1}일차 보상을 받을 수 있어요.`;
-    const button=document.getElementById('attendance-claim');button.disabled=!currentUser||pos.claimed;button.textContent=pos.claimed?'오늘 출석 완료':'출석 보상 받기';
+    const lastDay=Date.parse((playerAttendance.lastDate||'')+'T00:00:00Z')/86400000;
+    const missed=Number.isFinite(lastDay)&&lastDay<koreaDayNumber()-1;
+    document.getElementById('attendance-status').textContent=attendanceSaveError||(
+        attendanceSavePending?'출석 보상을 저장하고 있어요.':
+        pos.claimed?`오늘 출석 완료 · ${playerAttendance.streak}일 연속`:
+        missed?`마지막 출석 ${playerAttendance.lastDate} · 연속 출석이 끊겨 1일차부터 시작해요.`:
+        `오늘은 ${pos.day+1}일차 보상을 받을 수 있어요.`
+    );
+    const button=document.getElementById('attendance-claim');button.disabled=!currentUser||pos.claimed||attendanceSavePending;button.textContent=attendanceSavePending?'저장 중…':pos.claimed?'오늘 출석 완료':'출석 보상 받기';
 }
 // 홈을 열어둔 채 한국 시간으로 날짜가 바뀌어도 다음 출석 메뉴를 다시 보여준다.
 setInterval(()=>{if(!document.getElementById('home-view').classList.contains('hidden'))renderDailyAttendance();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!document.getElementById('home-view').classList.contains('hidden'))renderDailyAttendance();});
-function claimDailyAttendance(){
-    if(!currentUser)return;
+async function claimDailyAttendance(){
+    if(!currentUser||attendanceSavePending)return;
     const pos=attendancePosition();if(pos.claimed)return;
+    attendanceSavePending=true;attendanceSaveError='';
+    const before={attendance:playerAttendance,fountainPens:playerFountainPens,bookmarks:playerBookmarks,currency:playerCurrency,inkwells:playerInkwells,dreamFragments:playerDreamFragments};
     const reward=ATTENDANCE_REWARDS[pos.day];reward.grant();
     playerAttendance={lastDate:koreaDateKey(),streak:pos.streak+1};
-    updateUI();renderDailyAttendance();saveGame();
+    const claimed=playerAttendance;
+    const granted={fountainPens:playerFountainPens,bookmarks:playerBookmarks,currency:playerCurrency,inkwells:playerInkwells,dreamFragments:playerDreamFragments};
+    updateUI();renderDailyAttendance();
+    let saved=false;
+    try{saved=await saveGame();}catch(error){console.error('출석 보상 저장 실패:',error);}
+    attendanceSavePending=false;
+    if(!saved){
+        // 저장에 실패했으면 화면상의 출석과 지급분을 돌려놓고 다시 받을 수 있게 한다.
+        if(playerAttendance===claimed)playerAttendance=before.attendance;
+        for(const key of Object.keys(granted)){
+            const variable={fountainPens:()=>playerFountainPens,bookmarks:()=>playerBookmarks,currency:()=>playerCurrency,inkwells:()=>playerInkwells,dreamFragments:()=>playerDreamFragments}[key];
+            if(variable()!==granted[key])continue;
+            if(key==='fountainPens')playerFountainPens=before[key];
+            else if(key==='bookmarks')playerBookmarks=before[key];
+            else if(key==='currency')playerCurrency=before[key];
+            else if(key==='inkwells')playerInkwells=before[key];
+            else playerDreamFragments=before[key];
+        }
+        attendanceSaveError='출석 보상을 저장하지 못했어요. 연결을 확인하고 다시 받아주세요.';
+    }
+    updateUI();renderDailyAttendance();
 }
 let affinityPotionReturnFocus=null;
 function closeAffinityPotionModal(){
@@ -7104,9 +7137,10 @@ function displayMyRoom() {
     // 화분 이미지는 배치 기준점보다 위에 그려진다. 담당자는 화분의 실제 그림 옆에 세운다.
     const potWorker=working?.kind==='pot';
     if(potWorker)el.classList.add('pot-worker');
-    // 가구 앞쪽의 같은 그리드 위치를 사용하면 화면 폭이 달라도 거리와 앞뒤 관계가 유지된다.
-    const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+16)):Math.random()*90;
-    const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+16)):Math.random()*90;
+    // 작업대 담당자는 바닥 경계 밖으로 밀리지 않도록 작업대 앞의 오른쪽 안쪽에 선다.
+    // 그리드 좌표로 옮겨 방 전체 확대·축소 시에도 같은 상대 위치를 유지한다.
+    const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+20)):Math.random()*90;
+    const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+7)):Math.random()*90;
     const iso = getIsoPos(gridX, gridY);
 
     el.style.left = potWorker?`calc(${iso.left}% + var(--pot-worker-side))`:`${iso.left}%`;
