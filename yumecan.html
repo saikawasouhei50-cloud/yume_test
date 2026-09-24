@@ -265,6 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
 .life-panel button{border:1px solid #b9c8d1;border-radius:9px;padding:8px 11px;min-height:44px;background:#fff;color:#405666;font-size:12px;touch-action:manipulation}.life-panel button:disabled{opacity:.42;cursor:default}.life-panel button:not(:disabled):hover{background:#eaf0f6}.life-recipes button.needs-material{border-style:dashed;color:#73808e}.life-recipes button.needs-level{border-style:dashed;color:#73808e}.life-finish{margin-top:12px}.life-finish label{display:block;font-size:12px;margin:10px 0}.life-finish select{margin-left:8px;max-width:230px}.life-frame{flex:0 0 155px;min-height:145px;border:2px solid var(--life-accent);border-radius:12px;display:grid;place-content:center;text-align:center;padding:10px;font-size:12px;color:#657384}.life-frame img{display:block;width:95px;height:95px;object-fit:contain;margin:auto;image-rendering:pixelated}
 @media(max-width:700px){.life-panel{padding:14px}.life-layout,.life-recipes{grid-template-columns:1fr}.life-heading,.life-finish{flex-wrap:wrap}.life-frame{flex:1 1 100%;min-height:130px}.life-finish select{max-width:100%}}
 .life-workshops{display:grid;gap:12px;margin-top:12px}.life-workshop{border:1px solid #dce3ea;border-radius:12px;padding:12px;background:#f8fafc}.life-workshop>header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.life-planters>div{grid-template-columns:minmax(0,1fr) auto}.life-planters .life-worker-button{grid-row:2;grid-column:1 / -1;justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis}.life-workshop .life-worker-button{max-width:100%;white-space:normal}.life-worker-dialog{width:min(660px,100%);max-height:85dvh;overflow:auto;background:#fafbfd;color:#354050;border:1px solid #dce3ea;border-radius:18px;padding:18px}.life-worker-dialog header{display:flex;justify-content:space-between;align-items:center}.life-worker-dialog h3{font-size:18px;font-weight:700}.life-worker-dialog p{font-size:12px;color:#637386;margin:9px 0}.life-worker-dialog input{width:100%;padding:10px;margin:8px 0;border:1px solid #cbd5e1;border-radius:10px}.life-worker-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:9px;max-height:55dvh;overflow:auto}.life-worker-card{min-height:100px;border:1px solid #d9e1e9;border-radius:10px;background:white;padding:8px;display:grid;place-items:center;gap:4px;font-size:11px;overflow-wrap:anywhere}.life-worker-card img{width:60px;height:60px;object-fit:contain;image-rendering:pixelated}.life-worker-card:hover{border-color:#91a5bd;background:#f1f5fa}#room-store-selected:not(.hidden){background:#eaf0f7;color:#354f69;border:1px solid #b7c9db}#room-store-selected:disabled{opacity:.6}#myroom-view .furniture-hitbox.room-hitbox-edit{width:44px!important;height:44px!important;border:1px dashed #7b95ad!important;background:#e8f0f685!important}#myroom-view .furniture-hitbox.room-hitbox-selected{outline:3px solid #8aa9cc;background:#b8d3ed99!important}
+#myroom-view .pot-worker{--pot-worker-lift:50px;--pot-worker-side:22px}
+@media(max-width:768px){#myroom-view .pot-worker{--pot-worker-lift:25px;--pot-worker-side:13px}}
 
 </style>
 
@@ -6984,12 +6986,15 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
     el.dataset.charName = card.name;
 
     const working=activeWorkers.get(card.id);
-    const gridX=working?Math.min(95,working.item.x+4):Math.random()*90;
-    const gridY=working?Math.min(95,working.item.y+4):Math.random()*90;
+    // 화분 이미지는 배치 기준점보다 위에 그려진다. 담당자는 화분의 실제 그림 옆에 세운다.
+    const potWorker=working?.kind==='pot';
+    if(potWorker)el.classList.add('pot-worker');
+    const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+4)):Math.random()*90;
+    const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+4)):Math.random()*90;
     const iso = getIsoPos(gridX, gridY);
 
-    el.style.left = `${iso.left}%`;
-    el.style.top = `${iso.top}%`;
+    el.style.left = potWorker?`calc(${iso.left}% + var(--pot-worker-side))`:`${iso.left}%`;
+    el.style.top = potWorker?`calc(${iso.top}% - var(--pot-worker-lift))`:`${iso.top}%`;
     el.style.transform = 'translate(-50%, -90%)';
 
     // 캐릭터는 가구와 같은 선상에 있을 때 아주 살짝(+1) 앞에 오도록 설정
