@@ -934,6 +934,13 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 @media(max-width:767px){#home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-attendance{grid-column:1;grid-row:2}#home-view .dream-menu{grid-column:1;grid-row:3}#home-view .dream-explore{grid-row:4}#home-view .dream-bottom{grid-row:5}}
 @media(max-width:800px){.dream-attendance{grid-template-columns:1fr}.dream-attendance-days{grid-template-columns:repeat(2,minmax(0,1fr))}.dream-redeem-grid{grid-template-columns:1fr}.dream-redeem-panel{padding:15px}}
 </style>
+<style id="affinity-style">
+.affinity-panel{margin:16px 0;padding:18px;border:1px solid #dce3ed;border-radius:18px;background:linear-gradient(135deg,#f5f7fc,#fff);color:#364458}
+.affinity-panel h3{font-size:17px;font-weight:800;margin:0 0 6px}.affinity-panel>p{font-size:12px;color:#728198;margin:0 0 14px;line-height:1.6}
+.affinity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.affinity-card{border:1px solid #dce3ed;border-radius:14px;background:#fff;padding:12px;min-width:0}.affinity-card strong{display:block;overflow-wrap:anywhere;font-size:13px}.affinity-card small{display:block;color:#66768c;line-height:1.5;margin:6px 0}.affinity-card progress{width:100%;accent-color:#9aaad1;height:10px}.affinity-card button{min-height:36px;border:1px solid #bfcbe0;border-radius:10px;background:#eef2fa;padding:6px 11px;color:#455a7c;font-size:12px;font-weight:700}.affinity-card button:disabled{opacity:.5}
+.affinity-showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affinity-showcase label{min-width:0;font-size:11px;color:#64758e}.affinity-showcase select{width:100%;min-width:0;margin-top:4px;padding:8px;border:1px solid #d3dce9;border-radius:9px;background:#fff;color:#405069}.affinity-badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.affinity-badge{padding:5px 9px;border-radius:999px;border:1px solid #c4cfe2;background:#edf1fa;color:#496085;font-size:11px;font-weight:800}.affinity-master-frame{outline:3px double #9b9bcf;outline-offset:2px}.affinity-master-label{color:#6f6197;font-weight:800}
+@media(max-width:600px){.affinity-showcase{grid-template-columns:1fr}.affinity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affinity-panel{padding:13px}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1578,6 +1585,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
             </div>
 
             <div class="profile-title-settings"><h4>칭호 · 최대 3개</h4><div id="profile-nameplate-preview" class="profile-title-preview" aria-live="polite"></div><div class="profile-title-selects"><label>첫 번째 칭호<select id="profile-nameplate-select" class="profile-nameplate-select" aria-label="첫 번째 칭호"></select></label><label>두 번째 칭호<select id="profile-nameplate-select-2" class="profile-nameplate-select" aria-label="두 번째 칭호"></select></label><label>세 번째 칭호<select id="profile-nameplate-select-3" class="profile-nameplate-select" aria-label="세 번째 칭호"></select></label></div><p>업적 보상으로 받은 칭호를 최대 세 개까지 설정할 수 있어요. 선택 후 프로필을 저장하세요.</p></div>
+            <section class="affinity-panel"><h3>호감도 전시</h3><p>호감도 2단계부터 획득한 배지를 프로필에 최대 세 명까지 전시할 수 있어요.</p><div id="profile-affinity-preview" class="affinity-badges" aria-live="polite"></div><div id="profile-affinity-showcase" class="affinity-showcase"></div></section>
             <button onclick="saveProfileData()" class="gacha-button w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 프로필 저장
             </button>
@@ -1672,7 +1680,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><div class="room-wrapper">
+                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><h3>함께 쌓는 호감도</h3><p>베이스 캐릭터별로 성장 · 마이룸 상호작용 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 하루 최대 30</p><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -1744,6 +1752,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                                 <p id="detail-card-rarity" class="font-tech font-bold text-2xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"></p>
                                 <p id="detail-card-faction" class="font-tech text-xs font-bold px-3 py-1 border rounded-sm tracking-wider"></p>
                             </div>
+                            <p id="detail-affinity-status" class="text-center text-xs text-slate-600 mb-3"></p>
 
                             <div id="detail-parents-wrapper" class="hidden text-center mb-4 bg-gray-900/50 border border-gray-800 p-3 rounded-sm">
                                 <p class="font-tech text-[10px] text-cyan-500 tracking-widest mb-2 border-b border-gray-700 pb-1">GENETIC ORIGIN // 영감의 원천</p>
@@ -3295,11 +3304,12 @@ function updateDispatchClock() {
             playerFountainPens += (rewards.fountainPens || 0);
             playerCurrency += (rewards.currency || 0);
             if (rewards.inkwells) playerInkwells += rewards.inkwells;
+            const affinityRewards=gainAffinityForCards(dispatchRoster(activeData),18);
 
             // 파견 상태 초기화
             delete playerDispatches[missionId];
 
-            alert(`[현장 조사 완료]\n보상이 지급되었습니다!\n🖋️ 만년필 +${rewards.fountainPens || 0}\n💎 보석 +${rewards.currency || 0}${rewards.inkwells ? `\n💧 잉크병 +${rewards.inkwells}` : ''}`);
+            alert(`[현장 조사 완료]\n보상이 지급되었습니다!\n🖋️ 만년필 +${rewards.fountainPens || 0}\n💎 보석 +${rewards.currency || 0}${rewards.inkwells ? `\n💧 잉크병 +${rewards.inkwells}` : ''}${affinityRewards.length?'\n호감도 '+affinityRewards.map(r=>`${r.base} +${r.amount}${r.gear?' (전용 장비 획득)':''}`).join(' · '):''}`);
 
             updateUI();
             displayDispatchView();
@@ -3660,6 +3670,8 @@ function updateDispatchClock() {
             if(!rogueState.active||rogueState.phase!=='combat')return;
             if(Array.isArray(deck))rogueState.team.forEach((c,i)=>{const hp=deck[i]?.stats?.hp;c.stats.hp=Number.isFinite(hp)?Math.max(0,Math.min(c.maxHp,hp)):c.stats.hp;});
             if(!victory){settleRogueRun('탐사 종료');roguePersist();return;}
+            const affinityRewards=gainAffinityForCards(rogueState.team,3);
+            if(affinityRewards.length)rogueLog('호감도 '+affinityRewards.map(r=>`${r.base} +${r.amount}${r.gear?' · 전용 장비 획득':''}`).join(' · '));
             rogueState.wins++;
             rollRogueEquipment();
             const nodeType=rogueState.node.type;
@@ -3880,6 +3892,7 @@ let playerRaidLastResetDate = null;
 			let breedingSlots = { a: null, b: null }; // 슬롯 상태
 			// ✨ [신규] 장비(집필 도구) 관련 전역 변수
 			let playerEquipment = []; // 유저가 보유한 장비 인스턴스 목록
+            let playerAffinity = {}; // 베이스 캐릭터별 호감도와 하루 획득량
 
 			// 장비 원본 데이터 (템플릿)
 			const equipmentTemplates = [
@@ -3896,6 +3909,88 @@ let playerRaidLastResetDate = null;
 {"id": "rg_seal", "name": "침묵의 봉인서", "rarity": "SSR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0, "hp": 0.4, "defense": 0.25}, "desc": "체력 +40% · 방어력 +25%", "icon": "📜"},
 {"id": "rg_lastpen", "name": "종언을 쓰는 펜", "rarity": "UR", "type": "archive", "source": "rogue", "modifiers": {"atk": 0.42, "hp": 0.25, "defense": 0.2}, "desc": "공격력 +42% · 체력 +25% · 방어력 +20%", "icon": "✒️"}
 			];
+
+            const AFFINITY_THRESHOLDS = [0, 40, 110, 220, 360, 550];
+            const AFFINITY_DAILY_LIMIT = 30;
+            const affinityGearId = base => 'aff_' + encodeURIComponent(base);
+            function ensureAffinityEquipmentTemplates() {
+                for (const base of new Set(characters.map(card=>card.baseName).filter(Boolean))) {
+                    if(equipmentTemplates.some(t=>t.id===affinityGearId(base)))continue;
+                    const cards=characters.filter(card=>card.baseName===base);
+                    const signature=cards.find(card=>card.rarity==='SSR')||cards.find(card=>card.rarity==='SR')||cards[0];
+                    const skillTypes=new Set((signature?.skills||[]).map(skill=>skill.type));
+                    const secondary=skillTypes.has('heal')||skillTypes.has('vampire')?{hp:.07,defense:0,desc:'체력 +7%'}:
+                        skillTypes.has('buff_def')?{hp:0,defense:.05,desc:'방어력 +5%'}:{hp:.05,defense:0,desc:'체력 +5%'};
+                    equipmentTemplates.push({id:affinityGearId(base),name:`${base}의 유대의 증표`,type:'affinity',source:'affinity',exclusiveBase:base,
+                        rarity:'SSR',modifiers:{atk:.03,hp:secondary.hp,defense:secondary.defense},desc:`${base} 전용 · 공격력 +3% · ${secondary.desc}`,icon:'🪡'});
+                }
+            }
+            ensureAffinityEquipmentTemplates();
+            function affinityLevel(base,records=playerAffinity) {
+                const exp=Math.max(0,Number(records?.[base]?.xp)||0);
+                for(let i=AFFINITY_THRESHOLDS.length-1;i>=1;i--)if(exp>=AFFINITY_THRESHOLDS[i])return i;
+                return 0;
+            }
+            function affinityBase(card){return card && findCharacter(card.name)?.baseName || null;}
+            function awardAffinityGear(base){
+                const state=playerAffinity[base];if(!state||state.gearClaimed||affinityLevel(base)<5)return false;
+                ensureAffinityEquipmentTemplates();
+                const id=affinityGearId(base);
+                if(!equipmentTemplates.some(t=>t.id===id))return false;
+                if(!playerEquipment.some(eq=>eq.templateId===id))playerEquipment.push({id:generateEqId(),templateId:id,equippedTo:null});
+                state.gearClaimed=true;return true;
+            }
+            function gainAffinity(base,points){
+                if(!base||!characters.some(c=>c.baseName===base))return 0;
+                const today=getTodayDateString();
+                const state=playerAffinity[base]||{xp:0,date:today,daily:0,talkDate:'',gearClaimed:false};
+                if(state.date!==today){state.date=today;state.daily=0;}
+                const amount=Math.min(Math.max(0,Math.floor(Number(points)||0)),Math.max(0,AFFINITY_DAILY_LIMIT-state.daily),Math.max(0,AFFINITY_THRESHOLDS[5]-state.xp));
+                if(!amount)return 0;
+                state.xp+=amount;state.daily+=amount;playerAffinity[base]=state;
+                awardAffinityGear(base);
+                return amount;
+            }
+            function gainAffinityForCards(cards,points){
+                const rewards=[];
+                for(const base of new Set((cards||[]).map(affinityBase).filter(Boolean))){
+                    const hadGear=playerAffinity[base]?.gearClaimed===true;
+                    const amount=gainAffinity(base,points);
+                    if(amount)rewards.push({base,amount,level:affinityLevel(base),gear:!hadGear&&playerAffinity[base]?.gearClaimed===true});
+                }
+                return rewards;
+            }
+            function interactAffinity(base){
+                const today=getTodayDateString();
+                const placed=new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean));
+                if(!placed.has(base))return;
+                const state=playerAffinity[base];if(state?.talkDate===today)return;
+                const oldLevel=affinityLevel(base);
+                const amount=gainAffinity(base,12);
+                if(!amount)return;
+                playerAffinity[base].talkDate=today;
+                document.getElementById('room-affinity-status').textContent=`${base} 호감도 +${amount}${oldLevel<5&&affinityLevel(base)===5?' · 전용 장비 획득!':''}`;
+                renderRoomAffinity();saveGame();
+            }
+            function renderRoomAffinity(){
+                const list=document.getElementById('room-affinity-list');if(!list)return;
+                list.replaceChildren();
+                const bases=[...new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean))];
+                if(!bases.length){list.textContent='방문객 관리에서 카드를 배치하면 이곳에 호감도가 표시됩니다.';return;}
+                for(const base of bases){
+                    const state=playerAffinity[base]||{};const level=affinityLevel(base),today=getTodayDateString();
+                    const spent=state.date===today?Number(state.daily)||0:0;
+                    const next=AFFINITY_THRESHOLDS[Math.min(5,level+1)];
+                    const card=document.createElement('div');card.className='affinity-card';
+                    const title=document.createElement('strong');title.textContent=`${base} · 호감도 ${level}/5`;
+                    const info=document.createElement('small');info.textContent=`${Math.min(550,state.xp||0)} / ${next} · 오늘 ${spent}/${AFFINITY_DAILY_LIMIT} · ${level>=5?'전용 장비 획득':level>=4?'전용 명찰·테두리':level>=2?'프로필 배지':'HP +1%까지'}`;
+                    const progress=document.createElement('progress');progress.max=next;progress.value=Math.min(next,state.xp||0);
+                    const button=document.createElement('button');button.type='button';button.textContent=state.talkDate===today?'오늘 상호작용 완료':'함께 시간 보내기 · +12';
+                    button.disabled=state.talkDate===today||spent>=AFFINITY_DAILY_LIMIT||level>=5;
+                    button.addEventListener('click',()=>interactAffinity(base));
+                    card.append(title,info,progress,button);list.appendChild(card);
+                }
+            }
 
 			// 고유 장비 ID 생성 함수
 			function generateEqId() {
@@ -4107,7 +4202,8 @@ function buildGameSnapshot() {
         repCardId: currentProfile.repCardId || null,
         statusMessage: currentProfile.statusMessage || "",
         nameplateIds: nameplatesFor(currentProfile,playerAchievements).map(item=>item.id),
-        nameplateId: nameplatesFor(currentProfile,playerAchievements)[0]?.id || null
+        nameplateId: nameplatesFor(currentProfile,playerAchievements)[0]?.id || null,
+        affinityShowcase: [...new Set(currentProfile.affinityShowcase||[])].filter(base=>affinityLevel(base)>=2).slice(0,3)
     };
 
     // 저장할 데이터 객체 생성
@@ -4120,6 +4216,7 @@ function buildGameSnapshot() {
         deck: playerDeck.map(card => card.id),
         capacity: inventoryCapacity || 100,
         equipment: playerEquipment || [], // ✨ 장비 인벤토리 저장
+        affinity: playerAffinity,
 		 inspAtk: playerInspAtk || 0,
     inspDef: playerInspDef || 0,
     inspHp: playerInspHp || 0,
@@ -4222,6 +4319,14 @@ async function loadGameFromFirebase(uid) {
 		playerSsrTickets = savedData.ssrTickets ?? 0;
 		playerInspAtk = savedData.inspAtk ?? 0;
 		playerEquipment = savedData.equipment || []; // ✨ 장비 인벤토리 로드
+        playerAffinity = Object.fromEntries(Object.entries(savedData.affinity||{}).filter(([base,state])=>
+            characters.some(c=>c.baseName===base) && state && typeof state==='object').map(([base,state])=>[base,{
+                xp:Math.min(550,Math.max(0,Math.floor(Number(state.xp)||0))),
+                date:typeof state.date==='string'?state.date:'',daily:Math.min(30,Math.max(0,Math.floor(Number(state.daily)||0))),
+                talkDate:typeof state.talkDate==='string'?state.talkDate:'',gearClaimed:state.gearClaimed===true
+            }]));
+        ensureAffinityEquipmentTemplates();
+        Object.keys(playerAffinity).forEach(awardAffinityGear);
 playerInspDef = savedData.inspDef ?? 0;
 playerInspHp = savedData.inspHp ?? 0;
 
@@ -4363,7 +4468,7 @@ function saveGame() {
 
             function initializeNewGameData() {
                 playerDispatches = {}; dispatchReports = [];
-    playerDreamFragments=0;playerCharacterTraces={};playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};
+    playerDreamFragments=0;playerCharacterTraces={};playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};playerAffinity={};
     rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     // ✨ 게임 첫 시작 시 기본 지급 카드에 고유 ID와 레벨 부여
     addCardToInventory('[관리인] Ki');
@@ -4502,14 +4607,17 @@ function expandedAchievements() {
     achievementDefinitionCache = [...achievements,...extra];
     return achievementDefinitionCache;
 }
-function nameplatesFor(profile, earned) {
+function nameplatesFor(profile, earned, affinityRecords=playerAffinity) {
     const ids=Array.isArray(profile?.nameplateIds) ? profile.nameplateIds : [profile?.nameplateId];
     const rewards=new Map(expandedAchievements().filter(a=>a.nameplate).map(a=>[a.id,a.nameplate]));
-    return [...new Set(ids)].filter(id=>id && earned?.[id]==='claimed' && rewards.has(id)).slice(0,3).map(id=>({id,label:rewards.get(id)}));
+    for(const base of Object.keys(affinityRecords||{}))if(affinityLevel(base,affinityRecords)>=4)rewards.set('affinity:'+base,`${base}의 동반자`);
+    return [...new Set(ids)].filter(id=>id && rewards.has(id) && (id.startsWith('affinity:')||earned?.[id]==='claimed')).slice(0,3).map(id=>({id,label:rewards.get(id)}));
 }
 function renderNameplates() {
     const selects=[...document.querySelectorAll('.profile-nameplate-select')];
     const earned=expandedAchievements().filter(a=>a.nameplate && playerAchievements[a.id]==='claimed');
+    Object.keys(playerAffinity).filter(base=>affinityLevel(base)>=4).sort((a,b)=>a.localeCompare(b,'ko')).forEach(base=>
+        earned.push({id:'affinity:'+base,nameplate:`${base}의 동반자` }));
     const chosen=nameplatesFor(playerProfile,playerAchievements);
     selects.forEach((select,index)=>{
         select.replaceChildren();
@@ -4531,6 +4639,33 @@ function previewNameplates() {
     const selected=[...document.querySelectorAll('.profile-nameplate-select')].filter(select=>select.value);
     if(!selected.length){preview.textContent='설정된 칭호 없음';return;}
     selected.forEach(select=>{const badge=document.createElement('span');badge.className='profile-nameplate';badge.textContent=select.selectedOptions[0].textContent;preview.appendChild(badge);});
+}
+function renderProfileAffinityShowcase(){
+    const container=document.getElementById('profile-affinity-showcase');if(!container)return;
+    const available=Object.keys(playerAffinity).filter(base=>affinityLevel(base)>=2).sort((a,b)=>affinityLevel(b)-affinityLevel(a)||a.localeCompare(b,'ko'));
+    container.replaceChildren();
+    for(let i=0;i<3;i++){
+        const label=document.createElement('label');label.textContent=`${i+1}번째 배지`;
+        const select=document.createElement('select');select.className='affinity-showcase-select';
+        const empty=document.createElement('option');empty.value='';empty.textContent='설정 안 함';select.appendChild(empty);
+        for(const base of available){const option=document.createElement('option');option.value=base;option.textContent=`${base} · Lv.${affinityLevel(base)}`;select.appendChild(option);}
+        select.value=available.includes(playerProfile.affinityShowcase?.[i])?playerProfile.affinityShowcase[i]:'';
+        select.addEventListener('change',()=>{
+            if(select.value&&[...container.querySelectorAll('select')].some(other=>other!==select&&other.value===select.value)){
+                select.value='';alert('같은 캐릭터는 한 번만 전시할 수 있어요.');
+            }
+            previewProfileAffinity();
+        });
+        label.appendChild(select);container.appendChild(label);
+    }
+    previewProfileAffinity();
+}
+function previewProfileAffinity(){
+    const preview=document.getElementById('profile-affinity-preview');if(!preview)return;
+    preview.replaceChildren();
+    const selected=[...document.querySelectorAll('.affinity-showcase-select')].map(select=>select.value).filter(Boolean);
+    if(!selected.length){preview.textContent='전시할 배지를 선택해주세요.';return;}
+    for(const base of selected){const badge=document.createElement('span');badge.className='affinity-badge';badge.textContent=`${base} · 호감도 Lv.${affinityLevel(base)}`;preview.appendChild(badge);}
 }
 const MEMORY_EXCHANGE_COSTS={N:30,R:60,SR:100,SSR:200};
 function safeItemCount(value){return Math.max(0,Math.floor(Number(value)||0));}
@@ -5908,12 +6043,17 @@ document.getElementById('summon-share').onclick=async()=>{
                 finalAtk = Math.floor(finalAtk * enhancementBonus);
                 finalDef = Math.floor(finalDef * enhancementBonus);
 
+                // 베이스 캐릭터의 호감도 보너스는 장비와 별도로 한 번만 적용합니다.
+                const affinity=affinityLevel(baseCard.baseName);
+                if(affinity>=1)finalHp+=Math.max(1,Math.floor(finalHp*.01));
+                if(affinity>=3){finalAtk+=Math.max(1,Math.floor(finalAtk*.01));finalDef+=Math.max(1,Math.floor(finalDef*.01));}
+
                 // ✨ 4. [신규] '집필 도구(장비)' 보너스 적용
                 if (cardInstance.equippedItem) {
                     const equipped = playerEquipment.find(e => e.id === cardInstance.equippedItem);
                     if (equipped) {
                         const tmpl = equipmentTemplates.find(t => t.id === equipped.templateId);
-                        if (tmpl) {
+                        if (tmpl && (!tmpl.exclusiveBase || (tmpl.exclusiveBase===baseCard.baseName && equipped.equippedTo===cardInstance.id))) {
                             if (tmpl.type === 'atk') finalAtk += tmpl.bonus;
                             if (tmpl.type === 'def') finalDef += tmpl.bonus;
                             if (tmpl.type === 'hp') finalHp += tmpl.bonus;
@@ -6226,6 +6366,7 @@ function displayMyRoom() {
         ? '가구를 끌어서 옮기세요. 보관함에서 가구를 꺼내고, 완료 후 배치 완료를 눌러주세요.'
         : '방문객 관리에서 함께 지낼 인물을 선택하세요. 배치 모드에서 가구를 꾸밀 수 있어요.';
     document.getElementById('room-summary-counts').textContent = `방문객 ${(playerRoom.characters || []).length}명 · 배치 가구 ${(playerRoom.furniture || []).length}개`;
+    renderRoomAffinity();
 
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
@@ -6426,6 +6567,7 @@ container.style.zIndex = Math.floor(iso.zIndex + zOffset);
                 bubble.innerText = charData.dialogues[Math.floor(Math.random() * charData.dialogues.length)];
                 bubble.style.opacity = 1;
                 setTimeout(() => bubble.style.opacity = 0, 3000);
+                interactAffinity(charData.baseName);
             };
 
             roomLayer.appendChild(el);
@@ -8309,6 +8451,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
     }
 
     if (combatInfo && combatInfo.type === 'raid') {
+        if(isVictory && gainAffinityForCards(playerDeck,3).length)saveGame();
         if (resultModal) {
             resultModal.style.display = 'none';
             resultModal.classList.add('hidden');
@@ -8330,6 +8473,9 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
 
         if (isVictory) {
           sfx.playVictory();
+            const affinityRewards=gainAffinityForCards(playerDeck,3);
+            if(affinityRewards.length)rewardsList.push({icon:'🤍',name:'호감도',count:affinityRewards.map(r=>`${r.base} +${r.amount}`).join(' · '),color:'border-indigo-300 bg-indigo-50 text-indigo-800'});
+            for(const reward of affinityRewards.filter(r=>r.gear))rewardsList.push({icon:'🪡',name:`${reward.base} 전용 장비`,count:'획득',color:'border-indigo-300 bg-indigo-50 text-indigo-800'});
             if (combatInfo.type === 'event') {
                 const dungeon = eventDungeons[combatInfo.indices];
                 const reward = dungeon.eventPointReward || 0;
@@ -8357,7 +8503,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
 
                 // 장비 드롭 보상 추가
                 if (Math.random() < 0.20) {
-                    const normalEquipmentPool = equipmentTemplates.filter(t => t.source !== 'rogue');
+                const normalEquipmentPool = equipmentTemplates.filter(t => !t.source);
                     const randomTmpl = normalEquipmentPool[Math.floor(Math.random() * normalEquipmentPool.length)];
                     const newEq = { id: generateEqId(), templateId: randomTmpl.id, equippedTo: null };
                     playerEquipment.push(newEq);
@@ -8425,7 +8571,9 @@ function createCard(character, options = {}) {
     const card = document.createElement('div');
     card.dataset.rarity = displayRarity;
     card.className = `rarity-${displayRarity} relative text-center rounded-lg shadow-md p-2 transform transition-transform duration-300 hover:scale-105 cursor-pointer`;
-    card.title = character.name;
+    const affinityRank=cardInstance?affinityLevel(character.baseName):0;
+    if(affinityRank>=4)card.classList.add('affinity-master-frame');
+    card.title = character.name+(affinityRank?` · 호감도 Lv.${affinityRank}`:'');
 
     // ✨ 1. 등급 텍스트 색상을 다크 테마용 밝은 네온 컬러로 변경
         const rarityColor = {
@@ -8586,6 +8734,10 @@ function getSkillDescription(skill) {
     // --- 1. 기본 정보 표시 ---
     document.getElementById('detail-card-image').src = character.imageUrl;
     document.getElementById('detail-card-name').textContent = character.name;
+    document.getElementById('detail-card-name').title = `호감도 ${affinityLevel(character.baseName)}/5 · 베이스 ${character.baseName}`;
+    const affinityRank=affinityLevel(character.baseName);
+    document.getElementById('detail-affinity-status').textContent=`호감도 Lv.${affinityRank}/5 · ${character.baseName}${affinityRank>=3?' · HP +1% / ATK·DEF +1%':affinityRank>=1?' · HP +1%':''}${affinityRank>=5?' · 전용 장비 획득':''}`;
+    document.getElementById('detail-card-image').parentElement.classList.toggle('affinity-master-frame',affinityRank>=4);
     const rarityEl = document.getElementById('detail-card-rarity');
 
     // 유전된 등급이 있으면 그것을 표시
@@ -8905,11 +9057,17 @@ function updateEquipmentSlotUI(cardInstance) {
 // 장비 모달 열기
 window.openEquipmentModal = function() {
     if (!currentDetailCardId) return;
+    ensureAffinityEquipmentTemplates();
+    const selectedCard=playerInventory.find(c=>c.id===currentDetailCardId);
+    const selectedBase=selectedCard&&findCharacter(selectedCard.name)?.baseName;
     const listContainer = document.getElementById('equipment-list-container');
     listContainer.innerHTML = '';
 
     // 현재 장착 안 된 남은 장비들만 필터링
-    const availableEqs = playerEquipment.filter(eq => !eq.equippedTo || eq.equippedTo === currentDetailCardId);
+    const availableEqs = playerEquipment.filter(eq => {
+        const tmpl=equipmentTemplates.find(t=>t.id===eq.templateId);
+        return (!eq.equippedTo || eq.equippedTo === currentDetailCardId) && tmpl && (!tmpl.exclusiveBase || tmpl.exclusiveBase===selectedBase);
+    });
 
     if (availableEqs.length === 0) {
         listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화 또는 폐기된 서고의 정예·보스에게서 획득하세요.</p>';
@@ -8939,6 +9097,10 @@ window.openEquipmentModal = function() {
                 const badge=document.createElement('p');badge.className='rg-exclusive-label';badge.textContent='폐기된 서고 전용';
                 btn.querySelector('.font-bold').after(badge);
             }
+            if(tmpl.source==='affinity'){
+                const badge=document.createElement('p');badge.className='rg-exclusive-label';badge.textContent=`호감도 전용 · ${tmpl.exclusiveBase}`;
+                btn.querySelector('.font-bold').after(badge);
+            }
             btn.onclick = () => equipItem(eq.id);
             listContainer.appendChild(btn);
         });
@@ -8950,8 +9112,10 @@ window.openEquipmentModal = function() {
 window.equipItem = function(eqId) {
     const cardInstance = playerInventory.find(c => c.id === currentDetailCardId);
     const targetEq = playerEquipment.find(e => e.id === eqId);
+    const targetTemplate=targetEq&&equipmentTemplates.find(t=>t.id===targetEq.templateId);
 
-    if (cardInstance && targetEq && (!targetEq.equippedTo || targetEq.equippedTo === cardInstance.id)) {
+    if (cardInstance && targetEq && targetTemplate && (!targetTemplate.exclusiveBase || targetTemplate.exclusiveBase===findCharacter(cardInstance.name)?.baseName)
+        && (!targetEq.equippedTo || targetEq.equippedTo === cardInstance.id)) {
         // 기존 장비가 있었다면 해제 처리
         if (cardInstance.equippedItem) {
             const oldEq = playerEquipment.find(e => e.id === cardInstance.equippedItem);
@@ -9966,7 +10130,7 @@ function reviseCardWithInkwell() {
 
 // 1. 프로필 화면 표시
 function displayProfileView() {
-    checkAchievements();renderNameplates();
+    checkAchievements();renderNameplates();renderProfileAffinityShowcase();
     // 닉네임 & 메시지 세팅
     document.getElementById('profile-nickname-edit').value = currentPlayerNickname;
     document.getElementById('profile-message-edit').value = playerProfile.statusMessage || "";
@@ -9999,6 +10163,7 @@ function displayProfileView() {
         repName.textContent = "대표 카드를 선택해주세요";
         repName.className = "text-gray-500 font-bold text-lg mt-2";
     }
+    repImg.parentElement.classList.toggle('affinity-master-frame',Boolean(charData&&affinityLevel(charData.baseName)>=4));
 }
 
 // 2. 프로필 저장 버튼 클릭 시
@@ -10013,8 +10178,11 @@ function saveProfileData() {
     playerProfile.statusMessage = newMessage;
     const valid=new Set(expandedAchievements().filter(a=>a.nameplate && playerAchievements[a.id]==='claimed').map(a=>a.id));
     const selected=[...document.querySelectorAll('.profile-nameplate-select')].map(select=>select.value).filter(Boolean);
-    playerProfile.nameplateIds=[...new Set(selected.filter(id=>valid.has(id)))].slice(0,3);
+    const affinityTitles=Object.keys(playerAffinity).filter(base=>affinityLevel(base)>=4).map(base=>'affinity:'+base);
+    playerProfile.nameplateIds=[...new Set(selected.filter(id=>valid.has(id)||affinityTitles.includes(id)))].slice(0,3);
     playerProfile.nameplateId=playerProfile.nameplateIds[0] || null;
+    playerProfile.affinityShowcase=[...new Set([...document.querySelectorAll('.affinity-showcase-select')].map(select=>select.value)
+        .filter(base=>affinityLevel(base)>=2))].slice(0,3);
 
     // UI 갱신 (상단 닉네임 표시 등)
     document.getElementById('nickname-display').textContent = currentPlayerNickname;
@@ -11652,7 +11820,7 @@ async function openOtherUserProfile(initialData) {
 
             <div class="flex flex-col md:flex-row gap-8 items-start">
                 <div class="w-full md:w-1/2 flex flex-col items-center">
-                    <div class="relative w-full max-w-[240px] aspect-[2/3] bg-black/30 rounded-lg overflow-hidden border-4 border-gray-700 shadow-xl mb-4 group">
+                    <div class="relative w-full max-w-[240px] aspect-[2/3] bg-black/30 rounded-lg overflow-hidden border-4 border-gray-700 shadow-xl mb-4 group ${affinityLevel(findCharacter(userData.inventory?.find(c=>c.id===userData.profile?.repCardId)?.name)?.baseName,userData.affinity)>=4?'affinity-master-frame':''}">
                         <img src="${imgUrl}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                         <div class="absolute bottom-2 left-0 right-0 text-center">
@@ -11664,7 +11832,8 @@ async function openOtherUserProfile(initialData) {
                 <div class="w-full md:w-1/2 flex flex-col justify-center space-y-6 py-2">
                     <div class="bg-black/20 p-4 rounded-lg border-l-4 border-indigo-500">
                         <p class="text-gray-400 text-xs font-bold mb-1 uppercase tracking-wider">Nickname</p>
-                        <p class="text-white font-bold text-2xl tracking-tight">${nickname}</p><div class="public-profile-titles">${nameplatesFor(userData.profile,userData.achievements).map(title=>`<span class="profile-nameplate">${rogueEscape(title.label)}</span>`).join('')}</div>
+                        <p class="text-white font-bold text-2xl tracking-tight">${nickname}</p><div class="public-profile-titles">${nameplatesFor(userData.profile,userData.achievements,userData.affinity).map(title=>`<span class="profile-nameplate">${rogueEscape(title.label)}</span>`).join('')}</div>
+                        <div class="affinity-badges">${[...new Set(userData.profile?.affinityShowcase||[])].filter(base=>affinityLevel(base,userData.affinity)>=2).slice(0,3).map(base=>`<span class="affinity-badge">${rogueEscape(base)} · 호감도 Lv.${affinityLevel(base,userData.affinity)}</span>`).join('')}</div>
                     </div>
                     <div>
                         <p class="text-gray-400 text-xs font-bold mb-2 uppercase tracking-wider ml-1">Status Message</p>
