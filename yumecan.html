@@ -256,7 +256,17 @@ document.addEventListener('DOMContentLoaded', () => {
         .chibi-character:hover .chibi-bubble { opacity: 1; }
         .placed-furniture { position: absolute; transition: all 0.2s; }
         #event-point-display { display: none !important; }
-    </style>
+    
+/* 꿈의 공방 */
+.life-panel{--life-accent:#8a9da8;margin:18px 0;padding:22px;border:1px solid #dce3ea;border-radius:20px;background:linear-gradient(120deg,#fbfcfd,#f2f5f8);color:#354050}
+.life-panel[data-color=mist]{--life-accent:#819cb5;background:linear-gradient(120deg,#f5f9ff,#e7eff9)}.life-panel[data-color=dawn]{--life-accent:#bd967d;background:linear-gradient(120deg,#fff9f4,#f8e9e4)}.life-panel[data-color=violet]{--life-accent:#9687b5;background:linear-gradient(120deg,#faf7ff,#eee8f7)}
+.life-heading,.life-finish{display:flex;justify-content:space-between;gap:16px;align-items:start}.life-heading h3{font-size:21px;font-weight:750;margin:2px 0}.life-heading p,.life-subpanel p{font-size:13px;color:#657384;line-height:1.6}.life-heading small{color:var(--life-accent)}
+.life-materials,.life-skills,.life-actions{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}.life-materials span,.life-skills span{background:#fff;border:1px solid #dae1e9;border-radius:10px;padding:7px 10px;font-size:12px}.life-materials b{color:#435d70;margin-left:7px}.life-skills small{color:#84919e;margin-left:7px}
+.life-layout{display:grid;grid-template-columns:1fr 1.6fr;gap:12px}.life-subpanel{border:1px solid #e1e6ed;border-radius:16px;background:#ffffffd9;padding:17px;min-width:0}.life-subpanel h4{font-size:15px;font-weight:700}.life-planters,.life-recipes{display:grid;gap:9px;margin-top:12px}.life-planters>div,.life-recipes>div{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:11px;border:1px solid #e2e7ec;border-radius:11px}.life-recipes{grid-template-columns:repeat(2,minmax(0,1fr))}.life-recipes>div{grid-template-columns:1fr auto}.life-recipes small,.life-planters span{grid-column:1;font-size:11px;color:#667586}.life-recipes button,.life-planters button{grid-column:2;grid-row:1 / span 3}
+.life-panel button{border:1px solid #b9c8d1;border-radius:9px;padding:8px 11px;background:#fff;color:#405666;font-size:12px}.life-panel button:disabled{opacity:.42;cursor:default}.life-panel button:not(:disabled):hover{background:#eaf0f6}.life-finish{margin-top:12px}.life-finish label{display:block;font-size:12px;margin:10px 0}.life-finish select{margin-left:8px;max-width:230px}.life-frame{flex:0 0 155px;min-height:145px;border:2px solid var(--life-accent);border-radius:12px;display:grid;place-content:center;text-align:center;padding:10px;font-size:12px;color:#657384}.life-frame img{display:block;width:95px;height:95px;object-fit:contain;margin:auto;image-rendering:pixelated}
+@media(max-width:700px){.life-panel{padding:14px}.life-layout,.life-recipes{grid-template-columns:1fr}.life-heading,.life-finish{flex-wrap:wrap}.life-frame{flex:1 1 100%;min-height:130px}.life-finish select{max-width:100%}}
+
+</style>
 
 <style id="yumecan-refinements">
 :root { color-scheme: dark; --archive-accent: #80e2d2; }
@@ -1585,7 +1595,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 
 <div id="warehouse-view" class="hidden">
 <h2 class="text-2xl font-bold mb-3">창고</h2><p class="mb-3 text-sm">현재 보유 아이템을 한곳에서 확인하세요. 탐사 중인 로그라이크의 임시 영감·유물과 미정산 장비는 탐사 화면에서 확인할 수 있습니다.</p>
-<div class="collection-toolbar"><input id="warehouse-search" placeholder="아이템 이름·효과 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><select id="warehouse-filter" aria-label="아이템 종류" onchange="displayWarehouse()"><option value="">전체</option><option>영감</option><option>장비</option><option>뽑기권</option><option>재료</option><option>탐사</option><option>재화</option><option>가구</option></select><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
+<div class="collection-toolbar"><input id="warehouse-search" placeholder="아이템 이름·효과 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><select id="warehouse-filter" aria-label="아이템 종류" onchange="displayWarehouse()"><option value="">전체</option><option>영감</option><option>장비</option><option>뽑기권</option><option>재료</option><option>생활</option><option>탐사</option><option>재화</option><option>가구</option></select><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
 <p id="warehouse-summary" class="text-sm my-3" role="status"></p><div id="warehouse-list" class="collection-grid"></div>
 <div id="affinity-potion-modal" class="affinity-potion-modal" hidden role="dialog" aria-modal="true" aria-labelledby="affinity-potion-title"><div class="affinity-potion-panel"><span class="menu-eyebrow">DREAM ELIXIR</span><h3 id="affinity-potion-title">꿈결의 영약</h3><p>선택한 캐릭터의 호감도를 최대 200 올립니다. 하루 획득 상한은 사용하지 않으며, 호감도 최대치에서는 사용할 수 없습니다.</p><label for="affinity-potion-target">사용할 캐릭터</label><select id="affinity-potion-target"></select><div id="affinity-potion-preview" class="affinity-potion-preview" role="status" aria-live="polite"></div><div class="affinity-potion-actions"><button id="affinity-potion-close" type="button">취소</button><button id="affinity-potion-confirm" type="button">1개 사용</button></div></div></div>
 <div class="collection-toolbar"><button onclick="switchTab('breeding')">영감의 방</button><button onclick="switchTab('inventory')">카드·장비 관리</button><button onclick="switchTab('gacha')">뽑기</button><button onclick="switchTab('myroom')">마이룸</button></div></div>
@@ -1713,7 +1723,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
+                <section class="life-panel" id="life-panel" aria-label="꿈의 공방"></section><div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -3364,11 +3374,12 @@ function updateDispatchClock() {
             playerCurrency += (rewards.currency || 0);
             if (rewards.inkwells) playerInkwells += rewards.inkwells;
             const affinityRewards=gainAffinityForCards(dispatchRoster(activeData),18);
+            const lifeReward=awardDispatchLife(mission);
 
             // 파견 상태 초기화
             delete playerDispatches[missionId];
 
-            alert(`[현장 조사 완료]\n보상이 지급되었습니다!\n🖋️ 만년필 +${rewards.fountainPens || 0}\n💎 보석 +${rewards.currency || 0}${rewards.inkwells ? `\n💧 잉크병 +${rewards.inkwells}` : ''}${affinityRewards.length?'\n호감도 '+affinityRewards.map(r=>`${r.base} +${r.amount}${r.gear?' (전용 장비 획득)':''}`).join(' · '):''}`);
+            alert(`[현장 조사 완료]\n보상이 지급되었습니다!\n🖋️ 만년필 +${rewards.fountainPens || 0}\n💎 보석 +${rewards.currency || 0}${rewards.inkwells ? `\n💧 잉크병 +${rewards.inkwells}` : ''}${lifeReward?'\n생활 재료 '+lifeReward:''}${affinityRewards.length?'\n호감도 '+affinityRewards.map(r=>`${r.base} +${r.amount}${r.gear?' (전용 장비 획득)':''}`).join(' · '):''}`);
 
             updateUI();
             displayDispatchView();
@@ -3736,6 +3747,9 @@ function updateDispatchClock() {
             const nodeType=rogueState.node.type;
             const marks=nodeType==='boss'?3+Math.floor(rogueRand()*3):nodeType==='elite'?1+Math.floor(rogueRand()*2):rogueRand()<.30?1:0;
             if(marks){rogueState.archiveTokens+=marks;rogueLog(`잊힌 서표 ${marks}개 발견 · 탐사 종료 시 획득`);}
+            if(rogueRand()<(nodeType==='boss'?1:nodeType==='elite'?.35:.12)){
+                playerLife.materials.paper++;gainLifeXp('gathering',2);rogueLog('잊힌 종이 1개 발견');
+            }
             if(nodeType!=='boss'){
                 const source=monsters[rogueState.node.monsterName];
                 const trace=rollCharacterTrace(source,rogueRand);
@@ -3904,6 +3918,7 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
 			let collectedCardNames = new Set(); // 👈 이 줄을 추가하세요.
 		let playerRoom = { furniture: [], characters: [] }; // 마이룸 데이터 (가구 배치, 캐릭터)
 let ownedFurniture = []; // 보유한 가구 목록
+            let playerLife = freshLife();
 			let isSortAscending = false; // ✨ 정렬 방향 변수 추가 (false: 내림차순, true: 오름차순)
             let playerDeck = [];
             let inventoryCapacity = 100;
@@ -4316,6 +4331,7 @@ function buildGameSnapshot() {
         equipment: playerEquipment || [], // ✨ 장비 인벤토리 저장
         affinity: playerAffinity,
         affinityPotions: playerAffinityPotions,
+        life: playerLife,
 		 inspAtk: playerInspAtk || 0,
     inspDef: playerInspDef || 0,
     inspHp: playerInspHp || 0,
@@ -4463,6 +4479,7 @@ playerInspHp = savedData.inspHp ?? 0;
         playerArchiveTokens = Math.max(0, Math.floor(Number(savedData.archiveTokens)||0));
         playerCharacterTraces = Object.fromEntries(Object.entries(savedData.characterTraces||{}).filter(([name,count])=>name && Number.isFinite(Number(count)) && Number(count)>0).map(([name,count])=>[name,Math.floor(Number(count))]));
         playerAffinityPotions = Math.max(0,Math.floor(Number(savedData.affinityPotions)||0));
+        playerLife = restoreLife(savedData.life);
         playerAttendance = {lastDate:typeof savedData.attendance?.lastDate==='string'?savedData.attendance.lastDate:'',streak:Math.max(0,Math.floor(Number(savedData.attendance?.streak)||0))};
         clearedStageStories = savedData.clearedStageStories || [];
 
@@ -4568,7 +4585,7 @@ function saveGame() {
 
             function initializeNewGameData() {
                 playerDispatches = {}; dispatchReports = [];
-    playerDreamFragments=0;playerCharacterTraces={};playerAffinityPotions=0;playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};playerAffinity={};
+    playerDreamFragments=0;playerCharacterTraces={};playerAffinityPotions=0;playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};playerAffinity={};playerLife=freshLife();
     rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     // ✨ 게임 첫 시작 시 기본 지급 카드에 고유 ID와 레벨 부여
     addCardToInventory('[관리인] Ki');
@@ -4956,6 +4973,96 @@ function useAffinityPotion(){
     updateUI();displayWarehouse();renderRoomAffinity();saveGame();
     showMessage(`${base} 호감도 +${gained}${!hadGear&&playerAffinity[base]?.gearClaimed?' · 전용 장비 획득!':''}`, 'text-green-400',messageArea);
 }
+
+        // 꿈의 공방: 오래된 저장 파일도 같은 형태로 복구한다.
+        const LIFE_MATERIALS = {
+            thread:{name:'꿈실',desc:'현장 조사에서 발견 · 등불과 액자 제작'},
+            pigment:{name:'흐린 안료',desc:'현장 조사에서 발견 · 염료 제작'},
+            leaf:{name:'새벽 잎',desc:'현장 조사 또는 화분에서 재배 · 차 조제'},
+            paper:{name:'잊힌 종이',desc:'폐기된 서고 전투에서 발견 · 액자 제작'}
+        };
+        const LIFE_RECIPES = {
+            tea:{name:'잠든 차',cost:{leaf:2,thread:1},time:600000,skill:'alchemy',level:1,desc:'사용하면 다음 3회 전투에서 파티 최대 HP +3%'},
+            lantern:{name:'길잡이 등불',cost:{thread:2,pigment:1},time:900000,skill:'craft',level:1,desc:'사용하면 다음 조사 완료 시 생활 재료 +1'},
+            dye:{name:'몽색 염료',cost:{pigment:2,thread:1},time:1200000,skill:'craft',level:2,desc:'마이룸의 색을 꾸밀 수 있는 염료'},
+            frame:{name:'기억의 액자',cost:{thread:2,paper:1},time:1800000,skill:'craft',level:3,desc:'마이룸에 보유 카드를 전시하는 액자'}
+        };
+        function freshLife(){return {materials:{thread:0,pigment:0,leaf:0,paper:0},items:{tea:0,lantern:0,dye:0,frame:0},xp:{gathering:0,alchemy:0,craft:0},planters:[null,null],workshop:null,teaCharges:0,lanternCharges:0,roomColor:'plain',framedCardId:null};}
+        function lifeAmount(n){return Number.isFinite(Number(n))?Math.min(999999,Math.max(0,Math.floor(Number(n)))):0;}
+        function restoreLife(raw){
+            const clean=freshLife();if(!raw||typeof raw!=='object')return clean;
+            for(const key of Object.keys(clean.materials))clean.materials[key]=lifeAmount(raw.materials?.[key]);
+            for(const key of Object.keys(clean.items))clean.items[key]=lifeAmount(raw.items?.[key]);
+            for(const key of Object.keys(clean.xp))clean.xp[key]=lifeAmount(raw.xp?.[key]);
+            clean.planters=[0,1].map(i=>Number.isFinite(raw.planters?.[i]?.readyAt)&&raw.planters[i].readyAt>0?{readyAt:raw.planters[i].readyAt}:null);
+            if(LIFE_RECIPES[raw.workshop?.recipe]&&Number.isFinite(raw.workshop.readyAt)&&raw.workshop.readyAt>0)clean.workshop={recipe:raw.workshop.recipe,readyAt:raw.workshop.readyAt,quality:raw.workshop.quality==='정교'?'정교':'일반'};
+            clean.teaCharges=Math.min(3,lifeAmount(raw.teaCharges));clean.lanternCharges=Math.min(9,lifeAmount(raw.lanternCharges));
+            clean.roomColor=['plain','mist','dawn','violet'].includes(raw.roomColor)?raw.roomColor:'plain';
+            clean.framedCardId=typeof raw.framedCardId==='string'?raw.framedCardId:null;
+            return clean;
+        }
+        function lifeLevel(skill){return Math.min(5,1+Math.floor((playerLife.xp[skill]||0)/25));}
+        function gainLifeXp(skill,amount){playerLife.xp[skill]=lifeAmount((playerLife.xp[skill]||0)+amount);}
+        function lifeCostText(cost){return Object.entries(cost).map(([id,n])=>`${LIFE_MATERIALS[id].name} ${n}`).join(' · ');}
+        function lifeTime(ms){const m=Math.ceil(Math.max(0,ms)/60000);return m<60?`${m}분`:`${Math.floor(m/60)}시간 ${m%60}분`;}
+        function lifeAssistantBonus(){return Math.min(15,[...new Set((playerRoom.characters||[]).map(id=>playerInventory.find(c=>c.id===id)).map(c=>c&&affinityBase(c)).filter(Boolean))].reduce((n,base)=>n+affinityLevel(base)*2,0));}
+        function awardDispatchLife(mission){
+            const rolls=mission.duration>=21600000?3:mission.duration>=14400000?2:1;
+            const results=[];
+            for(let i=0;i<rolls;i++){
+                const keys=['thread','pigment','leaf'];const key=keys[Math.floor(Math.random()*keys.length)];
+                const extra=playerLife.lanternCharges>0?1:0;
+                playerLife.materials[key]+=1+extra;results.push(`${LIFE_MATERIALS[key].name} +${1+extra}`);
+                if(extra)playerLife.lanternCharges--;
+            }
+            gainLifeXp('gathering',2*rolls);return results.join(' · ');
+        }
+        function lifeRefresh(){renderLifePanel();if(typeof displayWarehouse==='function'&&!document.getElementById('warehouse-view')?.classList.contains('hidden'))displayWarehouse();saveGame();}
+        function plantLife(slot){if(currentVisitTargetUid)return;if(slot!==0&&slot!==1)return;if(playerLife.planters[slot])return;
+            if(playerLife.materials.leaf<1)return alert('심을 새벽 잎이 부족합니다. 현장 조사를 완료해보세요.');
+            playerLife.materials.leaf--;playerLife.planters[slot]={readyAt:Date.now()+7200000};lifeRefresh();}
+        function harvestLife(slot){if(currentVisitTargetUid)return;const job=playerLife.planters[slot];if(!job||Date.now()<job.readyAt)return;
+            const amount=2+(Math.random()<.2+lifeLevel('gathering')*.03?1:0);
+            playerLife.materials.leaf+=amount;playerLife.planters[slot]=null;gainLifeXp('gathering',3);
+            alert(`새벽 잎 +${amount} · 채집 경험치 +3`);lifeRefresh();}
+        function startLifeCraft(id){if(currentVisitTargetUid)return;const recipe=LIFE_RECIPES[id];if(!recipe||playerLife.workshop)return;
+            if(lifeLevel(recipe.skill)<recipe.level)return alert(`${recipe.skill==='alchemy'?'조제':'세공'} Lv.${recipe.level}에 열리는 제작법입니다.`);
+            if(Object.entries(recipe.cost).some(([key,n])=>playerLife.materials[key]<n))return alert('제작 재료가 부족합니다.');
+            for(const [key,n] of Object.entries(recipe.cost))playerLife.materials[key]-=n;
+            const helper=lifeAssistantBonus();playerLife.workshop={recipe:id,readyAt:Date.now()+Math.floor(recipe.time*(1-helper/100)),quality:Math.random()<.12+helper/200?'정교':'일반'};
+            lifeRefresh();}
+        function claimLifeCraft(){if(currentVisitTargetUid)return;const job=playerLife.workshop;if(!job||Date.now()<job.readyAt||!LIFE_RECIPES[job.recipe])return;
+            const xp=job.quality==='정교'?9:7;
+            playerLife.items[job.recipe]++;gainLifeXp(LIFE_RECIPES[job.recipe].skill,xp);
+            playerLife.workshop=null;alert(`${LIFE_RECIPES[job.recipe].name} ×1 완성 · ${job.quality} 품질 · 숙련도 +${xp}`);lifeRefresh();}
+        function useLifeItem(id){if(currentVisitTargetUid||playerLife.items[id]<1)return;
+            if(id==='tea'){playerLife.items.tea--;playerLife.teaCharges=3;alert('잠든 차를 마셨습니다. 다음 3회 전투에서 파티 최대 HP +3%');}
+            else if(id==='lantern'){playerLife.items.lantern--;playerLife.lanternCharges=1;alert('다음 현장 조사 보상 수령 시 생활 재료 +1');}
+            else return;
+            lifeRefresh();}
+        function setLifeColor(value){if(currentVisitTargetUid||!['plain','mist','dawn','violet'].includes(value))return;
+            if(value!=='plain'&&value!==playerLife.roomColor){if(playerLife.items.dye<1)return alert('몽색 염료가 필요합니다.');playerLife.items.dye--;}
+            playerLife.roomColor=value;lifeRefresh();}
+        function setLifeFrame(cardId){if(currentVisitTargetUid)return;if(cardId===''){playerLife.framedCardId=null;lifeRefresh();return;}
+            if(!playerInventory.some(c=>c.id===cardId))return;
+            if(!playerLife.framedCardId){if(playerLife.items.frame<1)return alert('기억의 액자가 필요합니다.');playerLife.items.frame--;}
+            playerLife.framedCardId=cardId;lifeRefresh();}
+        function renderLifePanel(){
+            const panel=document.getElementById('life-panel');if(!panel)return;
+            panel.hidden=!!currentVisitTargetUid;if(currentVisitTargetUid)return;
+            panel.dataset.color=playerLife.roomColor;
+            const now=Date.now(),bonus=lifeAssistantBonus(),job=playerLife.workshop;
+            const card=playerInventory.find(c=>c.id===playerLife.framedCardId);
+            const artwork=card?findCharacter(card.name):null;
+            panel.innerHTML=`<header class="life-heading"><div><span class="menu-eyebrow">DREAM ATELIER</span><h3>꿈의 공방</h3><p>현장 조사에서 재료를 모아 기르고, 만들고, 꾸며보세요.</p></div><small>방문객 도움 · 제작 시간 ${bonus}% 단축</small></header>
+              <div class="life-materials">${Object.entries(LIFE_MATERIALS).map(([id,v])=>`<span>${v.name} <b>${playerLife.materials[id]}</b></span>`).join('')}</div>
+              <div class="life-skills">${[['gathering','채집'],['alchemy','조제'],['craft','세공']].map(([id,name])=>`<span>${name} Lv.${lifeLevel(id)} <small>${playerLife.xp[id]} XP</small></span>`).join('')}</div>
+              <div class="life-layout"><div class="life-subpanel"><h4>새벽 화분 · 2칸</h4><p>새벽 잎 1개를 심으면 2시간 뒤 2~3개를 수확해요.</p><div class="life-planters">${playerLife.planters.map((plant,i)=>`<div><strong>화분 ${i+1}</strong><span>${plant?(now>=plant.readyAt?'수확 준비 완료':lifeTime(plant.readyAt-now)+' 남음'):'비어 있음'}</span><button type="button" onclick="${plant?`harvestLife(${i})`:`plantLife(${i})`}" ${plant&&now<plant.readyAt?'disabled':''}>${plant?'수확':'심기'}</button></div>`).join('')}</div></div>
+              <div class="life-subpanel"><h4>작업대 · 1칸</h4><p>${job?`${LIFE_RECIPES[job.recipe].name} 제작 중 · ${now>=job.readyAt?'완성':lifeTime(job.readyAt-now)+' 남음'}`:'제작법을 선택해 예약하세요.'}</p>${job?`<button type="button" onclick="claimLifeCraft()" ${now<job.readyAt?'disabled':''}>완성품 받기</button>`:''}<div class="life-recipes">${Object.entries(LIFE_RECIPES).map(([id,r])=>`<div><strong>${r.name}</strong><small>${r.desc}</small><small>${lifeCostText(r.cost)} · ${lifeTime(r.time)} · ${r.skill==='alchemy'?'조제':'세공'} Lv.${r.level}</small><button type="button" onclick="startLifeCraft('${id}')" ${job||lifeLevel(r.skill)<r.level||Object.entries(r.cost).some(([key,n])=>playerLife.materials[key]<n)?'disabled':''}>제작</button></div>`).join('')}</div></div></div>
+              <div class="life-subpanel life-finish"><div><h4>완성품과 전시</h4><p>차 ${playerLife.items.tea} · 등불 ${playerLife.items.lantern} · 염료 ${playerLife.items.dye} · 액자 ${playerLife.items.frame}</p><p>차 효과 ${playerLife.teaCharges}회 · 등불 효과 ${playerLife.lanternCharges}회 남음</p><div class="life-actions"><button type="button" onclick="useLifeItem('tea')" ${!playerLife.items.tea?'disabled':''}>차 마시기</button><button type="button" onclick="useLifeItem('lantern')" ${!playerLife.items.lantern?'disabled':''}>등불 사용</button></div><label>마이룸 색 <select onchange="setLifeColor(this.value)"><option value="plain">기본</option><option value="mist" ${playerLife.roomColor==='mist'?'selected':''}>안개색 · 염료 1</option><option value="dawn" ${playerLife.roomColor==='dawn'?'selected':''}>새벽색 · 염료 1</option><option value="violet" ${playerLife.roomColor==='violet'?'selected':''}>꿈빛 · 염료 1</option></select></label><label>기억의 액자 <select onchange="setLifeFrame(this.value)"><option value="">전시 안 함</option>${[...new Map(playerInventory.map(c=>[c.name,c])).values()].map(c=>`<option value="${dispatchEscape(c.id)}" ${card?.id===c.id?'selected':''}>${dispatchEscape(c.name)}</option>`).join('')}</select></label></div><div class="life-frame">${card?`${artwork?.cardImageUrl||artwork?.imageUrl?`<img src="${dispatchEscape(artwork.cardImageUrl||artwork.imageUrl)}" alt="">`:''}<strong>${dispatchEscape(card.name)}</strong>`:'전시할 카드를 선택해보세요.'}</div></div>`;
+        }
+        setInterval(()=>{if(!document.getElementById('myroom-view')?.classList.contains('hidden')&&(playerLife.workshop||playerLife.planters.some(Boolean)))renderLifePanel();},30000);
+
 function displayWarehouse() {
     const query=(document.getElementById('warehouse-search').value||'').trim().toLowerCase();
     const filter=document.getElementById('warehouse-filter').value;
@@ -4969,6 +5076,8 @@ function displayWarehouse() {
         ['꿈의 파편',playerDreamFragments,'재료','소환 1회마다 1개 · 꿈의 교환에서 등급별 카드와 교환'],
         ['꿈결의 영약',playerAffinityPotions,'재료','캐릭터 호감도 최대 +200 · 하루 상한 무시 · 캐릭터를 선택해 사용'],
         ['잊힌 서표',playerArchiveTokens,'탐사','폐기된 서고에서 발견 · 꿈의 교환에서 잉크병 또는 꿈의 파편으로 교환'],
+        ...Object.entries(LIFE_MATERIALS).map(([id,item])=>[item.name,playerLife.materials[id],'재료',item.desc]),
+        ...Object.entries(LIFE_RECIPES).map(([id,item])=>[item.name,playerLife.items[id],'생활',item.desc+' · '+lifeCostText(item.cost)]),
         ['SSR 확정 뽑기권',playerSsrTickets,'뽑기권','뽑기 화면에서 사용'],
         ['공격적 영감',playerInspAtk,'영감','영감의 방에서 사용'],
         ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용'],
@@ -4999,6 +5108,17 @@ function displayWarehouse() {
         const count=document.createElement('b');count.textContent=`${Number(item.count).toLocaleString()}개`;
         const desc=document.createElement('p');desc.textContent=item.desc;
         box.append(title,count,desc);
+        if(item.name==='잠든 차'||item.name==='길잡이 등불'){
+            const id=item.name==='잠든 차'?'tea':'lantern';
+            const button=document.createElement('button');button.type='button';button.className='warehouse-potion-action';
+            button.textContent=id==='tea'?'사용 · 다음 3회 전투 HP +3%':'사용 · 다음 조사 재료 +1';
+            button.disabled=playerLife.items[id]<1;button.addEventListener('click',()=>useLifeItem(id));box.appendChild(button);
+        }
+        if(Object.values(LIFE_MATERIALS).some(material=>material.name===item.name)){
+            const details=document.createElement('details');details.className='warehouse-traces';
+            const summary=document.createElement('summary');summary.textContent='획득처 · 사용처 확인';details.appendChild(summary);
+            const detail=document.createElement('p');detail.textContent=item.desc+' · 제작법: '+Object.values(LIFE_RECIPES).filter(recipe=>Object.keys(recipe.cost).some(key=>LIFE_MATERIALS[key]?.name===item.name)).map(recipe=>recipe.name).join(' · ');details.appendChild(detail);box.appendChild(details);
+        }
         if(item.name==='꿈결의 영약'){
             const button=document.createElement('button');button.type='button';button.className='warehouse-potion-action';
             button.textContent='캐릭터를 선택해 사용';button.disabled=playerAffinityPotions<1;
@@ -6557,6 +6677,7 @@ function displayMyRoom() {
         : '방문객 관리에서 함께 지낼 인물을 선택하세요. 배치 모드에서 가구를 꾸밀 수 있어요.';
     document.getElementById('room-summary-counts').textContent = `방문객 ${(playerRoom.characters || []).length}명 · 배치 가구 ${(playerRoom.furniture || []).length}개`;
     renderRoomAffinity();
+    renderLifePanel();
 
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
@@ -7949,6 +8070,10 @@ function startStageCombat(chapterIndex, stageIndex) {
 
     // 2. 인연 보너스 적용
     if (type !== 'rogue') combatDeck = applySynergyBonusesToDeck(combatDeck);
+    if(playerLife.teaCharges>0){
+        combatDeck.forEach(card=>{const full=card.maxHp||card.stats.hp, bonus=Math.max(1,Math.floor(full*.03));card.stats.hp+=bonus;card.maxHp=full+bonus;});
+        playerLife.teaCharges--;saveGame();
+    }
 
     // 3. 최대 HP 저장 (원본 보너스 덱 저장)
     const originalBonusDeck = JSON.parse(JSON.stringify(combatDeck));
