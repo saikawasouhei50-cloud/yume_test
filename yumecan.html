@@ -21,7 +21,55 @@ window.setYumecanPreference = function(key, value) {
   try { localStorage.setItem('yumecan.preferences.v1', JSON.stringify(window.yumecanSettings)); } catch (_) {}
 };
 document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
+window.yumecanLoading = (() => {
+  const phrases = [
+    '흩어진 페이지를 한 장씩 모으고 있어요.',
+    '서가에 잠든 이야기가 깨어나고 있어요.',
+    '꿈의 조각들이 제자리를 찾아가고 있어요.',
+    '곧 당신의 이야기가 이어집니다.'
+  ];
+  const widths = [0, 12, 48, 75, 92, 100];
+  let currentStage = 0, phraseIndex = 0, phraseTimer = null, stopped = false;
+  function paint(stage, label) {
+    if (stopped) return;
+    const fill = document.getElementById('loading-progress-fill');
+    const meter = document.getElementById('loading-progress');
+    const status = document.getElementById('loading-status');
+    const count = document.getElementById('loading-step');
+    if (!fill || !meter || !status || !count) return;
+    fill.style.width = widths[stage] + '%';
+    meter.setAttribute('aria-valuenow', String(stage));
+    status.textContent = label;
+    count.textContent = `${Math.min(stage, 4)} / 4`;
+  }
+  function begin() {
+    if (phraseTimer || stopped) return;
+    phraseTimer = setInterval(() => {
+      const note = document.getElementById('loading-note');
+      const overlay = document.getElementById('loading-overlay');
+      if (!note || !overlay || overlay.classList.contains('hidden')) return;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      note.textContent = phrases[phraseIndex];
+    }, 4500);
+  }
+  function stop() { if (phraseTimer) clearInterval(phraseTimer); phraseTimer = null; }
+  return {
+    reset(label = '이야기의 조각을 찾는 중') {
+      stop(); stopped = false; currentStage = 1; phraseIndex = 0;
+      const note = document.getElementById('loading-note');
+      if (note) note.textContent = phrases[0];
+      paint(1, label); begin();
+    },
+    stage(number, label) {
+      if (stopped || number < currentStage || number > 4) return;
+      currentStage = number; paint(number, label); begin();
+    },
+    finish() { currentStage = 5; paint(5, '이야기가 준비됐어요'); stop(); },
+    fail() { stopped = true; stop(); }
+  };
+})();
 window.showYumecanStartupError = function(message) {
+  window.yumecanLoading.fail();
   document.body.classList.remove('loading');
   const overlay = document.getElementById('loading-overlay');
   overlay.replaceChildren();
@@ -275,9 +323,15 @@ document.addEventListener('DOMContentLoaded', () => {
 .memory-frame-picker header{display:flex;justify-content:space-between;align-items:center;gap:8px}.memory-frame-picker h3{font-size:18px;font-weight:700}.memory-frame-picker p{font-size:12px;color:#637386}.memory-frame-picker input{width:100%;min-height:44px;border:1px solid #cbd5e1;border-radius:10px;padding:10px}
 .memory-frame-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;overflow-y:auto;min-height:0}.memory-frame-card{display:grid;justify-items:center;align-content:center;gap:6px;padding:10px;border:1px solid #d9e1e9;border-radius:10px;background:#fff;color:#354050;min-height:108px;overflow-wrap:anywhere;font-size:12px}.memory-frame-card img{width:58px;height:58px;object-fit:contain;image-rendering:pixelated}.memory-frame-card:hover{background:#edf2f7;border-color:#97acc1}
 /* 모든 기기에서 같은 1000 × 625 좌표계를 사용하고 방 전체를 함께 축소한다. */
-#myroom-view #room-container{width:1000px;height:625px;transform:scale(var(--room-scale,1));transform-origin:top left}
+#myroom-view #room-container{width:1000px;height:625px;transform:translate(var(--room-pan-x,0px),var(--room-pan-y,0px)) scale(var(--room-scale,1));transform-origin:top left}
 #myroom-view .furniture-hitbox.room-hitbox-edit{width:calc(44px / var(--room-scale,1))!important;height:calc(44px / var(--room-scale,1))!important}
 #myroom-view .pot-worker{--pot-worker-lift:50px;--pot-worker-side:22px}
+.room-zoom-controls{position:absolute;top:12px;right:12px;z-index:30;display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #d6dee8;border-radius:12px;background:#fffef5ed;box-shadow:0 4px 16px #2634432b;backdrop-filter:blur(8px)}
+.room-zoom-controls button{display:grid;place-items:center;min-width:42px;height:42px;padding:0 7px;border:0;border-radius:8px;background:transparent;color:#39495c;font-size:21px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.room-zoom-controls button:hover:not(:disabled),.room-zoom-controls button:focus-visible{background:#e7edf5;outline:none}.room-zoom-controls button:disabled{opacity:.35;cursor:default}
+.room-zoom-controls .room-zoom-reset{min-width:56px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:650;white-space:nowrap}
+#myroom-view .room-wrapper.room-zoomed{cursor:grab;touch-action:none}#myroom-view .room-wrapper.room-panning{cursor:grabbing}
+@media(max-width:600px){.room-zoom-controls{top:8px;right:8px;padding:3px;gap:0}.room-zoom-controls button{min-width:38px;height:38px}.room-zoom-controls .room-zoom-reset{min-width:49px}}
 
 </style>
 
@@ -593,6 +647,19 @@ body .new-discovery::after{background:#474e58;color:#fff;border:1px solid #fff}.
 body .fixed.inset-0{background:rgba(236,238,241,.9)!important;backdrop-filter:blur(12px)}
 body .fixed.inset-0>div:not(canvas){border-color:#dadde2!important;box-shadow:0 16px 60px #30384316!important}
 #loading-overlay{background:#f2f3f5f5!important;color:#4b525d!important}#loading-overlay>div{font-size:24px!important;letter-spacing:-.02em!important;font-family:inherit!important}#loading-overlay>p{letter-spacing:0!important}
+#loading-overlay .loading-scene{width:min(430px,calc(100vw - 40px));padding:32px 29px 28px;border:1px solid #dce2eb;border-radius:24px;background:linear-gradient(145deg,#fff,#f7f9fc);box-shadow:0 20px 65px #43536918;color:#384353}
+#loading-overlay .loading-symbol{display:grid;place-items:center;width:44px;height:44px;margin-bottom:24px;border:1px solid #cbd6e3;border-radius:14px;background:#edf2f8;color:#71859e;font-size:23px;line-height:1}
+#loading-overlay .loading-eyebrow{margin:0 0 9px;font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.19em;font-weight:700;color:#8995a7}
+#loading-overlay .loading-title{margin:0;font-size:clamp(23px,5vw,28px);font-weight:750;line-height:1.35;letter-spacing:-.045em;color:#343d49}
+#loading-overlay .loading-note{min-height:24px;margin:9px 0 30px;font-size:13px;line-height:1.6;color:#718093}
+#loading-overlay .loading-progress-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;font-size:12px;color:#657386}
+#loading-overlay .loading-progress-header strong{font-weight:650;color:#516173}
+#loading-overlay .loading-progress-header span{font-family:'Space Grotesk',sans-serif;font-weight:600;color:#7d8a9a}
+#loading-overlay .loading-progress{height:8px;overflow:hidden;border-radius:999px;background:#e5ebf1;border:1px solid #dbe3eb}
+#loading-overlay .loading-progress-fill{width:12%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b9c9d9,#809ab3);transition:width .55s ease}
+#loading-overlay .loading-footnote{margin:12px 0 0;font-size:11px;color:#8793a2}
+@media(max-width:480px){#loading-overlay .loading-scene{padding:26px 22px 24px;border-radius:20px}#loading-overlay .loading-note{margin-bottom:24px}}
+@media(prefers-reduced-motion:reduce){#loading-overlay .loading-progress-fill{transition:none}}
 body #toast-notification{background:#454c55!important;color:#fff!important;border:1px solid #fff;box-shadow:0 8px 28px #343a4322!important}
 body .hp-bar-background{background:#dddfe2!important;border-color:#d1d5da!important}body .hp-bar-foreground{background:#737f8a!important;box-shadow:none!important}body .hp-bar-foreground.bg-red-500{background:#986e6e!important}
 #roguelike-view{--rg-accent:#575e68;--rg-line:#dce0e4;color:#373d46!important}.rg-heading,.rg-panel,.rg-map-row,#rogue-log li{border-color:#dce0e4!important}.rg-panel,.rg-status,.rg-choice,.rg-loot-card{background:#ffffffce!important;border-color:#dce0e4!important;color:#404751!important;box-shadow:none!important}.rg-heading h2,.rg-intro h3{font-weight:500;letter-spacing:-.04em}.rg-intro{background:linear-gradient(120deg,#fff,#e9ebef)!important;border-color:#fff!important}.rg-kicker,.rg-edition,.rg-heading p,.rg-intro p{color:#707985!important}.rg-panel h3,.rg-panel label,.rg-panel summary,.rg-rules summary{color:#4d5764!important}.rg-panel small,.rg-rules,.rg-choice span,.rg-status>div:nth-child(2),.rg-tags span,#rogue-log,#rogue-report{color:#667180!important}.rg-status b,.rg-status p,.rg-edition b,.rg-choice strong,#rogue-record{color:#3f4c5d!important}.rg-choice:hover:not(:disabled){background:#e9edf1!important;border-color:#8e99a7!important}.rg-map-row{color:#717c8c}.rg-map-row.current{color:#303c4c;background:#e4e8ed}.rg-map-node.taken{color:#45576a}.rg-resonance{border-color:#dce1e6;background:#f9fafb}.rg-resonance b{color:#5e6c7c}.rg-resonance.lit{border-color:#8592a2;background:#e7ebef}.rg-resonance.lit b{color:#354454}.rg-tags span{border-color:#dbe0e5;background:#f9fafb}.rg-member progress{accent-color:#7b899b}.rg-member img{background:#eef0f3}.rg-primary{background:#424c5a!important;color:#fff!important}.rg-secondary{background:#f7f8fa!important;color:#5f6c7b!important;border-color:#d6dce3!important}.rg-choice-heading{background:#e8ecf0!important;border-color:#8693a3!important}.rg-choice-heading h3,.rg-choice-heading p{color:#475568!important}.rg-loot-card strong{color:#59687c!important}.rg-loot-card p,.rg-loot-card small,.rg-loot-empty,.rg-exclusive-label{color:#6c7888!important}.rg-loot-card[data-rarity=SSR]{border-top:2px solid #8995a3!important}.rg-loot-card[data-rarity=UR]{border:3px double #68788c!important;background:#e9edf3!important}
@@ -1023,9 +1090,16 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
         <span class="hidden md:inline font-bold">로비로</span>
     </button>
 
-    <div id="loading-overlay" class="fixed inset-0 bg-[#0b0c10]/95 flex flex-col justify-center items-center z-50">
-        <div class="text-[#66fcf1] font-tech text-4xl font-black tracking-widest animate-pulse">잠시, 꿈을 잇는 중</div>
-        <p class="text-gray-500 mt-2 font-tech text-xs tracking-widest">당신의 이야기를 불러오고 있어요</p>
+    <div id="loading-overlay" class="fixed inset-0 flex justify-center items-center z-50" aria-label="게임 불러오는 중">
+        <section class="loading-scene" role="status" aria-live="polite" aria-atomic="false">
+            <div class="loading-symbol" aria-hidden="true">✦</div>
+            <p class="loading-eyebrow">YUMECAN · DREAM LOADING</p>
+            <h2 class="loading-title">잠시, 꿈을 잇는 중</h2>
+            <p id="loading-note" class="loading-note">흩어진 페이지를 한 장씩 모으고 있어요.</p>
+            <div class="loading-progress-header"><strong id="loading-status">이야기의 조각을 찾는 중</strong><span id="loading-step">1 / 4</span></div>
+            <div id="loading-progress" class="loading-progress" role="progressbar" aria-label="게임 준비 단계" aria-valuemin="0" aria-valuemax="5" aria-valuenow="1"><div id="loading-progress-fill" class="loading-progress-fill"></div></div>
+            <p class="loading-footnote">데이터 연결 상태에 따라 잠시 걸릴 수 있어요.</p>
+        </section>
     </div>
 
     <!-- 텍티컬 메인 프레임 -->
@@ -1772,7 +1846,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
             #room-layer > * { pointer-events: auto; } </style>
         </div>
 
-    </div> </div> <div class="room-tools-panel"><div class="room-tools-heading"><div><span class="menu-eyebrow">ROOM STUDIO</span><h3>나의 공간 꾸미기</h3></div><span id="room-mode-label">휴식 중</span></div><p id="room-mode-hint">방문객을 초대하고 좋아하는 가구로 방을 꾸며보세요.</p><div class="room-toolbar">
+    </div><div class="room-zoom-controls" role="group" aria-label="마이룸 화면 확대 및 축소"><button id="room-zoom-out" type="button" aria-label="마이룸 축소" title="축소">−</button><button id="room-zoom-reset" class="room-zoom-reset" type="button" aria-label="마이룸 원래 크기로" title="원래 크기">100%</button><button id="room-zoom-in" type="button" aria-label="마이룸 확대" title="확대">+</button></div></div> <div class="room-tools-panel"><div class="room-tools-heading"><div><span class="menu-eyebrow">ROOM STUDIO</span><h3>나의 공간 꾸미기</h3></div><span id="room-mode-label">휴식 중</span></div><p id="room-mode-hint">방문객을 초대하고 좋아하는 가구로 방을 꾸며보세요.</p><div class="room-toolbar">
     <button onclick="openMyRoomCharacterSelector()" class="gacha-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-6 rounded-full text-xs md:text-base transition-all shadow-md">
         👥 방문객 관리
     </button>
@@ -3130,6 +3204,7 @@ const COLLECTION_GROUPS = ['히어로 대 빌런: 각축전', '히어로 대 빌
         return;
     }
     document.body.classList.add('loading');
+	window.yumecanLoading.reset();
 	const eventSubTabBattle = document.getElementById('event-sub-tab-battle');
         const eventSubTabRaid = document.getElementById('event-sub-tab-raid');
         const eventSubTabStory = document.getElementById('event-sub-tab-story');
@@ -3159,6 +3234,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         window.showYumecanStartupError('캐릭터 데이터를 불러오지 못했습니다. 인터넷 연결과 데이터 파일을 확인해 주세요.');
         return;
     }
+	window.yumecanLoading.stage(2, '서가를 정리하는 중');
 	checkEndedEvents();
 	const exitMultiModeButton = document.getElementById('exit-multi-mode');
     const enterMultiModeButton = document.getElementById('enter-multi-mode');
@@ -3169,6 +3245,13 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
             const loggedInView = document.getElementById('logged-in-view');
 
             if (user) {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                if (loadingOverlay.classList.contains('hidden')) {
+                    loadingOverlay.classList.remove('hidden');
+                    document.body.classList.add('loading');
+                    window.yumecanLoading.reset();
+                }
+                window.yumecanLoading.stage(3, '저장된 이야기를 불러오는 중');
                 currentUser = user;
                 loginView.classList.add('hidden');
                 loggedInView.classList.remove('hidden');
@@ -3191,6 +3274,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
                 loginView.classList.remove('hidden');
                 loggedInView.classList.add('hidden');
 				startBookmarkRegenTimer();
+				window.yumecanLoading.finish();
 
                 // ================== 👇 4. 로딩 상태 비활성화 👇 ==================
                 // 로딩 화면을 숨겨서 로그인/회원가입을 할 수 있도록 합니다.
@@ -4457,6 +4541,7 @@ async function loadGameFromFirebase(uid) {
     startupSaveConsumed = true;
     if (prefetched?.uid === uid && prefetched.error) throw prefetched.error;
     const doc = prefetched?.uid === uid ? prefetched.doc : await docRef.get();
+	window.yumecanLoading.stage(3, '저장된 이야기를 정리하는 중');
 
     if (doc.exists) {
         console.log("Firebase에서 게임 데이터를 불러옵니다.");
@@ -4620,6 +4705,7 @@ playerInspHp = savedData.inspHp ?? 0;
     if(lifeMigrationPending){lifeMigrationPending=false;await saveGame();}
 
     await checkAndProcessSystemMails(uid);
+	window.yumecanLoading.stage(4, '마지막 장면을 준비하는 중');
 
     updateUI();
     renderDailyAttendance();
@@ -4630,6 +4716,7 @@ playerInspHp = savedData.inspHp ?? 0;
     checkAndSpawnRaidBoss();
     updateAchievementBadge();
 
+    window.yumecanLoading.finish();
     document.getElementById('loading-overlay').classList.add('hidden');
     document.body.classList.remove('loading');
 	if (playerTutorialFinished === false) {
@@ -4697,6 +4784,7 @@ async function resetGame() {
         // ⛔ [중요 2] 로딩 오버레이를 띄워 유저가 아무것도 못하게 막습니다.
         document.getElementById('loading-overlay').classList.remove('hidden');
         document.body.classList.add('loading');
+		window.yumecanLoading.reset('계정을 정리하는 중');
 
         // =========================================================
         // 1단계: 거래소 & 친구 삭제 (기존 코드 유지)
@@ -4756,6 +4844,7 @@ async function resetGame() {
         // 에러가 나도 오버레이는 꺼줍니다.
         document.getElementById('loading-overlay').classList.add('hidden');
         document.body.classList.remove('loading');
+		window.yumecanLoading.finish();
     }
 }
 
@@ -7122,12 +7211,35 @@ function getGridPosFromScreen(screenX, screenY) {
 }
 
 let roomScaleObserver=null;
+let roomZoomLevel=1;
+let roomPanX=0,roomPanY=0;
+const ROOM_ZOOM_MIN=.75,ROOM_ZOOM_MAX=2,ROOM_ZOOM_STEP=.25;
+function clampRoomPan(){
+    const wrapper=document.querySelector('#myroom-view .room-wrapper');
+    if(!wrapper)return;
+    const width=wrapper.clientWidth,height=wrapper.clientHeight;
+    if(roomZoomLevel<=1){roomPanX=(width-width*roomZoomLevel)/2;roomPanY=(height-height*roomZoomLevel)/2;}
+    else{
+        roomPanX=Math.max(width*(1-roomZoomLevel),Math.min(0,roomPanX));
+        roomPanY=Math.max(height*(1-roomZoomLevel),Math.min(0,roomPanY));
+    }
+}
 function syncRoomScale(){
     const wrapper=document.querySelector('#myroom-view .room-wrapper');
     const room=document.getElementById('room-container');
     if(!wrapper||!room)return;
     const width=wrapper.clientWidth;
-    if(width>0)room.style.setProperty('--room-scale',String(width/1000));
+    if(width>0){
+        clampRoomPan();
+        room.style.setProperty('--room-scale',String(width/1000*roomZoomLevel));
+        room.style.setProperty('--room-pan-x',`${roomPanX}px`);
+        room.style.setProperty('--room-pan-y',`${roomPanY}px`);
+    }
+    wrapper.classList.toggle('room-zoomed',roomZoomLevel>1);
+    const out=document.getElementById('room-zoom-out'),inside=document.getElementById('room-zoom-in'),reset=document.getElementById('room-zoom-reset');
+    if(out)out.disabled=roomZoomLevel<=ROOM_ZOOM_MIN;
+    if(inside)inside.disabled=roomZoomLevel>=ROOM_ZOOM_MAX;
+    if(reset)reset.textContent=`${Math.round(roomZoomLevel*100)}%`;
     if(!roomScaleObserver&&typeof ResizeObserver!=='undefined'){
         roomScaleObserver=new ResizeObserver(()=>syncRoomScale());
         roomScaleObserver.observe(wrapper);
@@ -7135,6 +7247,47 @@ function syncRoomScale(){
         window.addEventListener('resize',syncRoomScale);
         syncRoomScale.fallbackBound=true;
     }
+}
+function setRoomZoom(value){
+    const wrapper=document.querySelector('#myroom-view .room-wrapper');
+    const previous=roomZoomLevel;
+    const next=Math.max(ROOM_ZOOM_MIN,Math.min(ROOM_ZOOM_MAX,Math.round(value/ROOM_ZOOM_STEP)*ROOM_ZOOM_STEP));
+    if(next===previous)return;
+    if(wrapper&&previous>0){
+        const centerX=wrapper.clientWidth/2,centerY=wrapper.clientHeight/2;
+        roomPanX=centerX-(centerX-roomPanX)*next/previous;
+        roomPanY=centerY-(centerY-roomPanY)*next/previous;
+    }
+    roomZoomLevel=next;
+    syncRoomScale();
+}
+function initRoomZoomControls(){
+    const wrapper=document.querySelector('#myroom-view .room-wrapper');
+    if(!wrapper)return;
+    document.getElementById('room-zoom-out').addEventListener('click',()=>setRoomZoom(roomZoomLevel-ROOM_ZOOM_STEP));
+    document.getElementById('room-zoom-in').addEventListener('click',()=>setRoomZoom(roomZoomLevel+ROOM_ZOOM_STEP));
+    document.getElementById('room-zoom-reset').addEventListener('click',()=>setRoomZoom(1));
+    let pointerId=null,lastX=0,lastY=0;
+    wrapper.addEventListener('pointerdown',event=>{
+        if(roomZoomLevel<=1||event.button!==0||event.target.closest('.room-zoom-controls,.placed-furniture,.chibi-character,button'))return;
+        pointerId=event.pointerId;lastX=event.clientX;lastY=event.clientY;
+        wrapper.setPointerCapture(pointerId);
+        wrapper.classList.add('room-panning');
+    });
+    wrapper.addEventListener('pointermove',event=>{
+        if(pointerId!==event.pointerId)return;
+        roomPanX+=event.clientX-lastX;roomPanY+=event.clientY-lastY;
+        lastX=event.clientX;lastY=event.clientY;
+        syncRoomScale();
+    });
+    const finishPan=event=>{
+        if(pointerId!==event.pointerId)return;
+        if(wrapper.hasPointerCapture(pointerId))wrapper.releasePointerCapture(pointerId);
+        pointerId=null;wrapper.classList.remove('room-panning');
+    };
+    wrapper.addEventListener('pointerup',finishPan);
+    wrapper.addEventListener('pointercancel',finishPan);
+    syncRoomScale();
 }
 
 // ================== ✨ 수정된 displayMyRoom (전체 코드) ✨ ==================
@@ -11803,6 +11956,7 @@ speed4xButton.addEventListener('click', () => setCombatSpeed(4));
         }
         // 드래그 기능 초기화
         initDragEvents();
+        initRoomZoomControls();
         // ==========================================
         // ▼▼▼ 교환소(Trade) 통합 코드 (여기서부터 붙여넣으세요) ▼▼▼
         // ==========================================
