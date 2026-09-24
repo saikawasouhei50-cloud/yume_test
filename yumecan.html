@@ -939,6 +939,10 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 .affinity-panel h3{font-size:17px;font-weight:800;margin:0 0 6px}.affinity-panel>p{font-size:12px;color:#728198;margin:0 0 14px;line-height:1.6}
 .affinity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.affinity-card{border:1px solid #dce3ed;border-radius:14px;background:#fff;padding:12px;min-width:0}.affinity-card strong{display:block;overflow-wrap:anywhere;font-size:13px}.affinity-card small{display:block;color:#66768c;line-height:1.5;margin:6px 0}.affinity-card progress{width:100%;accent-color:#9aaad1;height:10px}.affinity-card button{min-height:36px;border:1px solid #bfcbe0;border-radius:10px;background:#eef2fa;padding:6px 11px;color:#455a7c;font-size:12px;font-weight:700}.affinity-card button:disabled{opacity:.5}
 .affinity-showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affinity-showcase label{min-width:0;font-size:11px;color:#64758e}.affinity-showcase select{width:100%;min-width:0;margin-top:4px;padding:8px;border:1px solid #d3dce9;border-radius:9px;background:#fff;color:#405069}.affinity-badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.affinity-badge{padding:5px 9px;border-radius:999px;border:1px solid #c4cfe2;background:#edf1fa;color:#496085;font-size:11px;font-weight:800}.affinity-master-frame{outline:3px double #9b9bcf;outline-offset:2px}.affinity-master-label{color:#6f6197;font-weight:800}
+.affinity-reward-strip{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.affinity-reward-strip span{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border:1px solid #d9e1ee;border-radius:9px;background:#fff;color:#53657e;font-size:11px;font-weight:700}.affinity-reward-strip b{color:#425b83}
+.affinity-panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.affinity-panel-header button{min-height:38px;padding:8px 12px;border-radius:10px;border:1px solid #c9d5e6;background:#fff;color:#456080;font-size:12px;font-weight:750;cursor:pointer}.affinity-panel-header button[aria-expanded="true"]{background:#e8eef9;border-color:#9eafcc}
+.affinity-all-panel{margin-top:16px;padding-top:14px;border-top:1px solid #e0e6ef}.affinity-all-panel[hidden]{display:none}.affinity-all-panel input{width:100%;min-height:42px;margin:0 0 12px;padding:9px 12px;border:1px solid #d1dce9;border-radius:10px;background:#fff;color:#364458;font-size:13px}.affinity-all-list{max-height:420px;overflow:auto;align-content:start}.affinity-card .affinity-current{margin:8px 0 0;color:#59709a;font-size:11px;font-weight:700}.affinity-card .affinity-next{margin:4px 0 0;color:#7d899b;font-size:11px}
+.combat-affinity-summary{margin-top:12px;text-align:left;font-size:12px;color:#536382}.combat-affinity-summary[hidden]{display:none}.combat-affinity-summary details{border:1px solid #dce3ed;border-radius:10px;background:#f8faff}.combat-affinity-summary summary{padding:10px 12px;cursor:pointer;font-weight:750;list-style-position:inside}.combat-affinity-summary ul{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0;list-style:none}.combat-affinity-summary li{border:1px solid #e0e5ef;border-radius:8px;background:#fff;padding:5px 8px;overflow-wrap:anywhere}
 @media(max-width:600px){.affinity-showcase{grid-template-columns:1fr}.affinity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affinity-panel{padding:13px}}
 </style>
 </head>
@@ -1680,7 +1684,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><h3>함께 쌓는 호감도</h3><p>베이스 캐릭터별로 성장 · 마이룸 상호작용 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 하루 최대 30</p><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p></section><div class="room-wrapper">
+                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 30</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -1992,6 +1996,7 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
             <div id="reward-items-container" class="flex flex-wrap justify-center gap-3 min-h-[90px] items-center">
                 <!-- JS로 동적 생성됨 -->
             </div>
+            <div id="combat-affinity-summary" class="combat-affinity-summary" hidden></div>
         </div>
 
         <button id="close-combat-result" class="gacha-button w-full py-3 text-xs md:text-sm border-cyan-500 text-cyan-400 hover:bg-cyan-900/30 tracking-widest font-bold">
@@ -3960,6 +3965,19 @@ let playerRaidLastResetDate = null;
                 }
                 return rewards;
             }
+            function renderCombatAffinitySummary(rewards){
+                const box=document.getElementById('combat-affinity-summary');if(!box)return;
+                box.replaceChildren();box.hidden=!rewards?.length;
+                if(!rewards?.length)return;
+                const details=document.createElement('details'),summary=document.createElement('summary');
+                const total=rewards.reduce((sum,reward)=>sum+reward.amount,0);
+                summary.textContent=`🤍 호감도 +${total} · ${rewards.length}명 · 내역 보기`;
+                const list=document.createElement('ul');
+                for(const reward of rewards){
+                    const item=document.createElement('li');item.textContent=`${reward.base} +${reward.amount}${reward.gear?' · 전용 장비 획득':''}`;list.appendChild(item);
+                }
+                details.append(summary,list);box.appendChild(details);
+            }
             function interactAffinity(base){
                 const today=getTodayDateString();
                 const placed=new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean));
@@ -3972,24 +3990,47 @@ let playerRaidLastResetDate = null;
                 document.getElementById('room-affinity-status').textContent=`${base} 호감도 +${amount}${oldLevel<5&&affinityLevel(base)===5?' · 전용 장비 획득!':''}`;
                 renderRoomAffinity();saveGame();
             }
+            const AFFINITY_REWARDS=['미해금','HP +1%','프로필 배지','ATK·DEF +1%','명찰·테두리','전용 장비'];
+            function placedAffinityBases(){
+                return [...new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean))];
+            }
+            function createAffinityCard(base,isVisitor=false,visiting=false){
+                const state=playerAffinity[base]||{},level=affinityLevel(base),today=getTodayDateString();
+                const spent=state.date===today?Number(state.daily)||0:0;
+                const next=AFFINITY_THRESHOLDS[Math.min(5,level+1)];
+                const card=document.createElement('div');card.className='affinity-card';
+                const title=document.createElement('strong');title.textContent=`${base} · Lv.${level}${!isVisitor&&visiting?' · 방문 중':''}`;
+                const info=document.createElement('small');info.textContent=`${Math.min(550,state.xp||0)} / ${next} · 오늘 ${spent}/${AFFINITY_DAILY_LIMIT}`;
+                const progress=document.createElement('progress');progress.max=next;progress.value=Math.min(next,state.xp||0);
+                const current=document.createElement('p');current.className='affinity-current';current.textContent=`현재 · ${AFFINITY_REWARDS[level]}`;
+                const upcoming=document.createElement('p');upcoming.className='affinity-next';upcoming.textContent=level<5?`다음 Lv.${level+1} · ${AFFINITY_REWARDS[level+1]}`:'모든 단계 달성';
+                card.append(title,info,progress,current,upcoming);
+                if(isVisitor){
+                    const button=document.createElement('button');button.type='button';button.textContent=state.talkDate===today?'오늘 상호작용 완료':'함께 시간 보내기 · +12';
+                    button.disabled=state.talkDate===today||spent>=AFFINITY_DAILY_LIMIT||level>=5;
+                    button.addEventListener('click',()=>interactAffinity(base));card.appendChild(button);
+                }
+                return card;
+            }
             function renderRoomAffinity(){
                 const list=document.getElementById('room-affinity-list');if(!list)return;
                 list.replaceChildren();
-                const bases=[...new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean))];
-                if(!bases.length){list.textContent='방문객 관리에서 카드를 배치하면 이곳에 호감도가 표시됩니다.';return;}
-                for(const base of bases){
-                    const state=playerAffinity[base]||{};const level=affinityLevel(base),today=getTodayDateString();
-                    const spent=state.date===today?Number(state.daily)||0:0;
-                    const next=AFFINITY_THRESHOLDS[Math.min(5,level+1)];
-                    const card=document.createElement('div');card.className='affinity-card';
-                    const title=document.createElement('strong');title.textContent=`${base} · 호감도 ${level}/5`;
-                    const info=document.createElement('small');info.textContent=`${Math.min(550,state.xp||0)} / ${next} · 오늘 ${spent}/${AFFINITY_DAILY_LIMIT} · ${level>=5?'전용 장비 획득':level>=4?'전용 명찰·테두리':level>=2?'프로필 배지':'HP +1%까지'}`;
-                    const progress=document.createElement('progress');progress.max=next;progress.value=Math.min(next,state.xp||0);
-                    const button=document.createElement('button');button.type='button';button.textContent=state.talkDate===today?'오늘 상호작용 완료':'함께 시간 보내기 · +12';
-                    button.disabled=state.talkDate===today||spent>=AFFINITY_DAILY_LIMIT||level>=5;
-                    button.addEventListener('click',()=>interactAffinity(base));
-                    card.append(title,info,progress,button);list.appendChild(card);
-                }
+                const bases=placedAffinityBases();
+                if(!bases.length)list.textContent='방문객 관리에서 카드를 배치하면 이곳에 호감도가 표시됩니다.';
+                else for(const base of bases)list.appendChild(createAffinityCard(base,true));
+                if(!document.getElementById('room-affinity-all').hidden)renderAllAffinity();
+            }
+            function renderAllAffinity(){
+                const list=document.getElementById('room-affinity-all-list');if(!list)return;
+                const query=document.getElementById('room-affinity-search').value.trim().toLocaleLowerCase('ko');
+                const all=[...new Set(characters.map(card=>card.baseName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+                const visible=all.filter(base=>base.toLocaleLowerCase('ko').includes(query));
+                const scroll=list.scrollTop;list.replaceChildren();
+                const visiting=new Set(placedAffinityBases());
+                for(const base of visible)list.appendChild(createAffinityCard(base,false,visiting.has(base)));
+                if(!visible.length)list.textContent='일치하는 캐릭터가 없습니다.';
+                list.scrollTop=scroll;
+                document.getElementById('room-affinity-all-count').textContent=`${visible.length} / ${all.length}명 표시`;
             }
 
 			// 고유 장비 ID 생성 함수
@@ -8433,6 +8474,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
     const rewardContainer = document.getElementById('reward-items-container'); // ✨ 보상 박스 컨테이너
 
     if (rewardContainer) rewardContainer.innerHTML = '';
+    renderCombatAffinitySummary([]);
 
     if (resultModal) {
         document.body.appendChild(resultModal);
@@ -8474,7 +8516,7 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
         if (isVictory) {
           sfx.playVictory();
             const affinityRewards=gainAffinityForCards(playerDeck,3);
-            if(affinityRewards.length)rewardsList.push({icon:'🤍',name:'호감도',count:affinityRewards.map(r=>`${r.base} +${r.amount}`).join(' · '),color:'border-indigo-300 bg-indigo-50 text-indigo-800'});
+            renderCombatAffinitySummary(affinityRewards);
             for(const reward of affinityRewards.filter(r=>r.gear))rewardsList.push({icon:'🪡',name:`${reward.base} 전용 장비`,count:'획득',color:'border-indigo-300 bg-indigo-50 text-indigo-800'});
             if (combatInfo.type === 'event') {
                 const dungeon = eventDungeons[combatInfo.indices];
@@ -14334,6 +14376,15 @@ function updateRaidDailyCountUI() {
     document.getElementById('trace-exchange-button').addEventListener('click',exchangeTraceCard);
     document.getElementById('archive-exchange-ink').addEventListener('click',()=>exchangeArchiveTokens('ink'));
     document.getElementById('archive-exchange-fragment').addEventListener('click',()=>exchangeArchiveTokens('fragment'));
+    document.getElementById('room-affinity-all-button').addEventListener('click',()=>{
+        const panel=document.getElementById('room-affinity-all');
+        panel.hidden=!panel.hidden;
+        const button=document.getElementById('room-affinity-all-button');
+        button.setAttribute('aria-expanded',String(!panel.hidden));
+        button.textContent=panel.hidden?'전체 캐릭터 호감도 보기':'전체 목록 닫기';
+        if(!panel.hidden)renderAllAffinity();
+    });
+    document.getElementById('room-affinity-search').addEventListener('input',renderAllAffinity);
     document.getElementById('archive-search').addEventListener('input', displayInventory);
     document.getElementById('archive-backup').addEventListener('click', downloadSaveData);
     document.getElementById('retry-save').addEventListener('click', () => {
