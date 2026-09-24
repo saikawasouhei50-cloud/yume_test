@@ -956,6 +956,7 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
 </style>
 <style id="dream-rewards-v3">
 #home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-menu{grid-column:2;grid-row:1}#home-view .dream-attendance{grid-column:1/-1;grid-row:2}#home-view .dream-explore{grid-row:3}#home-view .dream-bottom{grid-row:4}
+#home-view.attendance-claimed .dream-explore{grid-row:2}#home-view.attendance-claimed .dream-bottom{grid-row:3}
 .dream-attendance,.dream-redeem-panel{margin:20px 0;padding:20px;border:1px solid #dce3ec;border-radius:20px;background:linear-gradient(145deg,#f5f8fc,#fff 72%);color:#38465a;box-shadow:0 8px 24px #40506409}
 .dream-attendance{display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,2fr) auto;gap:15px;align-items:center}
 .dream-attendance h3,.dream-redeem-heading h3{font-size:20px;margin:4px 0 6px;font-weight:800;color:#36465a}
@@ -989,6 +990,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 .affinity-potion-preview{min-height:50px;padding:12px;border:1px solid #dce4f0;border-radius:12px;background:#fff;font-size:12px;line-height:1.6;font-weight:700}
 .affinity-potion-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}.affinity-potion-actions button{min-height:44px;padding:9px 15px;border:1px solid #c9d4e4;border-radius:11px;background:#fff;color:#445670;font:inherit;font-size:12px;font-weight:750;cursor:pointer}.affinity-potion-actions button:last-child{background:#536b8c;border-color:#536b8c;color:#fff}.affinity-potion-actions button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:767px){#home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-attendance{grid-column:1;grid-row:2}#home-view .dream-menu{grid-column:1;grid-row:3}#home-view .dream-explore{grid-row:4}#home-view .dream-bottom{grid-row:5}}
+@media(max-width:767px){#home-view.attendance-claimed .dream-menu{grid-row:2}#home-view.attendance-claimed .dream-explore{grid-row:3}#home-view.attendance-claimed .dream-bottom{grid-row:4}}
 @media(max-width:800px){.dream-attendance{grid-template-columns:1fr}.dream-attendance-days{grid-template-columns:repeat(2,minmax(0,1fr))}.dream-redeem-grid{grid-template-columns:1fr}.dream-redeem-panel{padding:15px}}
 </style>
 <style id="affinity-style">
@@ -1098,7 +1100,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
   </div>
   <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
  </div>
- <section class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button" onclick="claimDailyAttendance()">오늘 보상 받기</button></section>
+ <section id="home-attendance" class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button" onclick="claimDailyAttendance()">오늘 보상 받기</button></section>
  <nav class="dream-menu" aria-label="주요 메뉴">
   <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
   <div class="dream-menu-grid">
@@ -4940,6 +4942,8 @@ function attendancePosition(now=Date.now()){
 function renderDailyAttendance(){
     const panel=document.getElementById('attendance-rewards');if(!panel)return;
     const pos=attendancePosition();panel.replaceChildren();
+    document.getElementById('home-attendance').classList.toggle('hidden',pos.claimed);
+    document.getElementById('home-view').classList.toggle('attendance-claimed',pos.claimed);
     ATTENDANCE_REWARDS.forEach((reward,index)=>{
         const day=document.createElement('span');day.className='dream-attendance-day'+(index===pos.day?' current':'');
         day.textContent=`${index+1}일차 · ${reward.name}`;panel.appendChild(day);
@@ -4947,6 +4951,9 @@ function renderDailyAttendance(){
     document.getElementById('attendance-status').textContent=pos.claimed?`오늘 출석 완료 · ${playerAttendance.streak}일 연속`:`오늘은 ${pos.day+1}일차 보상을 받을 수 있어요.`;
     const button=document.getElementById('attendance-claim');button.disabled=!currentUser||pos.claimed;button.textContent=pos.claimed?'오늘 출석 완료':'출석 보상 받기';
 }
+// 홈을 열어둔 채 한국 시간으로 날짜가 바뀌어도 다음 출석 메뉴를 다시 보여준다.
+setInterval(()=>{if(!document.getElementById('home-view').classList.contains('hidden'))renderDailyAttendance();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!document.getElementById('home-view').classList.contains('hidden'))renderDailyAttendance();});
 function claimDailyAttendance(){
     if(!currentUser)return;
     const pos=attendancePosition();if(pos.claimed)return;
