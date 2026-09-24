@@ -2294,7 +2294,18 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
         monsters[mKey] = {
             name: row.name,
             // Monsters 시트의 baseName은 족적을 지급할 카드 계열입니다.
-            baseName: String(row.baseName || row.base_name || row.characterBaseName || '').trim(),
+            baseName: String(row.baseName || row.base_name || row.characterBaseName || row.baseCharacter || row.base_character || '').trim(),
+            faction: String(row.faction || row.characterFaction || '').trim(),
+            cardName: String(row.cardName || row.characterName || '').trim(),
+            key: String(mKey).trim(),
+            skills: [1,2].map(index=>({
+                name: row[`skill${index}_name`],
+                desc: row[`skill${index}_desc`],
+                dialogue: row[`skill${index}_dialogue`],
+                power: Number(row[`skill${index}_power`]) || 1,
+                type: String(row[`skill${index}_type`] || 'damage').trim(),
+                cooldown: row[`skill${index}_cooldown`] || row[`skill${index}_turn_limit`] || 3
+            })).filter(skill=>skill.name),
             speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 0,
             stats: { hp: Number(row.hp), atk: Number(row.atk), def: Number(row.def) },
             imageUrl: row.imageUrl,
@@ -2556,7 +2567,16 @@ if (data.raidBoss && data.raidBoss.length > 0) {
     const bossRow = data.raidBoss[0]; 
     raidBossDataSheet = {
         name: bossRow.name,
-        baseName: String(bossRow.baseName || bossRow.base_name || bossRow.characterBaseName || '').trim(),
+        baseName: String(bossRow.baseName || bossRow.base_name || bossRow.characterBaseName || bossRow.baseCharacter || bossRow.base_character || '').trim(),
+        faction: String(bossRow.faction || bossRow.characterFaction || '').trim(),
+        cardName: String(bossRow.cardName || bossRow.characterName || '').trim(),
+        skills: [1,2].map(index=>({
+            name: bossRow[`skill${index}_name`],
+            dialogue: bossRow[`skill${index}_dialogue`],
+            power: Number(bossRow[`skill${index}_power`]) || 1,
+            type: String(bossRow[`skill${index}_type`] || 'damage').trim(),
+            cooldown: bossRow[`skill${index}_cooldown`] || bossRow[`skill${index}_turn_limit`] || 3
+        })).filter(skill=>skill.name),
         level: Number(bossRow.level) || 1,
         maxHp: Number(bossRow.maxHp) || 1000000,
         atk: Number(bossRow.atk) || 100,
@@ -3466,7 +3486,7 @@ function updateDispatchClock() {
             const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
             const aoe=boss&&f>=8;
             return {name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
-                baseName:source.baseName||'',stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
+                baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
                 speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
         }
         function updateRogueUI() {
@@ -4715,17 +4735,32 @@ function traceBaseForEnemy(enemy){
     if(!enemy)return null;
     const monster=typeof enemy==='string'?{name:enemy}:enemy;
     const bases=new Set(characters.map(card=>card.baseName).filter(Boolean));
-    // 서로 다른 김기철 계열은 별개의 족적입니다. 명시된 베이스를 우선합니다.
+    // 동일 인물의 여러 계열은 각각 다른 스킬과 족적을 갖습니다.
     const specified=String(monster.baseName||'').trim();
-    if(specified)return bases.has(specified)?specified:null;
-    const name=String(monster.name||'').replace(/^정예\s*·\s*/,'').trim();
-    const matchedByName=new Set(characters.filter(card=>card.name===name||card.baseName===name).map(card=>card.baseName));
-    if(matchedByName.size===1)return [...matchedByName][0];
-    // 예전 Monsters 시트에는 baseName이 없으므로 동일 이미지의 계열만 보정합니다.
+    if(bases.has(specified))return specified;
+    const faction=String(monster.faction||'').trim();
+    const eligible=characters.filter(card=>!faction||card.faction===faction);
+    const uniqueBase=cards=>{const found=new Set(cards.map(card=>card.baseName).filter(Boolean));return found.size===1?[...found][0]:null;};
+    // 카드 이름과 적 이름이 동일할 때에는 진영 정보까지 고려합니다.
+    const names=[specified,monster.cardName,monster.sourceName,monster.key,monster.name]
+        .map(value=>String(value||'').replace(/^정예\s*·\s*/,'').trim()).filter(Boolean);
+    for(const name of names){
+        if(bases.has(name))return name;
+        const exact=uniqueBase(eligible.filter(card=>card.name===name||card.baseName===name));
+        if(exact)return exact;
+    }
+    // 시트에 baseName이 없을 때 진영과 이미지로 계열을 특정합니다.
     const image=String(monster.imageUrl||'').trim();
     if(image){
-        const matchedByImage=new Set(characters.filter(card=>image===card.imageUrl||image===card.cardImageUrl).map(card=>card.baseName));
-        if(matchedByImage.size===1)return [...matchedByImage][0];
+        const match=uniqueBase(eligible.filter(card=>[card.imageUrl,card.cardImageUrl,card.chibi_image].includes(image)));
+        if(match)return match;
+    }
+    // 예: Monsters 시트에 name=오태준, faction=악마인 경우 오태준(악마).
+    if(faction){
+        for(const name of names){
+            const match=uniqueBase(eligible.filter(card=>card.baseName.replace(/\([^)]*\)$/,'')===name));
+            if(match)return match;
+        }
     }
     return null;
 }
@@ -7741,6 +7776,9 @@ function startStageCombat(chapterIndex, stageIndex) {
         monsterData = JSON.parse(JSON.stringify({
             name: raidBossData.name,
             baseName: raidBossData.baseName || raidBossDataSheet?.baseName || '',
+            faction: raidBossData.faction || raidBossDataSheet?.faction || '',
+            cardName: raidBossData.cardName || raidBossDataSheet?.cardName || '',
+            skills: raidBossData.skills || raidBossDataSheet?.skills || [],
             speed: raidBossData.speed ?? 0,
             stats: { hp: raidBossData.currentHp, atk: raidBossData.atk, def: raidBossData.def },
             imageUrl: raidBossData.imageUrl,
@@ -7753,11 +7791,13 @@ function startStageCombat(chapterIndex, stageIndex) {
     } else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        monsterData.skillBaseName = combatData.monsterName;
         // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
         monsterData.maxHp = monsterData.stats.hp;
     } else if (type === 'event') {
         const combatData = eventDungeons[indices];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
+        monsterData.skillBaseName = combatData.monsterName;
         // ✨ [핵심 추가] 일반/이벤트 몬스터 최대 체력 저장
         monsterData.maxHp = monsterData.stats.hp;
     }
@@ -7912,17 +7952,25 @@ function battleCooldown(skill) {
 }
 const ENEMY_SKILL_TYPES = new Set(['damage','true_damage','vampire','heal','buff_atk','buff_def','debuff_atk','debuff_def']);
 function prepareEnemySkills(enemy) {
-    const base=traceBaseForEnemy(enemy);
+    // 안정화는 Stages.monster_name, 폐기된 서고는 선택된 Monsters.key를 우선합니다.
+    const skillBase=String(enemy.skillBaseName||'').trim();
+    const base=characters.some(card=>card.baseName===skillBase)?skillBase:traceBaseForEnemy(enemy);
+    const sheetSkills=Array.isArray(enemy.skills)?enemy.skills:[];
     enemy.skills=[];
-    if(!base)return;
+    if(!base){
+        enemy.skills=sheetSkills.filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
+        if(!enemy.skills.length)console.warn('스킬을 연결할 카드 계열이 없는 적:',enemy.name,enemy.baseName,enemy.key);
+        return;
+    }
     enemy.baseName=base;
-    const exactName=String(enemy.name||'').replace(/^정예\s*·\s*/,'').trim();
+    const exactName=String(enemy.cardName||enemy.sourceName||enemy.name||'').replace(/^정예\s*·\s*/,'').trim();
     const exact=characters.find(card=>card.baseName===base&&card.name===exactName);
     const variants=characters.filter(card=>card.baseName===base);
     const candidates=exact?[exact]:variants.filter(card=>card.rarity==='SSR');
     const pool=candidates.length?candidates:variants.filter(card=>card.rarity==='SR');
     const source=pool[Math.floor(Math.random()*pool.length)]||variants[0];
     enemy.skills=(source?.skills||[]).filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
+    if(!enemy.skills.length)enemy.skills=sheetSkills.filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
 }
 function chooseEnemySkill(enemy,random=Math.random) {
     if(enemy.rogueStrongTurn||!enemy.skills?.length)return null;
