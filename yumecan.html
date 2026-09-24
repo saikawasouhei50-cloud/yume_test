@@ -1403,7 +1403,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                     <div id="battle-order" aria-label="이번 턴 행동 순서"></div>
                     <p id="battle-status" role="status" aria-live="polite">전투 준비 중…</p>
                     <div id="battle-options"></div>
-                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있습니다. 사용 후 자신의 다음 3차례 동안 재사용할 수 없습니다(개별 설정 우선). 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식은 최대 HP의 10%·20%·30%·40%·50% 중 하나를 회복합니다(확률: 5%·40%·45%·7%·3%). 캐릭터마다 3턴에 한 번 사용할 수 있습니다. 예: 1턴 사용 → 4턴 재사용. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
+                    <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있으며 개별 재사용 대기를 따릅니다(설정이 없으면 3차례). 적도 연결된 베이스 캐릭터 카드의 스킬을 무작위로 사용합니다. 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식하면 최대 HP의 일부를 회복하며 20~30%가 주로 나옵니다. 캐릭터마다 3턴에 한 번 사용할 수 있습니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
                 </section>
                 <div class="relative z-10 flex justify-end items-center gap-2 mt-4 font-tech">
                     <button id="combat-run-button" class="gacha-button py-1 px-3 text-xs border-yellow-600 text-yellow-500 ml-2">항복</button>
@@ -1684,7 +1684,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 30</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
+                <div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -2556,6 +2556,7 @@ if (data.raidBoss && data.raidBoss.length > 0) {
     const bossRow = data.raidBoss[0]; 
     raidBossDataSheet = {
         name: bossRow.name,
+        baseName: String(bossRow.baseName || bossRow.base_name || bossRow.characterBaseName || '').trim(),
         level: Number(bossRow.level) || 1,
         maxHp: Number(bossRow.maxHp) || 1000000,
         atk: Number(bossRow.atk) || 100,
@@ -3465,7 +3466,7 @@ function updateDispatchClock() {
             const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
             const aoe=boss&&f>=8;
             return {name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
-                stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
+                baseName:source.baseName||'',stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
                 speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
         }
         function updateRogueUI() {
@@ -3916,7 +3917,7 @@ let playerRaidLastResetDate = null;
 			];
 
             const AFFINITY_THRESHOLDS = [0, 40, 110, 220, 360, 550];
-            const AFFINITY_DAILY_LIMIT = 30;
+            const AFFINITY_DAILY_LIMIT = 150;
             const affinityGearId = base => 'aff_' + encodeURIComponent(base);
             function ensureAffinityEquipmentTemplates() {
                 for (const base of new Set(characters.map(card=>card.baseName).filter(Boolean))) {
@@ -4363,7 +4364,7 @@ async function loadGameFromFirebase(uid) {
         playerAffinity = Object.fromEntries(Object.entries(savedData.affinity||{}).filter(([base,state])=>
             characters.some(c=>c.baseName===base) && state && typeof state==='object').map(([base,state])=>[base,{
                 xp:Math.min(550,Math.max(0,Math.floor(Number(state.xp)||0))),
-                date:typeof state.date==='string'?state.date:'',daily:Math.min(30,Math.max(0,Math.floor(Number(state.daily)||0))),
+                date:typeof state.date==='string'?state.date:'',daily:Math.min(AFFINITY_DAILY_LIMIT,Math.max(0,Math.floor(Number(state.daily)||0))),
                 talkDate:typeof state.talkDate==='string'?state.talkDate:'',gearClaimed:state.gearClaimed===true
             }]));
         ensureAffinityEquipmentTemplates();
@@ -7739,6 +7740,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     if (type === 'raid') {
         monsterData = JSON.parse(JSON.stringify({
             name: raidBossData.name,
+            baseName: raidBossData.baseName || raidBossDataSheet?.baseName || '',
             speed: raidBossData.speed ?? 0,
             stats: { hp: raidBossData.currentHp, atk: raidBossData.atk, def: raidBossData.def },
             imageUrl: raidBossData.imageUrl,
@@ -7876,6 +7878,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     `;
 
     monsterData.activeEffects = [];
+    prepareEnemySkills(monsterData);
 
     // 4. 전투 루프 실행
     initCombat3DBackground();
@@ -7906,6 +7909,62 @@ function battleCooldown(skill) {
     if (value == null || String(value).trim() === '') return 3;
     const n = Number(value);
     return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 3;
+}
+const ENEMY_SKILL_TYPES = new Set(['damage','true_damage','vampire','heal','buff_atk','buff_def','debuff_atk','debuff_def']);
+function prepareEnemySkills(enemy) {
+    const base=traceBaseForEnemy(enemy);
+    enemy.skills=[];
+    if(!base)return;
+    enemy.baseName=base;
+    const exactName=String(enemy.name||'').replace(/^정예\s*·\s*/,'').trim();
+    const exact=characters.find(card=>card.baseName===base&&card.name===exactName);
+    const variants=characters.filter(card=>card.baseName===base);
+    const candidates=exact?[exact]:variants.filter(card=>card.rarity==='SSR');
+    const pool=candidates.length?candidates:variants.filter(card=>card.rarity==='SR');
+    const source=pool[Math.floor(Math.random()*pool.length)]||variants[0];
+    enemy.skills=(source?.skills||[]).filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
+}
+function chooseEnemySkill(enemy,random=Math.random) {
+    if(enemy.rogueStrongTurn||!enemy.skills?.length)return null;
+    const ready=enemy.skills.map((skill,index)=>({skill,index})).filter(({skill,index})=>
+        battleRemaining(enemy,index)===0 && (skill.type!=='heal'||enemy.stats.hp<enemy.maxHp*.85));
+    return ready.length?ready[Math.floor(random()*ready.length)]:null;
+}
+function enemySkillPower(skill) {
+    const value=Number(skill.power);
+    return Math.min(skill.type==='true_damage'?1.15:1.35,Math.max(.75,Number.isFinite(value)&&value>0?value:1));
+}
+function executeEnemySkill(enemy,skill,deck,random=Math.random) {
+    const living=deck.filter(card=>card.stats.hp>0);
+    if(!living.length)return;
+    logCombat(`<strong>${rogueEscape(enemy.name)}</strong>의 스킬 · ${rogueEscape(skill.name)}`);
+    if(skill.dialogue)logCombat(`<em>“${rogueEscape(skill.dialogue)}”</em>`);
+    if(skill.type==='heal'){
+        const amount=Math.min(enemy.stats.atk*enemySkillPower(skill),enemy.maxHp*.15);
+        logCombat(`${rogueEscape(enemy.name)} 체력 ${battleHeal(enemy,amount)} 회복`);
+        return;
+    }
+    if(skill.type==='buff_atk'||skill.type==='buff_def'){
+        const atk=skill.type==='buff_atk';
+        enemy.activeEffects.push({type:skill.type,value:atk?1.1:1.15,turns:3,name:skill.name});
+        battleRecalculate(enemy);
+        logCombat(`${rogueEscape(enemy.name)} ${atk?'공격력 +10%':'방어력 +15%'} · 다음 행동 3회`);
+        return;
+    }
+    const target=living[Math.floor(random()*living.length)];
+    if(skill.type==='debuff_atk'||skill.type==='debuff_def'){
+        const atk=skill.type==='debuff_atk';
+        target.activeEffects.push({type:skill.type,value:atk?.9:.8,turns:2,name:skill.name});
+        battleRecalculate(target);
+        logCombat(`${rogueEscape(target.name)} ${atk?'공격력 -10%':'방어력 -20%'} · 다음 행동 2회`);
+        return;
+    }
+    const damage=Math.max(1,Math.floor(enemy.stats.atk*enemySkillPower(skill))-(skill.type==='true_damage'?0:target.stats.def));
+    const actual=Math.min(damage,target.stats.hp);
+    target.stats.hp=Math.max(0,target.stats.hp-damage);
+    logCombat(`${rogueEscape(target.name)}에게 ${actual} 피해${target.stats.hp<=0?' · 전투 불능':''}`);
+    if(skill.type==='vampire')logCombat(`${rogueEscape(enemy.name)} 체력 ${battleHeal(enemy,Math.min(actual*.5,enemy.maxHp*.1))} 흡수`);
+    if(target.stats.hp<=0&&target.deathDialogue)logCombat(`${rogueEscape(target.name)}: “${rogueEscape(target.deathDialogue)}”`);
 }
 function cancelBattleSession() {
     if (!battleSession) return;
@@ -7953,7 +8012,7 @@ function battleRecalculate(actor) {
     actor.stats.atk = Math.floor(actor._baseAtk * actor.activeEffects.reduce((n,e) =>
         n * (['buff_atk','debuff_atk','sacrifice_atk'].includes(e.type) ? e.value : 1), 1));
     actor.stats.def = Math.floor(actor._baseDef * actor.activeEffects.reduce((n,e) =>
-        n * (e.type === 'debuff_def' ? e.value : 1), 1));
+        n * (['debuff_def','buff_def'].includes(e.type) ? e.value : 1), 1));
 }
 function battleHeal(card, amount) {
     const before = card.stats.hp;
@@ -8009,11 +8068,8 @@ function requestBattleAction(session, card, deck) {
             options.replaceChildren();
             button('공격 · 일반 / 스킬', attack);
             const restWait = battleRestRemaining(card);
-            const restButton = button(restWait ? `휴식 · ${restWait}턴 후 사용 가능` : '휴식 · 주로 최대 HP 20~30% 회복', () => choose({type:'rest'}), restWait > 0);
-            const restInfo = document.createElement('span');
-            restInfo.className = 'battle-skill-cooldown';
-            restInfo.textContent = '3턴에 1회 · 회복량 10/20/30/40/50% (확률 5/40/45/7/3%)';
-            restButton.appendChild(restInfo);
+            const restButton = button(restWait ? `휴식 · ${restWait}턴 대기` : '휴식 · 체력 회복', () => choose({type:'rest'}), restWait > 0);
+            restButton.title = '최대 HP 일부 회복 · 사용 후 3턴 대기';
             button('희생 · 아군 공격력 +20%', targets, !deck.some(c => c !== card && c.stats.hp > 0));
         };
         const attack = () => {
@@ -8136,12 +8192,12 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     const power = Number.isFinite(Number(skill.power)) ? Number(skill.power) : 1;
                     if (skill.type === 'heal') {
                         logCombat(`${card.name} 체력 ${battleHeal(card,card.stats.atk*power)} 회복`);
-                    } else if (['debuff_def','debuff_atk','buff_atk'].includes(skill.type)) {
-                        const target = skill.type === 'buff_atk' ? card : monsterData;
-                        const value = skill.type === 'buff_atk' ? 1.1 : skill.type === 'debuff_atk' ? .9 : .8;
+                    } else if (['debuff_def','debuff_atk','buff_atk','buff_def'].includes(skill.type)) {
+                        const target = ['buff_atk','buff_def'].includes(skill.type) ? card : monsterData;
+                        const value = skill.type === 'buff_atk' ? 1.1 : skill.type === 'buff_def' ? 1.15 : skill.type === 'debuff_atk' ? .9 : .8;
                         target.activeEffects.push({type:skill.type, value, turns:5, name:skill.name});
                         battleRecalculate(target);
-                        logCombat(`${target.name} · ${skill.type === 'buff_atk' ? '공격력 +10%' : skill.type === 'debuff_atk' ? '공격력 -10%' : '방어력 -20%'} (대상의 행동 5회)`);
+                        logCombat(`${target.name} · ${{buff_atk:'공격력 +10%',buff_def:'방어력 +15%',debuff_atk:'공격력 -10%',debuff_def:'방어력 -20%'}[skill.type]} (대상의 행동 5회)`);
                     } else {
                         damage = Math.max(1,Math.floor(card.stats.atk*power) - (skill.type === 'true_damage' ? 0 : monsterData.stats.def));
                         if (skill.type === 'vampire') logCombat(`${card.name} 체력 ${battleHeal(card,Math.min(damage,monsterData.stats.hp)*.5)} 흡수`);
@@ -8157,18 +8213,24 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     logCombat(`${monsterData.name}에게 ${actualDamage} 피해`);
                 }
             } else {
-                status.textContent = `${monsterData.name}의 차례 · ${monsterData.isAoE ? '전체 공격' : '단일 공격'}${monsterData.rogueStrongTurn ? ' / 강공 +40%' : ''}`;
+                const selectedSkill=chooseEnemySkill(monsterData);
+                status.textContent = `${monsterData.name}의 차례 · ${selectedSkill?`스킬: ${selectedSkill.skill.name}`:monsterData.isAoE?'전체 공격':'단일 공격'}${monsterData.rogueStrongTurn ? ' / 강공 +40%' : ''}`;
                 document.getElementById('battle-options').replaceChildren();
                 await delay(650);
                 if (!alive()) return;
-                const living = combatDeck.filter(c => c.stats.hp > 0);
-                const targets = monsterData.isAoE ? living : [living[Math.floor(Math.random()*living.length)]];
-                logCombat(`${monsterData.name}의 ${monsterData.isAoE ? '광역 ' : ''}공격`);
-                for (const target of targets) {
-                    const damage = Math.max(1,Math.floor(card.stats.atk*(card.rogueStrongTurn ? 1.4 : 1))-target.stats.def);
-                    target.stats.hp = Math.max(0,target.stats.hp-damage);
-                    logCombat(`${target.name}에게 ${damage} 피해${target.stats.hp <= 0 ? ' · 전투 불능' : ''}`);
-                    if (target.stats.hp <= 0 && target.deathDialogue) logCombat(`${target.name}: “${target.deathDialogue}”`);
+                if(selectedSkill){
+                    monsterData._readyAt[selectedSkill.index]=monsterData._actions+battleCooldown(selectedSkill.skill)+1;
+                    executeEnemySkill(monsterData,selectedSkill.skill,combatDeck);
+                } else {
+                    const living = combatDeck.filter(c => c.stats.hp > 0);
+                    const targets = monsterData.isAoE ? living : [living[Math.floor(Math.random()*living.length)]];
+                    logCombat(`${monsterData.name}의 ${monsterData.isAoE ? '광역 ' : ''}공격`);
+                    for (const target of targets) {
+                        const damage = Math.max(1,Math.floor(card.stats.atk*(card.rogueStrongTurn ? 1.4 : 1))-target.stats.def);
+                        target.stats.hp = Math.max(0,target.stats.hp-damage);
+                        logCombat(`${target.name}에게 ${damage} 피해${target.stats.hp <= 0 ? ' · 전투 불능' : ''}`);
+                        if (target.stats.hp <= 0 && target.deathDialogue) logCombat(`${target.name}: “${target.deathDialogue}”`);
+                    }
                 }
             }
             ticking.forEach(effect => effect.turns--);
@@ -8751,7 +8813,7 @@ function describeSkillEffect(skill) {
         case 'buff_atk': return '자신의 공격력 +10%. 자신의 다음 행동 5회 동안 유지됩니다.';
         case 'debuff_atk': return '적의 공격력 -10%. 적이 행동 5회를 마칠 때까지 유지됩니다.';
         case 'debuff_def': return '적의 방어력 -20%. 적이 행동 5회를 마칠 때까지 유지됩니다.';
-        case 'buff_def': return damage + ' 현재 방어력 증가 효과는 구현되어 있지 않습니다.';
+        case 'buff_def': return '자신의 방어력 +15%. 자신의 다음 행동 5회 동안 유지됩니다.';
         default: return damage;
     }
 }
