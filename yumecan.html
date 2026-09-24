@@ -860,7 +860,7 @@ html body #dispatch-missions-container{max-width:none;display:grid;grid-template
 @media(max-width:640px){html body #dispatch-missions-container{grid-template-columns:1fr}.investigation-card{padding:16px}.investigation-card h3{font-size:17px}.investigation-member img{width:38px;height:48px}.investigation-summary{padding:16px;font-size:14px}}
 </style><style id="wide-card-detail">
 .detail-wide-layout{display:flex;flex-direction:column;gap:18px}.detail-wide-layout section{min-width:0}.detail-column-heading{display:none}.detail-wide-panel #close-card-detail{z-index:5;min-width:40px;min-height:40px;border-radius:10px;background:#ffffffed}
-.detail-wide-panel :is(select,#detail-equipment-slot){min-width:0;max-width:100%}.detail-wide-panel :is(#detail-card-name,#eq-slot-name,#eq-slot-desc,#detail-skills-container){overflow-wrap:anywhere}.detail-wide-panel #revision-material-select{width:0;min-width:0;flex:1}.detail-portrait-column>div:first-child{margin-bottom:16px}
+.detail-wide-panel :is(select,#detail-equipment-slot,#detail-bond-slot){min-width:0;max-width:100%}.detail-wide-panel :is(#detail-card-name,#eq-slot-name,#eq-slot-desc,#bond-slot-name,#bond-slot-desc,#detail-skills-container){overflow-wrap:anywhere}#detail-bond-slot>div{min-width:0}.detail-wide-panel #revision-material-select{width:0;min-width:0;flex:1}.detail-portrait-column>div:first-child{margin-bottom:16px}
 @media(min-width:960px){
 html body #card-detail-modal{padding:24px!important}
 html body #card-detail-modal>.detail-wide-panel{width:min(1400px,96vw)!important;max-width:1400px!important;height:min(860px,92vh);height:min(860px,92dvh);max-height:92dvh!important;overflow:hidden!important;padding:52px 24px 24px!important;border-radius:24px!important}
@@ -1896,6 +1896,11 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                                                                     </div>
                                                                 </div>
                                                                 <button id="unequip-btn" class="hidden gacha-button py-1 px-3 text-[10px] border-red-700 text-red-500" onclick="event.stopPropagation(); unequipItem();">해제</button>
+                                                            </div>
+                                                            <h3 class="font-tech text-xs tracking-widest mt-4 mb-2 border-b border-gray-700 pb-1">BOND // 유대의 증표</h3>
+                                                            <div id="detail-bond-slot" class="flex justify-between items-center bg-black/50 p-2 border border-gray-700 rounded-sm cursor-pointer hover:border-green-500 transition-colors" onclick="openEquipmentModal('bond')">
+                                                                <div class="flex items-center gap-3"><div id="bond-slot-icon" class="text-2xl">🪡</div><div><p id="bond-slot-name" class="text-sm font-bold">장착된 증표 없음</p><p id="bond-slot-desc" class="text-[10px]">집필 도구와 함께 장착할 수 있어요</p></div></div>
+                                                                <button id="unequip-bond-btn" class="hidden gacha-button py-1 px-3 text-[10px]" onclick="event.stopPropagation(); unequipBond();">해제</button>
                                                             </div>
                                                         </div><div id="dismantle-container" class="mt-4 bg-red-900/20 border border-red-900/50 p-3 rounded-sm flex justify-between items-center">
                                 <p class="font-tech text-xs font-bold text-red-500 tracking-widest">DISMANTLE // 파쇄 (재료 회수)</p>
@@ -4488,6 +4493,26 @@ playerInspHp = savedData.inspHp ?? 0;
             revision: (card.revision !== undefined && card.revision !== null) ? card.revision : 0,
             level: (card.level !== undefined && card.level !== null) ? card.level : 0
         }));
+        // 기존 한 칸에 장착한 유대의 증표를 별도 칸으로 옮기고 고아 장비를 회수한다.
+        const loadedEquipmentById=new Map(playerEquipment.map(eq=>[eq.id,eq]));
+        for(const card of playerInventory){
+            const old=loadedEquipmentById.get(card.equippedItem);
+            if(old&&equipmentTemplates.find(t=>t.id===old.templateId)?.source==='affinity'){
+                if(!card.equippedBond)card.equippedBond=card.equippedItem;
+                card.equippedItem=null;
+            }
+        }
+        const loadedCardsById=new Map(playerInventory.map(card=>[card.id,card]));
+        for(const eq of playerEquipment){
+            const wearer=loadedCardsById.get(eq.equippedTo);
+            if(eq.equippedTo&&(!wearer||(wearer.equippedItem!==eq.id&&wearer.equippedBond!==eq.id)))eq.equippedTo=null;
+        }
+        for(const card of playerInventory)for(const slot of ['equippedItem','equippedBond']){
+            if(!card[slot])continue;
+            const eq=loadedEquipmentById.get(card[slot]);
+            if(!eq||(eq.equippedTo&&eq.equippedTo!==card.id))card[slot]=null;
+            else eq.equippedTo=card.id;
+        }
 
         collectedCardNames = new Set(savedData.collectedCardNames || []);
         playerInventory.forEach(card => collectedCardNames.add(card.name));
@@ -6681,12 +6706,13 @@ document.getElementById('summon-share').onclick=async()=>{
                 if(affinity>=1)finalHp+=Math.max(1,Math.floor(finalHp*.01));
                 if(affinity>=3){finalAtk+=Math.max(1,Math.floor(finalAtk*.01));finalDef+=Math.max(1,Math.floor(finalDef*.01));}
 
-                // ✨ 4. [신규] '집필 도구(장비)' 보너스 적용
-                if (cardInstance.equippedItem) {
-                    const equipped = playerEquipment.find(e => e.id === cardInstance.equippedItem);
+                // 집필 도구와 유대의 증표는 서로 다른 칸이며 각각 한 번씩만 적용한다.
+                for (const equipmentId of new Set([cardInstance.equippedItem,cardInstance.equippedBond].filter(Boolean))) {
+                    const equipped = playerEquipment.find(e => e.id === equipmentId && e.equippedTo === cardInstance.id);
                     if (equipped) {
                         const tmpl = equipmentTemplates.find(t => t.id === equipped.templateId);
-                        if (tmpl && (!tmpl.exclusiveBase || (tmpl.exclusiveBase===baseCard.baseName && equipped.equippedTo===cardInstance.id))) {
+                        const correctSlot=tmpl?.source==='affinity'?equipmentId===cardInstance.equippedBond:equipmentId===cardInstance.equippedItem;
+                        if (tmpl && correctSlot && (!tmpl.exclusiveBase || tmpl.exclusiveBase===baseCard.baseName)) {
                             if (tmpl.type === 'atk') finalAtk += tmpl.bonus;
                             if (tmpl.type === 'def') finalDef += tmpl.bonus;
                             if (tmpl.type === 'hp') finalHp += tmpl.bonus;
@@ -9834,7 +9860,20 @@ updateEquipmentSlotUI(cardInstance);
 // 카드 상세창 열릴 때 장비 정보 업데이트 (showCardDetails 함수 내부 맨 마지막 줄에 추가)
 // >> updateEquipmentSlotUI(cardInstance);
 
+function updateBondSlotUI(cardInstance){
+    const icon=document.getElementById('bond-slot-icon');
+    const name=document.getElementById('bond-slot-name');
+    const desc=document.getElementById('bond-slot-desc');
+    const button=document.getElementById('unequip-bond-btn');
+    const eq=playerEquipment.find(e=>e.id===cardInstance.equippedBond&&e.equippedTo===cardInstance.id);
+    const template=eq&&equipmentTemplates.find(t=>t.id===eq.templateId&&t.source==='affinity');
+    icon.textContent=template?.icon||'🪡';
+    name.textContent=template?'유대의 증표':'장착된 증표 없음';
+    desc.textContent=template?template.desc:'집필 도구와 함께 장착할 수 있어요';
+    button.classList.toggle('hidden',!template);
+}
 function updateEquipmentSlotUI(cardInstance) {
+    updateBondSlotUI(cardInstance);
     const iconEl = document.getElementById('eq-slot-icon');
     const nameEl = document.getElementById('eq-slot-name');
     const descEl = document.getElementById('eq-slot-desc');
@@ -9844,6 +9883,7 @@ function updateEquipmentSlotUI(cardInstance) {
         const equipped = playerEquipment.find(e => e.id === cardInstance.equippedItem);
         if (equipped) {
             const tmpl = equipmentTemplates.find(t => t.id === equipped.templateId);
+            if (tmpl && tmpl.source!=='affinity') {
             iconEl.textContent = tmpl.icon;
             iconEl.classList.remove('grayscale', 'opacity-50');
             nameEl.textContent = `[${tmpl.rarity}] ${tmpl.name}`;
@@ -9851,6 +9891,7 @@ function updateEquipmentSlotUI(cardInstance) {
             descEl.textContent = tmpl.desc + (tmpl.source === 'rogue' ? ' · 폐기된 서고 전용' : '');
             unequipBtn.classList.remove('hidden');
             return;
+            }
         }
     }
 
@@ -9864,9 +9905,12 @@ function updateEquipmentSlotUI(cardInstance) {
 }
 
 // 장비 모달 열기
-window.openEquipmentModal = function() {
+window.openEquipmentModal = function(slot='tool') {
     if (!currentDetailCardId) return;
+    const bondSlot=slot==='bond';
     ensureAffinityEquipmentTemplates();
+    document.getElementById('equipment-modal-title').textContent=bondSlot?'유대의 증표':'집필 도구';
+    document.getElementById('equipment-modal-help').textContent=bondSlot?'이 캐릭터의 유대의 증표를 선택하세요. 집필 도구와 함께 장착할 수 있습니다.':'장착할 집필 도구를 선택하세요.';
     const selectedCard=playerInventory.find(c=>c.id===currentDetailCardId);
     const selectedBase=selectedCard&&findCharacter(selectedCard.name)?.baseName;
     const listContainer = document.getElementById('equipment-list-container');
@@ -9875,11 +9919,11 @@ window.openEquipmentModal = function() {
     // 현재 장착 안 된 남은 장비들만 필터링
     const availableEqs = playerEquipment.filter(eq => {
         const tmpl=equipmentTemplates.find(t=>t.id===eq.templateId);
-        return (!eq.equippedTo || eq.equippedTo === currentDetailCardId) && tmpl && (!tmpl.exclusiveBase || tmpl.exclusiveBase===selectedBase);
+        return (!eq.equippedTo || eq.equippedTo === currentDetailCardId) && tmpl && (tmpl.source==='affinity')===bondSlot && (!tmpl.exclusiveBase || tmpl.exclusiveBase===selectedBase);
     });
 
     if (availableEqs.length === 0) {
-        listContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">보유 중인 장비가 없습니다.<br>안정화 또는 폐기된 서고의 정예·보스에게서 획득하세요.</p>';
+        listContainer.textContent=bondSlot?'사용 가능한 유대의 증표가 없습니다. 호감도 Lv.5 달성 시 획득합니다.':'사용 가능한 집필 도구가 없습니다. 안정화 또는 폐기된 서고에서 획득할 수 있습니다.';
     } else {
         availableEqs.sort((a,b)=>{
             const order={N:0,R:1,SR:2,SSR:3,UR:4};
@@ -9925,20 +9969,21 @@ window.equipItem = function(eqId) {
 
     if (cardInstance && targetEq && targetTemplate && (!targetTemplate.exclusiveBase || targetTemplate.exclusiveBase===findCharacter(cardInstance.name)?.baseName)
         && (!targetEq.equippedTo || targetEq.equippedTo === cardInstance.id)) {
-        // 기존 장비가 있었다면 해제 처리
-        if (cardInstance.equippedItem) {
-            const oldEq = playerEquipment.find(e => e.id === cardInstance.equippedItem);
+        // 유대의 증표와 집필 도구는 각자의 칸만 교체한다.
+        const slot=targetTemplate.source==='affinity'?'equippedBond':'equippedItem';
+        if (cardInstance[slot]&&cardInstance[slot]!==eqId) {
+            const oldEq = playerEquipment.find(e => e.id === cardInstance[slot]);
             if (oldEq) oldEq.equippedTo = null;
         }
 
         // 새 장비 장착
-        cardInstance.equippedItem = eqId;
+        cardInstance[slot] = eqId;
         targetEq.equippedTo = cardInstance.id;
 
         document.getElementById('equipment-select-modal').classList.add('hidden');
         saveGame();
         showCardDetails(currentDetailCardId); // UI(스탯 포함) 전체 갱신
-        showMessage('집필 도구를 장착했습니다.', 'text-green-400', messageArea);
+        showMessage(targetTemplate.source==='affinity'?'유대의 증표를 장착했습니다.':'집필 도구를 장착했습니다.', 'text-green-400', messageArea);
     }
 };
 
@@ -9954,6 +9999,15 @@ window.unequipItem = function() {
         showCardDetails(currentDetailCardId);
         showMessage('장비를 해제했습니다.', 'text-gray-400', messageArea);
     }
+};
+window.unequipBond = function() {
+    const card=playerInventory.find(c=>c.id===currentDetailCardId);
+    if(!card?.equippedBond)return;
+    const eq=playerEquipment.find(e=>e.id===card.equippedBond);
+    if(eq)eq.equippedTo=null;
+    card.equippedBond=null;
+    saveGame();showCardDetails(card.id);
+    showMessage('유대의 증표를 해제했습니다.', 'text-gray-400', messageArea);
 };
 
 
@@ -10181,6 +10235,9 @@ function getDismantleSelection() {
     },{cards:[],fountainPens:0,inkwells:0});
 }
 
+function releaseEquipmentFromCards(cardIds){
+    for(const eq of playerEquipment)if(cardIds.has(eq.equippedTo))eq.equippedTo=null;
+}
 			function dismantleCard(cardId) {
     if (!confirm('이 카드를 파쇄하고 재료를 회수하시겠습니까? 카드는 영구히 사라집니다.')) {
         return;
@@ -10203,6 +10260,9 @@ function getDismantleSelection() {
         return;
     }
 
+    // 장비는 창고에 남기고 장착 상태만 해제한다 (유대의 증표 포함).
+    releaseEquipmentFromCards(new Set([cardId]));
+    if(playerProfile.repCardId===cardId)playerProfile.repCardId=null;
     // 인벤토리에서 카드 제거
     playerInventory.splice(indexToRemove, 1);
 
@@ -10693,7 +10753,7 @@ function confirmDismantleMultipleCards() {
 
     // 2. 파쇄 실행 및 보상 지급
     playerInventory = playerInventory.filter(card => !cardsToRemove.has(card.id));
-    playerEquipment.forEach(eq=>{if(cardsToRemove.has(eq.equippedTo))eq.equippedTo=null;});
+    releaseEquipmentFromCards(cardsToRemove);
     if(cardsToRemove.has(playerProfile.repCardId))playerProfile.repCardId=null;
     playerFountainPens += totalFountainPens;
     playerInkwells += totalInkwells;
@@ -15648,8 +15708,8 @@ document.addEventListener('mouseover', (e) => {
     <div id="equipment-select-modal" class="hidden fixed inset-0 bg-[#0b0c10]/90 flex items-center justify-center z-[100] p-4">
         <div class="bg-[#12151c] border border-gray-700 border-t-2 border-t-green-500 shadow-[0_0_30px_rgba(34,197,94,0.2)] p-6 max-w-lg w-full relative">
             <button onclick="document.getElementById('equipment-select-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
-            <h3 class="text-xl font-tech text-green-400 font-bold tracking-widest mb-1 text-center">SELECT TOOL</h3>
-            <p class="text-[10px] text-gray-500 text-center mb-4 tracking-widest">장착할 집필 도구를 선택하십시오.</p>
+            <h3 id="equipment-modal-title" class="text-xl font-tech text-green-400 font-bold tracking-widest mb-1 text-center">SELECT TOOL</h3>
+            <p id="equipment-modal-help" class="text-[10px] text-gray-500 text-center mb-4 tracking-widest">장착할 집필 도구를 선택하십시오.</p>
 
             <div id="equipment-list-container" class="max-h-64 overflow-y-auto space-y-2 pr-2 custom-scrollbar"></div>
         </div>
