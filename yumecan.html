@@ -257,6 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
         #event-point-display { display: none !important; }
     
 /* 꿈의 공방 */
+.life-workshop-overlay{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:12px;background:#1e2835b3}
+.life-workshop-overlay.hidden{display:none}
+.life-workshop-dialog{display:flex;flex-direction:column;width:min(1120px,100%);max-height:calc(100dvh - 24px);min-height:0;overflow:hidden;border:1px solid #dce3ea;border-radius:20px;background:#f8fafc;box-shadow:0 24px 70px #14233845}
+.life-workshop-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid #e2e7ed;background:#fff;color:#354050}
+.life-workshop-topbar strong{font-size:17px}.life-workshop-topbar button{border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#354050;padding:8px 14px;min-height:40px}
+#life-workshop-modal .life-panel{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0;border:0;border-radius:0}
+.room-workshop-launch{margin:8px 0 18px}.room-workshop-launch button{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:12px 18px;border:1px solid #dce3ea;border-radius:16px;background:#f7f9fc;color:#455267;text-align:left;touch-action:manipulation}.room-workshop-launch button:hover{background:#edf2f8;border-color:#b8c7d8}.room-workshop-launch button>span:last-child{margin-left:auto}.room-workshop-launch button:focus-visible{outline:3px solid #a3b3ce;outline-offset:2px}#life-workshop-summary{font-size:12px;font-weight:400;color:#748195}
+@media(max-width:700px){.life-workshop-overlay{padding:8px}.life-workshop-dialog{max-height:calc(100dvh - 16px);border-radius:16px}.life-workshop-topbar{padding:10px 14px}}
 .life-panel{--life-accent:#8a9da8;margin:18px 0;padding:22px;border:1px solid #dce3ea;border-radius:20px;background:linear-gradient(120deg,#fbfcfd,#f2f5f8);color:#354050}
 .life-panel[data-color=mist]{--life-accent:#819cb5;background:linear-gradient(120deg,#f5f9ff,#e7eff9)}.life-panel[data-color=dawn]{--life-accent:#bd967d;background:linear-gradient(120deg,#fff9f4,#f8e9e4)}.life-panel[data-color=violet]{--life-accent:#9687b5;background:linear-gradient(120deg,#faf7ff,#eee8f7)}
 .life-heading,.life-finish{display:flex;justify-content:space-between;gap:16px;align-items:start}.life-heading h3{font-size:21px;font-weight:750;margin:2px 0}.life-heading p,.life-subpanel p{font-size:13px;color:#657384;line-height:1.6}.life-heading small{color:var(--life-accent)}
@@ -1725,7 +1733,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <section class="life-panel" id="life-panel" aria-label="꿈의 공방"></section><div id="life-worker-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="공방 담당 카드 선택"><div class="life-worker-dialog"><header><h3>담당 카드 선택</h3><button type="button" id="life-worker-close" aria-label="닫기">✕</button></header><p>서고에 보유한 카드를 선택하세요. 방문객도 담당할 수 있어요.</p><input id="life-worker-search" type="search" placeholder="카드 이름 검색" aria-label="담당 카드 검색"><div id="life-worker-list" class="life-worker-list"></div></div></div><div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
+                <div id="life-workshop-modal" class="life-workshop-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 공방"><div class="life-workshop-dialog"><div class="life-workshop-topbar"><strong>✦ 꿈의 공방</strong><button id="close-life-workshop" type="button" aria-label="꿈의 공방 닫기">닫기 ✕</button></div><section class="life-panel" id="life-panel" aria-label="꿈의 공방"></section></div></div><div id="life-worker-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="공방 담당 카드 선택"><div class="life-worker-dialog"><header><h3>담당 카드 선택</h3><button type="button" id="life-worker-close" aria-label="닫기">✕</button></header><p>서고에 보유한 카드를 선택하세요. 방문객도 담당할 수 있어요.</p><input id="life-worker-search" type="search" placeholder="카드 이름 검색" aria-label="담당 카드 검색"><div id="life-worker-list" class="life-worker-list"></div></div></div><div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><div class="room-workshop-launch"><button id="open-life-workshop" type="button" aria-haspopup="dialog" aria-controls="life-workshop-modal">✦ <strong>꿈의 공방</strong><span id="life-workshop-summary"></span><span aria-hidden="true">↗</span></button></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -5111,6 +5119,7 @@ function useAffinityPotion(){
         function renderLifePanel(){
             const panel=document.getElementById('life-panel');if(!panel)return;
             panel.hidden=!!currentVisitTargetUid;if(currentVisitTargetUid)return;
+            const previousScroll=panel.scrollTop;
             panel.dataset.color=playerLife.roomColor;
             const now=Date.now(),card=playerInventory.find(c=>c.id===playerLife.framedCardId);
             const artwork=card?findCharacter(card.name):null;
@@ -5124,6 +5133,7 @@ function useAffinityPotion(){
               <div class="life-layout"><div class="life-subpanel"><h4>새벽 화분 · ${playerLife.planters.length}칸</h4><p>새벽 잎 1개를 심으면 2시간 뒤 2~3개를 수확해요.</p><div class="life-planters">${playerLife.planters.map((plant,i)=>`<div><strong>화분 ${i+1}</strong><span>${plant?(now>=plant.readyAt?'수확 준비 완료':lifeTime(plant.readyAt-now)+' 남음'):'비어 있음'}</span>${workerButton('pot',i)}<button type="button" data-life-action="${plant?'harvest':'plant'}" data-life-slot="${i}" ${plant&&now<plant.readyAt?'disabled':''}>${plant?'수확':'심기'}</button></div>`).join('')}</div></div>
               <div class="life-subpanel"><h4>작업대 · ${playerLife.workshops.length}칸</h4><p>담당 카드의 호감도가 높을수록 제작 시간이 조금 줄어듭니다.</p><div class="life-workshops">${playerLife.workshops.map((job,i)=>`<div class="life-workshop"><header><strong>작업대 ${i+1}</strong>${workerButton('worktable',i)}</header><p>${job?`${LIFE_RECIPES[job.recipe].name} 제작 중 · ${now>=job.readyAt?'완성':lifeTime(job.readyAt-now)+' 남음'}`:`대기 중 · 담당 카드 시간 단축 ${lifeAssistantBonus(i)}%`}</p>${job?`<button type="button" data-life-action="claim" data-life-slot="${i}" ${now<job.readyAt?'disabled':''}>완성품 받기</button>`:''}<div class="life-recipes">${Object.entries(LIFE_RECIPES).map(([id,r])=>`<div><strong>${r.name}</strong><small>${r.desc}</small><small>${lifeCostText(r.cost)} · ${lifeTime(r.time)} · ${r.skill==='alchemy'?'조제':'세공'} Lv.${r.level}</small><button type="button" data-life-action="craft" data-life-slot="${i}" data-life-recipe="${id}" class="${lifeLevel(r.skill)<r.level?'needs-level':Object.entries(r.cost).some(([key,n])=>playerLife.materials[key]<n)?'needs-material':''}" aria-label="${r.name} 제작 조건 확인">${job?'제작 중':lifeLevel(r.skill)<r.level?'잠김':Object.entries(r.cost).some(([key,n])=>playerLife.materials[key]<n)?'재료 확인':'제작'}</button></div>`).join('')}</div></div>`).join('')}</div></div></div>
               <div class="life-subpanel life-finish"><div><h4>완성품과 전시</h4><p>차 ${playerLife.items.tea} · 등불 ${playerLife.items.lantern} · 염료 ${playerLife.items.dye} · 액자 ${playerLife.items.frame}</p><p>차 효과 ${playerLife.teaCharges}회 · 등불 효과 ${playerLife.lanternCharges}회 남음</p><div class="life-actions"><button type="button" data-life-action="use" data-life-item="tea" ${!playerLife.items.tea?'disabled':''}>차 마시기</button><button type="button" data-life-action="use" data-life-item="lantern" ${!playerLife.items.lantern?'disabled':''}>등불 사용</button></div><label>마이룸 색 <select data-life-select="color"><option value="plain">기본</option><option value="mist" ${playerLife.roomColor==='mist'?'selected':''}>안개색 · 염료 1</option><option value="dawn" ${playerLife.roomColor==='dawn'?'selected':''}>새벽색 · 염료 1</option><option value="violet" ${playerLife.roomColor==='violet'?'selected':''}>꿈빛 · 염료 1</option></select></label><label>기억의 액자 <select data-life-select="frame"><option value="">전시 안 함</option>${[...new Map(playerInventory.map(c=>[c.name,c])).values()].map(c=>`<option value="${dispatchEscape(c.id)}" ${card?.id===c.id?'selected':''}>${dispatchEscape(c.name)}</option>`).join('')}</select></label></div><div class="life-frame">${card?`${artwork?.cardImageUrl||artwork?.imageUrl?`<img src="${dispatchEscape(artwork.cardImageUrl||artwork.imageUrl)}" alt="">`:''}<strong>${dispatchEscape(card.name)}</strong>`:'전시할 카드를 선택해보세요.'}</div></div>`;
+            panel.scrollTop=previousScroll;
         }
         let lifeWorkerTarget=null;
         function renderLifeWorkerCards(){
@@ -5159,6 +5169,31 @@ function useAffinityPotion(){
         // 공방 로직은 DOMContentLoaded 안에 있으므로 인라인 onclick에서 참조할 수 없다.
         // 다시 그려지는 버튼 대신 고정된 패널에 한 번만 리스너를 연결한다.
         const lifePanel=document.getElementById('life-panel');
+        const lifeWorkshopModal=document.getElementById('life-workshop-modal');
+        const openLifeWorkshopButton=document.getElementById('open-life-workshop');
+        function updateLifeWorkshopSummary(){
+            const ready=playerLife.planters.filter(job=>job&&Date.now()>=job.readyAt).length+playerLife.workshops.filter(job=>job&&Date.now()>=job.readyAt).length;
+            document.getElementById('life-workshop-summary').textContent=ready?`· 완료 ${ready}건`:`· 화분 ${playerLife.planters.length} · 작업대 ${playerLife.workshops.length}`;
+        }
+        function closeLifeWorkshop(restoreFocus=true){
+            closeLifeWorkerPicker();
+            lifeWorkshopModal.classList.add('hidden');
+            if(restoreFocus&&!openLifeWorkshopButton.classList.contains('hidden'))openLifeWorkshopButton.focus();
+        }
+        openLifeWorkshopButton.addEventListener('click',()=>{
+            if(currentVisitTargetUid)return;
+            renderLifePanel();
+            lifePanel.scrollTop=0;
+            lifeWorkshopModal.classList.remove('hidden');
+            document.getElementById('close-life-workshop').focus();
+        });
+        document.getElementById('close-life-workshop').addEventListener('click',()=>closeLifeWorkshop());
+        lifeWorkshopModal.addEventListener('click',event=>{if(event.target===lifeWorkshopModal)closeLifeWorkshop();});
+        document.addEventListener('keydown',event=>{
+            if(event.key!=='Escape'||lifeWorkshopModal.classList.contains('hidden'))return;
+            if(!document.getElementById('life-worker-modal').classList.contains('hidden'))closeLifeWorkerPicker();
+            else closeLifeWorkshop();
+        });
         lifePanel.addEventListener('click',event=>{
             const button=event.target.closest('button[data-life-action]');
             if(!button||!lifePanel.contains(button))return;
@@ -5186,7 +5221,11 @@ function useAffinityPotion(){
             if(button&&lifeWorkerModal.contains(button))chooseLifeWorker(button.dataset.lifeWorkerId);
         });
         document.getElementById('life-worker-search').addEventListener('input',renderLifeWorkerCards);
-        setInterval(()=>{if(!document.getElementById('myroom-view')?.classList.contains('hidden')&&(playerLife.workshops.some(Boolean)||playerLife.planters.some(Boolean)))renderLifePanel();},30000);
+        setInterval(()=>{
+            if(document.getElementById('myroom-view')?.classList.contains('hidden')||currentVisitTargetUid)return;
+            updateLifeWorkshopSummary();
+            if(!lifeWorkshopModal.classList.contains('hidden')&&(playerLife.workshops.some(Boolean)||playerLife.planters.some(Boolean)))renderLifePanel();
+        },30000);
 
 function displayWarehouse() {
     const query=(document.getElementById('warehouse-search').value||'').trim().toLowerCase();
@@ -5439,6 +5478,7 @@ window.displayWarehouse=displayWarehouse;
                 if (tabName === 'event-home') tabName = 'event';
                 const destination = document.getElementById(tabName === 'event' ? 'event-home-view' : `${tabName}-view`);
                 if (!destination) return;
+                if(tabName!=='myroom')closeLifeWorkshop(false);
 
                 // [초기화] 모든 뷰 숨기기 및 탭 버튼 비활성화
                 if (allViews) {
@@ -6794,6 +6834,10 @@ function getGridPosFromScreen(screenX, screenY) {
 // ================== ✨ 수정된 displayMyRoom (전체 코드) ✨ ==================
 function displayMyRoom() {
     if(!currentVisitTargetUid)ensureLifeFurniture();
+    const workshopButton=document.getElementById('open-life-workshop');
+    workshopButton.classList.toggle('hidden',!!currentVisitTargetUid);
+    if(currentVisitTargetUid)closeLifeWorkshop(false);
+    else updateLifeWorkshopSummary();
     const editing = typeof isEditMode !== 'undefined' && isEditMode;
     const roomView = document.getElementById('myroom-view');
     roomView.classList.toggle('room-is-editing', editing);
@@ -6803,7 +6847,7 @@ function displayMyRoom() {
         : '방문객 관리에서 함께 지낼 인물을 선택하세요. 배치 모드에서 가구를 꾸밀 수 있어요.';
     document.getElementById('room-summary-counts').textContent = `방문객 ${(playerRoom.characters || []).length}명 · 배치 가구 ${(playerRoom.furniture || []).length}개`;
     renderRoomAffinity();
-    renderLifePanel();
+    if(!lifeWorkshopModal.classList.contains('hidden'))renderLifePanel();
 
     const roomLayer = document.getElementById('room-layer');
     if (!roomLayer) return;
