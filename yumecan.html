@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1193,7 +1194,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
                 <div class="collection-toolbar"><button id="summon-share" type="button" disabled>이번 소환 공유</button><button id="summon-save" type="button" disabled>이미지 저장</button><span id="summon-share-status" role="status"></span></div>
                 <details id="archive-history"><summary>최근 소환 기록 · 최대 30회</summary><ol id="summon-history-list"><li>아직 기록된 소환이 없습니다.</li></ol></details>
-                <section class="dream-redeem-panel"><div class="dream-redeem-heading"><span class="menu-eyebrow">MEMORY EXCHANGE</span><h3>꿈의 교환</h3><p>소환과 전투로 모은 아이템을 원하는 카드로 교환하세요. 교환 대상은 실제로 존재하는 등급만 표시됩니다.</p></div><div class="dream-redeem-grid"><div class="dream-redeem-box"><strong>꿈의 파편</strong><p>보석 소환 1회마다 1개 · 보유 <b id="dream-fragment-balance">0</b>개</p><label>등급<select id="dream-exchange-rarity" onchange="renderCardExchange()"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><label>교환할 카드<select id="dream-exchange-card" onchange="renderCardExchange()"></select></label><button id="dream-exchange-button" type="button" onclick="exchangeDreamCard()">카드 교환</button></div><div class="dream-redeem-box"><strong>캐릭터의 족적</strong><p>해당 캐릭터가 적일 때 승리 시 30% · 1~3개</p><label>캐릭터<select id="trace-exchange-character" onchange="renderCardExchange()"></select></label><p>보유 <b id="trace-exchange-balance">0</b>개</p><label>등급<select id="trace-exchange-rarity" onchange="renderCardExchange()"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><button id="trace-exchange-button" type="button" onclick="exchangeTraceCard()">카드 교환</button></div></div><div class="dream-redeem-extra"><strong>잊힌 서표</strong><span>폐기된 서고에서 발견 · 보유 <b id="archive-token-balance">0</b>개</span><button type="button" onclick="exchangeArchiveTokens('ink')">8개 → 잉크병 1개</button><button type="button" onclick="exchangeArchiveTokens('fragment')">15개 → 꿈의 파편 5개</button></div><p id="card-exchange-status" role="status" aria-live="polite"></p></section>
+                <section class="dream-redeem-panel"><div class="dream-redeem-heading"><span class="menu-eyebrow">MEMORY EXCHANGE</span><h3>꿈의 교환</h3><p>소환과 전투로 모은 아이템을 원하는 카드로 교환하세요. 교환 대상은 실제로 존재하는 등급만 표시됩니다.</p></div><div class="dream-redeem-grid"><div class="dream-redeem-box"><strong>꿈의 파편</strong><p>보석 소환 1회마다 1개 · 보유 <b id="dream-fragment-balance">0</b>개</p><label>등급<select id="dream-exchange-rarity"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><label>교환할 카드<select id="dream-exchange-card"></select></label><button id="dream-exchange-button" type="button">카드 교환</button></div><div class="dream-redeem-box"><strong>캐릭터의 족적</strong><p>해당 캐릭터가 적일 때 승리 시 30% · 1~3개</p><label>캐릭터<select id="trace-exchange-character"></select></label><p>보유 <b id="trace-exchange-balance">0</b>개</p><label>등급<select id="trace-exchange-rarity"><option>N</option><option>R</option><option>SR</option><option>SSR</option></select></label><label>교환할 카드<select id="trace-exchange-card"></select></label><button id="trace-exchange-button" type="button">카드 교환</button></div></div><div class="dream-redeem-extra"><strong>잊힌 서표</strong><span>폐기된 서고에서 발견 · 보유 <b id="archive-token-balance">0</b>개</span><button id="archive-exchange-ink" type="button">8개 → 잉크병 1개</button><button id="archive-exchange-fragment" type="button">15개 → 꿈의 파편 5개</button></div><p id="card-exchange-status" role="status" aria-live="polite"></p></section>
             </div>
 
 <div id="breeding-view" class="hidden dream-secondary-menu"><header class="menu-page-heading"><div><span class="menu-eyebrow">INSPIRATION</span><h2>영감</h2><p>두 가지 모티브를 조합해 새로운 가능성을 발견하세요.</p></div></header>
@@ -4584,7 +4585,15 @@ function renderCardExchange(){
     const base=baseSelect.value;const count=safeItemCount(playerCharacterTraces[base]);
     document.getElementById('trace-exchange-balance').textContent=count.toLocaleString();
     const traceRarity=document.getElementById('trace-exchange-rarity').value;
-    const variant=characters.find(card=>card.baseName===base&&card.rarity===traceRarity);
+    const traceCardSelect=document.getElementById('trace-exchange-card');
+    const oldTraceName=traceCardSelect.value;
+    traceCardSelect.replaceChildren();
+    characters.filter(card=>card.baseName===base&&card.rarity===traceRarity)
+      .sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach(card=>{
+        const option=document.createElement('option');option.value=card.name;option.textContent=card.name;traceCardSelect.appendChild(option);
+      });
+    if([...traceCardSelect.options].some(option=>option.value===oldTraceName))traceCardSelect.value=oldTraceName;
+    const variant=characters.find(card=>card.name===traceCardSelect.value&&card.baseName===base&&card.rarity===traceRarity);
     const traceButton=document.getElementById('trace-exchange-button');
     traceButton.textContent=variant?`${MEMORY_EXCHANGE_COSTS[traceRarity]}개로 [${traceRarity}] ${variant.name} 교환`:`해당 등급의 카드 없음`;
     traceButton.disabled=!currentUser||!variant||count<MEMORY_EXCHANGE_COSTS[traceRarity]||playerInventory.length>=inventoryCapacity;
@@ -4595,7 +4604,7 @@ function exchangeCardForItems(kind){
     const rarity=document.getElementById(isTrace?'trace-exchange-rarity':'dream-exchange-rarity').value;
     const cost=MEMORY_EXCHANGE_COSTS[rarity];if(!cost)return;
     const base=document.getElementById('trace-exchange-character').value;
-    const card=isTrace?characters.find(c=>c.baseName===base&&c.rarity===rarity):getGachaCandidates(rarity).find(c=>c.name===document.getElementById('dream-exchange-card').value);
+    const card=isTrace?characters.find(c=>c.baseName===base&&c.rarity===rarity&&c.name===document.getElementById('trace-exchange-card').value):getGachaCandidates(rarity).find(c=>c.name===document.getElementById('dream-exchange-card').value);
     const available=isTrace?safeItemCount(playerCharacterTraces[base]):playerDreamFragments;
     const status=document.getElementById('card-exchange-status');
     if(!card||available<cost||playerInventory.length>=inventoryCapacity){status.textContent='교환 대상, 아이템 수량 또는 서고의 빈칸을 확인해 주세요.';renderCardExchange();return;}
@@ -14150,6 +14159,12 @@ function updateRaidDailyCountUI() {
 // ================== 👆 레이드 시스템 로직 끝 👆 ==================
 
 
+    ['dream-exchange-rarity','dream-exchange-card','trace-exchange-character','trace-exchange-rarity','trace-exchange-card']
+      .forEach(id=>document.getElementById(id).addEventListener('change',renderCardExchange));
+    document.getElementById('dream-exchange-button').addEventListener('click',exchangeDreamCard);
+    document.getElementById('trace-exchange-button').addEventListener('click',exchangeTraceCard);
+    document.getElementById('archive-exchange-ink').addEventListener('click',()=>exchangeArchiveTokens('ink'));
+    document.getElementById('archive-exchange-fragment').addEventListener('click',()=>exchangeArchiveTokens('fragment'));
     document.getElementById('archive-search').addEventListener('input', displayInventory);
     document.getElementById('archive-backup').addEventListener('click', downloadSaveData);
     document.getElementById('retry-save').addEventListener('click', () => {
