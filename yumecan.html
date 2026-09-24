@@ -625,6 +625,18 @@ html body #combat-3d-cutin #cutin-skill-name{background:#ffffffbf!important;colo
 html body #combat-3d-cutin #cutin-dialogue{background:transparent!important;color:#4f5b6c!important;border:0!important;letter-spacing:0!important;font-size:14px!important;line-height:1.65;font-weight:500}
 @media(max-width:767px){html body #combat-in-progress-view .combat-card-name{font-size:10px;min-height:32px}html body #combat-in-progress-view [id^="player-hp-text-"]{font-size:9px!important}html body #combat-in-progress-view .combat-faction{font-size:8px;padding:2px 5px}html body #combat-3d-cutin #cutin-skill-name{font-size:18px!important}html body #combat-3d-cutin #cutin-dialogue{font-size:12px!important}html body #combat-3d-cutin #cutin-character-name{font-size:12px}html body #combat-3d-cutin #cutin-card-wrapper{padding:14px 18px!important}}
 </style>
+<style id="enemy-skill-cutin-style">
+#cutin-source[hidden],#cutin-skill-effect[hidden]{display:none!important}
+html body #combat-3d-cutin[data-side="enemy"]{background:rgba(45,38,52,.59)!important;color:#503645!important}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-card-wrapper{background:linear-gradient(150deg,#f9e8ed,#fffafc 76%)!important;border:2px solid #d89aaa!important;box-shadow:0 20px 56px #4b293354!important}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-character-img{display:block;width:min(100%,220px);height:clamp(115px,25vh,220px);object-fit:contain;image-rendering:pixelated;margin:0 auto 7px!important}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-source{display:inline-flex;align-items:center;justify-content:center;align-self:center;background:#f0cfda;color:#793f57;border:1px solid #d89aaa;border-radius:999px;padding:4px 13px;margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.08em}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-skill-name{background:#fff!important;color:#733c52!important;border:1px solid #e8c4d0!important;box-shadow:0 2px 8px #7c4a6012}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-skill-effect{display:block;margin:9px 0 0;color:#715565;font-size:12px;font-weight:600;line-height:1.5}
+html body #combat-3d-cutin[data-side="enemy"] #cutin-dialogue{color:#634b5b!important;max-width:33ch;margin:8px auto 0}
+html body #combat-monster-area.enemy-skill-active{border-color:#d89aaa!important;box-shadow:0 0 0 3px #f5dfe8,0 10px 30px #b1648224!important}
+@media(max-width:767px){html body #combat-3d-cutin[data-side="enemy"] #cutin-card-wrapper{width:min(90%,320px);padding:12px 15px!important}html body #combat-3d-cutin[data-side="enemy"] #cutin-character-img{height:clamp(100px,21vh,170px)}html body #combat-3d-cutin[data-side="enemy"] #cutin-skill-effect{font-size:11px}}
+</style>
 <style id="combat-log-follow">
 #combat-log-container { overflow-y: auto; overflow-anchor: none; overscroll-behavior-y: contain; scroll-behavior: auto !important; }
 </style>
@@ -1381,9 +1393,11 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                         <div id="cutin-card-wrapper" class="relative transform scale-0 transition-transform duration-300 flex flex-col items-center max-w-lg px-4 text-center">
                             <div class="absolute -inset-4 border-2 border-cyan-400 animate-ping opacity-40"></div>
                             <img id="cutin-character-img" src="" class="max-h-[45vh] object-contain drop-shadow-[0_0_30px_rgba(0,255,255,0.8)] border-2 border-cyan-400 bg-black/80 mb-3">
+                            <span id="cutin-source" hidden>적 스킬 · ENEMY SKILL</span>
                             <p id="cutin-character-name"></p>
                             <span id="cutin-faction" class="faction-mark"></span>
                             <div id="cutin-skill-name" class="font-tech font-black text-2xl md:text-4xl text-cyan-400 tracking-[0.2em] bg-black/90 px-6 py-1.5 border-l-4 border-cyan-400"></div>
+                            <p id="cutin-skill-effect" hidden></p>
                             <!-- ✨ [추가] 컷인 대사 출력 영역 -->
                             <div id="cutin-dialogue" class="mt-2 text-sm md:text-lg text-gray-200 font-bold bg-black/80 px-4 py-1.5 border border-gray-700 tracking-wide italic"></div>
                         </div>
@@ -7959,18 +7973,28 @@ function prepareEnemySkills(enemy) {
     enemy.skills=[];
     if(!base){
         enemy.skills=sheetSkills.filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
-        if(!enemy.skills.length)console.warn('스킬을 연결할 카드 계열이 없는 적:',enemy.name,enemy.baseName,enemy.key);
+        if(!enemy.skills.length)console.warn('적 스킬 연결 실패: Characters.baseName과 식별자를 확인하세요.',{
+            displayName:enemy.name,skillIdentifier:skillBase||enemy.key||'',baseName:enemy.baseName||''
+        });
         return;
     }
     enemy.baseName=base;
     const exactName=String(enemy.cardName||enemy.sourceName||enemy.name||'').replace(/^정예\s*·\s*/,'').trim();
     const exact=characters.find(card=>card.baseName===base&&card.name===exactName);
     const variants=characters.filter(card=>card.baseName===base);
-    const candidates=exact?[exact]:variants.filter(card=>card.rarity==='SSR');
-    const pool=candidates.length?candidates:variants.filter(card=>card.rarity==='SR');
-    const source=pool[Math.floor(Math.random()*pool.length)]||variants[0];
-    enemy.skills=(source?.skills||[]).filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
+    const ssr=variants.filter(card=>card.rarity==='SSR');
+    const sr=variants.filter(card=>card.rarity==='SR');
+    const pool=exact?[exact]:ssr.length?ssr:sr.length?sr:variants;
+    const seen=new Set();
+    enemy.skills=pool.flatMap(card=>card.skills||[]).filter(skill=>{
+        if(!skill.name||!ENEMY_SKILL_TYPES.has(skill.type))return false;
+        const id=`${skill.name}|${skill.type}`;
+        if(seen.has(id))return false;
+        seen.add(id);
+        return true;
+    }).map(skill=>({...skill}));
     if(!enemy.skills.length)enemy.skills=sheetSkills.filter(skill=>skill.name&&ENEMY_SKILL_TYPES.has(skill.type)).map(skill=>({...skill}));
+    if(!enemy.skills.length)console.warn('적 스킬 연결 실패: 해당 카드 계열에 지원되는 스킬이 없습니다.',{displayName:enemy.name,baseName:base});
 }
 function chooseEnemySkill(enemy,random=Math.random) {
     if(enemy.rogueStrongTurn||!enemy.skills?.length)return null;
@@ -8268,6 +8292,14 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 if (!alive()) return;
                 if(selectedSkill){
                     monsterData._readyAt[selectedSkill.index]=monsterData._actions+battleCooldown(selectedSkill.skill)+1;
+                    const enemyPanel=document.getElementById('combat-monster-area');
+                    enemyPanel?.classList.add('enemy-skill-active');
+                    try {
+                        await playUltimateCutin(monsterData,selectedSkill.skill,{enemy:true});
+                        if(!alive())return;
+                    } finally {
+                        enemyPanel?.classList.remove('enemy-skill-active');
+                    }
                     executeEnemySkill(monsterData,selectedSkill.skill,combatDeck);
                 } else {
                     const living = combatDeck.filter(c => c.stats.hp > 0);
@@ -14908,10 +14940,19 @@ function stopCombat3DBackground() {
     }
 }
 
-// 궁극기/스킬 사용 시 3D 공간 팝업 컷인 연출 함수 (대사 포함)
-async function playUltimateCutin(card, skill) {
-  if (window.yumecanSettings.calm) return;
-  sfx.playSkillUltimate();
+function enemySkillVisualEffect(skill) {
+    return ({
+        damage:'아군 1명에게 피해',true_damage:'아군 1명에게 방어 무시 피해',
+        vampire:'아군 1명에게 피해 · 체력 흡수',heal:'적 자신의 체력 회복',
+        buff_atk:'적의 공격력 증가',buff_def:'적의 방어력 증가',
+        debuff_atk:'아군 1명의 공격력 감소',debuff_def:'아군 1명의 방어력 감소'
+    })[skill.type] || '적의 특수 행동';
+}
+// 같은 컷인 틀을 사용하되 적 스킬은 진영과 별개로 적 전용 색·라벨을 표시합니다.
+async function playUltimateCutin(card, skill, {enemy=false}={}) {
+    const calm=window.yumecanSettings.calm;
+    if(calm&&!enemy)return;
+    if(!calm)sfx.playSkillUltimate();
     const cutinLayer = document.getElementById('combat-3d-cutin');
     const cardWrapper = document.getElementById('cutin-card-wrapper');
     const charImg = document.getElementById('cutin-character-img');
@@ -14921,26 +14962,35 @@ async function playUltimateCutin(card, skill) {
     if (!cutinLayer || !cardWrapper) return;
 
     // 캐릭터 이미지, 스킬 이름, 스킬 대사 매핑
+    cutinLayer.dataset.side=enemy?'enemy':'ally';
     cardWrapper.dataset.faction = card.faction || '기타';
+    const sourceLabel=document.getElementById('cutin-source');
+    sourceLabel.hidden=!enemy;
     document.getElementById('cutin-character-name').textContent = card.name;
     const factionBadge = document.getElementById('cutin-faction');
     factionBadge.dataset.faction = card.faction || '기타';
     factionBadge.textContent = card.faction || '기타';
     charImg.alt = card.name;
-    charImg.src = card.cardImageUrl || card.imageUrl || '';
+    charImg.src = enemy ? card.imageUrl || card.cardImageUrl || '' : card.cardImageUrl || card.imageUrl || '';
+    charImg.style.display=charImg.getAttribute('src')?'':'none';
     skillNameEl.textContent = skill.name;
+    const skillEffect=document.getElementById('cutin-skill-effect');
+    skillEffect.hidden=!enemy;
+    skillEffect.textContent=enemy?enemySkillVisualEffect(skill):'';
 
     if (dialogueEl) {
-        dialogueEl.textContent = skill.dialogue ? `"${skill.dialogue}"` : `"${card.name}, 전개 완료."`;
+        dialogueEl.textContent=skill.dialogue?`“${skill.dialogue}”`:enemy?'':`“${card.name}, 전개 완료.”`;
+        dialogueEl.hidden=enemy&&!skill.dialogue;
     }
 
     // 모달 및 애니메이션 트리거 (스케일 0 -> 1 팝업)
+    cardWrapper.style.transitionDuration=calm?'0ms':'';
     cutinLayer.classList.remove('hidden');
     cardWrapper.classList.remove('scale-0');
     cardWrapper.classList.add('scale-100', 'rotate-1', 'transition-transform', 'duration-300');
 
     // 연출 지속 시간 (약 1.4초 후 자동 퇴장)
-    await new Promise(res => setTimeout(res, 500));
+    await new Promise(res => setTimeout(res, enemy?Math.max(320,Math.round(800/Math.max(1,combatSpeedMultiplier))):500));
 
     cardWrapper.classList.remove('scale-100', 'rotate-1');
     cardWrapper.classList.add('scale-0');
