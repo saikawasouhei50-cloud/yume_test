@@ -943,6 +943,13 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #card-exchange-status{font-size:12px;min-height:18px;color:#536c91;margin:10px 0 0}
 .warehouse-equipment{margin-top:12px;border-top:1px solid #dce3ec;padding-top:10px}.warehouse-equipment summary{cursor:pointer;font-size:12px;font-weight:750;color:#506886;list-style-position:inside}
 .warehouse-equipment-holders{margin-top:9px;max-height:190px;overflow-y:auto;display:grid;gap:5px}.warehouse-equipment-holders>div{background:#fff;border:1px solid #e0e5ec;border-radius:9px;padding:7px 9px;font-size:11px;overflow-wrap:anywhere}
+.warehouse-traces{margin-top:12px;padding-top:11px;border-top:1px solid #dce3ec}
+.warehouse-traces summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;color:#506886;font-size:12px;font-weight:750}
+.warehouse-traces summary::-webkit-details-marker{display:none}.warehouse-traces summary::after{content:'⌄';font-size:18px;line-height:1;transition:transform .2s ease}.warehouse-traces[open] summary::after{transform:rotate(180deg)}
+.warehouse-traces summary:focus-visible{outline:3px solid #91a4c3;outline-offset:3px;border-radius:5px}
+.warehouse-traces-list{display:grid;gap:6px;max-height:240px;overflow-y:auto;margin-top:11px;padding-right:3px}
+.warehouse-traces-list>div{display:flex;justify-content:space-between;align-items:center;gap:12px;min-width:0;padding:9px 11px;border:1px solid #e2e7ef;border-radius:10px;background:#fff;color:#48566c;font-size:12px}
+.warehouse-traces-list span{min-width:0;overflow-wrap:anywhere}.warehouse-traces-list b{white-space:nowrap;color:#546b89;font-variant-numeric:tabular-nums}
 @media(max-width:767px){#home-view .dream-scene{grid-column:1;grid-row:1}#home-view .dream-attendance{grid-column:1;grid-row:2}#home-view .dream-menu{grid-column:1;grid-row:3}#home-view .dream-explore{grid-row:4}#home-view .dream-bottom{grid-row:5}}
 @media(max-width:800px){.dream-attendance{grid-template-columns:1fr}.dream-attendance-days{grid-template-columns:repeat(2,minmax(0,1fr))}.dream-redeem-grid{grid-template-columns:1fr}.dream-redeem-panel{padding:15px}}
 </style>
@@ -4902,7 +4909,8 @@ function displayWarehouse() {
         ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용'],
         ['끈기있는 영감',playerInspHp,'영감','영감의 방에서 사용']
     ].map(([name,count,category,desc])=>({name,count,category,desc}));
-    for(const [base,count] of Object.entries(playerCharacterTraces))items.push({name:`${base}의 족적`,count:safeItemCount(count),category:'재료',desc:`${base}을(를) 쓰러뜨려 획득 · 꿈의 교환에서 ${base}의 카드로 교환`});
+    const traceEntries=Object.entries(playerCharacterTraces).map(([base,count])=>[base,safeItemCount(count)]).filter(([base,count])=>base&&count>0).sort(([a],[b])=>a.localeCompare(b,'ko'));
+    items.push({name:'캐릭터의 족적',count:traceEntries.reduce((total,[,count])=>total+count,0),category:'재료',desc:`${traceEntries.length}명분 보유 · 꿈의 교환에서 해당 캐릭터의 카드로 교환`,searchTerms:traceEntries.map(([base])=>base).join(' '),traces:traceEntries});
     const equipmentGroups=new Map();
     for(const eq of playerEquipment){
         const key=eq.templateId || eq.id;
@@ -4918,7 +4926,7 @@ function displayWarehouse() {
     const furnitureCounts=new Map();
     for(const id of ownedFurniture)furnitureCounts.set(id,(furnitureCounts.get(id)||0)+1);
     for(const [id,count] of furnitureCounts){const t=furnitureItems.find(f=>f.id===id);items.push({name:t?.name||String(id),count,category:'가구',desc:'마이룸 보유 가구 (배치된 가구 포함)'});}
-    const visible=items.filter(i=>(zero||i.count>0)&&(!filter||filter===i.category)&&(!query||(i.name+' '+i.desc).toLowerCase().includes(query)));
+    const visible=items.filter(i=>(zero||i.count>0)&&(!filter||filter===i.category)&&(!query||(i.name+' '+i.desc+' '+(i.searchTerms||'')).toLowerCase().includes(query)));
     document.getElementById('warehouse-summary').textContent=`${visible.length}개 항목 표시 · 장비 ${equipmentGroups.size}종 / 총 ${playerEquipment.length}개 (장착 포함)`;
     const list=document.getElementById('warehouse-list');list.replaceChildren();
     for(const item of visible){const box=document.createElement('article');box.className='collection-item';
@@ -4926,6 +4934,21 @@ function displayWarehouse() {
         const count=document.createElement('b');count.textContent=`${Number(item.count).toLocaleString()}개`;
         const desc=document.createElement('p');desc.textContent=item.desc;
         box.append(title,count,desc);
+        if(item.traces){
+            const details=document.createElement('details');details.className='warehouse-traces';
+            const summary=document.createElement('summary');summary.textContent=`캐릭터별 수량 확인 · ${item.traces.length}명`;details.appendChild(summary);
+            const entries=document.createElement('div');entries.className='warehouse-traces-list';entries.setAttribute('role','list');
+            for(const [base,amount] of item.traces){
+                const row=document.createElement('div');row.setAttribute('role','listitem');
+                const name=document.createElement('span');name.textContent=base;
+                const owned=document.createElement('b');owned.textContent=`${amount.toLocaleString()}개`;
+                row.append(name,owned);entries.appendChild(row);
+            }
+            if(!item.traces.length){const empty=document.createElement('div');empty.textContent='아직 보유한 캐릭터의 족적이 없습니다.';entries.appendChild(empty);}
+            details.appendChild(entries);box.appendChild(details);
+            box.style.cursor='pointer';
+            box.addEventListener('click',event=>{if(!event.target.closest('details'))details.open=!details.open;});
+        }
         if(item.equipment){
             const details=document.createElement('details');details.className='warehouse-equipment';
             const summary=document.createElement('summary');summary.textContent=`장착 카드 확인 · ${item.equipment.filter(eq=>eq.equippedTo).length} / ${item.equipment.length}개 장착`;details.appendChild(summary);
