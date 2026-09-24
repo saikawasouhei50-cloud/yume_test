@@ -91,14 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             background: linear-gradient(90deg, #990000, #ff3366) !important;
             box-shadow: 0 0 8px rgba(255, 51, 102, 0.7);
         }
-        /* 📱 모바일 환경 대응 */
-        @media (max-width: 768px) {
-            .placed-furniture img { width: 60px !important; height: auto !important; }
-            .chibi-character { width: 40px !important; height: 40px !important; }
-            .chibi-character img { width: 100% !important; height: auto !important; }
-            .chibi-bubble { font-size: 10px !important; top: -30px !important; padding: 2px 6px !important; }
-        }
-
         /* 시간대별 필터 효과 (다크/블루 톤으로 조정) */
         .time-night { filter: brightness(0.8) contrast(1.2) sepia(0.2) hue-rotate(200deg); }
         .time-morning { filter: brightness(1.0) sepia(0.3) hue-rotate(190deg) saturate(0.6); }
@@ -280,9 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
 .memory-frame-picker{width:min(680px,100%);max-height:88dvh;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid #dce3ea;border-radius:18px;background:#fafbfd;color:#354050}
 .memory-frame-picker header{display:flex;justify-content:space-between;align-items:center;gap:8px}.memory-frame-picker h3{font-size:18px;font-weight:700}.memory-frame-picker p{font-size:12px;color:#637386}.memory-frame-picker input{width:100%;min-height:44px;border:1px solid #cbd5e1;border-radius:10px;padding:10px}
 .memory-frame-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;overflow-y:auto;min-height:0}.memory-frame-card{display:grid;justify-items:center;align-content:center;gap:6px;padding:10px;border:1px solid #d9e1e9;border-radius:10px;background:#fff;color:#354050;min-height:108px;overflow-wrap:anywhere;font-size:12px}.memory-frame-card img{width:58px;height:58px;object-fit:contain;image-rendering:pixelated}.memory-frame-card:hover{background:#edf2f7;border-color:#97acc1}
-@media(max-width:768px){.memory-figure-object{width:34px;height:34px}#myroom-view .placed-furniture.memory-frame-furniture .furniture-hitbox{width:44px!important;height:44px!important}}
+/* 모든 기기에서 같은 1000 × 625 좌표계를 사용하고 방 전체를 함께 축소한다. */
+#myroom-view #room-container{width:1000px;height:625px;transform:scale(var(--room-scale,1));transform-origin:top left}
+#myroom-view .furniture-hitbox.room-hitbox-edit{width:calc(44px / var(--room-scale,1))!important;height:calc(44px / var(--room-scale,1))!important}
 #myroom-view .pot-worker{--pot-worker-lift:50px;--pot-worker-side:22px}
-@media(max-width:768px){#myroom-view .pot-worker{--pot-worker-lift:25px;--pot-worker-side:13px}}
 
 </style>
 
@@ -6942,9 +6935,25 @@ function getGridPosFromScreen(screenX, screenY) {
     return { x: gridX, y: gridY };
 }
 
+let roomScaleObserver=null;
+function syncRoomScale(){
+    const wrapper=document.querySelector('#myroom-view .room-wrapper');
+    const room=document.getElementById('room-container');
+    if(!wrapper||!room)return;
+    const width=wrapper.clientWidth;
+    if(width>0)room.style.setProperty('--room-scale',String(width/1000));
+    if(!roomScaleObserver&&typeof ResizeObserver!=='undefined'){
+        roomScaleObserver=new ResizeObserver(()=>syncRoomScale());
+        roomScaleObserver.observe(wrapper);
+    }else if(!roomScaleObserver&&!syncRoomScale.fallbackBound){
+        window.addEventListener('resize',syncRoomScale);
+        syncRoomScale.fallbackBound=true;
+    }
+}
 
 // ================== ✨ 수정된 displayMyRoom (전체 코드) ✨ ==================
 function displayMyRoom() {
+    syncRoomScale();
     if(!currentVisitTargetUid)ensureLifeFurniture();
     const workshopButton=document.getElementById('open-life-workshop');
     workshopButton.classList.toggle('hidden',!!currentVisitTargetUid);
@@ -7095,8 +7104,9 @@ function displayMyRoom() {
     // 화분 이미지는 배치 기준점보다 위에 그려진다. 담당자는 화분의 실제 그림 옆에 세운다.
     const potWorker=working?.kind==='pot';
     if(potWorker)el.classList.add('pot-worker');
-    const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+4)):Math.random()*90;
-    const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+4)):Math.random()*90;
+    // 가구 앞쪽의 같은 그리드 위치를 사용하면 화면 폭이 달라도 거리와 앞뒤 관계가 유지된다.
+    const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+16)):Math.random()*90;
+    const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+16)):Math.random()*90;
     const iso = getIsoPos(gridX, gridY);
 
     el.style.left = potWorker?`calc(${iso.left}% + var(--pot-worker-side))`:`${iso.left}%`;
@@ -7898,22 +7908,6 @@ function syncFurnitureData() {
         }
     });
 }
-
-function getGridPosFromScreen(leftPercent, topPercent) {
-    // getIsoPos의 기준점(50, 45)과 계수(0.42, 0.24)를 사용함
-    const relX = leftPercent - 50;
-    const relY = topPercent - 45;
-
-    // 역행렬 계산식
-    const x = (relY / 0.24 + relX / 0.42) / 2;
-    const y = (relY / 0.24 - relX / 0.42) / 2;
-
-    return { x, y };
-}
-
-
-
-
 
 // ================== 🔨 배치 모드 로직 끝 ==================
 // ================== ✨ 마이룸 로직 끝 ✨ ==================
