@@ -939,6 +939,12 @@ html body #dismantle-selected-button,html body #confirm-dismantle-action{backgro
 .archive-confirm-card h2{font-size:20px;font-weight:800;margin:8px 0}
 .archive-confirm-details{margin:20px 0;border:1px solid #dfe6f0;background:#f4f7fb;border-radius:13px;padding:14px;font-size:13px;font-weight:700;line-height:1.7;overflow-wrap:anywhere}
 .archive-confirm-actions{justify-content:flex-end}
+.multi-select-card.dismantle-picked{outline:4px solid #54719a!important;outline-offset:-4px;background:#e7effb!important;opacity:1!important}
+.multi-select-card.dismantle-picked::after,.multi-select-card.dismantle-locked::after{position:absolute;top:8px;left:8px;z-index:30;padding:5px 9px;border-radius:8px;background:#405c82;color:#fff;font-size:12px;font-weight:800;line-height:1.2;pointer-events:none}
+.multi-select-card.dismantle-picked::after{content:'✓ 선택됨'}
+.multi-select-card.dismantle-locked{opacity:.48!important;cursor:not-allowed!important}
+.multi-select-card.dismantle-locked::after{content:'편찬 중';background:#677386}
+.multi-select-card:not(.dismantle-picked):not(.dismantle-locked){opacity:.78}
 @media(max-width:700px){.profile-title-selects{grid-template-columns:1fr}.archive-dismantle-panel{padding:15px}.archive-dismantle-bottom{align-items:stretch}.archive-dismantle-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.archive-dismantle-actions button{width:100%}.archive-confirm-card{padding:20px}}
 </style>
 <style id="shared-inspiration-dispatch-filters">
@@ -991,12 +997,19 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 .affinity-panel{margin:16px 0;padding:18px;border:1px solid #dce3ed;border-radius:18px;background:linear-gradient(135deg,#f5f7fc,#fff);color:#364458}
 .affinity-panel h3{font-size:17px;font-weight:800;margin:0 0 6px}.affinity-panel>p{font-size:12px;color:#728198;margin:0 0 14px;line-height:1.6}
 .affinity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.affinity-card{border:1px solid #dce3ed;border-radius:14px;background:#fff;padding:12px;min-width:0}.affinity-card strong{display:block;overflow-wrap:anywhere;font-size:13px}.affinity-card small{display:block;color:#66768c;line-height:1.5;margin:6px 0}.affinity-card progress{width:100%;accent-color:#9aaad1;height:10px}.affinity-card button{min-height:36px;border:1px solid #bfcbe0;border-radius:10px;background:#eef2fa;padding:6px 11px;color:#455a7c;font-size:12px;font-weight:700}.affinity-card button:disabled{opacity:.5}
-.affinity-showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affinity-showcase label{min-width:0;font-size:11px;color:#64758e}.affinity-showcase select{width:100%;min-width:0;margin-top:4px;padding:8px;border:1px solid #d3dce9;border-radius:9px;background:#fff;color:#405069}.affinity-badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.affinity-badge{padding:5px 9px;border-radius:999px;border:1px solid #c4cfe2;background:#edf1fa;color:#496085;font-size:11px;font-weight:800}.affinity-master-frame{outline:3px double #9b9bcf;outline-offset:2px}.affinity-master-label{color:#6f6197;font-weight:800}
+.affinity-showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affinity-showcase label{min-width:0;font-size:11px;color:#64758e}.affinity-showcase select{width:100%;min-width:0;margin-top:4px;padding:8px;border:1px solid #d3dce9;border-radius:9px;background:#fff;color:#405069}.affinity-badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.affinity-badge{padding:5px 9px;border-radius:999px;border:1px solid #c4cfe2;background:#edf1fa;color:#496085;font-size:11px;font-weight:800}.affinity-master-label{color:#6f6197;font-weight:800}
 .affinity-reward-strip{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.affinity-reward-strip span{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border:1px solid #d9e1ee;border-radius:9px;background:#fff;color:#53657e;font-size:11px;font-weight:700}.affinity-reward-strip b{color:#425b83}
 .affinity-panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.affinity-panel-header button{min-height:38px;padding:8px 12px;border-radius:10px;border:1px solid #c9d5e6;background:#fff;color:#456080;font-size:12px;font-weight:750;cursor:pointer}.affinity-panel-header button[aria-expanded="true"]{background:#e8eef9;border-color:#9eafcc}
 .affinity-all-panel{margin-top:16px;padding-top:14px;border-top:1px solid #e0e6ef}.affinity-all-panel[hidden]{display:none}.affinity-all-panel input{width:100%;min-height:42px;margin:0 0 12px;padding:9px 12px;border:1px solid #d1dce9;border-radius:10px;background:#fff;color:#364458;font-size:13px}.affinity-all-list{max-height:420px;overflow:auto;align-content:start}.affinity-card .affinity-current{margin:8px 0 0;color:#59709a;font-size:11px;font-weight:700}.affinity-card .affinity-next{margin:4px 0 0;color:#7d899b;font-size:11px}
 .combat-affinity-summary{margin-top:12px;text-align:left;font-size:12px;color:#536382}.combat-affinity-summary[hidden]{display:none}.combat-affinity-summary details{border:1px solid #dce3ed;border-radius:10px;background:#f8faff}.combat-affinity-summary summary{padding:10px 12px;cursor:pointer;font-weight:750;list-style-position:inside}.combat-affinity-summary ul{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0;list-style:none}.combat-affinity-summary li{border:1px solid #e0e5ef;border-radius:8px;background:#fff;padding:5px 8px;overflow-wrap:anywhere}
 @media(max-width:600px){.affinity-showcase{grid-template-columns:1fr}.affinity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affinity-panel{padding:13px}}
+</style>
+<style id="warehouse-tabs-style">
+.warehouse-tabs{display:flex;gap:7px;overflow-x:auto;padding:3px 2px 10px;margin:14px 0 8px;scrollbar-width:thin}
+.warehouse-tabs button{flex:none;min-height:42px;padding:9px 14px;border:1px solid #d8dfe9;border-radius:12px;background:#fff;color:#586779;font-size:12px;font-weight:750;white-space:nowrap;cursor:pointer}
+.warehouse-tabs button[aria-selected="true"]{border-color:#556d90;background:#556d90;color:#fff}
+.warehouse-tabs button:focus-visible{outline:3px solid #a0b1ca;outline-offset:2px}
+@media(max-width:640px){.warehouse-tabs{margin-left:-2px;margin-right:-2px}.warehouse-tabs button{min-height:44px;padding:9px 12px}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -1094,7 +1107,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
   </div>
   <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
  </div>
- <section id="home-attendance" class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button" onclick="claimDailyAttendance()">오늘 보상 받기</button></section>
+ <section id="home-attendance" class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button">오늘 보상 받기</button></section>
  <nav class="dream-menu" aria-label="주요 메뉴">
   <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
   <div class="dream-menu-grid">
@@ -1613,7 +1626,8 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 
 <div id="warehouse-view" class="hidden">
 <h2 class="text-2xl font-bold mb-3">창고</h2><p class="mb-3 text-sm">현재 보유 아이템을 한곳에서 확인하세요. 탐사 중인 로그라이크의 임시 영감·유물과 미정산 장비는 탐사 화면에서 확인할 수 있습니다.</p>
-<div class="collection-toolbar"><input id="warehouse-search" placeholder="아이템 이름·효과 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><select id="warehouse-filter" aria-label="아이템 종류" onchange="displayWarehouse()"><option value="">전체</option><option>영감</option><option>장비</option><option>뽑기권</option><option>재료</option><option>생활</option><option>탐사</option><option>재화</option><option>가구</option></select><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
+<div id="warehouse-tabs" class="warehouse-tabs" role="tablist" aria-label="창고 분류"><button type="button" role="tab" data-warehouse-tab="all" aria-selected="true">전체</button><button type="button" role="tab" data-warehouse-tab="resources" aria-selected="false">재화·소모품</button><button type="button" role="tab" data-warehouse-tab="equipment" aria-selected="false">장비</button><button type="button" role="tab" data-warehouse-tab="traces" aria-selected="false">족적</button><button type="button" role="tab" data-warehouse-tab="furniture" aria-selected="false">가구</button><button type="button" role="tab" data-warehouse-tab="workshop" aria-selected="false">공방</button><button type="button" role="tab" data-warehouse-tab="inspiration" aria-selected="false">영감·소환</button></div>
+<div class="collection-toolbar"><input id="warehouse-search" placeholder="현재 탭에서 아이템 검색" aria-label="아이템 검색" oninput="displayWarehouse()"><label><input id="warehouse-zero" type="checkbox" onchange="displayWarehouse()"> 미보유도 표시</label></div>
 <p id="warehouse-summary" class="text-sm my-3" role="status"></p><div id="warehouse-list" class="collection-grid"></div>
 <div id="affinity-potion-modal" class="affinity-potion-modal" hidden role="dialog" aria-modal="true" aria-labelledby="affinity-potion-title"><div class="affinity-potion-panel"><span class="menu-eyebrow">DREAM ELIXIR</span><h3 id="affinity-potion-title">꿈결의 영약</h3><p>선택한 캐릭터의 호감도를 최대 200 올립니다. 하루 획득 상한은 사용하지 않으며, 호감도 최대치에서는 사용할 수 없습니다.</p><label for="affinity-potion-target">사용할 캐릭터</label><select id="affinity-potion-target"></select><div id="affinity-potion-preview" class="affinity-potion-preview" role="status" aria-live="polite"></div><div class="affinity-potion-actions"><button id="affinity-potion-close" type="button">취소</button><button id="affinity-potion-confirm" type="button">1개 사용</button></div></div></div>
 <div class="collection-toolbar"><button onclick="switchTab('breeding')">영감의 방</button><button onclick="switchTab('inventory')">카드·장비 관리</button><button onclick="switchTab('gacha')">뽑기</button><button onclick="switchTab('myroom')">마이룸</button></div></div>
@@ -1741,7 +1755,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div>
                 
 
-                <div id="life-workshop-modal" class="life-workshop-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 공방"><div class="life-workshop-dialog"><div class="life-workshop-topbar"><strong>✦ 꿈의 공방</strong><button id="close-life-workshop" type="button" aria-label="꿈의 공방 닫기">닫기 ✕</button></div><section class="life-panel" id="life-panel" aria-label="꿈의 공방"></section></div></div><div id="life-worker-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="공방 담당 카드 선택"><div class="life-worker-dialog"><header><h3>담당 카드 선택</h3><button type="button" id="life-worker-close" aria-label="닫기">✕</button></header><p>서고에 보유한 카드를 선택하세요. 방문객도 담당할 수 있어요.</p><input id="life-worker-search" type="search" placeholder="카드 이름 검색" aria-label="담당 카드 검색"><div id="life-worker-list" class="life-worker-list"></div></div></div><div id="memory-frame-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="기억의 피규어에 넣을 카드 선택"><div class="memory-frame-picker"><header><h3>기억의 피규어 · 카드 선택</h3><button type="button" id="memory-frame-close" aria-label="닫기">✕</button></header><p>서고의 카드를 골라 작은 피규어로 마이룸에 배치하세요. 배치 모드에서 전시 카드를 바꿀 수 있습니다.</p><input id="memory-frame-search" type="search" placeholder="카드 이름 검색" aria-label="피규어 카드 검색"><div id="memory-frame-list" class="memory-frame-list"></div></div></div><div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><div class="room-workshop-launch"><button id="open-life-workshop" type="button" aria-haspopup="dialog" aria-controls="life-workshop-modal">✦ <strong>꿈의 공방</strong><span id="life-workshop-summary"></span><span aria-hidden="true">↗</span></button></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰·카드 테두리</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
+                <div id="life-workshop-modal" class="life-workshop-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 공방"><div class="life-workshop-dialog"><div class="life-workshop-topbar"><strong>✦ 꿈의 공방</strong><button id="close-life-workshop" type="button" aria-label="꿈의 공방 닫기">닫기 ✕</button></div><section class="life-panel" id="life-panel" aria-label="꿈의 공방"></section></div></div><div id="life-worker-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="공방 담당 카드 선택"><div class="life-worker-dialog"><header><h3>담당 카드 선택</h3><button type="button" id="life-worker-close" aria-label="닫기">✕</button></header><p>서고에 보유한 카드를 선택하세요. 방문객도 담당할 수 있어요.</p><input id="life-worker-search" type="search" placeholder="카드 이름 검색" aria-label="담당 카드 검색"><div id="life-worker-list" class="life-worker-list"></div></div></div><div id="memory-frame-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="기억의 피규어에 넣을 카드 선택"><div class="memory-frame-picker"><header><h3>기억의 피규어 · 카드 선택</h3><button type="button" id="memory-frame-close" aria-label="닫기">✕</button></header><p>서고의 카드를 골라 작은 피규어로 마이룸에 배치하세요. 배치 모드에서 전시 카드를 바꿀 수 있습니다.</p><input id="memory-frame-search" type="search" placeholder="카드 이름 검색" aria-label="피규어 카드 검색"><div id="memory-frame-list" class="memory-frame-list"></div></div></div><div class="room-summary"><span>작은 쉼터</span><span id="room-summary-counts"></span></div><div class="room-workshop-launch"><button id="open-life-workshop" type="button" aria-haspopup="dialog" aria-controls="life-workshop-modal">✦ <strong>꿈의 공방</strong><span id="life-workshop-summary"></span><span aria-hidden="true">↗</span></button></div><section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section><div class="room-wrapper">
     <div id="room-container">
 
         <div class="absolute inset-0 bg-center bg-no-repeat"
@@ -4084,7 +4098,7 @@ let playerRaidLastResetDate = null;
                 document.getElementById('room-affinity-status').textContent=`${base} 호감도 +${amount}${oldLevel<5&&affinityLevel(base)===5?' · 전용 장비 획득!':''}`;
                 renderRoomAffinity();saveGame();
             }
-            const AFFINITY_REWARDS=['미해금','HP +1%','프로필 배지','ATK·DEF +1%','명찰·테두리','전용 장비'];
+            const AFFINITY_REWARDS=['미해금','HP +1%','프로필 배지','ATK·DEF +1%','명찰','전용 장비'];
             function placedAffinityBases(){
                 return [...new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean))];
             }
@@ -4987,6 +5001,7 @@ async function claimDailyAttendance(){
     }
     updateUI();renderDailyAttendance();
 }
+document.getElementById('attendance-claim').addEventListener('click',claimDailyAttendance);
 let affinityPotionReturnFocus=null;
 function closeAffinityPotionModal(){
     const modal=document.getElementById('affinity-potion-modal');modal.hidden=true;
@@ -5354,9 +5369,9 @@ function useAffinityPotion(){
             if(!lifeWorkshopModal.classList.contains('hidden')&&(playerLife.workshops.some(Boolean)||playerLife.planters.some(Boolean)))renderLifePanel();
         },30000);
 
+let activeWarehouseTab='all';
 function displayWarehouse() {
     const query=(document.getElementById('warehouse-search').value||'').trim().toLowerCase();
-    const filter=document.getElementById('warehouse-filter').value;
     const zero=document.getElementById('warehouse-zero').checked;
     const items=[
         ['보석',playerCurrency,'재화','뽑기·상점 등에서 사용하는 재화'],
@@ -5364,21 +5379,22 @@ function displayWarehouse() {
         ['잉크병',playerInkwells,'재료','카드 성장 재료'],
         ['책갈피',playerBookmarks,'재화','던전 입장에 사용'],
         ['이벤트 포인트',playerEventPoints,'재화','현재 이벤트 교환소에서 사용'],
-        ['꿈의 파편',playerDreamFragments,'재료','소환 1회마다 1개 · 꿈의 교환에서 등급별 카드와 교환'],
+        ['꿈의 파편',playerDreamFragments,'재료','소환 1회마다 1개 · 꿈의 교환에서 등급별 카드와 교환','inspiration'],
         ['꿈결의 영약',playerAffinityPotions,'재료','캐릭터 호감도 최대 +200 · 하루 상한 무시 · 캐릭터를 선택해 사용'],
         ['잊힌 서표',playerArchiveTokens,'탐사','폐기된 서고에서 발견 · 꿈의 교환에서 잉크병 또는 꿈의 파편으로 교환'],
-        ...Object.entries(LIFE_MATERIALS).map(([id,item])=>[item.name,playerLife.materials[id],'재료',item.desc]),
-        ...Object.entries(LIFE_RECIPES).filter(([id])=>id!=='frame').map(([id,item])=>[item.name,playerLife.items[id],'생활',item.desc+' · '+lifeCostText(item.cost)]),
-        ['SSR 확정 뽑기권',playerSsrTickets,'뽑기권','뽑기 화면에서 사용'],
-        ['공격적 영감',playerInspAtk,'영감','영감의 방에서 사용'],
-        ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용'],
-        ['끈기있는 영감',playerInspHp,'영감','영감의 방에서 사용']
-    ].map(([name,count,category,desc])=>({name,count,category,desc}));
+        ...Object.entries(LIFE_MATERIALS).map(([id,item])=>[item.name,playerLife.materials[id],'재료',item.desc,'workshop']),
+        ...Object.entries(LIFE_RECIPES).filter(([id])=>id!=='frame').map(([id,item])=>[item.name,playerLife.items[id],'생활',item.desc+' · '+lifeCostText(item.cost),'workshop']),
+        ['SSR 확정 뽑기권',playerSsrTickets,'뽑기권','뽑기 화면에서 사용','inspiration'],
+        ['공격적 영감',playerInspAtk,'영감','영감의 방에서 사용','inspiration'],
+        ['방어적 영감',playerInspDef,'영감','영감의 방에서 사용','inspiration'],
+        ['끈기있는 영감',playerInspHp,'영감','영감의 방에서 사용','inspiration']
+    ].map(([name,count,category,desc,tab])=>({name,count,category,desc,tab:tab||'resources'}));
     const traceEntries=Object.entries(playerCharacterTraces).map(([base,count])=>[base,safeItemCount(count)]).filter(([base,count])=>base&&count>0).sort(([a],[b])=>a.localeCompare(b,'ko'));
-    items.push({name:'캐릭터의 족적',count:traceEntries.reduce((total,[,count])=>total+count,0),category:'재료',desc:`${traceEntries.length}명분 보유 · 꿈의 교환에서 해당 캐릭터의 카드로 교환`,searchTerms:traceEntries.map(([base])=>base).join(' '),traces:traceEntries});
+    items.push({name:'캐릭터의 족적',count:traceEntries.reduce((total,[,count])=>total+count,0),category:'재료',tab:'traces',desc:`${traceEntries.length}명분 보유 · 꿈의 교환에서 해당 캐릭터의 카드로 교환`,searchTerms:traceEntries.map(([base])=>base).join(' '),traces:traceEntries});
     const equipmentGroups=new Map();
+    const templateById=new Map(equipmentTemplates.map(template=>[template.id,template]));
     for(const eq of playerEquipment){
-        const key=eq.templateId || eq.id;
+        const key=templateById.get(eq.templateId)?.source==='affinity'?'affinity-all':eq.templateId || eq.id;
         if(!equipmentGroups.has(key))equipmentGroups.set(key,[]);
         equipmentGroups.get(key).push(eq);
     }
@@ -5386,12 +5402,14 @@ function displayWarehouse() {
         const t=equipmentTemplates.find(template=>template.id===templateId);
         const equipped=group.filter(eq=>eq.equippedTo);
         const status=`미장착 ${group.length-equipped.length}개 · 장착 ${equipped.length}개`;
-        items.push({name:t?.name||'알 수 없는 장비',count:group.length,category:'장비',desc:`${t?.rarity||''} · ${t?.desc||templateId} · ${status}${t?.source==='rogue'?' · 서고 전용':''}`,equipment:group});
+        items.push({name:templateId==='affinity-all'?'유대의 증표':t?.name||'알 수 없는 장비',count:group.length,category:'장비',tab:'equipment',desc:templateId==='affinity-all'?`SSR · 호감도 Lv.5 보상 · 해당 캐릭터 전용 · ${status}`:`${t?.rarity||''} · ${t?.desc||templateId} · ${status}${t?.source==='rogue'?' · 서고 전용':''}`,equipment:group});
     }
     const furnitureCounts=new Map();
     for(const id of ownedFurniture)furnitureCounts.set(id,(furnitureCounts.get(id)||0)+1);
-    for(const [id,count] of furnitureCounts){const t=furnitureItems.find(f=>f.id===id);items.push({name:t?.name||String(id),count,category:'가구',desc:'마이룸 보유 가구 (배치된 가구 포함)'});}
-    const visible=items.filter(i=>(zero||i.count>0)&&(!filter||filter===i.category)&&(!query||(i.name+' '+i.desc+' '+(i.searchTerms||'')).toLowerCase().includes(query)));
+    for(const [id,count] of furnitureCounts){const t=furnitureItems.find(f=>f.id===id);items.push({name:t?.name||String(id),count,category:'가구',tab:'furniture',desc:'마이룸 보유 가구 (배치된 가구 포함)'});}
+    const tabs=document.querySelectorAll('#warehouse-tabs [data-warehouse-tab]');
+    tabs.forEach(button=>{const selected=button.dataset.warehouseTab===activeWarehouseTab;button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;});
+    const visible=items.filter(i=>(zero||i.count>0)&&(activeWarehouseTab==='all'||activeWarehouseTab===i.tab)&&(!query||(i.name+' '+i.desc+' '+(i.searchTerms||'')).toLowerCase().includes(query)));
     document.getElementById('warehouse-summary').textContent=`${visible.length}개 항목 표시 · 장비 ${equipmentGroups.size}종 / 총 ${playerEquipment.length}개 (장착 포함)`;
     const list=document.getElementById('warehouse-list');list.replaceChildren();
     for(const item of visible){const box=document.createElement('article');box.className='collection-item';
@@ -5436,7 +5454,8 @@ function displayWarehouse() {
             const holders=document.createElement('div');holders.className='warehouse-equipment-holders';
             for(const eq of item.equipment){
                 const wearer=playerInventory.find(card=>card.id===eq.equippedTo);
-                const label=document.createElement('div');label.textContent=wearer?`장착 · ${wearer.name} (퇴고 +${Number(wearer.level)||0})`:eq.equippedTo?'장착 정보가 없는 카드':'미장착';
+                const label=document.createElement('div');const base=templateById.get(eq.templateId)?.exclusiveBase;
+                label.textContent=(base?`${base} · `:'')+(wearer?`장착 · ${wearer.name} (퇴고 +${Number(wearer.level)||0})`:eq.equippedTo?'장착 정보가 없는 카드':'미장착');
                 holders.appendChild(label);
             }
             details.appendChild(holders);box.appendChild(details);
@@ -5447,6 +5466,18 @@ function displayWarehouse() {
     }
     if(!visible.length)list.textContent='조건에 맞는 보유 아이템이 없습니다.';
 }
+document.getElementById('warehouse-tabs').addEventListener('click',event=>{
+    const tab=event.target.closest('[data-warehouse-tab]');if(!tab)return;
+    activeWarehouseTab=tab.dataset.warehouseTab;displayWarehouse();tab.focus();
+});
+document.getElementById('warehouse-tabs').addEventListener('keydown',event=>{
+    if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;
+    const tabs=[...document.querySelectorAll('#warehouse-tabs [data-warehouse-tab]')];
+    const index=tabs.indexOf(document.activeElement);if(index<0)return;
+    event.preventDefault();
+    const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+    tabs[next].click();
+});
 window.displayWarehouse=displayWarehouse;
 
             // --- 업적 관련 함수 ---
@@ -6872,17 +6903,13 @@ function pullCharacter(allowedRarities = null, gachaType = 'normal') {
                 cardElement.setAttribute('aria-pressed',String(selectedCardsToDismantle.has(cardInstance.id)));
                 const isInDeck = playerDeck.some(deckCard => deckCard.id === cardInstance.id);
                 if (isInDeck) {
+                    cardElement.classList.add('dismantle-locked');
                     cardElement.classList.add('opacity-40', 'cursor-not-allowed', 'bg-red-900/30');
                     cardElement.title = "덱에 포함되어 파쇄 불가";
                 } else {
                     cardElement.classList.add('cursor-pointer');
                 }
-                if (selectedCardsToDismantle.has(cardInstance.id)) {
-                    cardElement.classList.remove('bg-black/20');
-                    cardElement.classList.add('border-4', 'border-yellow-400', 'bg-blue-900/50');
-                } else if (!isInDeck) {
-                    cardElement.classList.add('border', 'border-gray-500', 'bg-black/20');
-                }
+                if (!isInDeck)updateDismantleCardSelection(cardElement);
                 cardElement.querySelector('[data-action="set-representative"]').classList.add('hidden');
             }
             inventoryContainer.appendChild(cardElement);
@@ -9356,7 +9383,6 @@ function createCard(character, options = {}) {
     card.dataset.rarity = displayRarity;
     card.className = `rarity-${displayRarity} relative text-center rounded-lg shadow-md p-2 transform transition-transform duration-300 hover:scale-105 cursor-pointer`;
     const affinityRank=cardInstance?affinityLevel(character.baseName):0;
-    if(affinityRank>=4)card.classList.add('affinity-master-frame');
     card.title = character.name+(affinityRank?` · 호감도 Lv.${affinityRank}`:'');
 
     // ✨ 1. 등급 텍스트 색상을 다크 테마용 밝은 네온 컬러로 변경
@@ -9521,7 +9547,6 @@ function getSkillDescription(skill) {
     document.getElementById('detail-card-name').title = `호감도 ${affinityLevel(character.baseName)}/5 · 베이스 ${character.baseName}`;
     const affinityRank=affinityLevel(character.baseName);
     document.getElementById('detail-affinity-status').textContent=`호감도 Lv.${affinityRank}/5 · ${character.baseName}${affinityRank>=3?' · HP +1% / ATK·DEF +1%':affinityRank>=1?' · HP +1%':''}${affinityRank>=5?' · 전용 장비 획득':''}`;
-    document.getElementById('detail-card-image').parentElement.classList.toggle('affinity-master-frame',affinityRank>=4);
     const rarityEl = document.getElementById('detail-card-rarity');
 
     // 유전된 등급이 있으면 그것을 표시
@@ -10134,6 +10159,7 @@ function updateMultiSelectUI() {
 }
 function updateDismantleCardSelection(cardElement) {
     const selected=selectedCardsToDismantle.has(cardElement.dataset.uniqueId);
+    cardElement.classList.toggle('dismantle-picked',selected);
     cardElement.classList.toggle('border-4',selected);
     cardElement.classList.toggle('border-yellow-400',selected);
     cardElement.classList.toggle('bg-blue-900/50',selected);
@@ -10947,7 +10973,6 @@ function displayProfileView() {
         repName.textContent = "대표 카드를 선택해주세요";
         repName.className = "text-gray-500 font-bold text-lg mt-2";
     }
-    repImg.parentElement.classList.toggle('affinity-master-frame',Boolean(charData&&affinityLevel(charData.baseName)>=4));
 }
 
 // 2. 프로필 저장 버튼 클릭 시
@@ -12606,7 +12631,7 @@ async function openOtherUserProfile(initialData) {
 
             <div class="flex flex-col md:flex-row gap-8 items-start">
                 <div class="w-full md:w-1/2 flex flex-col items-center">
-                    <div class="relative w-full max-w-[240px] aspect-[2/3] bg-black/30 rounded-lg overflow-hidden border-4 border-gray-700 shadow-xl mb-4 group ${affinityLevel(findCharacter(userData.inventory?.find(c=>c.id===userData.profile?.repCardId)?.name)?.baseName,userData.affinity)>=4?'affinity-master-frame':''}">
+                    <div class="relative w-full max-w-[240px] aspect-[2/3] bg-black/30 rounded-lg overflow-hidden border-4 border-gray-700 shadow-xl mb-4 group">
                         <img src="${imgUrl}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                         <div class="absolute bottom-2 left-0 right-0 text-center">
