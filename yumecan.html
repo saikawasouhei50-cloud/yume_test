@@ -3219,7 +3219,7 @@ document.getElementById('combat-run-button').addEventListener('click', () => {
         // 유저의 파견 상태 저장 객체 (로컬스토리지/파이어베이스 연동을 위해 세팅)
         // playerDispatches = { mission_4h: { endTime: 123456789, dispatchedIds: [...] }, ... }
         let playerDispatches = {};
-        dispatchMissions.push({id:'mission_1h',name:'구역 00: 새벽 골목 순찰',duration:3600000,durationLabel:'1시간',rewards:{fountainPens:30,currency:3},conditionDesc:'조건: 카드 1명 이상 (진영 제한 없음)',checkCondition:team=>team.length>=1},
+        dispatchMissions.push({id:'mission_1h',name:'구역 00: 새벽 골목 순찰',duration:10000,durationLabel:'10초',rewards:{fountainPens:30,currency:3},conditionDesc:'조건: 카드 1명 이상 (진영 제한 없음)',checkCondition:team=>team.length>=1},
         {id:'mission_6h',name:'지원 구역: 기억의 자료실',duration:21600000,durationLabel:'6시간',rewards:{fountainPens:200,currency:30},conditionDesc:'조건: 마법사 또는 사제 1명 이상, 총 퇴고 합 8 이상',checkCondition:team=>team.some(c=>['마법사','사제'].includes(c.inherited?.faction||findCharacter(c.name)?.faction))&&team.reduce((n,c)=>n+(Number(c.level)||0),0)>=8});
 
 let dispatchReports = [];
