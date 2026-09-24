@@ -8295,8 +8295,13 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     const enemyPanel=document.getElementById('combat-monster-area');
                     enemyPanel?.classList.add('enemy-skill-active');
                     try {
-                        await playUltimateCutin(monsterData,selectedSkill.skill,{enemy:true});
+                        await playUltimateCutin(monsterData,selectedSkill.skill,{enemy:true,speed:combatSpeedMultiplier});
                         if(!alive())return;
+                    } catch(error) {
+                        // 화면 연출 문제로 실제 전투까지 중단하지 않습니다.
+                        console.warn('적 스킬 컷인 표시 실패',error);
+                        document.getElementById('combat-3d-cutin')?.classList.add('hidden');
+                        document.getElementById('cutin-card-wrapper')?.classList.add('scale-0');
                     } finally {
                         enemyPanel?.classList.remove('enemy-skill-active');
                     }
@@ -14949,7 +14954,7 @@ function enemySkillVisualEffect(skill) {
     })[skill.type] || '적의 특수 행동';
 }
 // 같은 컷인 틀을 사용하되 적 스킬은 진영과 별개로 적 전용 색·라벨을 표시합니다.
-async function playUltimateCutin(card, skill, {enemy=false}={}) {
+async function playUltimateCutin(card, skill, {enemy=false,speed=1}={}) {
     const calm=window.yumecanSettings.calm;
     if(calm&&!enemy)return;
     if(!calm)sfx.playSkillUltimate();
@@ -14990,7 +14995,8 @@ async function playUltimateCutin(card, skill, {enemy=false}={}) {
     cardWrapper.classList.add('scale-100', 'rotate-1', 'transition-transform', 'duration-300');
 
     // 연출 지속 시간 (약 1.4초 후 자동 퇴장)
-    await new Promise(res => setTimeout(res, enemy?Math.max(320,Math.round(800/Math.max(1,combatSpeedMultiplier))):500));
+    const playbackSpeed=Number(speed);
+    await new Promise(res => setTimeout(res, enemy?Math.max(320,Math.round(800/(Number.isFinite(playbackSpeed)&&playbackSpeed>0?playbackSpeed:1))):500));
 
     cardWrapper.classList.remove('scale-100', 'rotate-1');
     cardWrapper.classList.add('scale-0');
