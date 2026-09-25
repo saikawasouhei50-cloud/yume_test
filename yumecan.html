@@ -1156,6 +1156,25 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-request-history{margin-top:9px;font-size:11px;color:#65788d}
 #myroom-view .room-request-history article{padding:9px 0;border-top:1px solid #e8edf3;line-height:1.55}
 #myroom-view .room-request-history p{margin:4px 0}
+.room-request-result{position:fixed;inset:0;z-index:100002;display:flex;justify-content:center;align-items:center;padding:16px;background:#253349b5;backdrop-filter:blur(5px)}
+.room-request-result.hidden{display:none}
+.room-request-result,.room-request-result *{box-sizing:border-box}
+.room-request-result-window{width:min(640px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;padding:23px;border:1px solid #d5e0ed;border-radius:19px;background:#f9fbfe;box-shadow:0 24px 70px #1a263552;color:#394c64}
+.room-request-result-kicker{margin:0 0 5px;color:#7c8fa8;font-size:10px;font-weight:750;letter-spacing:.14em}
+.room-request-result-window h2{margin:0 0 17px;font-size:23px;line-height:1.35}
+.room-request-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;padding:16px 12px;border:1px solid #dae4ef;border-radius:15px;background:linear-gradient(145deg,#f4eff9,#edf4fa)}
+.room-request-person{min-width:0;margin:0;text-align:center}
+.room-request-person img{display:block;width:82px;height:94px;object-fit:contain;margin:0 auto;image-rendering:pixelated;filter:drop-shadow(0 3px 2px #44516850)}
+.room-request-person figcaption{min-height:36px;overflow-wrap:anywhere;font-size:12px;font-weight:700;line-height:1.5}
+.room-request-person figcaption span{display:block;color:#71839a;font-size:10px;font-weight:600}
+.room-request-person blockquote{position:relative;min-height:76px;margin:8px 0 0;padding:11px 12px;border:1px solid #d9e4f0;border-radius:12px;background:#fff;color:#3b526c;font-size:12px;line-height:1.6;text-align:left;overflow-wrap:anywhere}
+.room-request-person blockquote::before{content:'';position:absolute;top:-6px;left:calc(50% - 5px);width:10px;height:10px;background:#fff;border-top:1px solid #d9e4f0;border-left:1px solid #d9e4f0;transform:rotate(45deg)}
+.room-request-result-item{margin:14px 0;padding:9px 12px;border:1px solid #e0e7f0;border-radius:10px;background:#fff;text-align:center;font-size:12px;overflow-wrap:anywhere}
+.room-request-reward{padding:14px;border:1px solid #d9e4ef;border-radius:13px;background:#fff}
+.room-request-reward strong{display:block;margin-bottom:9px;font-size:11px;color:#71839a;letter-spacing:.06em}
+.room-request-reward-list{display:flex;flex-wrap:wrap;gap:8px}.room-request-reward-list span{padding:8px 11px;border:1px solid #d5e2f0;border-radius:9px;background:#f1f6fb;font-size:12px;font-weight:700}
+.room-request-result-close{display:block;width:100%;min-height:43px;margin-top:16px;border:1px solid #aebfd4;border-radius:10px;background:#e9f1fa;color:#38516d;font-weight:750}
+@media(max-width:420px){.room-request-result-window{padding:16px}.room-request-stage{gap:8px;padding:12px 8px}.room-request-person img{width:65px;height:76px}.room-request-person blockquote{padding:9px;font-size:11px}}
 #myroom-view .room-rail .room-workshop-launch button{margin-top:12px;min-height:46px;border-radius:11px;background:#edf2f9}
 .dream-fishing-overlay{position:fixed;inset:0;z-index:75;display:flex;align-items:center;justify-content:center;padding:12px;background:#253349ab}
 .dream-fishing-overlay.hidden{display:none}
@@ -2064,6 +2083,19 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
   </aside>
 </div>
 <div id="dream-fishing-modal" class="dream-fishing-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 식탁"><div class="dream-fishing-dialog"><div class="dream-fishing-top"><strong>✦ 꿈의 식탁</strong><button id="dream-fishing-close" type="button">닫기 ✕</button></div><div id="dream-fishing-content" class="dream-fishing-content"></div></div></div>
+<div id="room-request-result" class="room-request-result hidden" role="dialog" aria-modal="true" aria-labelledby="room-request-result-title" tabindex="-1">
+  <div class="room-request-result-window">
+    <p class="room-request-result-kicker">A MEMORY MADE · 부탁 완료</p>
+    <h2 id="room-request-result-title"></h2>
+    <div class="room-request-stage">
+      <figure class="room-request-person"><img id="room-request-visitor-image" alt=""><figcaption><span>부탁한 방문객</span><b id="room-request-visitor-name"></b></figcaption><blockquote id="room-request-visitor-line"></blockquote></figure>
+      <figure class="room-request-person"><img id="room-request-worker-image" alt=""><figcaption><span>활동한 담당</span><b id="room-request-worker-name"></b></figcaption><blockquote id="room-request-worker-line"></blockquote></figure>
+    </div>
+    <p id="room-request-result-item" class="room-request-result-item"></p>
+    <div class="room-request-reward"><strong>획득 보상</strong><div id="room-request-reward-list" class="room-request-reward-list"></div></div>
+    <button id="room-request-result-close" class="room-request-result-close" type="button">확인 · 기억 기록으로</button>
+  </div>
+</div>
 <div id="furniture-storage-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
     <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full">
         <h3 class="text-2xl font-bold text-purple-300 mb-4">가구 보관함</h3>
@@ -5328,6 +5360,29 @@ function useAffinityPotion(){
             active.ready=true;active.performerName=actor.name;active.performerFaction=actor.faction;active.itemName=itemName;
             return true;
         }
+        function showVisitorRequestResult(active,offer,dialogue,affinity){
+            const dialog=document.getElementById('room-request-result');
+            document.getElementById('room-request-result-title').textContent=`${active.visitorName}의 부탁 완료`;
+            const [visitorLine,workerLine]=dialogue.split(' · 담당: ');
+            document.getElementById('room-request-visitor-name').textContent=active.visitorName;
+            document.getElementById('room-request-worker-name').textContent=active.performerName;
+            document.getElementById('room-request-visitor-line').textContent=visitorLine.replace(/^방문객:\s*/, '');
+            document.getElementById('room-request-worker-line').textContent=workerLine||'';
+            for(const [role,name] of [['visitor',active.visitorName],['worker',active.performerName]]){
+                const img=document.getElementById(`room-request-${role}-image`);
+                img.src=memoryFigureImage(name);img.alt=`${name} 치비`;
+            }
+            document.getElementById('room-request-result-item').textContent=`${offer.title} · ${active.itemName}`;
+            const rewards=document.getElementById('room-request-reward-list');rewards.replaceChildren();
+            for(const label of [affinity?`호감도 +${affinity}`:'호감도 추가 획득 없음',`${LIFE_MATERIALS[offer.material].name} +1`]){
+                const badge=document.createElement('span');badge.textContent=label;rewards.appendChild(badge);
+            }
+            dialog.classList.remove('hidden');document.getElementById('room-request-result-close').focus();
+        }
+        function closeVisitorRequestResult(){document.getElementById('room-request-result').classList.add('hidden');document.querySelector('#myroom-view .room-request-history summary')?.focus();}
+        document.getElementById('room-request-result-close').addEventListener('click',closeVisitorRequestResult);
+        document.getElementById('room-request-result').addEventListener('click',event=>{if(event.target===event.currentTarget)closeVisitorRequestResult();});
+        document.getElementById('room-request-result').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeVisitorRequestResult();}});
         function claimVisitorRequest(){
             if(currentVisitTargetUid)return;
             const state=playerLife.requests,active=state.active;if(!active?.ready)return;
@@ -5340,7 +5395,7 @@ function useAffinityPotion(){
             state.memories.unshift({date:getTodayDateString(),title:offer.title,visitorName:active.visitorName,performerName:active.performerName,itemName:active.itemName,relation,dialogue});
             state.memories=state.memories.slice(0,30);state.active=null;
             lifeRefresh();
-            alert(`${active.visitorName}의 부탁 완료! 호감도 +${affinity} · ${LIFE_MATERIALS[offer.material].name} +1\n${dialogue}`);
+            showVisitorRequestResult(active,offer,dialogue,affinity);
         }
         function renderVisitorRequests(){
             const panel=document.querySelector('#myroom-view .room-request-panel'),list=document.getElementById('room-request-list'),memories=document.getElementById('room-request-memories');
