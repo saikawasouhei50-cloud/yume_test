@@ -1102,7 +1102,6 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-floor-glow{position:absolute;inset:0;clip-path:polygon(50% var(--room-back-y,45%),var(--room-right-x,88%) var(--room-side-y,69%),50% var(--room-front-y,93%),var(--room-left-x,12%) var(--room-side-y,69%));background:radial-gradient(ellipse at 35% 55%,#fff9 0,transparent 58%)}
 #myroom-view .room-boundary{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 1px 1px #71829b26)}
 #myroom-view .room-boundary path{fill:none;stroke:#899db5;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-#myroom-view .room-boundary .room-floor-grid{stroke:#b4c3d4;stroke-width:1;opacity:.43}
 #myroom-view .room-boundary .room-back-seam{stroke:#8397ad;stroke-width:2.5}
 #myroom-view .room-boundary .room-front-edge{stroke:#9aacc0;stroke-width:1.75}
 #myroom-view #room-layer>.room-guest{pointer-events:auto;touch-action:manipulation}
@@ -1953,7 +1952,6 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
           <div class="room-floor"></div>
           <div class="room-floor-glow"></div>
           <svg class="room-boundary" viewBox="0 0 1000 625" preserveAspectRatio="none" aria-hidden="true">
-            <path id="room-floor-grid" class="room-floor-grid"/>
             <path id="room-back-seam" class="room-back-seam"/>
             <path id="room-front-edge" class="room-front-edge"/>
           </svg>
@@ -6736,17 +6734,6 @@ function updateRoomGeometry(){
     const sideY=centerY+100*heightFactor,leftX=centerX-100*widthFactor,rightX=centerX+100*widthFactor,frontY=centerY+200*heightFactor;
     for(const [name,value] of Object.entries({'--room-back-y':centerY,'--room-side-y':sideY,'--room-left-x':leftX,'--room-right-x':rightX,'--room-front-y':frontY}))room.style.setProperty(name,`${value}%`);
     const back=document.getElementById('room-back-seam'),front=document.getElementById('room-front-edge');
-    const grid=document.getElementById('room-floor-grid');
-    if(grid){
-        const lines=[];
-        const point=(x,y)=>{const iso=getIsoPos(x,y);return `${(iso.left*10).toFixed(2)} ${(iso.top*6.25).toFixed(2)}`;};
-        for(let i=1;i<6;i++){
-            const tile=i*100/6;
-            lines.push(`M ${point(tile,0)} L ${point(tile,100)}`);
-            lines.push(`M ${point(0,tile)} L ${point(100,tile)}`);
-        }
-        grid.setAttribute('d',lines.join(' '));
-    }
     if(back)back.setAttribute('d',`M ${leftX*10} ${sideY*6.25} L 500 ${centerY*6.25} L ${rightX*10} ${sideY*6.25}`);
     if(front)front.setAttribute('d',`M ${leftX*10} ${sideY*6.25} L 500 ${frontY*6.25} L ${rightX*10} ${sideY*6.25}`);
 }
