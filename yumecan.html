@@ -1065,7 +1065,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 .affinity-showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.affinity-showcase label{min-width:0;font-size:11px;color:#64758e}.affinity-showcase select{width:100%;min-width:0;margin-top:4px;padding:8px;border:1px solid #d3dce9;border-radius:9px;background:#fff;color:#405069}.affinity-badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.affinity-badge{padding:5px 9px;border-radius:999px;border:1px solid #c4cfe2;background:#edf1fa;color:#496085;font-size:11px;font-weight:800}
 .affinity-reward-strip{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.affinity-reward-strip span{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border:1px solid #d9e1ee;border-radius:9px;background:#fff;color:#53657e;font-size:11px;font-weight:700}.affinity-reward-strip b{color:#425b83}
 .affinity-panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.affinity-panel-header button{min-height:38px;padding:8px 12px;border-radius:10px;border:1px solid #c9d5e6;background:#fff;color:#456080;font-size:12px;font-weight:750;cursor:pointer}.affinity-panel-header button[aria-expanded="true"]{background:#e8eef9;border-color:#9eafcc}
-.affinity-all-panel{margin-top:16px;padding-top:14px;border-top:1px solid #e0e6ef}.affinity-all-panel[hidden]{display:none}.affinity-all-panel input{width:100%;min-height:42px;margin:0 0 12px;padding:9px 12px;border:1px solid #d1dce9;border-radius:10px;background:#fff;color:#364458;font-size:13px}.affinity-all-list{max-height:420px;overflow:auto;align-content:start}.affinity-card .affinity-current{margin:8px 0 0;color:#59709a;font-size:11px;font-weight:700}.affinity-card .affinity-next{margin:4px 0 0;color:#7d899b;font-size:11px}
+.affinity-all-panel{margin-top:16px;padding-top:14px;border-top:1px solid #e0e6ef}.affinity-all-panel[hidden]{display:none}.affinity-all-panel input{width:100%;min-height:42px;margin:0 0 12px;padding:9px 12px;border:1px solid #d1dce9;border-radius:10px;background:#fff;color:#364458;font-size:13px}.affinity-all-list{max-height:420px;overflow:auto;align-content:start}
 .combat-affinity-summary{margin-top:12px;text-align:left;font-size:12px;color:#536382}.combat-affinity-summary[hidden]{display:none}.combat-affinity-summary details{border:1px solid #dce3ed;border-radius:10px;background:#f8faff}.combat-affinity-summary summary{padding:10px 12px;cursor:pointer;font-weight:750;list-style-position:inside}.combat-affinity-summary ul{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0;list-style:none}.combat-affinity-summary li{border:1px solid #e0e5ef;border-radius:8px;background:#fff;padding:5px 8px;overflow-wrap:anywhere}
 @media(max-width:600px){.affinity-showcase{grid-template-columns:1fr}.affinity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.affinity-panel{padding:13px}}
 </style>
@@ -1176,18 +1176,29 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-rail .dream-fishing-launch button{width:100%;margin-top:12px;min-height:46px;text-align:left;border:1px solid #cbd9e8;border-radius:11px;background:#edf3f9;color:#40566e;padding:10px 13px;font-weight:700}
 @media(max-width:600px){.dream-fishing-content{padding:14px}.dream-fishing-top{padding:12px 14px}.dream-fishing-roles{grid-template-columns:1fr}.dream-fishing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dream-fishing-card svg{height:80px}}
 @media(max-width:600px){.dream-fishing-tabs{overflow-x:auto;white-space:nowrap}.dream-fishing-tabs button{flex:0 0 auto}.dream-fishing-scene{aspect-ratio:1.85/1;min-height:175px}.dream-kitchen-scene{min-height:260px}.dream-fishing-actor.first{left:10%}.dream-fishing-actor.second{right:6%}.dream-fishing-actor img{height:58px}.dream-kitchen-scene .dream-fishing-actor img{transform:translateY(14px)}.dream-fishing-actor .dream-fishing-empty{height:58px}.dream-fishing-actor figcaption{font-size:10px}.dream-kitchen-scene .dream-fishing-actor figcaption{transform:translateY(28px)}.dream-fishing-catch{left:42%;width:22%}.dream-table-food{width:24%;top:58%}.dream-table-serving{width:44%!important;bottom:5%}.dream-fishing-filters select{max-width:none}}
-#myroom-view .room-rail .affinity-panel{background:#fff}
+#myroom-view .room-rail .affinity-panel{margin:0;padding:15px;background:#fff}
 #myroom-view .room-rail .affinity-panel h3{font-size:16px;margin:0}
-#myroom-view .room-rail .affinity-panel>p{font-size:11px;margin:8px 0}
-#myroom-view .room-rail #room-affinity-list{display:grid;grid-template-columns:1fr;max-height:308px;overflow:auto;gap:6px;padding-right:3px}
-#myroom-view .room-rail .affinity-card{padding:10px;border-radius:11px;background:#f8fafc}
-#myroom-view .room-rail .affinity-card strong{font-size:12px}
-#myroom-view .room-rail .affinity-current,#myroom-view .room-rail .affinity-next{font-size:10px}
-#myroom-view .room-rail .affinity-reward-strip{margin:8px 0 0}
+#myroom-view .room-rail .affinity-panel-header{align-items:center;flex-wrap:nowrap}
+#myroom-view .room-rail .affinity-panel-header small{display:block;margin-top:3px;color:#7b899e;font-size:10px}
+#myroom-view .room-rail .affinity-panel-header button{flex:none;min-height:30px;padding:5px 9px;font-size:11px}
+#myroom-view .room-rail #room-affinity-list{display:grid;grid-template-columns:1fr;max-height:308px;overflow:auto;gap:5px;margin-top:11px;padding-right:3px}
+#myroom-view .room-rail .affinity-card{display:grid;gap:4px;padding:8px 10px;border-radius:10px;background:#f9fafc}
+#myroom-view .room-rail .affinity-card-heading,#myroom-view .room-rail .affinity-card-footer{display:flex;justify-content:space-between;align-items:center;gap:7px;min-width:0}
+#myroom-view .room-rail .affinity-card strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#myroom-view .room-rail .affinity-card-heading span{flex:none;color:#536b8d;font-size:11px;font-weight:800}
+#myroom-view .room-rail .affinity-card progress{display:block;height:5px;margin:1px 0}
+#myroom-view .room-rail .affinity-card-footer small{min-width:0;margin:0;color:#78879a;font-size:10px}
+#myroom-view .room-rail .affinity-card-footer button{flex:none;min-height:28px;padding:4px 8px;border-radius:8px;font-size:10px}
+#myroom-view .room-rail #room-affinity-status{margin:7px 0 0;color:#536b8d;font-size:11px}
+#myroom-view .room-rail #room-affinity-status:empty{display:none}
+#myroom-view .room-rail .room-affinity-rewards{margin-top:10px;padding-top:9px;border-top:1px solid #e7ebf1}
 #myroom-view .room-rail .room-affinity-rewards summary{cursor:pointer;color:#667d98;font-size:11px}
-#myroom-view .room-rail .affinity-all-list{display:grid;grid-template-columns:1fr;max-height:320px}
-#myroom-view .room-rail .affinity-panel-header{align-items:start}
-#myroom-view .room-rail .affinity-panel-header button{padding:6px 8px;min-height:34px;font-size:10px}
+#myroom-view .room-rail .room-affinity-rewards p{margin:9px 0 4px;color:#76869a;font-size:10px;line-height:1.5}
+#myroom-view .room-rail .affinity-reward-strip{margin:8px 0 0}
+#myroom-view .room-rail .affinity-all-panel{margin-top:10px;padding-top:9px}
+#myroom-view .room-rail .affinity-all-panel input{min-height:36px;margin-bottom:5px;padding:7px 9px;font-size:12px}
+#myroom-view .room-rail #room-affinity-all-count{margin:2px 0 7px;color:#7c8ba0;font-size:10px}
+#myroom-view .room-rail .affinity-all-list{display:grid;grid-template-columns:1fr;max-height:320px;gap:4px}
 #myroom-char-selector-modal{padding:12px}
 #myroom-char-selector-modal>div{width:min(750px,100%);height:min(84dvh,780px);max-height:calc(100dvh - 24px);padding:20px!important;border:1px solid #dbe3ed!important;border-radius:20px!important;background:#fff!important;color:#42516a!important;box-shadow:0 22px 70px #3442592b;min-height:0}
 #myroom-char-selector-modal h3{font-size:19px;color:#37475c!important}
@@ -2032,7 +2043,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
       <p>낚시·재배로 이물 식재료를 모으고 요리하세요.</p>
       <button id="open-dream-fishing" type="button" aria-haspopup="dialog" aria-controls="dream-fishing-modal">식탁 열기 · <span id="dream-fishing-summary">도감 0/12</span> ↗</button>
     </section>
-    <section class="affinity-panel"><div class="affinity-panel-header"><h3>함께 쌓는 호감도</h3><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 캐릭터 호감도 보기</button></div><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><details class="room-affinity-rewards"><summary>레벨별 보상 보기</summary><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div></details><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="캐릭터 이름으로 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div></section>
+    <section class="affinity-panel"><div class="affinity-panel-header"><div><h3>호감도</h3><small id="room-affinity-overview"></small></div><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 보기</button></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="방문객 외 캐릭터 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div><details class="room-affinity-rewards"><summary>획득 방법 · 단계 보상</summary><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div></details></section>
   </aside>
 </div>
 <div id="dream-fishing-modal" class="dream-fishing-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 식탁"><div class="dream-fishing-dialog"><div class="dream-fishing-top"><strong>✦ 꿈의 식탁</strong><button id="dream-fishing-close" type="button">닫기 ✕</button></div><div id="dream-fishing-content" class="dream-fishing-content"></div></div></div>
@@ -4154,28 +4165,37 @@ let playerRaidLastResetDate = null;
             function placedAffinityBases(){
                 return [...new Set((playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).map(affinityBase).filter(Boolean))];
             }
-            function createAffinityCard(base,isVisitor=false,visiting=false){
+            function createAffinityCard(base,isVisitor=false){
                 const state=playerAffinity[base]||{},level=affinityLevel(base),today=getTodayDateString();
                 const spent=state.date===today?Number(state.daily)||0:0;
                 const next=AFFINITY_THRESHOLDS[Math.min(5,level+1)];
                 const card=document.createElement('div');card.className='affinity-card';
-                const title=document.createElement('strong');title.textContent=`${base} · Lv.${level}${!isVisitor&&visiting?' · 방문 중':''}`;
-                const info=document.createElement('small');info.textContent=`${Math.min(550,state.xp||0)} / ${next} · 오늘 ${spent}/${AFFINITY_DAILY_LIMIT}`;
+                const heading=document.createElement('div');heading.className='affinity-card-heading';
+                const title=document.createElement('strong');title.textContent=base;
+                const rank=document.createElement('span');rank.textContent=`Lv.${level}`;
+                heading.append(title,rank);
                 const progress=document.createElement('progress');progress.max=next;progress.value=Math.min(next,state.xp||0);
-                const current=document.createElement('p');current.className='affinity-current';current.textContent=`현재 · ${AFFINITY_REWARDS[level]}`;
-                const upcoming=document.createElement('p');upcoming.className='affinity-next';upcoming.textContent=level<5?`다음 Lv.${level+1} · ${AFFINITY_REWARDS[level+1]}`:'모든 단계 달성';
-                card.append(title,info,progress,current,upcoming);
+                const footer=document.createElement('div');footer.className='affinity-card-footer';
+                const info=document.createElement('small');info.textContent=`${Math.min(550,state.xp||0)}/${next}${isVisitor?` · 오늘 ${spent}/${AFFINITY_DAILY_LIMIT}`:''}`;
+                footer.appendChild(info);
+                card.title=`현재 · ${AFFINITY_REWARDS[level]}${level<5?` / 다음 Lv.${level+1} · ${AFFINITY_REWARDS[level+1]}`:''}`;
                 if(isVisitor){
-                    const button=document.createElement('button');button.type='button';button.textContent=state.talkDate===today?'오늘 상호작용 완료':'함께 시간 보내기 · +12';
+                    const button=document.createElement('button');button.type='button';
+                    const gain=Math.min(12,AFFINITY_DAILY_LIMIT-spent,AFFINITY_THRESHOLDS[5]-(state.xp||0));
+                    button.textContent=state.talkDate===today?'오늘 완료':level>=5?'최대 레벨':gain<=0?'오늘 한도':`대화 +${gain}`;
                     button.disabled=state.talkDate===today||spent>=AFFINITY_DAILY_LIMIT||level>=5;
-                    button.addEventListener('click',()=>interactAffinity(base));card.appendChild(button);
+                    button.addEventListener('click',()=>interactAffinity(base));footer.appendChild(button);
                 }
+                card.append(heading,progress,footer);
                 return card;
             }
             function renderRoomAffinity(){
                 const list=document.getElementById('room-affinity-list');if(!list)return;
                 list.replaceChildren();
                 const bases=placedAffinityBases();
+                const today=getTodayDateString();
+                const done=bases.filter(base=>playerAffinity[base]?.talkDate===today).length;
+                document.getElementById('room-affinity-overview').textContent=`방문객 ${bases.length}명 · 오늘 대화 ${done}/${bases.length}`;
                 if(!bases.length)list.textContent='방문객 관리에서 카드를 배치하면 이곳에 호감도가 표시됩니다.';
                 else for(const base of bases)list.appendChild(createAffinityCard(base,true));
                 if(!document.getElementById('room-affinity-all').hidden)renderAllAffinity();
@@ -4183,12 +4203,12 @@ let playerRaidLastResetDate = null;
             function renderAllAffinity(){
                 const list=document.getElementById('room-affinity-all-list');if(!list)return;
                 const query=document.getElementById('room-affinity-search').value.trim().toLocaleLowerCase('ko');
-                const all=[...new Set(characters.map(card=>card.baseName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+                const visiting=new Set(placedAffinityBases());
+                const all=[...new Set(characters.map(card=>card.baseName).filter(base=>base&&!visiting.has(base)))].sort((a,b)=>a.localeCompare(b,'ko'));
                 const visible=all.filter(base=>base.toLocaleLowerCase('ko').includes(query));
                 const scroll=list.scrollTop;list.replaceChildren();
-                const visiting=new Set(placedAffinityBases());
-                for(const base of visible)list.appendChild(createAffinityCard(base,false,visiting.has(base)));
-                if(!visible.length)list.textContent='일치하는 캐릭터가 없습니다.';
+                for(const base of visible)list.appendChild(createAffinityCard(base));
+                if(!visible.length)list.textContent=query?'일치하는 캐릭터가 없습니다.':'방문객 외 캐릭터가 없습니다.';
                 list.scrollTop=scroll;
                 document.getElementById('room-affinity-all-count').textContent=`${visible.length} / ${all.length}명 표시`;
             }
@@ -14908,7 +14928,7 @@ function updateRaidDailyCountUI() {
         panel.hidden=!panel.hidden;
         const button=document.getElementById('room-affinity-all-button');
         button.setAttribute('aria-expanded',String(!panel.hidden));
-        button.textContent=panel.hidden?'전체 캐릭터 호감도 보기':'전체 목록 닫기';
+        button.textContent=panel.hidden?'전체 보기':'닫기';
         if(!panel.hidden)renderAllAffinity();
     });
     document.getElementById('room-affinity-search').addEventListener('input',renderAllAffinity);
