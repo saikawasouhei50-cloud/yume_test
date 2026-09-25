@@ -6796,10 +6796,18 @@ function getRoomFurnitureDepth(item,iso){
     const furniture=furnitureItems.find(f=>f.id===item.id);
     return iso.zIndex+(furniture?.type==='wall'?-20000:0);
 }
+function getRoomFurnitureAngleScale(furniture){
+    // 탁자류 그림의 평면은 방 바닥보다 얕은 기울기로 그려져 있다.
+    // 넓고 낮은 가구에만 세로 방향을 보정하고 책장·화분·피규어는 원본을 유지한다.
+    if(furniture?.type!=='floor'||!(Number(furniture.size?.w)>=2)||!(Number(furniture.size?.h)>0&&Number(furniture.size?.h)<=1))return 1;
+    const {widthFactor,heightFactor}=getRoomGeometry();
+    const floorSlope=heightFactor*625/(widthFactor*1000);
+    return Math.min(1.32,Math.max(1.08,Math.round(floorSlope/.30*100)/100));
+}
 function getRoomFurnitureTransform(item,furniture){
     if(item.id===MEMORY_FRAME_ID)return item.isFlipped?'scaleX(-1)':'scaleX(1)';
     const yOffset=furniture?.type==='wall'?'-100%':furniture?.type==='rug'||furniture?.type==='floor'?'-50%':'-95%';
-    return `translate(-50%, ${yOffset}) scaleX(${item.isFlipped?-1:1})`;
+    return `translate(-50%, ${yOffset}) scaleY(${getRoomFurnitureAngleScale(furniture)}) scaleX(${item.isFlipped?-1:1})`;
 }
 // 2. 역변환 함수 (위와 변수값 일치 필수)
 function getGridPosFromScreen(screenX, screenY) {
@@ -6958,6 +6966,7 @@ function renderRoomFurniture(layer,editing){
         image.src=item.id===MEMORY_FRAME_ID?memoryFigureImage(item.cardName,item.cardImageUrl):furniture.imageUrl;
         image.alt=item.cardName||furniture.name||'가구';
         image.draggable=false;image.style.width=`${(furniture.scale||1)*96}px`;
+        if(getRoomFurnitureAngleScale(furniture)!==1)image.style.transformOrigin='center bottom';
         image.style.maxWidth='none';image.style.transform=getRoomFurnitureTransform(item,furniture);
         image.style.pointerEvents=editing?'auto':'none';
         if(item.id===MEMORY_FRAME_ID){
