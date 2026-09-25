@@ -1936,7 +1936,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
     <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;pointer-events:none">
       <defs>
         <filter id="room-furniture-outline" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-          <feMorphology in="SourceAlpha" operator="dilate" radius="1" result="outer"/>
+          <feMorphology in="SourceAlpha" operator="dilate" radius="0.3" result="outer"/>
           <feComposite in="outer" in2="SourceAlpha" operator="out" result="edge"/>
           <feFlood flood-color="#111111" result="ink"/>
           <feComposite in="ink" in2="edge" operator="in" result="outline"/>
