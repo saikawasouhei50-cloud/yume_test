@@ -1104,8 +1104,9 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-window span{flex:1;background:linear-gradient(135deg,#e6f4f8,#c2dbe5 55%,#eaf6f6);border:1px solid #accad2}
 #myroom-view .room-wall-mark{position:absolute;right:23%;top:16%;font-size:34px;color:#c4d1e0;text-shadow:0 2px 6px #d8e3ec}
 #myroom-view #room-layer>.room-guest{pointer-events:auto;touch-action:manipulation}
+#myroom-view #room-layer>.room-guest.room-guest-speaking{z-index:100000!important}
 #myroom-view #room-layer>.room-guest img{image-rendering:pixelated;filter:drop-shadow(0 5px 3px #46557040)}
-#myroom-view #room-layer>.room-guest .chibi-bubble{z-index:20;background:#fff;color:#49586c;border:1px solid #d5dfeb;border-radius:9px;padding:6px 9px;white-space:normal;max-width:155px;min-width:70px;text-align:center;font-size:11px;box-shadow:0 5px 16px #4d5f7825}
+#myroom-view #room-layer>.room-guest .chibi-bubble{top:auto;bottom:calc(100% - 10px);left:32%;z-index:20;background:#fff;color:#49586c;border:1px solid #d5dfeb;border-radius:9px;padding:6px 9px;white-space:normal;max-width:155px;min-width:70px;text-align:center;font-size:11px;box-shadow:0 5px 16px #4d5f7825}
 #myroom-view #room-container[data-life-color=mist] .room-wall{filter:hue-rotate(12deg)}
 #myroom-view #room-container[data-life-color=dawn] .room-wall{filter:hue-rotate(-24deg) sepia(.15)}
 #myroom-view #room-container[data-life-color=violet] .room-wall{filter:hue-rotate(42deg)}
@@ -7472,8 +7473,8 @@ function renderRoomGuests(layer,cards){
         const data=findCharacter(card.name);if(!data)return;
         const working=assigned.get(card.id),potWorker=working?.kind==='pot';
         const position=points[index%points.length];
-        const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+20)):position[0];
-        const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+7)):position[1];
+        const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+10)):position[0];
+        const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+5)):position[1];
         const iso=getIsoPos(gridX,gridY);
         const el=document.createElement('div');el.className='chibi-character room-guest';
         el.setAttribute('role','button');el.tabIndex=0;
@@ -7492,9 +7493,7 @@ function renderRoomGuests(layer,cards){
         el.addEventListener('click',event=>{
             event.stopPropagation();
             const dialogues=Array.isArray(data.dialogues)&&data.dialogues.length?data.dialogues:['반가워.'];
-            bubble.textContent=dialogues[Math.floor(Math.random()*dialogues.length)];
-            bubble.style.opacity='1';
-            setTimeout(()=>{if(bubble.isConnected)bubble.style.opacity='0';},3000);
+            showRoomGuestBubble(el,dialogues[Math.floor(Math.random()*dialogues.length)],3000);
             if(!currentVisitTargetUid){interactAffinity(data.baseName);renderRoomGuestList(getRoomGuests());}
         });
         el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();el.click();}});
@@ -7503,9 +7502,7 @@ function renderRoomGuests(layer,cards){
             el.dataset.isWorking='true';
             const speak=()=>{
                 if(!el.isConnected)return;
-                bubble.textContent=lifeWorkerSpeech(working.kind,card);
-                bubble.style.opacity='1';
-                setTimeout(()=>{if(bubble.isConnected)bubble.style.opacity='0';},3400);
+                showRoomGuestBubble(el,lifeWorkerSpeech(working.kind,card),3400);
             };
             const interval=setInterval(()=>{
                 if(!el.isConnected){clearInterval(interval);return;}
@@ -7516,6 +7513,18 @@ function renderRoomGuests(layer,cards){
         }else startChibiMovement(el);
     });
     initInteractionSystem();
+}
+function showRoomGuestBubble(character,text,duration=3000){
+    const bubble=character.querySelector('.chibi-bubble');
+    if(!bubble)return;
+    clearTimeout(character.roomBubbleTimeout);
+    bubble.textContent=text;
+    bubble.style.opacity='1';
+    character.classList.add('room-guest-speaking');
+    character.roomBubbleTimeout=setTimeout(()=>{
+        bubble.style.opacity='0';
+        character.classList.remove('room-guest-speaking');
+    },duration);
 }
 function displayMyRoom(){
     syncRoomScale();
@@ -7740,6 +7749,10 @@ function triggerInteraction(charA, charB) {
 }
 
 function showBubble(charEl, text) {
+    if(charEl.classList.contains('room-guest')){
+        showRoomGuestBubble(charEl,text);
+        return;
+    }
     const bubble = charEl.querySelector('.chibi-bubble');
     if (bubble) {
         bubble.innerText = text;
