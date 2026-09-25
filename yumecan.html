@@ -902,8 +902,9 @@ html body #pref-battleSpeed{padding:7px 12px;margin-left:auto;border:1px solid #
 .room-tools-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.room-tools-heading h3{font-size:18px;font-weight:700;color:#455267;margin-top:5px}#room-mode-label{font-size:12px;padding:7px 12px;border-radius:30px;background:#e4efeb;color:#4b7467}
 #room-mode-hint{font-size:13px;line-height:1.7;color:#7c8797;margin:10px 0 16px}.room-tools-panel .room-toolbar{margin:0;padding:0;border:0;background:none;max-width:none;justify-content:flex-start}
 .room-color-choice{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:46px;padding:5px 10px;border:1px solid #d8dee8;border-radius:12px;background:#fff;color:#556276;font-size:12px;font-weight:700}.room-color-choice select{max-width:130px;min-height:34px!important;padding:5px 7px!important;font-size:12px!important}
-#room-container[data-life-color=mist]::after,#room-container[data-life-color=dawn]::after,#room-container[data-life-color=violet]::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2}
-#room-container[data-life-color=mist]::after{background:#b9d5f125}#room-container[data-life-color=dawn]::after{background:#efc5aa28}#room-container[data-life-color=violet]::after{background:#cbbaf02b}
+#room-container[data-life-color=mist]{--room-haze-tint:#b9d5f125}
+#room-container[data-life-color=dawn]{--room-haze-tint:#efc5aa28}
+#room-container[data-life-color=violet]{--room-haze-tint:#cbbaf02b}
 html body .room-tools-panel .room-toolbar button{border-radius:12px!important;min-height:46px;padding:10px 18px!important;box-shadow:none!important}
 html body #myroom-view.room-is-editing .room-wrapper{border-color:#9eafca;box-shadow:0 0 0 3px #a8bad526}html body .room-is-editing #room-mode-label{background:#e3eaf7;color:#536b95}
 html body #myroom-view #furniture-shop-modal>div,html body #myroom-view #furniture-storage-modal>div{border-radius:20px;padding:24px;max-height:85dvh;overflow-y:auto}
@@ -1094,6 +1095,14 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-summary span:first-child{font:700 10px 'Space Grotesk',sans-serif;letter-spacing:.13em;color:#9aaaBC}
 #myroom-view .room-wrapper{margin:0;border-radius:20px!important;box-shadow:0 12px 38px #60708718!important;background:#eef2f7}
 #myroom-view #room-container{border:0;border-radius:0;box-shadow:none;background:radial-gradient(ellipse at 50% 40%,#f8f9fb,#ebeff5 80%)}
+/* 배경, 가구, 방문객을 모두 같은 빛으로 덮는다. 조작을 가리지 않도록 터치는 통과시킨다. */
+#myroom-view #room-container::after{
+  content:"";position:absolute;inset:0;z-index:100001;pointer-events:none;
+  background:linear-gradient(var(--room-haze-tint,transparent),var(--room-haze-tint,transparent)),
+    radial-gradient(ellipse at 50% 46%,transparent 28%,#bac9dd20 100%),
+    linear-gradient(115deg,#dee8fa1f,#fff0f024 56%,#dbe1f42b);
+  box-shadow:inset 0 0 72px #aabbd521;
+}
 #myroom-view .room-backdrop{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 #myroom-view .room-wall{position:absolute;inset:0;filter:drop-shadow(0 6px 10px #6e7d9118)}
 #myroom-view .room-wall-left{clip-path:polygon(0 0,50% 0,50% 45%,12% 69%,0 61%);background:repeating-linear-gradient(90deg,#f5f7fb 0 96px,#e8edf4 97px,#f5f7fb 98px);border-right:1px solid #dce4ed}
@@ -1940,7 +1949,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
             #room-layer > * { pointer-events: auto; } </style>
         </div>
 
-    </div><div class="room-zoom-controls" role="group" aria-label="마이룸 화면 확대 및 축소"><button id="room-zoom-out" type="button" aria-label="마이룸 축소" title="축소">−</button><button id="room-zoom-reset" class="room-zoom-reset" type="button" aria-label="마이룸 원래 크기로" title="원래 크기">100%</button><button id="room-zoom-in" type="button" aria-label="마이룸 확대" title="확대">+</button></div></div> <div class="room-tools-panel"><div class="room-tools-heading"><div><span class="menu-eyebrow">ROOM STUDIO</span><h3>나의 공간 꾸미기</h3></div><span id="room-mode-label">휴식 중</span></div><p id="room-mode-hint">방문객을 초대하고 좋아하는 가구로 방을 꾸며보세요.</p><div class="room-toolbar">
+    </div><div class="room-zoom-controls" role="group" aria-label="마이룸 화면 확대 및 축소"><button id="room-zoom-out" type="button" aria-label="마이룸 축소" title="축소">−</button><button id="room-zoom-reset" class="room-zoom-reset" type="button" aria-label="마이룸 처음 위치로" title="처음 위치로">150%</button><button id="room-zoom-in" type="button" aria-label="마이룸 확대" title="확대">+</button></div></div> <div class="room-tools-panel"><div class="room-tools-heading"><div><span class="menu-eyebrow">ROOM STUDIO</span><h3>나의 공간 꾸미기</h3></div><span id="room-mode-label">휴식 중</span></div><p id="room-mode-hint">방문객을 초대하고 좋아하는 가구로 방을 꾸며보세요.</p><div class="room-toolbar">
     <button onclick="openMyRoomCharacterSelector()" class="gacha-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-6 rounded-full text-xs md:text-base transition-all shadow-md">
         👥 방문객 관리
     </button>
@@ -7319,9 +7328,16 @@ function getGridPosFromScreen(screenX, screenY) {
 }
 
 let roomScaleObserver=null;
-let roomZoomLevel=1;
+const ROOM_INITIAL_ZOOM=1.5;
+let roomZoomLevel=ROOM_INITIAL_ZOOM;
 let roomPanX=0,roomPanY=0;
+let roomViewInitialized=false,roomViewportWidth=0,roomViewportHeight=0;
 const ROOM_ZOOM_MIN=.75,ROOM_ZOOM_MAX=2,ROOM_ZOOM_STEP=.25;
+function centerRoomView(width,height){
+    roomPanX=width*(1-roomZoomLevel)/2;
+    roomPanY=height*(1-roomZoomLevel)*.8; // 바닥 앞쪽까지 들어오도록 벽보다 조금 아래를 중심에 둔다.
+    roomViewInitialized=true;
+}
 function clampRoomPan(){
     const wrapper=document.querySelector('#myroom-view .room-wrapper');
     if(!wrapper)return;
@@ -7336,8 +7352,14 @@ function syncRoomScale(){
     const wrapper=document.querySelector('#myroom-view .room-wrapper');
     const room=document.getElementById('room-container');
     if(!wrapper||!room)return;
-    const width=wrapper.clientWidth;
-    if(width>0){
+    const width=wrapper.clientWidth,height=wrapper.clientHeight;
+    if(width>0&&height>0){
+        if(!roomViewInitialized)centerRoomView(width,height);
+        else if(roomViewportWidth&&roomViewportHeight&&(roomViewportWidth!==width||roomViewportHeight!==height)){
+            roomPanX*=width/roomViewportWidth;
+            roomPanY*=height/roomViewportHeight;
+        }
+        roomViewportWidth=width;roomViewportHeight=height;
         clampRoomPan();
         room.style.setProperty('--room-scale',String(width/1000*roomZoomLevel));
         room.style.setProperty('--room-pan-x',`${roomPanX}px`);
@@ -7369,12 +7391,17 @@ function setRoomZoom(value){
     roomZoomLevel=next;
     syncRoomScale();
 }
+function resetRoomView(){
+    roomZoomLevel=ROOM_INITIAL_ZOOM;
+    roomViewInitialized=false;
+    syncRoomScale();
+}
 function initRoomZoomControls(){
     const wrapper=document.querySelector('#myroom-view .room-wrapper');
     if(!wrapper)return;
     document.getElementById('room-zoom-out').addEventListener('click',()=>setRoomZoom(roomZoomLevel-ROOM_ZOOM_STEP));
     document.getElementById('room-zoom-in').addEventListener('click',()=>setRoomZoom(roomZoomLevel+ROOM_ZOOM_STEP));
-    document.getElementById('room-zoom-reset').addEventListener('click',()=>setRoomZoom(1));
+    document.getElementById('room-zoom-reset').addEventListener('click',resetRoomView);
     let pointerId=null,lastX=0,lastY=0;
     wrapper.addEventListener('pointerdown',event=>{
         if(roomZoomLevel<=1||event.button!==0||event.target.closest('.room-zoom-controls,.placed-furniture,.chibi-character,button'))return;
