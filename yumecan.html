@@ -1106,6 +1106,11 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view #room-layer>.room-guest.room-guest-speaking{z-index:100000!important}
 #myroom-view #room-layer>.room-guest img{image-rendering:pixelated;filter:drop-shadow(0 5px 3px #46557040)}
 #myroom-view #room-layer>.room-guest .chibi-bubble{top:auto;bottom:calc(100% - 10px);left:32%;z-index:20;background:#fff;color:#49586c;border:1px solid #d5dfeb;border-radius:9px;padding:6px 9px;white-space:normal;max-width:155px;min-width:70px;text-align:center;font-size:11px;box-shadow:0 5px 16px #4d5f7825}
+/* 배경의 밝고 부드러운 색에 맞춰 가구와 치비 그림만 같은 톤으로 보정한다. */
+#myroom-view #room-layer .placed-furniture img,
+#myroom-view #room-layer>.room-guest>img{
+  filter:saturate(.68) contrast(.93) brightness(1.07) sepia(.04) drop-shadow(0 4px 3px #59657638);
+}
 #myroom-view #room-container[data-life-color=mist] .room-wall{filter:hue-rotate(12deg)}
 #myroom-view #room-container[data-life-color=dawn] .room-wall{filter:hue-rotate(-24deg) sepia(.15)}
 #myroom-view #room-container[data-life-color=violet] .room-wall{filter:hue-rotate(42deg)}
@@ -7440,7 +7445,6 @@ function renderRoomFurniture(layer,editing){
         image.draggable=false;image.style.width=`${(furniture.scale||1)*96}px`;
         image.style.maxWidth='none';image.style.transform=getRoomFurnitureTransform(item,furniture);
         image.style.pointerEvents=editing?'auto':'none';
-        image.style.filter='drop-shadow(0 6px 5px #52617340)';
         if(item.id===MEMORY_FRAME_ID){
             const frame=document.createElement('div');frame.className='memory-figure-object';frame.appendChild(image);object.appendChild(frame);
         }else object.appendChild(image);
