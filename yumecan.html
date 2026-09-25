@@ -1146,6 +1146,16 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-visitor strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #myroom-view .room-visitor small{font-size:10px;color:#78899b}
 #myroom-view .room-visitor-empty{margin:4px 0;color:#8391a0;font-size:12px}
+#myroom-view .room-request-list{display:grid;gap:7px;margin-top:12px}
+#myroom-view .room-request-card{padding:10px;border:1px solid #e0e7f0;border-radius:11px;background:#f9fafc;font-size:11px;line-height:1.5}
+#myroom-view .room-request-card strong{display:block;font-size:12px}
+#myroom-view .room-request-card p{margin:5px 0;color:#65788d}
+#myroom-view .room-request-card small{display:block;color:#8392a3}
+#myroom-view .room-request-card button{margin-top:7px;padding:6px 10px;min-height:34px;border:1px solid #c6d5e5;border-radius:9px;background:#edf3fa;color:#425b78;font-weight:700}
+#myroom-view .room-request-card button:disabled{opacity:.5}
+#myroom-view .room-request-history{margin-top:9px;font-size:11px;color:#65788d}
+#myroom-view .room-request-history article{padding:9px 0;border-top:1px solid #e8edf3;line-height:1.55}
+#myroom-view .room-request-history p{margin:4px 0}
 #myroom-view .room-rail .room-workshop-launch button{margin-top:12px;min-height:46px;border-radius:11px;background:#edf2f9}
 .dream-fishing-overlay{position:fixed;inset:0;z-index:75;display:flex;align-items:center;justify-content:center;padding:12px;background:#253349ab}
 .dream-fishing-overlay.hidden{display:none}
@@ -2034,6 +2044,11 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
       <div class="room-rail-heading"><div><span class="menu-eyebrow">VISITORS</span><h3>오늘의 방문객</h3></div><span id="room-visitor-count">0 / 5</span></div>
       <div id="room-visitor-list" class="room-visitor-list"></div>
       <p id="room-visitor-hint">방 안의 캐릭터를 누르면 대화하고 하루 한 번 호감도를 얻을 수 있어요.</p>
+    </section>
+    <section class="room-rail-card room-request-panel">
+      <div class="room-rail-heading"><div><span class="menu-eyebrow">SMALL WISHES</span><h3>방문객의 작은 부탁</h3></div></div>
+      <div id="room-request-list" class="room-request-list" aria-live="polite"></div>
+      <details class="room-request-history"><summary>기억 기록</summary><div id="room-request-memories"></div></details>
     </section>
     <section class="room-rail-card room-workshop-launch">
       <div class="room-rail-heading"><div><span class="menu-eyebrow">ATELIER</span><h3>꿈의 공방</h3></div></div>
@@ -5195,7 +5210,19 @@ function useAffinityPotion(){
         };
         const DREAM_DISH_STYLES={clock:'soup',block:'skewer',receipt:'steam',zipper:'grill',map:'soup',blank:'porridge',clock_carrot:'soup',clock_turnip:'braise',block_pea:'skewer',block_cabbage:'steam',receipt_cabbage:'wrap',receipt_tomato:'stew',zipper_tomato:'pasta',map_turnip:'soup',map_carrot:'steam',blank_pea:'porridge',root_soup:'soup',folded_salad:'salad',mirror_stew:'stew',paper_roll:'wrap',button_plate:'platter',glassfish:'steam',ribbonfish:'skewer',bellfish:'soup',inkfish:'grill',keyfish:'braise',mirrorfish:'pasta',mushroom_tea:'steam',lotus_soup:'soup',pepper_salad:'salad',pumpkin_porridge:'porridge',onion_stew:'stew',moon_roll:'wrap',glass_lotus:'steam',glass_mint:'soup',ribbon_pepper:'grill',ribbon_pumpkin:'wrap',bell_mushroom:'soup',bell_onion:'steam',ink_tomato:'grill',ink_pepper:'soup',key_pumpkin:'braise',key_lotus:'steam',mirror_onion:'soup',mirror_mushroom:'pasta',clock_mint:'soup',block_pumpkin:'skewer',receipt_onion:'wrap',zipper_pepper:'grill',map_lotus:'soup',blank_mushroom:'steam'};
         function freshFishing(){return {stock:[],records:{},vegetables:Object.fromEntries(['carrot','cabbage','pea','turnip','tomato','mushroom','lotus','mint','pepper','onion','pumpkin'].map(id=>[id,0])),vegetableRecords:{},meals:{},lastCookedId:null,selectedMealId:null,proficiency:{},anglerId:null,observerId:null,cookId:null,tasterId:null,zone:'still',active:null,buff:null,pity:0,baitCharges:0,sightCharges:0,message:''};}
-        function freshLife(){return {materials:{thread:0,pigment:0,leaf:0,paper:0,dew:0,spool:0,glass:0,petal:0},items:{tea:0,lantern:0,dye:0,frame:0,bait:0,tonic:0,hourglass:0,dewflask:0,gatheringmap:0,fishglass:0,fineink:0,seedpouch:0},xp:{gathering:0,alchemy:0,craft:0},planters:[null,null],workshops:[null],planterChoices:['leaf:normal','leaf:normal'],workshopRecipes:['tea'],planterWorkers:[null,null],workshopWorkers:[null],teaCharges:0,lanternCharges:0,growthCharges:0,strollCharges:0,fineCharges:0,roomColor:'plain',framedCardId:null,stroll:null,stamps:0,board:{date:'',claimed:[]},journal:{crafts:Object.fromEntries(['tea','lantern','dye','frame','bait','tonic','hourglass','dewflask','gatheringmap','fishglass','fineink','seedpouch'].map(id=>[id,0])),fine:Object.fromEntries(['tea','lantern','dye','frame','bait','tonic','hourglass','dewflask','gatheringmap','fishglass','fineink','seedpouch'].map(id=>[id,0])),fineTokens:0,harvests:0,strolls:0},fishing:freshFishing()};}
+        const VISITOR_REQUESTS=[
+            {id:'fish_ripple',kind:'fish',title:'수면의 작은 소식',wish:'낚시터에서 물고기 모습을 한 이물을 하나 낚아 보여 줘.',material:'dew'},
+            {id:'fish_clock',kind:'fish',title:'낚싯줄 끝의 시간',wish:'꿈낚시에서 이물을 하나 낚아 줘. 물속의 시간이 궁금해.',material:'thread'},
+            {id:'fish_shadow',kind:'fish',title:'물가의 그림자',wish:'낚시터에서 이물을 하나 낚고, 어떤 모습인지 들려줘.',material:'pigment'},
+            {id:'cook_warm',kind:'cook',title:'따뜻한 한 접시',wish:'꿈의 식탁에서 음식을 한 접시 만들어 줘.',material:'leaf'},
+            {id:'cook_story',kind:'cook',title:'접시 위의 이야기',wish:'낚거나 기른 재료로 음식을 하나 완성해 줘.',material:'paper'},
+            {id:'cook_scent',kind:'cook',title:'낯선 향기',wish:'꿈의 식탁에서 어떤 음식이든 한 접시 요리해 줘.',material:'petal'},
+            {id:'harvest_leaf',kind:'harvest',title:'새벽의 수확',wish:'화분에서 새벽 잎이나 야채 이물을 수확해 줘.',material:'leaf'},
+            {id:'harvest_garden',kind:'harvest',title:'작은 정원의 소식',wish:'꿈의 재배 화분에서 자란 것을 수확해 줘.',material:'petal'},
+            {id:'craft_gift',kind:'craft',title:'손끝에 남는 것',wish:'꿈의 공방 작업대에서 제작품을 하나 완성해 줘.',material:'thread'},
+            {id:'craft_memory',kind:'craft',title:'형태를 얻은 기억',wish:'작업대에서 무엇이든 만들어 보여 줘.',material:'pigment'}
+        ];
+        function freshLife(){return {materials:{thread:0,pigment:0,leaf:0,paper:0,dew:0,spool:0,glass:0,petal:0},items:{tea:0,lantern:0,dye:0,frame:0,bait:0,tonic:0,hourglass:0,dewflask:0,gatheringmap:0,fishglass:0,fineink:0,seedpouch:0},xp:{gathering:0,alchemy:0,craft:0},planters:[null,null],workshops:[null],planterChoices:['leaf:normal','leaf:normal'],workshopRecipes:['tea'],planterWorkers:[null,null],workshopWorkers:[null],teaCharges:0,lanternCharges:0,growthCharges:0,strollCharges:0,fineCharges:0,roomColor:'plain',framedCardId:null,stroll:null,stamps:0,board:{date:'',claimed:[]},requests:{active:null,completed:{},memories:[]},journal:{crafts:Object.fromEntries(['tea','lantern','dye','frame','bait','tonic','hourglass','dewflask','gatheringmap','fishglass','fineink','seedpouch'].map(id=>[id,0])),fine:Object.fromEntries(['tea','lantern','dye','frame','bait','tonic','hourglass','dewflask','gatheringmap','fishglass','fineink','seedpouch'].map(id=>[id,0])),fineTokens:0,harvests:0,strolls:0},fishing:freshFishing()};}
         function lifeAmount(n){return Number.isFinite(Number(n))?Math.min(999999,Math.max(0,Math.floor(Number(n)))):0;}
         function restoreLife(raw){
             const clean=freshLife();if(!raw||typeof raw!=='object')return clean;
@@ -5223,6 +5250,15 @@ function useAffinityPotion(){
             }
             clean.stamps=lifeAmount(raw.stamps);
             clean.board={date:typeof raw.board?.date==='string'?raw.board.date:'',claimed:Array.isArray(raw.board?.claimed)?[...new Set(raw.board.claimed.filter(id=>Number.isInteger(id)&&id>=0&&id<3))]:[]};
+            const requests=raw.requests;
+            if(requests&&typeof requests==='object'){
+                const active=requests.active;
+                if(VISITOR_REQUESTS.some(req=>req.id===active?.id)&&typeof active?.base==='string'&&active.base.length<120)
+                    clean.requests.active={id:active.id,base:active.base,visitorName:String(active.visitorName||active.base).slice(0,120),visitorFaction:String(active.visitorFaction||'').slice(0,40),ready:active.ready===true,performerName:String(active.performerName||'').slice(0,120),performerFaction:String(active.performerFaction||'').slice(0,40),itemName:String(active.itemName||'').slice(0,120)};
+                if(requests.completed&&typeof requests.completed==='object')for(const [base,date] of Object.entries(requests.completed).slice(0,200))
+                    if(base.length<120&&typeof date==='string')clean.requests.completed[base]=date.slice(0,24);
+                if(Array.isArray(requests.memories))clean.requests.memories=requests.memories.slice(0,30).filter(m=>m&&typeof m==='object').map(m=>({date:String(m.date||'').slice(0,24),title:String(m.title||'').slice(0,120),visitorName:String(m.visitorName||'').slice(0,120),performerName:String(m.performerName||'').slice(0,120),itemName:String(m.itemName||'').slice(0,120),relation:['same','friendly','hostile','neutral'].includes(m.relation)?m.relation:'neutral',dialogue:String(m.dialogue||'').slice(0,300)}));
+            }
             for(const id of Object.keys(clean.journal.crafts)){
                 clean.journal.crafts[id]=lifeAmount(raw.journal?.crafts?.[id]);clean.journal.fine[id]=lifeAmount(raw.journal?.fine?.[id]);
             }
@@ -5254,6 +5290,79 @@ function useAffinityPotion(){
             return clean;
         }
         function lifeLevel(skill){return Math.min(5,1+Math.floor((playerLife.xp[skill]||0)/25));}
+        const REQUEST_FRIENDLY_PAIRS=[['탐정','조수'],['탐정','히어로'],['탐정','사제'],['조수','히어로'],['히어로','사제'],['히어로','마법사'],['사제','마법사'],['범인','빌런'],['범인','악마'],['빌런','악마'],['도박사','초대객'],['도박사','범인'],['도박사','빌런']];
+        const REQUEST_HOSTILE_PAIRS=[['탐정','범인'],['탐정','빌런'],['조수','범인'],['조수','빌런'],['히어로','빌런'],['히어로','악마'],['사제','악마'],['사제','빌런']];
+        function visitorRequestRelation(a,b){
+            if(!a||!b)return 'neutral';
+            if(a===b)return 'same';
+            const pair=items=>items.some(([x,y])=>a===x&&b===y||a===y&&b===x);
+            return pair(REQUEST_HOSTILE_PAIRS)?'hostile':pair(REQUEST_FRIENDLY_PAIRS)?'friendly':'neutral';
+        }
+        function visitorRequestDialogue(offer,performerName,relation){
+            const activity={fish:'낚아 올린',cook:'만들어 준',harvest:'길러 낸',craft:'완성한'}[offer.kind];
+            if(relation==='hostile')return `방문객: 네게 부탁한 건 결과가 궁금해서야. · 담당: 마음에 들든 말든, ${activity} 건 사실이지.`;
+            if(relation==='same')return `방문객: 역시 ${performerName}, 네가 해 줄 줄 알았어! · 담당: 우리끼리니까 편하게 부탁해.`;
+            if(relation==='friendly')return `방문객: ${performerName}에게 부탁하길 잘했어. · 담당: 다음에도 같이 해 보자.`;
+            return `방문객: 생각보다 근사하네. 고마워. · 담당: ${activity} 걸 마음에 들어 하니 다행이야.`;
+        }
+        function visitorRequestAvailable(){
+            return VISITOR_REQUESTS.filter(offer=>offer.kind==='fish'||offer.kind==='cook'&&Object.entries(DREAM_RECIPES).some(([id,recipe])=>dreamRecipeDiscovered(id,recipe,playerLife.fishing))||offer.kind==='harvest'&&playerLife.planters.length>0||offer.kind==='craft'&&playerLife.workshops.length>0);
+        }
+        function visitorRequestOffer(base){
+            const choices=visitorRequestAvailable(),key=`${base}:${getTodayDateString()}`;
+            const hash=Array.from(key).reduce((n,ch)=>(Math.imul(n,31)+ch.charCodeAt(0))>>>0,7);
+            return choices[hash%choices.length];
+        }
+        function visitorRequestActor(card){const data=card&&findCharacter(card.name);return {name:card?.name||'',faction:card?.inherited?.faction||data?.faction||''};}
+        function acceptVisitorRequest(base){
+            if(currentVisitTargetUid||!base||playerLife.requests.active||playerLife.requests.completed[base]===getTodayDateString())return;
+            const card=(playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(c=>c.id===id):id).find(c=>affinityBase(c)===base);
+            if(!card)return;
+            const offer=visitorRequestOffer(base);if(!offer)return;
+            playerLife.requests.active={id:offer.id,base,visitorName:card.name,visitorFaction:visitorRequestActor(card).faction,ready:false,performerName:'',performerFaction:'',itemName:''};
+            lifeRefresh();
+        }
+        function progressVisitorRequest(kind,itemName,card){
+            const active=playerLife.requests.active,actor=visitorRequestActor(card);
+            if(!active||active.ready||!actor.name||!VISITOR_REQUESTS.some(offer=>offer.id===active.id&&offer.kind===kind))return false;
+            active.ready=true;active.performerName=actor.name;active.performerFaction=actor.faction;active.itemName=itemName;
+            return true;
+        }
+        function claimVisitorRequest(){
+            if(currentVisitTargetUid)return;
+            const state=playerLife.requests,active=state.active;if(!active?.ready)return;
+            const offer=VISITOR_REQUESTS.find(row=>row.id===active.id);if(!offer)return;
+            const relation=visitorRequestRelation(active.visitorFaction,active.performerFaction);
+            const dialogue=visitorRequestDialogue(offer,active.performerName,relation);
+            const affinity=gainAffinity(active.base,12);
+            playerLife.materials[offer.material]=lifeAmount(playerLife.materials[offer.material]+1);
+            state.completed[active.base]=getTodayDateString();
+            state.memories.unshift({date:getTodayDateString(),title:offer.title,visitorName:active.visitorName,performerName:active.performerName,itemName:active.itemName,relation,dialogue});
+            state.memories=state.memories.slice(0,30);state.active=null;
+            lifeRefresh();
+            alert(`${active.visitorName}의 부탁 완료! 호감도 +${affinity} · ${LIFE_MATERIALS[offer.material].name} +1\n${dialogue}`);
+        }
+        function renderVisitorRequests(){
+            const panel=document.querySelector('#myroom-view .room-request-panel'),list=document.getElementById('room-request-list'),memories=document.getElementById('room-request-memories');
+            if(!panel||!list||!memories)return;
+            panel.classList.toggle('hidden',!!currentVisitTargetUid);
+            if(currentVisitTargetUid)return;
+            const state=playerLife.requests,active=state.active,esc=dispatchEscape;
+            if(active){
+                const offer=VISITOR_REQUESTS.find(row=>row.id===active.id);
+                list.innerHTML=offer?`<div class="room-request-card"><strong>${esc(active.visitorName)} · ${esc(offer.title)}</strong><p>${esc(offer.wish)}</p><small>${active.ready?`${esc(active.performerName)}이(가) ${esc(active.itemName)} 완료 · 보상을 받을 수 있어요.`:'담당 카드가 활동을 마치면 완료돼요. 부탁은 날짜가 바뀌어도 남습니다.'}</small>${active.ready?'<button type="button" data-request-claim>완료하고 기억 남기기</button>':''}</div>`:'';
+            }else{
+                const seen=new Set();
+                const guests=(playerRoom.characters||[]).map(id=>typeof id==='string'?playerInventory.find(card=>card.id===id):id).filter(card=>{const base=affinityBase(card);if(!base||seen.has(base))return false;seen.add(base);return true;}).slice(0,5);
+                list.innerHTML=guests.length?guests.map(card=>{const base=affinityBase(card),offer=visitorRequestOffer(base),done=state.completed[base]===getTodayDateString();return `<div class="room-request-card"><strong>${esc(card.name)} · ${esc(offer.title)}</strong><p>${esc(offer.wish)}</p><button type="button" data-request-accept="${esc(base)}" ${done?'disabled':''}>${done?'오늘 부탁 완료':'부탁 듣기'}</button></div>`;}).join(''):'<p class="room-visitor-empty">방문객 관리에서 카드를 초대하면 부탁을 들을 수 있어요.</p>';
+            }
+            memories.innerHTML=state.memories.length?state.memories.map(row=>`<article><strong>${esc(row.date)} · ${esc(row.title)}</strong><div>${esc(row.visitorName)} ↔ ${esc(row.performerName)} · ${esc(row.itemName)}</div><p>${esc(row.dialogue)}</p></article>`).join(''):'<p>아직 남긴 기억이 없어요.</p>';
+        }
+        document.getElementById('room-request-list').addEventListener('click',event=>{
+            const button=event.target.closest('button');if(!button)return;
+            if(button.dataset.requestAccept)acceptVisitorRequest(button.dataset.requestAccept);
+            else if(button.dataset.requestClaim!==undefined)claimVisitorRequest();
+        });
         let dreamFishingTab='fish';
         function dreamFishCard(id){return playerInventory.find(c=>String(c.id)===String(id))||null;}
         const dreamFishFilters={fish:{query:'',rarity:'All',faction:'all',sort:'rarity',ascending:false},table:{query:'',rarity:'All',faction:'all',sort:'rarity',ascending:false}};
@@ -5383,11 +5492,11 @@ function useAffinityPotion(){
             const pool=Object.keys(DREAM_FISH).filter(id=>DREAM_FISH[id].zone===f.zone);
             const unseen=pool.filter(id=>!f.records[id]);const boosted=f.baitCharges>0;if(boosted)f.baitCharges--;const candidates=(boosted||f.pity>=5)&&unseen.length?unseen:pool;
             const id=candidates[Math.floor(Math.random()*candidates.length)],angler=dreamFishCard(f.anglerId);const skill=f.proficiency[affinityBase(angler)]||0;const sight=f.sightCharges>0;if(sight)f.sightCharges--;f.active={id,step:0,tension:(affinityLevel(affinityBase(angler))>=4||skill>=10?3:2)+(dreamFishBuff('blank')?1:0)+(dreamFishBuff('ribbonfish')?1:0),mapHint:sight||dreamFishBuff('map')||dreamFishBuff('mirrorfish')};f.message='낚싯줄 끝이 움직입니다.';lifeRefresh();renderDreamFishing();}
-        function dreamFishMove(move){const f=playerLife.fishing,a=f.active;if(!a)return;if(move==='release'){f.active=null;f.message='이물을 놓아주었습니다.';}else if(move===DREAM_FISH[a.id].pattern[a.step]){a.step++;if(a.step===3){const first=!f.records[a.id];if(first)f.records[a.id]={count:0,first:getTodayDateString()};f.records[a.id].count++;f.stock.push(a.id);f.pity=first?0:Math.min(12,f.pity+1);for(const role of ['anglerId','observerId']){const base=affinityBase(dreamFishCard(f[role]));if(base){f.proficiency[base]=Math.min(999,(f.proficiency[base]||0)+1);gainAffinity(base,2);}}f.message=`${DREAM_FISH[a.id].name}을(를) 낚았습니다!${first?' 새 도감 기록!':''}`;f.active=null;}else f.message='줄의 감각을 잘 읽었습니다.';}else {a.tension--;if(a.tension<1){f.active=null;f.message='줄이 풀리면서 이물이 달아났습니다.';}else f.message=`방향이 맞지 않았습니다. 남은 여유 ${a.tension}.`;}lifeRefresh();renderDreamFishing();}
+        function dreamFishMove(move){const f=playerLife.fishing,a=f.active;if(!a)return;if(move==='release'){f.active=null;f.message='이물을 놓아주었습니다.';}else if(move===DREAM_FISH[a.id].pattern[a.step]){a.step++;if(a.step===3){const first=!f.records[a.id];if(first)f.records[a.id]={count:0,first:getTodayDateString()};f.records[a.id].count++;f.stock.push(a.id);f.pity=first?0:Math.min(12,f.pity+1);for(const role of ['anglerId','observerId']){const base=affinityBase(dreamFishCard(f[role]));if(base){f.proficiency[base]=Math.min(999,(f.proficiency[base]||0)+1);gainAffinity(base,2);}}const requestDone=progressVisitorRequest('fish',DREAM_FISH[a.id].name,dreamFishCard(f.anglerId));f.message=`${DREAM_FISH[a.id].name}을(를) 낚았습니다!${first?' 새 도감 기록!':''}${requestDone?' 방문객의 부탁도 달성했어요.':''}`;f.active=null;}else f.message='줄의 감각을 잘 읽었습니다.';}else {a.tension--;if(a.tension<1){f.active=null;f.message='줄이 풀리면서 이물이 달아났습니다.';}else f.message=`방향이 맞지 않았습니다. 남은 여유 ${a.tension}.`;}lifeRefresh();renderDreamFishing();}
         function dreamFishCook(id){const f=playerLife.fishing,recipe=DREAM_RECIPES[id];if(!recipe||!dreamRecipeCanCook(recipe,f))return;if(!dreamFishValidRoles(f.cookId,f.tasterId)){f.message='서로 다른 베이스 캐릭터의 요리 담당과 시식 담당을 골라주세요.';renderDreamFishing();return;}
             if(recipe.fish)f.stock.splice(f.stock.indexOf(recipe.fish),1);
             for(const [veg,count] of Object.entries(recipe.vegetables))f.vegetables[veg]-=count;
-            const cookBase=affinityBase(dreamFishCard(f.cookId)),bonus=cookBase&&affinityLevel(cookBase)>=4&&Math.random()<.15?1:0;f.meals[id]=Math.min(99,(f.meals[id]||0)+1+bonus);f.lastCookedId=id;f.selectedMealId=id;gainAffinity(cookBase,2);gainAffinity(affinityBase(dreamFishCard(f.tasterId)),1);f.message=`${recipe.name} ${bonus?'두 접시':'한 접시'} 완성! 식탁에서 먹으면 다음 생활 행동에 효과가 적용됩니다.`;lifeRefresh();renderDreamFishing();}
+            const cookBase=affinityBase(dreamFishCard(f.cookId)),bonus=cookBase&&affinityLevel(cookBase)>=4&&Math.random()<.15?1:0;f.meals[id]=Math.min(99,(f.meals[id]||0)+1+bonus);f.lastCookedId=id;f.selectedMealId=id;gainAffinity(cookBase,2);gainAffinity(affinityBase(dreamFishCard(f.tasterId)),1);const requestDone=progressVisitorRequest('cook',recipe.name,dreamFishCard(f.cookId));f.message=`${recipe.name} ${bonus?'두 접시':'한 접시'} 완성! 식탁에서 먹으면 다음 생활 행동에 효과가 적용됩니다.${requestDone?' 방문객의 부탁도 달성했어요.':''}`;lifeRefresh();renderDreamFishing();}
         function dreamFishEat(id){const f=playerLife.fishing,recipe=DREAM_RECIPES[id];if(!recipe||!(f.meals[id]>0))return;f.meals[id]--;f.selectedMealId=f.meals[id]>0?id:null;f.buff={id:recipe.effectId,recipeId:id,charges:1};f.message=`${recipe.name}을(를) 먹었습니다. ${DREAM_FISH[recipe.effectId].effect}`;lifeRefresh();renderDreamFishing();}
         const dreamFishModal=document.getElementById('dream-fishing-modal');
         document.getElementById('open-dream-fishing').addEventListener('click',openDreamFishing);
@@ -5450,8 +5559,9 @@ function useAffinityPotion(){
             const bonus=playerLife.growthCharges>0?2:0;if(bonus)playerLife.growthCharges--;
             const total=amount+bonus+(dreamFishBuff('block')?1:0)+(dreamFishBuff('keyfish')?1:0);
             if(crop)dreamGiveVegetable(job.crop,total);else playerLife.materials.leaf+=total;
+            const requestDone=progressVisitorRequest('harvest',crop?crop.name:'새벽 잎',worker);
             playerLife.planters[slot]=null;const xp=seed.xp||3;gainLifeXp('gathering',xp);playerLife.journal.harvests++;
-            alert(`${crop?crop.name:'새벽 잎'} +${total} · 채집 경험치 +${xp}`);lifeRefresh();}
+            alert(`${crop?crop.name:'새벽 잎'} +${total} · 채집 경험치 +${xp}${requestDone?' · 방문객의 부탁 달성!':''}`);lifeRefresh();}
         function startLifeCraft(id,slot){if(currentVisitTargetUid||!Number.isInteger(slot)||slot<0||slot>=playerLife.workshops.length)return;const recipe=LIFE_RECIPES[id];if(!recipe)return;
             if(playerLife.workshops[slot])return alert('이 작업대의 완성품을 먼저 받아주세요.');
             if(lifeLevel(recipe.skill)<recipe.level)return alert(`${recipe.skill==='alchemy'?'조제':'세공'} Lv.${recipe.level}에 열리는 제작법입니다.`);
@@ -5467,7 +5577,8 @@ function useAffinityPotion(){
             gainLifeXp(LIFE_RECIPES[job.recipe].skill,xp);
             playerLife.journal.crafts[job.recipe]++;
             if(job.quality==='정교'){playerLife.journal.fine[job.recipe]++;playerLife.journal.fineTokens++;}
-            playerLife.workshops[slot]=null;alert(`${LIFE_RECIPES[job.recipe].name} ×1 완성 · ${job.quality} 품질 · 숙련도 +${xp}${job.recipe==='frame'?'\n마이룸 배치 모드 → 보관함에서 피규어를 배치할 수 있어요.':''}`);lifeRefresh();}
+            const requestDone=progressVisitorRequest('craft',LIFE_RECIPES[job.recipe].name,lifeWorkerCard('worktable',slot));
+            playerLife.workshops[slot]=null;alert(`${LIFE_RECIPES[job.recipe].name} ×1 완성 · ${job.quality} 품질 · 숙련도 +${xp}${job.recipe==='frame'?'\n마이룸 배치 모드 → 보관함에서 피규어를 배치할 수 있어요.':''}${requestDone?'\n방문객의 부탁도 달성했어요.':''}`);lifeRefresh();}
         function useLifeItem(id){if(currentVisitTargetUid||playerLife.items[id]<1)return;
             if(id==='tea'){playerLife.items.tea--;playerLife.teaCharges=3;alert('잠든 차를 마셨습니다. 다음 3회 전투에서 파티 최대 HP +3%');}
             else if(id==='lantern'){playerLife.items.lantern--;playerLife.lanternCharges=1;alert('다음 현장 조사 보상 수령 시 생활 재료 +1');}
@@ -7454,6 +7565,7 @@ function displayMyRoom(){
     document.getElementById('room-summary-counts').textContent=
         `방문객 ${(playerRoom.characters||[]).length}명 · 가구 ${(playerRoom.furniture||[]).length}개`;
     if(!visiting)renderRoomAffinity();
+    renderVisitorRequests();
     if(!lifeWorkshopModal.classList.contains('hidden'))renderLifePanel();
     const layer=document.getElementById('room-layer');if(!layer)return;
     layer.querySelectorAll('.chibi-character').forEach(el=>{
