@@ -7473,8 +7473,10 @@ function renderRoomGuests(layer,cards){
         const data=findCharacter(card.name);if(!data)return;
         const working=assigned.get(card.id),potWorker=working?.kind==='pot';
         const position=points[index%points.length];
-        const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+10)):position[0];
-        const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+5)):position[1];
+        // 작업대의 가로 반전은 담당자의 위치도 작업대 중심 기준으로 거울처럼 옮긴다.
+        const tableOffset=working&&!potWorker?(working.item.isFlipped?{x:5,y:10}:{x:10,y:5}):null;
+        const gridX=working?(potWorker?working.item.x:Math.min(95,working.item.x+tableOffset.x)):position[0];
+        const gridY=working?(potWorker?working.item.y:Math.min(95,working.item.y+tableOffset.y)):position[1];
         const iso=getIsoPos(gridX,gridY);
         const el=document.createElement('div');el.className='chibi-character room-guest';
         el.setAttribute('role','button');el.tabIndex=0;
@@ -7487,6 +7489,7 @@ function renderRoomGuests(layer,cards){
         el.style.zIndex=iso.zIndex+5;el.style.width='100px';
         const image=document.createElement('img');image.src=chibiImages[data.name]||data.chibi_image||data.cardImageUrl||'';
         image.alt=data.name;image.draggable=false;image.className='w-full h-auto object-contain';
+        if(tableOffset&&working.item.isFlipped)image.style.transform='scaleX(-1)';
         const bubble=document.createElement('div');bubble.className='chibi-bubble';
         bubble.textContent=data.dialogues?.[0]||'반가워.';
         el.append(image,bubble);
