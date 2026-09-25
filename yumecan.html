@@ -1096,10 +1096,14 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 }
 #myroom-view .room-backdrop{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 #myroom-view .room-wall{position:absolute;inset:0;filter:drop-shadow(0 6px 10px #6e7d9118)}
-#myroom-view .room-wall-left{clip-path:polygon(0 0,50% 0,50% 45%,12% 69%,0 61%);background:repeating-linear-gradient(90deg,#f5f7fb 0 96px,#e8edf4 97px,#f5f7fb 98px);border-right:1px solid #dce4ed}
-#myroom-view .room-wall-right{clip-path:polygon(50% 0,100% 0,100% 61%,88% 69%,50% 45%);background:repeating-linear-gradient(90deg,#ecf1f7 0 112px,#e0e8f0 113px,#ecf1f7 114px)}
-#myroom-view .room-floor{position:absolute;inset:0;clip-path:polygon(50% 45%,88% 69%,50% 93%,12% 69%);background:repeating-linear-gradient(150deg,#f2f4f8 0 38px,#e2e8ef 39px,#f2f4f8 40px),linear-gradient(#f2f4f8,#dce5ed);filter:drop-shadow(0 4px 15px #60708925)}
-#myroom-view .room-floor-glow{position:absolute;inset:0;clip-path:polygon(50% 45%,88% 69%,50% 93%,12% 69%);background:radial-gradient(ellipse at 35% 55%,#fff9 0,transparent 58%)}
+#myroom-view .room-wall-left{clip-path:polygon(0 0,50% 0,50% var(--room-back-y,45%),var(--room-left-x,12%) var(--room-side-y,69%),0 61%);background:repeating-linear-gradient(90deg,#f5f7fb 0 96px,#e8edf4 97px,#f5f7fb 98px)}
+#myroom-view .room-wall-right{clip-path:polygon(50% 0,100% 0,100% 61%,var(--room-right-x,88%) var(--room-side-y,69%),50% var(--room-back-y,45%));background:repeating-linear-gradient(90deg,#ecf1f7 0 112px,#e0e8f0 113px,#ecf1f7 114px)}
+#myroom-view .room-floor{position:absolute;inset:0;clip-path:polygon(50% var(--room-back-y,45%),var(--room-right-x,88%) var(--room-side-y,69%),50% var(--room-front-y,93%),var(--room-left-x,12%) var(--room-side-y,69%));background:repeating-linear-gradient(150deg,#f2f4f8 0 38px,#e2e8ef 39px,#f2f4f8 40px),linear-gradient(#f2f4f8,#dce5ed)}
+#myroom-view .room-floor-glow{position:absolute;inset:0;clip-path:polygon(50% var(--room-back-y,45%),var(--room-right-x,88%) var(--room-side-y,69%),50% var(--room-front-y,93%),var(--room-left-x,12%) var(--room-side-y,69%));background:radial-gradient(ellipse at 35% 55%,#fff9 0,transparent 58%)}
+#myroom-view .room-boundary{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 2px 2px #71829b48)}
+#myroom-view .room-boundary path{fill:none;stroke:#8497ae;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#myroom-view .room-boundary .room-back-seam{stroke:#7389a3;stroke-width:6}
+#myroom-view .room-boundary .room-front-edge{stroke:#a0afc3;stroke-width:3.5}
 #myroom-view #room-layer>.room-guest{pointer-events:auto;touch-action:manipulation}
 #myroom-view #room-layer>.room-guest.room-guest-speaking{z-index:100000!important}
 #myroom-view #room-layer>.room-guest img{image-rendering:pixelated;filter:drop-shadow(0 5px 3px #46557040)}
@@ -1123,6 +1127,11 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-tools-panel .room-toolbar{display:flex;flex-wrap:wrap;gap:7px;padding:0;margin:12px 0 0;max-width:none}
 #myroom-view .room-tools-panel .room-toolbar .gacha-button{background:#f3f6fa!important;color:#44546a!important;border:1px solid #dae3ed!important;min-height:42px;font-size:12px!important;font-weight:650;box-shadow:none!important}
 #myroom-view .room-tools-panel .room-toolbar .gacha-button:hover{background:#e6edf5!important}
+#myroom-view .room-expansion{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin-top:14px;padding:11px 13px;border:1px solid #d9e3ef;border-radius:13px;background:#f8fafc;color:#52647b;font-size:12px}
+#myroom-view .room-expansion.hidden{display:none}
+#myroom-view .room-expansion button{min-height:38px;margin-left:auto;padding:7px 13px;border:1px solid #afc1d6;border-radius:10px;background:#eaf1fa;color:#344e6c;font-weight:700}
+#myroom-view .room-expansion button:hover:not(:disabled){background:#dae8f7}
+#myroom-view .room-expansion button:disabled{opacity:.55;cursor:default}
 #myroom-view .room-rail{display:grid;gap:12px}
 #myroom-view .room-rail-card{margin:0;padding:18px;border:1px solid #dfe6ee;border-radius:18px;background:#fff;box-shadow:0 4px 14px #6070880b;color:#3c4b60}
 #myroom-view .room-rail-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -1942,6 +1951,10 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
           <div class="room-wall room-wall-right"></div>
           <div class="room-floor"></div>
           <div class="room-floor-glow"></div>
+          <svg class="room-boundary" viewBox="0 0 1000 625" preserveAspectRatio="none" aria-hidden="true">
+            <path id="room-back-seam" class="room-back-seam"/>
+            <path id="room-front-edge" class="room-front-edge"/>
+          </svg>
         </div>
 
         <div id="room-layer" class="relative w-full h-full z-10 pointer-events-none">
@@ -1970,6 +1983,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
         🔨 배치 모드
     </button>
 </div>
+<div id="room-expansion" class="room-expansion"><span id="room-expansion-status">객실 크기 · 기본</span><button id="room-expand-button" type="button">공간 확장 · 💎 400</button></div>
   </div>
   </div>
   <aside class="room-rail">
@@ -4386,10 +4400,11 @@ function setSaveStatus(text, state = '') {
 function saveGameToFirebase() {
     if (!currentUser) return Promise.resolve(false);
     const uid = currentUser.uid;
-    const snapshot = buildGameSnapshot();
     setSaveStatus('저장 중…');
     const operation = saveQueue.then(async () => {
         try {
+            // 대기 중인 저장이 확장 구매 뒤의 잔액/객실 단계를 덮어쓰지 않도록 실행 시점에 만든다.
+            const snapshot = buildGameSnapshot();
             await db.collection('users').doc(uid).set(snapshot, { merge: true });
             setSaveStatus('저장됨 · ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}));
             return true;
@@ -4470,6 +4485,7 @@ playerInspHp = savedData.inspHp ?? 0;
         playerRoom = savedData.myRoom || { furniture: [], characters: [] };
         if (!Array.isArray(playerRoom.furniture)) playerRoom.furniture = [];
         if (!Array.isArray(playerRoom.characters)) playerRoom.characters = [];
+        playerRoom.expansionLevel = Math.min(2,Math.max(0,Math.floor(Number(playerRoom.expansionLevel)||0)));
         ownedFurniture = savedData.ownedFurniture || [];
         inventoryCapacity = savedData.capacity ?? 100;
         if (savedData.representative) {
@@ -4567,7 +4583,7 @@ function saveGame() {
             function initializeNewGameData() {
                 playerDispatches = {}; dispatchReports = [];
     playerDreamFragments=0;playerCharacterTraces={};playerAffinityPotions=0;playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};playerAffinity={};playerLife=freshLife();
-    playerRoom={furniture:[],characters:[]};ownedFurniture=[];ensureLifeFurniture();
+    playerRoom={furniture:[],characters:[],expansionLevel:0};ownedFurniture=[];ensureLifeFurniture();
     rogueState=emptyRogueState(); rogueMeta={runs:0,clears:0,best:0,last:null};
     addCardToInventory('[관리인] Ki');
     addCardToInventory('[관리인] Ai');
@@ -6302,6 +6318,7 @@ function displayEventShopView() {
         }
     }
     expandInventoryButton.disabled = playerCurrency < EXPAND_COST;
+    updateRoomExpansionUI();
 }
             function showMessage(message, colorClass, element) {
     if (!element) return;
@@ -6704,13 +6721,71 @@ if (indicator) {
     }
 }
 window.displayInventory = displayInventory;
+// 벽, 바닥, 가구 좌표가 같은 치수를 사용한다. 구형 저장의 확장 단계는 0이다.
+const ROOM_EXPANSION_COSTS=[400,800];
+function getRoomExpansionLevel(){return Math.min(ROOM_EXPANSION_COSTS.length,Math.max(0,Math.floor(Number(playerRoom?.expansionLevel)||0)));}
+function getRoomGeometry(){
+    const level=getRoomExpansionLevel();
+    return {centerX:50,centerY:45-level,widthFactor:.38+.04*level,heightFactor:.24+.01*level};
+}
+function updateRoomGeometry(){
+    const room=document.getElementById('room-container');if(!room)return;
+    const {centerX,centerY,widthFactor,heightFactor}=getRoomGeometry();
+    const sideY=centerY+100*heightFactor,leftX=centerX-100*widthFactor,rightX=centerX+100*widthFactor,frontY=centerY+200*heightFactor;
+    for(const [name,value] of Object.entries({'--room-back-y':centerY,'--room-side-y':sideY,'--room-left-x':leftX,'--room-right-x':rightX,'--room-front-y':frontY}))room.style.setProperty(name,`${value}%`);
+    const back=document.getElementById('room-back-seam'),front=document.getElementById('room-front-edge');
+    if(back)back.setAttribute('d',`M ${leftX*10} ${sideY*6.25} L 500 ${centerY*6.25} L ${rightX*10} ${sideY*6.25}`);
+    if(front)front.setAttribute('d',`M ${leftX*10} ${sideY*6.25} L 500 ${frontY*6.25} L ${rightX*10} ${sideY*6.25}`);
+}
+let roomExpansionBusy=false;
+function updateRoomExpansionUI(){
+    const level=getRoomExpansionLevel(),button=document.getElementById('room-expand-button');
+    const panel=document.getElementById('room-expansion');if(!button||!panel)return;
+    panel.classList.toggle('hidden',!!currentVisitTargetUid);
+    document.getElementById('room-expansion-status').textContent=`객실 크기 · ${level===0?'기본':level+'단계 확장'} / 2`;
+    button.textContent=level>=ROOM_EXPANSION_COSTS.length?'최대 확장 완료':`공간 확장 · 💎 ${ROOM_EXPANSION_COSTS[level]}`;
+    button.disabled=roomExpansionBusy||level>=ROOM_EXPANSION_COSTS.length||playerCurrency<ROOM_EXPANSION_COSTS[level];
+    if(level<ROOM_EXPANSION_COSTS.length&&!roomExpansionBusy&&playerCurrency<ROOM_EXPANSION_COSTS[level])button.title='보석이 부족합니다.';
+    else button.removeAttribute('title');
+}
+async function expandMyRoom(){
+    if(roomExpansionBusy||currentVisitTargetUid||!currentUser)return;
+    const level=getRoomExpansionLevel(),cost=ROOM_EXPANSION_COSTS[level];
+    if(cost===undefined||playerCurrency<cost)return;
+    if(!confirm(`객실을 ${level+1}단계로 확장할까요?\n보석 ${cost}개를 사용합니다. (최대 2단계)`))return;
+    roomExpansionBusy=true;updateRoomExpansionUI();
+    const userRef=db.collection('users').doc(currentUser.uid);
+    const purchase=saveQueue.then(async()=>{
+        const result=await db.runTransaction(async transaction=>{
+            const doc=await transaction.get(userRef);
+            if(!doc.exists)throw new Error('저장 데이터를 찾을 수 없습니다.');
+            const remote=doc.data(),remoteLevel=Math.min(2,Math.max(0,Math.floor(Number(remote.myRoom?.expansionLevel)||0)));
+            const balance=Math.max(0,Number(remote.currency)||0);
+            if(remoteLevel!==level)return {changed:true,level:remoteLevel,balance};
+            if(balance<cost)return {insufficient:true,level:remoteLevel,balance};
+            transaction.update(userRef,{'myRoom.expansionLevel':level+1,currency:balance-cost});
+            return {level:level+1,balance:balance-cost};
+        });
+        playerCurrency=result.balance;
+        playerRoom.expansionLevel=result.level;
+        updateUI();displayMyRoom();
+        if(result.changed)alert('다른 기기에서 변경된 객실 상태를 반영했습니다.');
+        else if(result.insufficient)alert('보석이 부족합니다.');
+        else {
+            setRoomZoom(1); // 새로 열린 바닥의 양 끝이 보이도록 한 번 전체 화면에 맞춘다.
+            setSaveStatus('저장됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
+            showMessage(`${result.level}단계 객실로 확장했습니다.`, 'text-green-300', messageArea);
+        }
+    });
+    saveQueue=purchase.then(()=>true,()=>false);
+    try{await purchase;}catch(error){console.error('객실 확장 오류:',error);alert('객실 확장에 실패했습니다. 연결 상태를 확인하고 다시 시도해 주세요.');}
+    finally{roomExpansionBusy=false;updateRoomExpansionUI();}
+}
+document.getElementById('room-expand-button').addEventListener('click',expandMyRoom);
 // 1. 마이룸 화면 표시 (캐릭터 & 가구 렌더링)
-// 1. 그리드 좌표 변환 함수 (벽 안쪽으로 범위 축소)
+// 1. 그리드 좌표 변환 함수
 function getIsoPos(gridX, gridY) {
-    const centerX = 50;
-    const centerY = 45;
-    const widthFactor = 0.38;
-    const heightFactor = 0.24;
+    const {centerX,centerY,widthFactor,heightFactor}=getRoomGeometry();
     const screenX = centerX + (gridX - gridY) * widthFactor;
     const screenY = centerY + (gridX + gridY) * heightFactor;
     const zIndex = Math.floor((gridX + gridY) * 100);
@@ -6728,11 +6803,7 @@ function getRoomFurnitureTransform(item,furniture){
 }
 // 2. 역변환 함수 (위와 변수값 일치 필수)
 function getGridPosFromScreen(screenX, screenY) {
-    const centerX = 50;
-    const centerY = 45; // ✨ 일치시킴
-
-    const widthFactor = 0.38; // ✨ 일치시킴
-    const heightFactor = 0.24; // ✨ 일치시킴
+    const {centerX,centerY,widthFactor,heightFactor}=getRoomGeometry();
 
     const dx = (screenX - centerX) / widthFactor;
     const dy = (screenY - centerY) / heightFactor;
@@ -6978,6 +7049,8 @@ function showRoomGuestBubble(character,text,duration=3000){
 function displayMyRoom(){
     syncRoomScale();
     if(!currentVisitTargetUid)ensureLifeFurniture();
+    updateRoomGeometry();
+    updateRoomExpansionUI();
     const visiting=!!currentVisitTargetUid;
     const editing=!!isEditMode;
     const view=document.getElementById('myroom-view');
@@ -12154,8 +12227,10 @@ async function visitFriendRoom(targetUid, targetNickname) {
         // 3. 친구 방 데이터 준비 (없으면 빈 방)
         let friendFurniture = [];
         let friendCharacters = [];
+        let friendExpansionLevel = 0;
 
         if (friendData.myRoom) {
+            friendExpansionLevel = Math.min(2,Math.max(0,Math.floor(Number(friendData.myRoom.expansionLevel)||0)));
             // 가구 데이터 안전하게 가져오기
             if (Array.isArray(friendData.myRoom.furniture)) {
                 friendFurniture = JSON.parse(JSON.stringify(friendData.myRoom.furniture));
@@ -12180,6 +12255,7 @@ async function visitFriendRoom(targetUid, targetNickname) {
         // 이렇게 하면 참조 오류를 방지하고 확실하게 내용이 바뀝니다.
         playerRoom.furniture = friendFurniture;
         playerRoom.characters = friendCharacters;
+        playerRoom.expansionLevel = friendExpansionLevel;
 
         // 5. 화면 전환 및 렌더링
         switchTab('myroom');
