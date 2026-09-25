@@ -294,6 +294,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         .chibi-character:hover .chibi-bubble { opacity: 1; }
         .placed-furniture { position: absolute; transition: all 0.2s; }
+        /* 그림과 편집 손잡이 모두 가구의 동일한 등각 좌표를 기준으로 둔다. */
+        #myroom-view .placed-furniture > img,
+        #myroom-view .placed-furniture > .furniture-hitbox { position: absolute; }
         #event-point-display { display: none !important; }
     
 /* 꿈의 공방 */
