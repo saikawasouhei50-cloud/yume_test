@@ -1100,8 +1100,6 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-wall-right{clip-path:polygon(50% 0,100% 0,100% 61%,88% 69%,50% 45%);background:repeating-linear-gradient(90deg,#ecf1f7 0 112px,#e0e8f0 113px,#ecf1f7 114px)}
 #myroom-view .room-floor{position:absolute;inset:0;clip-path:polygon(50% 45%,88% 69%,50% 93%,12% 69%);background:repeating-linear-gradient(150deg,#f2f4f8 0 38px,#e2e8ef 39px,#f2f4f8 40px),linear-gradient(#f2f4f8,#dce5ed);filter:drop-shadow(0 4px 15px #60708925)}
 #myroom-view .room-floor-glow{position:absolute;inset:0;clip-path:polygon(50% 45%,88% 69%,50% 93%,12% 69%);background:radial-gradient(ellipse at 35% 55%,#fff9 0,transparent 58%)}
-#myroom-view .room-window{position:absolute;left:15%;top:13%;width:27%;height:31%;display:flex;gap:4px;padding:9px;background:#fefefe;border:4px solid #cbd7e4;box-shadow:8px 13px 25px #8fa9b538;transform:skewY(-20deg);border-radius:5px}
-#myroom-view .room-window span{flex:1;background:linear-gradient(135deg,#e6f4f8,#c2dbe5 55%,#eaf6f6);border:1px solid #accad2}
 #myroom-view #room-layer>.room-guest{pointer-events:auto;touch-action:manipulation}
 #myroom-view #room-layer>.room-guest.room-guest-speaking{z-index:100000!important}
 #myroom-view #room-layer>.room-guest img{image-rendering:pixelated;filter:drop-shadow(0 5px 3px #46557040)}
@@ -1110,6 +1108,13 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view #room-layer .placed-furniture img,
 #myroom-view #room-layer>.room-guest>img{
   filter:saturate(.48) contrast(.85) brightness(1.10) sepia(.035) drop-shadow(0 5px 7px #59657626);
+}
+/* 투명한 PNG 가장자리만 따라가는 한 픽셀 윤곽선. 피규어는 치비 이미지를 쓰므로 제외한다. */
+#myroom-view #room-layer .placed-furniture:not(.memory-frame-furniture)>img{
+  filter:saturate(.48) contrast(.85) brightness(1.10) sepia(.035)
+    drop-shadow(1px 0 0 #4c566475) drop-shadow(-1px 0 0 #4c566475)
+    drop-shadow(0 1px 0 #4c566475) drop-shadow(0 -1px 0 #4c566475)
+    drop-shadow(0 5px 7px #59657626);
 }
 #myroom-view #room-container[data-life-color=mist] .room-wall{filter:hue-rotate(12deg)}
 #myroom-view #room-container[data-life-color=dawn] .room-wall{filter:hue-rotate(-24deg) sepia(.15)}
@@ -1160,7 +1165,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-char-selector-modal>div>div:last-child .gacha-button{border-radius:11px!important;background:#edf2f8!important;color:#44546b!important;border:1px solid #d3deea!important;min-height:44px}
 #myroom-char-selector-modal>div>div:last-child .gacha-button:first-child{background:#485a70!important;color:#fff!important;border-color:#485a70!important}
 @media(max-width:900px){#myroom-view .room-dashboard{grid-template-columns:1fr}#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}#myroom-view .room-rail #room-affinity-list{grid-template-columns:repeat(auto-fit,minmax(185px,1fr));max-height:260px}}
-@media(max-width:580px){#myroom-view .room-dashboard{gap:12px}#myroom-view .room-hero{padding:17px}#myroom-view .room-hero h3{font-size:20px}#myroom-view .room-rail{grid-template-columns:1fr}#myroom-view .room-rail .affinity-panel{grid-column:auto}#myroom-view .room-tools-panel{padding:14px}#myroom-view .room-tools-panel .room-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#myroom-view .room-tools-panel .room-toolbar .gacha-button{padding:8px!important}#myroom-view .room-rail #room-affinity-list{grid-template-columns:1fr}#myroom-view .room-window{border-width:3px;padding:5px}#myroom-char-selector-modal>div{padding:14px!important}#myroom-char-list{grid-template-columns:repeat(3,minmax(0,1fr));padding:8px!important}}
+@media(max-width:580px){#myroom-view .room-dashboard{gap:12px}#myroom-view .room-hero{padding:17px}#myroom-view .room-hero h3{font-size:20px}#myroom-view .room-rail{grid-template-columns:1fr}#myroom-view .room-rail .affinity-panel{grid-column:auto}#myroom-view .room-tools-panel{padding:14px}#myroom-view .room-tools-panel .room-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#myroom-view .room-tools-panel .room-toolbar .gacha-button{padding:8px!important}#myroom-view .room-rail #room-affinity-list{grid-template-columns:1fr}#myroom-char-selector-modal>div{padding:14px!important}#myroom-char-list{grid-template-columns:repeat(3,minmax(0,1fr));padding:8px!important}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -1925,7 +1930,6 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
         <div class="room-backdrop" aria-hidden="true">
           <div class="room-wall room-wall-left"></div>
           <div class="room-wall room-wall-right"></div>
-          <div class="room-window"><span></span><span></span><span></span></div>
           <div class="room-floor"></div>
           <div class="room-floor-glow"></div>
         </div>
