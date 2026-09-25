@@ -6797,9 +6797,12 @@ function getRoomFurnitureDepth(item,iso){
     return iso.zIndex+(furniture?.type==='wall'?-20000:0);
 }
 function getRoomFurnitureAngleScale(furniture){
-    // 탁자류 그림의 윗면은 방 바닥보다 가파르게 보인다.
-    // 원본 이미지를 기준으로 넓고 낮은 가구만 약하게 세로 압축한다.
-    if(furniture?.type!=='floor'||!(Number(furniture.size?.w)>=2)||!(Number(furniture.size?.h)>0&&Number(furniture.size?.h)<=1))return 1;
+    // 같은 각도 보정을 넓고 낮은 가구, 책장, 창문에 적용한다.
+    // 이름과 ID를 함께 확인해 시트에서 가구 종류가 달라도 빠지지 않게 한다.
+    const label=`${furniture?.id||''} ${furniture?.name||''}`;
+    const shelfOrWindow=/(?:bookshelf|bookcase|book[_ -]?shelf|book[_ -]?case|shelf|window|책장|서가|창문)/i.test(label);
+    const lowFurniture=furniture?.type==='floor'&&Number(furniture.size?.w)>=2&&Number(furniture.size?.h)>0&&Number(furniture.size?.h)<=1;
+    if(!shelfOrWindow&&!lowFurniture)return 1;
     const {widthFactor,heightFactor}=getRoomGeometry();
     const floorSlope=heightFactor*625/(widthFactor*1000);
     return Math.min(.92,Math.max(.80,Math.round(floorSlope/.45*100)/100));
