@@ -1539,6 +1539,52 @@ html.dark-mode body .dream-bottom #event-banner{background:#29394e!important;col
 html.dark-mode body .dream-bottom #event-banner>span{color:#c0cee0!important}
 html.dark-mode body #collection-character-list button.bg-yellow-400{background:#405875!important;color:#f1f5fb!important}
 </style>
+<style id="yumecan-dark-views-rarity">
+/* Navigation and content areas that used separate light surfaces. */
+html.dark-mode body #combat-view :is(.menu-power,.chapter-panel,.stage-panel){background:#222f40!important;color:#e7eef8!important;border-color:#435870!important}
+html.dark-mode body #combat-view .menu-power :is(span,strong){color:#edf2fa!important}
+html.dark-mode body #combat-view .menu-text-button{color:#c8daf0!important}
+html.dark-mode body #combat-view :is(.chapter-menu-card,.stage-menu-card){background:#29394e!important;color:#e9eff8!important;border-color:#495f79!important}
+html.dark-mode body #combat-view :is(.chapter-menu-card.is-selected,.stage-menu-card:hover:not(:disabled)){background:#405774!important;border-color:#8caacb!important}
+html.dark-mode body #combat-view :is(.chapter-menu-card small,.stage-menu-card small,.stage-entry,.stage-status,.menu-meta){color:#c2d1e4!important}
+html.dark-mode body #friends-view .friends-dashboard>div,
+html.dark-mode body #friends-view :is(#friend-search-result,#friend-list-container>div,#friend-request-list>div){background:#243247!important;color:#e9eff8!important;border-color:#435872!important}
+html.dark-mode body #friends-view :is(h3,#search-result-name,#friend-search-msg){color:#e9f0fa!important}
+html.dark-mode body #friends-view :is(#search-result-msg,#friend-list-container p){color:#bbcce0!important}
+html.dark-mode body #friends-view #friend-request-section{border-color:#435872!important}
+html.dark-mode body #collection-view :is(.character-archive-nav,#collection-character-detail-view,#collection-default-message,#collection-container,#collection-dialogues-list){background:#243247!important;color:#e7eff8!important;border-color:#415671!important}
+html.dark-mode body #collection-view #collection-profile-name{color:#edf3fb!important}
+html.dark-mode body #collection-view #collection-default-message p{color:#c4d1e2!important}
+html.dark-mode body #collection-view #collection-character-list button{background:#2b3b50!important;color:#e2eaf5!important;border-color:#485e77!important}
+html.dark-mode body #collection-view #collection-character-list button.active{background:#435d7c!important;color:#fff!important;border-color:#91abc9!important}
+html.dark-mode body #profile-view .profile-dashboard>div{background:#243247!important;color:#e7eef8!important;border:1px solid #435872!important;border-radius:18px}
+html.dark-mode body #profile-view :is(#profile-rep-name,.profile-dashboard label){color:#eaf0f9!important}
+html.dark-mode body #profile-view :is(#profile-msg-count,.profile-dashboard p){color:#c1d0e2!important}
+html.dark-mode body #profile-view .profile-title-settings{background:#2a3a50!important;border-color:#4b6079!important;color:#e7eef8!important}
+html.dark-mode body #profile-view #profile-nameplate-preview{background:#29394e!important;color:#eaf0f9!important;border-color:#4b607a!important}
+html.dark-mode body #trade-view :is(#trade-market-view,#trade-register-view,#trade-register-view>div,#trade-list-container,#trade-inventory-container,#trade-selected-card-preview){background:#243247!important;color:#e9f0fa!important;border-color:#435872!important}
+html.dark-mode body #trade-view #trade-list-container>div{background:#2a3b51!important;border-color:#526780!important;color:#e9f0fa!important}
+html.dark-mode body #trade-view :is(#trade-register-view h3,#trade-selected-name){color:#edf3fb!important}
+html.dark-mode body #trade-view #trade-inventory-container>div{background:#2a3b50!important;color:#e8eff8!important;border-color:#4a617e!important}
+html.dark-mode body :is(#combat-view,#friends-view,#collection-view,#profile-view,#trade-view,#inventory-view,#deck-view,#breeding-view) :is([class*="bg-white"],[class*="bg-black"],[class*="bg-gray"],[class*="bg-slate"]):not(img):not(canvas):not(button):not(.trade-rarity-badge):not(.faction-mark):not(.faction-btn){background-color:#26364a!important}
+html.dark-mode body :is(#inventory-view,#deck-view,#collection-view,#trade-view,#breeding-view) :is(#inventory-container,#deck-slots-container,#deck-inventory-container,#collection-container,#trade-inventory-container,#breeding-inventory-container){background:#202e41!important;border-color:#435872!important}
+/* Card grades: keep four distinct dark tints, clear borders and readable chips. */
+html.dark-mode body [data-rarity="N"]{--tier-border:#98a9bc;--tier-ink:#e1eaf4;--tier-wash:#334253;--tier-surface:#354254;--tier-badge:#435469;--tier-shadow:#0e18243d}
+html.dark-mode body [data-rarity="R"]{--tier-border:#65c6e7;--tier-ink:#c1efff;--tier-wash:#244c61;--tier-surface:#245169;--tier-badge:#275d78;--tier-shadow:#1a53633b}
+html.dark-mode body [data-rarity="SR"]{--tier-border:#ba90ef;--tier-ink:#efdeff;--tier-wash:#47345e;--tier-surface:#4a3566;--tier-badge:#634784;--tier-shadow:#603d773b}
+html.dark-mode body [data-rarity="SSR"]{--tier-border:#f1c46f;--tier-ink:#ffeab9;--tier-wash:#5a462e;--tier-surface:#624a2d;--tier-badge:#77572c;--tier-shadow:#72502945}
+html.dark-mode body [data-rarity="UR"]{--tier-border:#eea5ca;--tier-ink:#ffe1f0;--tier-wash:#5a354e;--tier-surface:#5d3751;--tier-badge:#774967;--tier-shadow:#69334a40}
+html.dark-mode body div:is(.rarity-N,.rarity-R,.rarity-SR,.rarity-SSR)[data-rarity]{background:linear-gradient(160deg,var(--tier-surface) 0%,#1d2a3b 82%)!important;border:2px solid var(--tier-border)!important;border-top-width:5px!important;box-shadow:inset 0 1px #ffffff1c,0 5px 18px var(--tier-shadow)!important}
+html.dark-mode body div.rarity-SSR[data-rarity]{border:4px double var(--tier-border)!important;border-top-width:6px!important}
+html.dark-mode body div[data-rarity]>div>p.font-tech.font-black,
+html.dark-mode body [data-rarity] .combat-rarity-label,
+html.dark-mode body #detail-card-rarity[data-rarity]{display:inline-block;background:var(--tier-badge)!important;color:var(--tier-ink)!important;border:1px solid var(--tier-border)!important;border-radius:7px!important;padding:3px 9px!important;font-weight:900!important;text-shadow:0 1px 2px #1017228c!important;letter-spacing:.08em!important}
+html.dark-mode body #combat-player-deck>div[data-rarity],
+html.dark-mode body #detail-card-image[data-rarity]{border-color:var(--tier-border)!important}
+html.dark-mode body #combat-in-progress-view [id^="combat-card-"][data-rarity]{border:2px solid var(--tier-border)!important;border-top-width:5px!important;background:linear-gradient(160deg,var(--faction-bg) 0%,#263549 82%)!important}
+html.dark-mode body #trade-view .trade-rarity-badge[data-rarity]{background:var(--tier-badge)!important;color:var(--tier-ink)!important;border:1px solid var(--tier-border)!important;padding:3px 7px!important;font-weight:800!important}
+html.dark-mode body :is(.rg-loot-card,.stage-menu-card)[data-rarity]{border-color:var(--tier-border)!important}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -12780,7 +12826,7 @@ if(marketTabBtn) marketTabBtn.click();
             let rarityBadge = '';
             if (trade.targetRarity && trade.targetRarity !== 'ALL') {
                 const rColors = { 'N': 'bg-gray-500', 'R': 'bg-blue-600', 'SR': 'bg-purple-600', 'SSR': 'bg-yellow-500 text-black' };
-                rarityBadge = `<span class="${rColors[trade.targetRarity]} text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">${trade.targetRarity}</span>`;
+                rarityBadge = `<span class="trade-rarity-badge ${rColors[trade.targetRarity]} text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold" data-rarity="${trade.targetRarity}">${trade.targetRarity}</span>`;
             } else {
                 rarityBadge = `<span class="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1">모든 등급</span>`;
             }
