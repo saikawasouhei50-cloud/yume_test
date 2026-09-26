@@ -1282,6 +1282,12 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-activity-card .room-activity-pot:first-child{border:0}
 #myroom-view .room-activity-card .room-activity-pot span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #myroom-view .room-activity-card .room-activity-pot button{flex:none}
+#myroom-view .room-rail #room-fishing-card,#myroom-view .room-rail #room-farming-card{grid-column:auto;padding:10px;align-self:stretch}
+#myroom-view .room-rail #room-fishing-card .room-activity-body,#myroom-view .room-rail #room-farming-card .room-activity-body{font-size:10px;overflow-wrap:anywhere}
+#myroom-view .room-rail #room-fishing-card button,#myroom-view .room-rail #room-farming-card .room-activity-entry{padding:6px;font-size:10px}
+#myroom-view .room-rail #room-farming-card .room-activity-pot{flex-wrap:wrap;gap:3px}
+#myroom-view .room-rail #room-farming-card .room-activity-pot span{white-space:normal;overflow:visible;text-overflow:clip}
+@media(max-width:360px){#myroom-view .room-rail #room-fishing-card,#myroom-view .room-rail #room-farming-card{grid-column:1/-1}}
 @media(max-width:900px){#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}}
 </style>
 </head>
