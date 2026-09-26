@@ -3674,7 +3674,13 @@ function updateDispatchClock() {
             });
         }
         function rogueEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-        function rogueDialogue(id,fallback) { return String(rogueDialogues[id] || fallback || '기록의 일부가 지워져 있습니다.'); }
+        function rogueInterpolateDialogue(value,cast={}) {
+            return String(value??'').replace(/\{(leader|리더|companion|동행인)\}/gi,(_,key)=>{
+                const name=/^(leader|리더)$/i.test(key)?cast.leader:cast.companion;
+                return name||(/^(leader|리더)$/i.test(key)?'담당자':'동행인');
+            });
+        }
+        function rogueDialogue(id,fallback,cast) { return rogueInterpolateDialogue(rogueDialogues[id] || fallback || '기록의 일부가 지워져 있습니다.',cast); }
         function rogueIncident() { return ROGUE_INCIDENTS.find(incident=>incident.id===rogueState.node?.eventId); }
         function rogueActors() {
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
@@ -3713,12 +3719,13 @@ function updateDispatchClock() {
             const effect=rogueIncidentEffect(incident,trait,success);
             const leaderId=`${incident.id}.leader.${trait}.${leader.card.faction}.${outcome}`;
             const companionId=`${incident.id}.companion.${trait}.${relation}.${outcome}`;
+            const cast={leader:leader.card.name,companion:companion?.card.name||''};
             rogueState.eventResult={incidentId:incident.id,trait,success,chance,effect,leaderIndex:leader.index,companionIndex:companion?.index??null,
-                narration:rogueDialogue(`${incident.id}.result.${trait}.${outcome}`,success?'사건을 해결했습니다.':'사건을 완전히 해결하지는 못했습니다.'),
-                leaderLine:rogueDialogue(leaderId,success?'길을 찾았어.':'다음에는 다른 방법을 찾아보자.'),
-                companionLine:companion?rogueDialogue(companionId,success?'함께 지나갈 수 있겠어.':'다시 시도해 보자.'):''};
+                narration:rogueDialogue(`${incident.id}.result.${trait}.${outcome}`,success?'사건을 해결했습니다.':'사건을 완전히 해결하지는 못했습니다.',cast),
+                leaderLine:rogueDialogue(leaderId,success?'길을 찾았어.':'다음에는 다른 방법을 찾아보자.',cast),
+                companionLine:companion?rogueDialogue(companionId,success?'함께 지나갈 수 있겠어.':'다시 시도해 보자.',cast):''};
             const record={id:`${rogueState.runId}:${rogueState.floor}:${incident.id}`,at:Date.now(),floor:rogueState.floor,title:incident.name,trait,leaderTrait:rogueCardTrait(leader.card),success,chance,effect,
-                intro:rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'),choice:rogueDialogue(`${incident.id}.choice.${trait}`,trait),
+                intro:rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.',cast),choice:rogueDialogue(`${incident.id}.choice.${trait}`,trait,cast),
                 leader:leader.card.name,companion:companion?.card.name||'',relation,narration:rogueState.eventResult.narration,
                 leaderLine:rogueState.eventResult.leaderLine,companionLine:rogueState.eventResult.companionLine};
             rogueMeta.investigations=[record,...(rogueMeta.investigations||[]).filter(entry=>entry.id!==record.id)].slice(0,30);
@@ -3832,7 +3839,8 @@ function updateDispatchClock() {
             panel.classList.toggle('hidden',!entries.length);
             document.getElementById('rogue-investigation-count').textContent=`${entries.length}건`;
             document.getElementById('rogue-investigation-list').innerHTML=entries.map(entry=>{
-                const show=(label,value)=>value?`<p><strong>${label}</strong> ${rogueEscape(value)}</p>`:'';
+                const cast={leader:entry.leader,companion:entry.companion};
+                const show=(label,value)=>value?`<p><strong>${rogueEscape(label)}</strong> ${rogueEscape(rogueInterpolateDialogue(value,cast))}</p>`:'';
                 return `<article class="rg-journal-entry"><h4>${rogueEscape(entry.title)} · ${entry.success?'성공':'실패'}</h4><small>${Number(entry.floor)||'?'}층 · ${rogueEscape(entry.trait||'')}${entry.leaderTrait?` · 담당 성향 ${rogueEscape(entry.leaderTrait)}`:''} · 성공 확률 ${Number(entry.chance)||0}%</small>${show('사건',entry.intro)}${show('조사',entry.choice)}${show('결과',entry.narration)}${show(entry.leader||'담당',entry.leaderLine)}${show(entry.companion||'동행인',entry.companionLine)}${show('획득',entry.effect)}</article>`;
             }).join('');
         }
@@ -3891,8 +3899,9 @@ function updateDispatchClock() {
             if(rogueState.phase==='event-result'){
                 const result=rogueState.eventResult;if(!result){panel.replaceChildren();return;}
                 const leader=rogueState.team[result.leaderIndex],companion=rogueState.team[result.companionIndex];
-                const actor=(card,line)=>card?`<div class="rg-incident-person"><img src="${rogueEscape(card.cardImageUrl||card.imageUrl||'')}" alt="${rogueEscape(card.name)}"><strong>${rogueEscape(card.name)}</strong><p>${rogueEscape(line)}</p></div>`:'';
-                panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(result.narration)}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p>`;
+                const cast={leader:leader?.name,companion:companion?.name};
+                const actor=(card,line)=>card?`<div class="rg-incident-person"><img src="${rogueEscape(card.cardImageUrl||card.imageUrl||'')}" alt="${rogueEscape(card.name)}"><strong>${rogueEscape(card.name)}</strong><p>${rogueEscape(rogueInterpolateDialogue(line,cast))}</p></div>`:'';
+                panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(rogueInterpolateDialogue(result.narration,cast))}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p>`;
                 return;
             }
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
