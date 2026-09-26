@@ -398,6 +398,8 @@ html.calm-mode .hud-scanline-container::after { display: none; }
 .rg-heading{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--rg-line);padding:20px 0 26px;margin-bottom:24px}.rg-heading h2{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.04em;margin:8px 0}.rg-heading p,.rg-intro p{color:#aebad0;font-size:14px;line-height:1.8}.rg-kicker{font-size:10px;letter-spacing:.18em;color:var(--rg-accent);font-weight:700}.rg-edition{align-self:center;text-align:right;font-size:12px;color:#aebad0}.rg-edition b{font-size:20px;color:var(--rg-accent)}
 .rg-intro{padding:28px;border:1px solid #53496c;border-radius:14px;background:linear-gradient(120deg,#252035,#131e2c);margin-bottom:18px}.rg-intro h3{font-size:34px;line-height:1.3;font-weight:700;margin:12px 0 20px}.rg-lobby-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.rg-panel{background:#101925;border:1px solid var(--rg-line);padding:18px;border-radius:12px;margin-bottom:14px}.rg-panel h3,.rg-panel label{display:block;font-size:14px;font-weight:700;margin-bottom:12px}.rg-panel small{display:block;color:#aebad0;font-size:11px;line-height:1.7}.rg-panel select{width:100%;padding:12px;background:#192437;border:1px solid #46526d;border-radius:8px;color:#e7edf8;font-size:13px;margin:6px 0 16px}.rg-primary,.rg-secondary{width:100%;padding:14px 18px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}.rg-primary{background:#cbb9ff;color:#181125;display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.rg-primary span{font-size:12px}.rg-secondary{border:1px solid #48546c;background:#152031;color:#becbdd}.rg-status{display:flex;align-items:center;gap:26px;border:1px solid #53496c;background:#1b2030;padding:18px;border-radius:12px;margin-bottom:18px}.rg-status h3{font-size:26px;font-weight:800}.rg-status>div:nth-child(2){display:flex;flex-direction:column;font-size:11px;color:#aebad0}.rg-status b{font-size:24px;color:#f2d38b}.rg-status p{margin-left:auto;color:#d8cfff;font-size:13px}.rg-layout{display:grid;grid-template-columns:175px minmax(0,1fr);gap:16px}.rg-map-panel{align-self:start}.rg-map-row{display:flex;gap:5px;align-items:center;padding:9px 3px;border-bottom:1px solid #253147;font-size:10px;color:#8c9ab1}.rg-map-row>span:first-child{font-variant-numeric:tabular-nums;width:18px;flex-shrink:0}.rg-map-row.current{color:#e4d9ff;background:#342e46;border-radius:5px}.rg-map-row.done{opacity:.65}.rg-map-node.taken{color:#94e8d3;text-decoration:underline}.rg-or{opacity:.35}.rg-main{min-width:0}.rg-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:18px}.rg-choice{background:#192337;border:1px solid #46526d;border-radius:10px;padding:18px;text-align:left;min-height:125px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .18s,background .18s}.rg-choice:hover:not(:disabled){border-color:#cbb9ff;background:#27283e}.rg-choice strong{font-size:16px;color:#dfd4ff}.rg-choice span{color:#b5c2d7;font-size:12px;line-height:1.8;white-space:pre-line}.rg-team{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.rg-member{min-width:0}.rg-member img{width:100%;height:85px;object-fit:cover;border-radius:6px;background:#202b3d}.rg-member strong{font-size:10px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}.rg-member progress{display:block;width:100%;height:6px;accent-color:#83ddc5;margin:6px 0}.rg-member small{font-size:9px}.rg-member.fallen{filter:grayscale(1);opacity:.45}.rg-resonances{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.rg-resonance{border:1px solid #39455b;border-radius:8px;padding:10px}.rg-resonance b{font-size:13px;color:#b0bfd5}.rg-resonance.lit{border-color:#cbb9ff;background:#302940}.rg-resonance.lit b{color:#e3d6ff}.rg-tags{display:flex;flex-wrap:wrap;gap:7px}.rg-tags span{border:1px solid #39455b;border-radius:6px;padding:6px 9px;font-size:11px;color:#c1cee0}.rg-rules{margin-top:20px;color:#aebad0;font-size:12px}.rg-rules p{margin-top:12px;line-height:1.9}.rg-panel summary{cursor:pointer;color:#cbb9ff;font-size:13px}#rogue-log{font-size:12px;color:#b5c2d7;max-height:190px;overflow:auto;margin-top:12px}#rogue-log li{padding:6px 0;border-bottom:1px solid #253147}#rogue-record{color:#cbb9ff;font-size:14px}#rogue-report{font-size:12px;color:#aebad0;line-height:1.9;margin-top:12px}
 @media(max-width:640px){.rg-heading{padding-top:10px}.rg-layout,.rg-lobby-grid{grid-template-columns:1fr}.rg-map-panel{padding:12px}.rg-map-panel small{display:none}#rogue-map{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.rg-map-row{font-size:9px;padding:5px 2px;flex-wrap:wrap;gap:3px}.rg-map-row>span:first-child{width:100%}.rg-status{gap:16px;flex-wrap:wrap}.rg-status p{margin-left:0;width:100%}.rg-choices{grid-template-columns:1fr}.rg-choice{min-height:100px}.rg-resonances{grid-template-columns:1fr}.rg-resonance small{display:inline;margin-left:8px}.rg-panel{padding:14px}.rg-member img{height:60px}.rg-team{gap:5px}.rg-intro{padding:22px}.rg-intro h3{font-size:28px}}
+.rg-incident{margin-bottom:12px;line-height:1.65;color:#455369}.rg-incident h4{font-size:17px;font-weight:750;color:#303d52;margin:0 0 6px}.rg-incident p{margin:0 0 10px}.rg-incident-actors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.rg-incident-actors label{font-size:12px;font-weight:700}.rg-incident-actors select{display:block;width:100%;margin:5px 0;padding:9px;border:1px solid #c9d5e3;border-radius:8px;background:#fff;color:#34455a}.rg-incident-result{display:flex;gap:10px;align-items:flex-start}.rg-incident-person{flex:1;min-width:0;border:1px solid #dce4f0;border-radius:10px;padding:10px;background:#f8f9fd}.rg-incident-person img{height:68px;width:68px;object-fit:contain;image-rendering:pixelated}.rg-incident-person strong{display:block}.rg-incident-person p{margin:5px 0 0;white-space:pre-line;word-break:keep-all}@media(max-width:640px){.rg-incident-actors{grid-template-columns:1fr}.rg-incident-result{flex-direction:column}.rg-incident-person{width:100%}}
+#rogue-boss-warning:not(.hidden){display:block;margin:8px 0;padding:9px 12px;border:1px solid #dcab7c;border-radius:8px;background:#3c2731;color:#ffe6c9;font-size:12px;line-height:1.6}
 </style>
 
 <style id="yumecan-typography-v3">
@@ -1714,6 +1716,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 </div></div></div>
                     <div id="battle-order" aria-label="이번 턴 행동 순서"></div>
                     <p id="battle-status" role="status" aria-live="polite">전투 준비 중…</p>
+                    <p id="rogue-boss-warning" class="hidden" role="status" aria-live="polite"></p>
                     <div id="battle-options"></div>
                     <details class="battle-help"><summary>전투 규칙</summary><p>스피드가 높을수록 먼저 행동합니다. 값이 없으면 0이며, 같으면 편성 순서 → 적 순입니다. 모두 한 번씩 행동하면 다음 턴으로 넘어갑니다.</p><p>스킬은 처음부터 사용할 수 있으며 개별 재사용 대기를 따릅니다(설정이 없으면 3차례). 적도 연결된 베이스 캐릭터 카드의 스킬을 무작위로 사용합니다. 일반 공격·휴식·희생도 한 차례를 사용합니다.</p><p>휴식하면 최대 HP의 일부를 회복하며 20~30%가 주로 나옵니다. 캐릭터마다 3턴에 한 번 사용할 수 있습니다. 희생은 자신의 HP를 0으로 만들고 지정한 생존 아군에게 이번 전투 동안 공격력 +20%를 부여합니다. 희생 버프는 중첩되지 않습니다.</p><p>자동 진행은 희생을 사용하지 않습니다. OFF로 전환하면 다음 아군 차례부터 직접 선택합니다. 자동 진행 옆의 1x·2x·4x는 연출 속도입니다.</p></details>
                 </section>
@@ -2401,6 +2404,7 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
     <h3 id="rogue-choice-title">다음 선택지를 고르세요</h3>
     <p id="rogue-choice-hint" aria-live="polite"></p>
    </div>
+   <div id="rogue-incident" class="rg-incident hidden"></div>
    <div id="rogue-choices" class="rg-choices" role="group" aria-labelledby="rogue-choice-title" aria-describedby="rogue-choice-hint"></div>
    <section class="rg-panel"><h3>동행 중인 등장인물</h3><div id="rogue-team-status" class="rg-team"></div></section>
    <section class="rg-panel"><h3>영감과 공명 <small>같은 계열 3개 획득 시 발동 · 중복 포함</small></h3><div id="rogue-resonance" class="rg-resonances"></div><div id="rogue-buffs-list" class="rg-tags"></div></section>
@@ -2493,6 +2497,7 @@ let mainChapters = [];
 let gachaPool = {}; 
 let characterProfiles = {};
 let interactionDialogues = {};
+let rogueDialogues = {};
 let systemMails = [];
 let raidBossDataSheet = null;
 let allEventInfos = []; // ✨ [추가] 모든 이벤트 목록 저장용
@@ -2574,6 +2579,9 @@ async function loadGameData() {
         // const GOOGLE_SHEET_URL = "..."; 
         // 자동으로 맨 위에 적은 GOOGLE_SHEET_URL을 가져옵니다.
         const data = await requestMasterData();
+        rogueDialogues = Object.fromEntries((Array.isArray(data.rogueDialogues) ? data.rogueDialogues : [])
+            .filter(row => row && typeof row.id === 'string' && typeof row.text === 'string' && row.id && row.text)
+            .map(row => [row.id.trim(), row.text.trim()]));
 		if (data.systemMails) {
             systemMails = data.systemMails.map(row => ({
                 id: row.id,
@@ -3593,7 +3601,14 @@ function updateDispatchClock() {
             rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
-        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[]}; }
+        const ROGUE_INCIDENTS = [
+            {id:'reversed_stairs',name:'올라갈수록 아래층이 되는 계단',base:{관찰:62,결단:52,교섭:58,보호:68},favored:['탐정','조수','마법사']},
+            {id:'extra_portrait',name:'인원이 늘어나는 초상화',base:{관찰:65,결단:48,교섭:55,보호:61},favored:['탐정','범인','초대객']},
+            {id:'early_reply',name:'먼저 도착한 답장',base:{관찰:65,결단:53,교섭:62,보호:50},favored:['도박사','마법사','사제']},
+            {id:'breathing_greenhouse',name:'숨을 쉬는 온실',base:{관찰:63,결단:57,교섭:49,보호:68},favored:['히어로','사제','악마']}
+        ];
+        const ROGUE_TRAITS = ['관찰','결단','교섭','보호'];
+        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[],bossClues:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
@@ -3623,6 +3638,55 @@ function updateDispatchClock() {
             });
         }
         function rogueEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function rogueDialogue(id,fallback) { return String(rogueDialogues[id] || fallback || '기록의 일부가 지워져 있습니다.'); }
+        function rogueIncident() { return ROGUE_INCIDENTS.find(incident=>incident.id===rogueState.node?.eventId); }
+        function rogueActors() {
+            const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
+            const leader=living.find(x=>x.index===rogueState.eventActors?.leaderIndex)||living[0];
+            const noCompanion=rogueState.eventActors&&rogueState.eventActors.companionIndex===null;
+            const companion=noCompanion?null:living.find(x=>x.index===rogueState.eventActors?.companionIndex&&x.index!==leader?.index)||living.find(x=>x.index!==leader?.index);
+            return {leader,companion};
+        }
+        function rogueIncidentChance(incident,trait,leader,companion) {
+            const relation=companion?visitorRequestRelation(leader.card.faction,companion.card.faction):'neutral';
+            const base=affinityBase(leader.card),level=base?affinityLevel(base):0;
+            return Math.min(90,Math.max(20,incident.base[trait]+(incident.favored.includes(leader.card.faction)?8:0)+level*4+(relation==='same'||relation==='friendly'?4:0)));
+        }
+        function rogueIncidentEffect(incident,trait,success) {
+            const clue=(kind,value,desc)=>{rogueState.bossClues=rogueState.bossClues||[];rogueState.bossClues.push({kind,value});return desc+' · 다음 보스전';};
+            const shards=(amount,desc)=>{rogueState.shards+=amount;return `${desc} · 조각 +${amount}`;};
+            if(!success){
+                const failures={reversed_stairs:{관찰:[8,'거짓 층의 순서를 기록'],결단:[10,'뒤집히는 시점을 확인'],교섭:[9,'안내인의 종소리를 기억'],보호:[7,'일행을 다시 모음']},extra_portrait:{관찰:[8,'복제의 그림자를 표시'],결단:[10,'액자의 못을 회수'],교섭:[9,'그림의 응답을 기록'],보호:[7,'얼굴이 번지는 것을 막음']},early_reply:{관찰:[8,'필체의 흔적을 기록'],결단:[10,'끝 문장 하나를 지움'],교섭:[9,'답장에서 다른 단어를 발견'],보호:[7,'다음 표적을 확인']},breathing_greenhouse:{관찰:[8,'먼저 피는 꽃을 표시'],결단:[10,'첫 개화를 지연'],교섭:[9,'온실이 아끼는 꽃을 확인'],보호:[7,'일행을 파편에서 떼어 냄']}};
+                const [amount,desc]=failures[incident.id][trait];return shards(amount,desc);
+            }
+            const outcomes={
+                reversed_stairs:{관찰:()=>clue('defDown',.15,'보스 방어력 -15%'),결단:()=>{rogueStat('atk',1.08);return '일행 공격력 +8% · 이번 탐사';},교섭:()=>shards(25,'안내인에게 길값을 돌려받음'),보호:()=>{rogueHeal(.20);return '생존자 최대 체력의 20% 회복';}},
+                extra_portrait:{관찰:()=>clue('cloneHp',.5,'복제상 체력 절반'),결단:()=>clue('atkDown',.10,'보스 공격력 -10%'),교섭:()=>clue('skipFirstSpecial',1,'첫 특수 행동 무효'),보호:()=>{rogueRevive(.30);return '전투불능 1명 복귀 · 없으면 생존자 회복';}},
+                early_reply:{관찰:()=>clue('replySafe',1,'첫 답장 반격 무효'),결단:()=>clue('delaySpecial',1,'첫 특수 행동 한 턴 지연'),교섭:()=>shards(30,'발신인에게 새 선택지를 받아냄'),보호:()=>{rogueHeal(.12);return '생존자 최대 체력의 12% 회복';}},
+                breathing_greenhouse:{관찰:()=>clue('bloomHp',.55,'첫 유리꽃 제거에 필요한 피해 감소'),결단:()=>clue('skipBloom',1,'첫 유리꽃 즉사 무효'),교섭:()=>clue('atkDown',.12,'보스 공격력 -12%'),보호:()=>clue('bloomGuard',1,'첫 유리꽃 즉사 자동 방어')}
+            };
+            return outcomes[incident.id][trait]();
+        }
+        async function resolveRogueIncident(trait) {
+            const incident=rogueIncident();if(rogueBusy||!rogueState.active||rogueState.phase!=='event'||!incident||!ROGUE_TRAITS.includes(trait))return;
+            const {leader,companion}=rogueActors();if(!leader)return;
+            const relation=companion?visitorRequestRelation(leader.card.faction,companion.card.faction):'neutral';
+            const chance=rogueIncidentChance(incident,trait,leader,companion);
+            const success=rogueRand()*100<chance,outcome=success?'success':'failure';
+            const effect=rogueIncidentEffect(incident,trait,success);
+            const leaderId=`${incident.id}.leader.${trait}.${leader.card.faction}.${outcome}`;
+            const companionId=`${incident.id}.companion.${trait}.${relation}.${outcome}`;
+            rogueState.eventResult={incidentId:incident.id,trait,success,chance,effect,leaderIndex:leader.index,companionIndex:companion?.index??null,
+                narration:rogueDialogue(`${incident.id}.result.${trait}.${outcome}`,success?'사건을 해결했습니다.':'사건을 완전히 해결하지는 못했습니다.'),
+                leaderLine:rogueDialogue(leaderId,success?'길을 찾았어.':'다음에는 다른 방법을 찾아보자.'),
+                companionLine:companion?rogueDialogue(companionId,success?'함께 지나갈 수 있겠어.':'다시 시도해 보자.'):''};
+            rogueState.phase='event-result';rogueLog(`${incident.name} · ${trait} ${success?'성공':'실패'} (${chance}%) · ${effect}`);
+            await roguePersist();
+        }
+        async function finishRogueIncident() {
+            if(rogueBusy||rogueState.phase!=='event-result'||!rogueState.eventResult)return;
+            rogueState.eventResult=null;advanceRogueFloor();await roguePersist();
+        }
         function rogueRand() { let x=rogueState.seed|0; x^=x<<13;x^=x>>>17;x^=x<<5;rogueState.seed=x>>>0;return (x>>>0)/4294967296; }
         function rogueShuffle(items) { const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(rogueRand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
         function rogueLog(text) { rogueState.history.unshift(text);rogueState.history=rogueState.history.slice(0,18); }
@@ -3648,7 +3712,7 @@ function updateDispatchClock() {
             if(!r?.active || r.version!==ROGUE_VERSION)return;
             const valid=Array.isArray(r.team)&&r.team.length===5&&r.team.every(c=>c&&typeof c.name==='string'&&c.stats&&['hp','atk','def'].every(k=>Number.isFinite(c.stats[k])&&c.stats[k]>=0)&&Number.isFinite(c.maxHp)&&c.maxHp>0&&c.stats.hp<=c.maxHp)
                 &&Array.isArray(r.map)&&r.map.length===12&&r.map.every(row=>Array.isArray(row)&&row.length<=3&&row.every(n=>n&&rogueNodeInfo[n.type]&&typeof n.id==='string'))
-                &&['route','combat','buff','relic','rest','shop','event'].includes(r.phase)&&Number.isInteger(r.floor)&&r.floor>=1&&r.floor<=12
+                &&['route','combat','buff','relic','rest','shop','event','event-result'].includes(r.phase)&&Number.isInteger(r.floor)&&r.floor>=1&&r.floor<=12
                 &&['cleared','wins','bosses','shards','rerolls','seed'].every(k=>Number.isFinite(r[k])&&r[k]>=0)
                 &&r.baseline&&['hp','atk','def'].every(k=>Number.isFinite(r.baseline[k])&&r.baseline[k]>0)
                 &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
@@ -3659,7 +3723,9 @@ function updateDispatchClock() {
             rogueState.loot=Array.isArray(r.loot)?r.loot.filter(e=>e&&typeof e.id==='string'&&equipmentTemplates.some(t=>t.id===e.templateId&&t.source==='rogue')):[];
             rogueState.lootedNodes=Array.isArray(r.lootedNodes)?r.lootedNodes.filter(id=>typeof id==='string'):[];
             if(rogueState.phase==='combat'){rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;rogueLog('연결이 끊긴 전투를 시작 시점부터 다시 진행합니다.');}
-            if(['rest','shop','event','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
+            if(['rest','shop','event','event-result','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
+            if(rogueState.phase==='event-result'&&!rogueState.eventResult){rogueState.phase='event';}
+            rogueState.bossClues=Array.isArray(r.bossClues)?r.bossClues.filter(x=>x&&typeof x.kind==='string'&&Number.isFinite(x.value)).slice(0,16):[];
         }
         function displayRoguelikeView() { updateRogueUI(); }
         function makeRogueMap() {
@@ -3668,7 +3734,10 @@ function updateDispatchClock() {
         }
         function makeRogueNode(floor,type,index){
             const names=Object.keys(monsters).filter(name=>monsters[name]?.stats);
-            return {id:`${floor}-${index}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event:Math.floor(rogueRand()*3)};
+            // 사건에서 얻은 보스 단서가 실제 다음 보스의 패턴과 맞도록 구역을 나눕니다.
+            const pool=floor<6?[0,1]:[2,3];
+            const event=pool[Math.floor(rogueRand()*pool.length)];
+            return {id:`${floor}-${index}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event,eventId:type==='event'?ROGUE_INCIDENTS[event].id:null};
         }
         function revealRogueFloor(floor){
             if(!rogueState.map[floor-1]||rogueState.map[floor-1].length)return;
@@ -3709,7 +3778,7 @@ function updateDispatchClock() {
             const aoe=boss&&f>=8;
             return {name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
                 baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
-                speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'매 3턴 공격력 40% 증가'+(aoe?' · 광역 공격':' · 단일 공격'):elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
+                speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?f>=12?'답장 반격 · 유리꽃 즉사(예고 후 대응 가능)':'2명 행동 봉인 · 초상화 복제(예고 후 대응 가능)':elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
         }
         function updateRogueUI() {
             const lobby=document.getElementById('rogue-lobby');if(!lobby)return;
@@ -3726,7 +3795,7 @@ function updateDispatchClock() {
             document.getElementById('rogue-map-boss-hint').textContent=`${bossFloors.length>2?'진행 중인 기존 경로 유지':'다음 층의 갈림길은 도착할 때 공개'} · ${bossFloors.join(' · ')}층 보스`;
             document.getElementById('rogue-shards').textContent=rogueState.shards;
             document.getElementById('rogue-archive-tokens').textContent=safeItemCount(rogueState.archiveTokens);
-            document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'어떤 결말을 쓰시겠어요?'}[rogueState.phase]);
+            document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'사건을 해결하세요', 'event-result':'사건의 결과'}[rogueState.phase]);
             document.getElementById('rogue-map').innerHTML=rogueState.map.map((row,i)=>`<div class="rg-map-row ${i+1===rogueState.floor?'current':''} ${i<rogueState.cleared?'done':''}"><span>${String(i+1).padStart(2,'0')}</span>${i+1>rogueState.floor&&i>=rogueState.cleared&&![6,12].includes(i+1)?'<span class="rg-map-node">미지의 경로</span>':row.map(n=>`<span class="rg-map-node ${n.id===rogueState.visited?.[i]?'taken':''}">${rogueNodeInfo[n.type][0]}</span>`).join('<span class="rg-or">/</span>')}</div>`).join('');
             document.getElementById('rogue-team-status').innerHTML=rogueState.team.map(c=>`<div class="rg-member ${c.stats.hp<=0?'fallen':''}"><img src="${rogueEscape(c.cardImageUrl||c.imageUrl||'')}" alt="${rogueEscape(c.name)}"><strong>${rogueEscape(c.name)}</strong><progress max="${c.maxHp}" value="${c.stats.hp}" aria-label="${rogueEscape(c.name)} 체력"></progress><small>${Math.ceil(c.stats.hp)} / ${c.maxHp}</small></div>`).join('');
             const counts={};for(const id of rogueState.buffs){const b=rogueBuffPool.find(b=>b.id===id);if(b)counts[b.school]=(counts[b.school]||0)+1;}
@@ -3742,7 +3811,8 @@ function updateDispatchClock() {
                 relic: ['유물을 하나 고르세요', '이번 탐사에 적용할 유물을 선택하면 다음 층으로 이어집니다.'],
                 rest: ['쉼터에서 할 일을 고르세요', '회복·퇴고·부활 중 하나를 선택할 수 있어요.'],
                 shop: ['필요한 보급품을 고르세요', '구매를 마쳤다면 ‘행상인을 떠난다’를 눌러 진행하세요.'],
-                event: ['다음 선택지를 고르세요', '각 선택의 효과를 확인하고 이야기를 이어가세요.'],
+                event: ['사건을 해결할 방법을 고르세요', '담당자와 동행인을 고른 뒤 성향을 선택하세요. 호감도가 성공 확률을 높입니다.'],
+                'event-result': ['사건의 결과', '성공하거나 실패해도 탐사는 이어집니다.'],
                 combat: ['교전 진행 중', '전투가 끝나면 이곳에서 다음 선택지를 고를 수 있어요.']
             };
             const prompt = prompts[rogueState.phase] || prompts.route;
@@ -3750,12 +3820,35 @@ function updateDispatchClock() {
             document.getElementById('rogue-choice-hint').textContent = prompt[1];
             const found=(rogueState.loot||[]).filter(e=>e.acquiredFloor===rogueState.floor);
             if(found.length&&['buff','relic'].includes(rogueState.phase))document.getElementById('rogue-choice-hint').textContent += ' 장비 발견: '+found.map(e=>{const t=equipmentTemplates.find(t=>t.id===e.templateId);return t?`[${t.rarity}] ${t.name}`:'';}).join(', ')+' — 탐사 종료 시 영구 획득!';
-            renderRogueChoices();
+            renderRogueIncidentPanel();renderRogueChoices();
             revealRogueStep();
         }
         function rogueChoiceButton(title,desc,callback,disabled=false) {
             const b=document.createElement('button');b.type='button';b.className='rg-choice';b.disabled=rogueBusy||disabled;
             const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=desc;b.append(h,p);b.onclick=callback;return b;
+        }
+        function renderRogueIncidentPanel() {
+            const panel=document.getElementById('rogue-incident'),incident=rogueIncident();
+            const show=incident&&['event','event-result'].includes(rogueState.phase);
+            panel.classList.toggle('hidden',!show);if(!show){panel.replaceChildren();return;}
+            if(rogueState.phase==='event-result'){
+                const result=rogueState.eventResult;if(!result){panel.replaceChildren();return;}
+                const leader=rogueState.team[result.leaderIndex],companion=rogueState.team[result.companionIndex];
+                const actor=(card,line)=>card?`<div class="rg-incident-person"><img src="${rogueEscape(card.cardImageUrl||card.imageUrl||'')}" alt="${rogueEscape(card.name)}"><strong>${rogueEscape(card.name)}</strong><p>${rogueEscape(line)}</p></div>`:'';
+                panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(result.narration)}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p>`;
+                return;
+            }
+            const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
+            const {leader,companion}=rogueActors();
+            const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')}</option>`).join('');
+            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div>`;
+            panel.querySelectorAll('select').forEach(select=>select.addEventListener('change',()=>{
+                if(rogueBusy||rogueState.phase!=='event')return;
+                const index=select.value===''?null:Number(select.value);
+                if(select.dataset.rogueActor==='leader')rogueState.eventActors={leaderIndex:index??living[0]?.index??0,companionIndex:companion?.index??null};
+                else rogueState.eventActors={leaderIndex:leader?.index??0,companionIndex:index};
+                updateRogueUI();saveGame();
+            }));
         }
         function renderRogueChoices() {
             const box=document.getElementById('rogue-choices');box.replaceChildren();
@@ -3785,11 +3878,18 @@ function updateDispatchClock() {
                 if(b)add(`${b.name} · 조각 45`,`[${rogueSchools[b.school]}] ${b.desc} · 1회 한정`,()=>resolveRogueRoom('buyBuff'),rogueState.shards<45||sold.includes('buyBuff'));
                 add('행상인을 떠난다','남은 조각은 이번 탐사 중에만 사용됩니다.',()=>resolveRogueRoom('leave'));
             } else if(phase==='event') {
+                const incident=rogueIncident();
+                if(incident){
+                    const {leader,companion}=rogueActors();
+                    for(const trait of ROGUE_TRAITS){const chance=rogueIncidentChance(incident,trait,leader,companion);
+                        add(`${trait} · 성공 확률 ${chance}%`,rogueDialogue(`${incident.id}.choice.${trait}`,`${trait}의 방식으로 사건을 해결합니다.`),()=>resolveRogueIncident(trait));}
+                    return;
+                }
                 const e=rogueState.node.event;
                 if(e===0){add('금지된 원고를 읽는다','생존자 현재 체력 20% 소모 (전투불능 없음) → 파괴 영감 획득',()=>resolveRogueRoom('risk'));add('원고를 봉인한다','탐사 조각 20개 획득',()=>resolveRogueRoom('safe'));}
                 if(e===1){add('길 잃은 사서를 돕는다','조각 20개 지불 → 전원 최대 체력 +15%',()=>resolveRogueRoom('help'),rogueState.shards<20);add('길을 물어본다','탐사 조각 10개 획득',()=>resolveRogueRoom('ask'));}
                 if(e===2){add('기억을 복원한다','전투불능 1명 체력 30%로 복귀. 없으면 생존자 25% 회복',()=>resolveRogueRoom('memory'));add('잉크를 회수한다','탐사 조각 35개 획득',()=>resolveRogueRoom('collect'));}
-            }
+            } else if(phase==='event-result')add('다음 층으로','결과를 확인하고 탐사를 계속합니다.',finishRogueIncident);
         }
         async function chooseRogueNode(id) {
             if(!rogueState.active||rogueBusy||rogueState.phase!=='route'||isCombatRunning)return;
@@ -3806,6 +3906,7 @@ function updateDispatchClock() {
                 catch(error){console.error(error);isCombatRunning=false;stopCombat3DBackground();rogueState.phase='route';rogueState.retryNode=id;switchTab('roguelike');alert('전투를 시작하지 못했습니다. 같은 경로로 다시 시도해 주세요.');}
             } else {
                 rogueState.phase=node.type;
+                if(node.type==='event'&&node.eventId){const living=rogueState.team.map((card,index)=>card.stats.hp>0?index:-1).filter(index=>index>=0);rogueState.eventActors={leaderIndex:living[0]??0,companionIndex:living[1]??null};}
                 if(node.type==='shop'){rogueState.purchases=[];rogueState.shopBuff=rogueShuffle(rogueBuffPool)[0].id;}
                 await roguePersist();
             }
@@ -3937,7 +4038,7 @@ function updateDispatchClock() {
                 const trace=rollCharacterTrace(source,rogueRand);
                 if(trace)rogueLog(`${trace.base}의 족적 ${trace.count}개 획득`);
             }
-            if(rogueState.node.type==='boss')rogueState.bosses++;
+            if(rogueState.node.type==='boss'){rogueState.bosses++;rogueState.bossClues=[];}
             rogueState.shards+=({battle:25,elite:45,boss:60}[rogueState.node.type]||0)+(rogueState.relics.includes('compass')?10:0);
             if(rogueState.relics.includes('needle'))rogueHeal(.08);
             if(rogueState.resonances.includes('renewal'))rogueHeal(.10);
@@ -8551,6 +8652,7 @@ function startStageCombat(chapterIndex, stageIndex) {
         monsterData.maxHp = raidBossData.maxHp;
     } else if (type === 'rogue') {
             monsterData = rogueEnemyPlan(rogueState.node);
+            rogueBossSetup(session,monsterData);
     } else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
@@ -8793,12 +8895,94 @@ function battleRest(card) {
     return {percent, healed};
 }
 function battleAutoAction(card) {
+    const pending=battleSession?.rogueBoss?.pending;
+    if(pending && pending.resolveRound===battleSession.round && ['bloom','reply'].includes(pending.kind) && pending.targetIndices.includes(battleSession.deck?.indexOf(card))) return {type:'guard'};
     if (card.stats.hp < card.maxHp * .35 && battleRestRemaining(card) === 0) return {type: 'rest'};
     const skills = card.skills || [];
+    if(battleSession?.rogueBoss?.clone?.targetIndex===battleSession.deck?.indexOf(card))return {type:'normal'};
     const ready = skills.map((skill,index) => ({skill,index})).filter(({skill,index}) =>
         battleRemaining(card,index) === 0 && (skill.type !== 'heal' || card.stats.hp < card.maxHp * .7));
     const pick = ready.find(({skill}) => ['damage','true_damage','vampire'].includes(skill.type)) || ready[0];
     return pick ? {type:'skill', index:pick.index} : {type:'normal'};
+}
+function rogueBossSetup(session,monster) {
+    if(!monster.rogueBoss)return;
+    const clues=rogueState.bossClues||[],values={};
+    for(const clue of clues){if(!clue||!Number.isFinite(clue.value))continue;values[clue.kind]=['atkDown','defDown'].includes(clue.kind)?Math.min(.35,(values[clue.kind]||0)+clue.value):Math.max(values[clue.kind]||0,clue.value);}
+    if(values.atkDown)monster.stats.atk=Math.max(1,Math.floor(monster.stats.atk*(1-values.atkDown)));
+    if(values.defDown)monster.stats.def=Math.max(0,Math.floor(monster.stats.def*(1-values.defDown)));
+    session.rogueBoss={clues:values,nextWarningRound:2+(values.delaySpecial?1:0),warnings:0,pending:null,clone:null,bloomUsed:false};
+}
+function rogueBossWarn(session,monster,deck) {
+    const state=session.rogueBoss;if(!state||session.round!==state.nextWarningRound||state.pending)return;
+    const patterns=rogueState.floor>=12?['reply','bloom','seal']:['seal','portrait'];
+    const kind=patterns[state.warnings++%patterns.length];state.nextWarningRound=session.round+3;
+    if(kind==='bloom'&&state.bloomUsed)return;
+    if(kind==='bloom')state.bloomUsed=true;
+    if(state.clues.skipFirstSpecial){delete state.clues.skipFirstSpecial;logCombat('사건의 단서로 첫 보스 특수 행동을 무효화했습니다.');return;}
+    const living=deck.map((card,index)=>card.stats.hp>0?index:-1).filter(index=>index>=0);
+    if(!living.length)return;
+    const chosen=living[Math.floor(Math.random()*living.length)];
+    const targets=kind==='seal'?[chosen,...living.filter(index=>index!==chosen).slice(0,1)]:[chosen];
+    const pending={kind,targetIndices:targets,resolveRound:session.round+1,damage:0,guardedIndices:[],countered:false};
+    state.pending=pending;
+    const who=targets.map(index=>rogueEscape(deck[index].name)).join(', ');
+    const warning={seal:`${who}의 이름이 지워집니다. 다음 턴 종료 시 두 사람의 행동을 한 턴 봉인합니다. 보스 체력 10% 이상을 깎거나 대상이 방어하면 봉인을 줄일 수 있습니다.`,portrait:`${who}의 초상화가 완성됩니다. 다음 턴 종료 전 보스 체력 12% 이상을 깎으면 복제를 막습니다.`,reply:`${who}에게 미래의 답장이 도착했습니다. 다음 턴 공격하면 반격합니다. 방어·휴식으로 피할 수 있습니다.`,bloom:`${who} 발밑에 유리꽃이 핍니다. 다음 턴 종료 전 방어하거나 보스 체력 ${state.clues.bloomHp?'7':'12'}% 이상을 깎으면 즉사를 막습니다.`};
+    logCombat(`<strong>⚠ ${rogueEscape(monster.name)}의 예고</strong> · ${warning[kind]}`);
+}
+function rogueBossReceiveDamage(session,monster,damage) {
+    const state=session.rogueBoss;
+    if(state?.clone){const actual=Math.min(damage,state.clone.hp);state.clone.hp-=damage;logCombat(`복제상에게 ${actual} 피해${state.clone.hp<=0?' · 복제 해제':''}`);if(state.clone.hp<=0)state.clone=null;return 0;}
+    const actual=Math.min(damage,monster.stats.hp);monster.stats.hp=Math.max(0,monster.stats.hp-damage);
+    if(state?.pending)state.pending.damage+=actual;
+    return actual;
+}
+function rogueBossGuard(session,index) {
+    const pending=session.rogueBoss?.pending;
+    if(pending?.targetIndices.includes(index) && !pending.guardedIndices.includes(index))pending.guardedIndices.push(index);
+}
+function rogueBossReply(session,monster,card,index,damage) {
+    const state=session.rogueBoss,pending=state?.pending;
+    if(!pending||pending.kind!=='reply'||pending.resolveRound!==session.round||pending.targetIndices[0]!==index||damage<=0||monster.stats.hp<=0)return;
+    pending.countered=true;
+    if(state.clues.replySafe){delete state.clues.replySafe;logCombat('미리 읽은 답장 덕분에 첫 반격이 빗나갔습니다.');return;}
+    const retaliation=Math.max(1,Math.floor(card.maxHp*.55));card.stats.hp=Math.max(0,card.stats.hp-retaliation);
+    logCombat(`${rogueEscape(card.name)}이(가) 예정된 답장에 맞아 ${retaliation} 피해${card.stats.hp<=0?' · 전투 불능':''}`);
+}
+function rogueBossResolve(session,monster,deck) {
+    const state=session.rogueBoss,pending=state?.pending;
+    if(!pending||pending.resolveRound!==session.round||monster.stats.hp<=0)return;
+    const guarded=new Set(pending.guardedIndices),target=deck[pending.targetIndices[0]];
+    const threshold=monster.maxHp*(pending.kind==='seal'?.10:pending.kind==='portrait'?.12:state.clues.bloomHp?.066:.12);
+    if(pending.kind==='seal'){
+        const targets=pending.targetIndices.filter(index=>deck[index]?.stats.hp>0&&!guarded.has(index));
+        const limited=pending.damage>=threshold||state.clues.sealLimit?targets.slice(0,1):targets;
+        for(const index of limited){deck[index]._rogueSilencedUntil=session.round+1;logCombat(`${rogueEscape(deck[index].name)}의 다음 턴 행동 봉인`);}
+        if(!limited.length)logCombat('대상이 모두 방어해 이름을 지켰습니다.');
+    } else if(pending.kind==='portrait'){
+        if(pending.damage>=threshold)logCombat('초상화가 완성되기 전에 찢어졌습니다.');
+        else if(target?.stats.hp>0){const hp=Math.max(1,Math.floor(monster.maxHp*(state.clues.cloneHp?.05:.10)*(guarded.has(pending.targetIndices[0])?.5:1)));state.clone={targetIndex:pending.targetIndices[0],hp};logCombat(`${rogueEscape(target.name)}의 복제상 생성 · 체력 ${hp}. 아군의 공격으로 없앨 때까지 해당 인물의 스킬이 봉인됩니다.`);}
+    } else if(pending.kind==='reply'){
+        if(!pending.countered)logCombat('표식 대상이 공격하지 않아 답장의 반격이 빗나갔습니다.');
+    } else if(pending.kind==='bloom'){
+        const protectedByClue=Boolean(state.clues.skipBloom||state.clues.bloomGuard);
+        delete state.clues.skipBloom;delete state.clues.bloomGuard;
+        if(target?.stats.hp>0&&pending.damage<threshold&&!guarded.has(pending.targetIndices[0])&&!protectedByClue){target.stats.hp=0;logCombat(`${rogueEscape(target.name)}이(가) 유리꽃에 닿아 전투 불능 · 즉사`);}
+        else logCombat('유리꽃의 즉사를 막았습니다.');
+    }
+    state.pending=null;
+}
+function rogueBossDisplay(session,monster,deck) {
+    const banner=document.getElementById('rogue-boss-warning');if(!banner)return;
+    const state=session.rogueBoss,pending=state?.pending;
+    banner.classList.toggle('hidden',!pending&&!state?.clone);
+    if(!state)return;
+    if(pending){
+        const names=pending.targetIndices.map(index=>deck[index]?.name).filter(Boolean).join(', ');
+        const needed=Math.ceil(monster.maxHp*(pending.kind==='seal'?.10:pending.kind==='portrait'?.12:state.clues.bloomHp?.066:.12));
+        const guide={seal:'행동 봉인: 방어하거나 보스를 공격해 대상을 줄이세요.',portrait:'초상화: 보스를 공격해 복제를 막으세요.',reply:'답장: 대상이 공격하면 반격합니다. 방어·휴식으로 회피하세요.',bloom:'유리꽃: 대상이 방어하거나 보스를 공격해 즉사를 막으세요.'};
+        banner.textContent=`⚠ ${names} · ${guide[pending.kind]} ${pending.kind==='reply'?'':`필요 피해 ${needed} / 누적 ${pending.damage}`} · ${pending.resolveRound}턴 종료 시 발동`;
+    }else if(state.clone){banner.textContent=`초상화 복제 · ${deck[state.clone.targetIndex]?.name||'아군'}의 스킬 봉인 · 복제상 HP ${Math.ceil(state.clone.hp)}. 공격하면 복제상에 피해를 줍니다.`;}
 }
 function battleRecalculate(actor) {
     actor.stats.atk = Math.floor(actor._baseAtk * actor.activeEffects.reduce((n,e) =>
@@ -8836,7 +9020,8 @@ function renderBattleOrder(session, order, position) {
 }
 function requestBattleAction(session, card, deck) {
     const status = document.getElementById('battle-status');
-    status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp} · 행동을 선택하세요`;
+    const threat=session.rogueBoss?.pending?.targetIndices.includes(deck.indexOf(card))?' · ⚠ 보스가 이 인물을 노립니다':'';
+    status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp}${threat} · 행동을 선택하세요`;
     if (session.auto) return Promise.resolve(battleAutoAction(card));
     return new Promise(resolve => {
         const pending = {resolve, card};
@@ -8863,6 +9048,7 @@ function requestBattleAction(session, card, deck) {
             const restButton = button(restWait ? `휴식 · ${restWait}턴 대기` : '휴식 · 체력 회복', () => choose({type:'rest'}), restWait > 0);
             restButton.title = '최대 HP 일부 회복 · 사용 후 3턴 대기';
             button('희생 · 아군 공격력 +20%', targets, !deck.some(c => c !== card && c.stats.hp > 0));
+            if(session.rogueBoss?.pending?.targetIndices.includes(deck.indexOf(card)))button('방어 · 보스 예고에 대응',()=>choose({type:'guard'}));
         };
         const attack = () => {
             options.replaceChildren();
@@ -8873,7 +9059,7 @@ function requestBattleAction(session, card, deck) {
             normal.appendChild(normalDesc);
             (card.skills || []).forEach((skill,index) => {
                 const wait = battleRemaining(card,index);
-                const skillButton = button('', () => choose({type:'skill',index}), wait > 0);
+                const skillButton = button('', () => choose({type:'skill',index}), wait > 0 || session.rogueBoss?.clone?.targetIndex===deck.indexOf(card));
                 skillButton.classList.add('battle-skill-button');
                 const title = document.createElement('strong');
                 title.textContent = skill.name;
@@ -8919,6 +9105,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     const status = document.getElementById('battle-status');
     const refresh = () => {
         updateCombatUI(combatDeck, originalBonusDeck, monsterData);
+        rogueBossDisplay(session,monsterData,combatDeck);
         combatDeck.forEach((c,i) => {
             const el = document.getElementById(`combat-card-${i}`);
             el?.classList.toggle('grayscale', c.stats.hp <= 0);
@@ -8944,8 +9131,8 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
         session.round++;
         logCombat(`<strong>── ${session.round}턴 ──</strong>`);
         if (type === 'rogue' && monsterData.rogueBoss) {
-            monsterData.rogueStrongTurn = session.round % 3 === 0;
-            logCombat(monsterData.rogueStrongTurn ? '수호자의 강공! 이번 턴 공격력 +40%.' : `수호자의 다음 강공까지 ${3-session.round%3}턴.`);
+            rogueBossWarn(session,monsterData,combatDeck);
+            refresh();
         }
         const order = battleOrder(combatDeck, monsterData);
         for (let position = 0; position < order.length; position++) {
@@ -8960,6 +9147,10 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
             const cardEl = i >= 0 ? document.getElementById(`combat-card-${i}`) : null;
             cardEl?.classList.add('battle-active');
             if (i >= 0) {
+                if(card._rogueSilencedUntil>=session.round){
+                    logCombat(`${rogueEscape(card.name)}의 행동이 봉인되었습니다.`);
+                    cardEl?.classList.remove('battle-active');refresh();continue;
+                }
                 const action = await requestBattleAction(session,card,combatDeck);
                 if (!alive() || !action) return;
                 status.textContent = `${card.name} 행동 중…`;
@@ -8967,13 +9158,16 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                 await delay(250);
                 if (!alive()) return;
                 let damage = 0;
-                if (action.type === 'rest') {
+                if (action.type === 'guard') {
+                    rogueBossGuard(session,i);logCombat(`${rogueEscape(card.name)} 방어 · 예고된 특수 행동에 대비`);
+                } else if (action.type === 'rest') {
                     const {percent, healed} = battleRest(card);
                     logCombat(`${card.name} 휴식 · 최대 HP의 ${percent}% 회복 → 실제 회복 ${healed} · 3턴 후 재사용 가능`);
                 } else if (action.type === 'sacrifice') {
                     const target = combatDeck[action.target];
                     if (battleSacrifice(card,target)) logCombat(`${card.name} 희생 · HP 0 → ${target.name} 공격력 +20% (이번 전투)`);
                 } else if (action.type === 'skill') {
+                    if(session.rogueBoss?.clone?.targetIndex===i){logCombat('복제상이 스킬을 막았습니다. 일반 공격으로 복제상을 제거하세요.');cardEl?.classList.remove('battle-active');continue;}
                     const skill = card.skills[action.index];
                     if (!skill || battleRemaining(card,action.index) > 0) throw new Error('사용할 수 없는 스킬입니다.');
                     card._readyAt[action.index] = card._actions + battleCooldown(skill) + 1;
@@ -8999,12 +9193,18 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
                     logCombat(`<strong>${card.name}</strong>의 일반 공격`);
                 }
                 if (damage > 0) {
-                    const actualDamage = Math.min(damage,monsterData.stats.hp);
-                    monsterData.stats.hp = Math.max(0,monsterData.stats.hp-damage);
+                    const actualDamage = session.rogueBoss ? rogueBossReceiveDamage(session,monsterData,damage) : Math.min(damage,monsterData.stats.hp);
+                    if(!session.rogueBoss)monsterData.stats.hp=Math.max(0,monsterData.stats.hp-damage);
                     session.damage += actualDamage;
-                    logCombat(`${monsterData.name}에게 ${actualDamage} 피해`);
+                    if(actualDamage)logCombat(`${monsterData.name}에게 ${actualDamage} 피해`);
                 }
+                if(session.rogueBoss)rogueBossReply(session,monsterData,card,i,damage);
             } else {
+                if(session.rogueBoss?.pending?.resolveRound===session.round){
+                    status.textContent=`${monsterData.name}의 특수 행동 집중 중…`;
+                    logCombat(`${rogueEscape(monsterData.name)}이(가) 예고한 행동에 집중합니다.`);
+                    cardEl?.classList.remove('battle-active');continue;
+                }
                 const selectedSkill=chooseEnemySkill(monsterData);
                 status.textContent = `${monsterData.name}의 차례 · ${selectedSkill?`스킬: ${selectedSkill.skill.name}`:monsterData.isAoE?'전체 공격':'단일 공격'}${monsterData.rogueStrongTurn ? ' / 강공 +40%' : ''}`;
                 document.getElementById('battle-options').replaceChildren();
@@ -9046,6 +9246,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
             await delay(350);
             if (!alive()) return;
         }
+        if(session.rogueBoss){rogueBossResolve(session,monsterData,combatDeck);refresh();}
     }
     if (!alive()) return;
     status.textContent = monsterData.stats.hp <= 0 ? '승리 · 전투 종료' : '패배 · 전투 종료';
