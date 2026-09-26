@@ -813,6 +813,55 @@ html body #combat-monster-area.enemy-skill-active{border-color:#d89aaa!important
  #battle-controls:has(#battle-auto:disabled) .battle-heading{align-items:center}
 }
 </style>
+<style id="dream-feedback-effects">
+/* Brief, low-saturation feedback on an action; static colors carry the same information. */
+#combat-in-progress-view .hp-bar-background{position:relative}
+#combat-in-progress-view .hp-bar-echo{position:absolute;inset:0 auto 0 0;height:100%;border-radius:inherit;background:#d5a6a3;pointer-events:none;transition:width .5s ease .12s;z-index:0}
+#combat-in-progress-view .hp-bar-foreground{position:relative;z-index:1}
+#combat-in-progress-view #monster-hp-text{z-index:2}
+html body #combat-in-progress-view #combat-player-deck>.compact-combat-card.boss-targeted{border-color:#b97680!important;box-shadow:0 0 0 3px #b976805e,0 4px 15px #b9768033!important}
+html body #combat-in-progress-view #rogue-boss-warning.boss-warning-marked{border-color:#b97680!important;box-shadow:inset 4px 0 #b97680;color:#ffe5e6}
+#rogue-boss-mobile-hud .boss-hud-ally.is-targeted{border-color:#b97680;background:#fceff1}
+@keyframes combat-hit-pulse{0%,100%{transform:translateX(0)}32%{transform:translateX(-3px)}65%{transform:translateX(3px)}}
+#combat-in-progress-view .compact-combat-card.combat-hit,#combat-in-progress-view #combat-monster-area.combat-hit{animation:combat-hit-pulse .34s ease-out}
+@keyframes incident-ink-reveal{from{opacity:.5;filter:blur(2px);letter-spacing:.055em}to{opacity:1;filter:blur(0);letter-spacing:normal}}
+@keyframes incident-ink-fade{0%{filter:blur(0);opacity:1}45%{filter:blur(1.4px);opacity:.6}100%{filter:blur(0);opacity:1}}
+#rogue-incident.is-success>p:first-of-type{animation:incident-ink-reveal .55s ease-out both}
+#rogue-incident.is-failure>p:first-of-type{animation:incident-ink-fade .65s ease-out both}
+#breeding-result-reveal{max-width:600px;margin:0 auto 22px;padding:14px;border:1px solid #cad5e3;border-radius:16px;background:linear-gradient(120deg,#fff,var(--inspiration-tone,#ecf1f7));color:#44536a;text-align:center;overflow:hidden}
+#breeding-result-reveal.hidden{display:none!important}
+#breeding-result-reveal .inspiration-new-card{position:relative;display:flex;align-items:center;justify-content:center;gap:13px;max-width:270px;margin:9px auto;padding:8px 14px;border:1px solid #aebdd1;border-radius:12px;background:#fff;overflow:hidden}
+#breeding-result-reveal .inspiration-new-card::before{content:"";position:absolute;inset:0;background:linear-gradient(95deg,transparent,var(--inspiration-tone,#e5ebf4),transparent);transform:translateX(-110%);animation:inspiration-ink-sweep .8s ease-out both;pointer-events:none}
+#breeding-result-reveal .inspiration-new-card img{position:relative;width:75px;height:75px;object-fit:contain;image-rendering:pixelated;animation:inspiration-arrival .6s ease-out both}
+#breeding-result-reveal .inspiration-new-card strong{position:relative;font-size:13px;overflow-wrap:anywhere}
+#breeding-result-reveal p{font-size:12px;margin:6px 0;color:#5a6c81}
+#breeding-result-reveal button{margin-top:8px;padding:8px 15px;min-height:40px;border:1px solid #b5c8dd;border-radius:9px;background:#f0f5fb;color:#415c7a;font-weight:700}
+@keyframes inspiration-ink-sweep{to{transform:translateX(110%)}}
+@keyframes inspiration-arrival{from{opacity:.15;transform:scale(.85);filter:blur(3px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+.dream-pond-scene .dream-pond-bobber{transform-box:fill-box;transform-origin:center;animation:dream-bobber-idle 2.4s ease-in-out infinite}
+.dream-pond-scene .dream-pond-ripple{transform-box:fill-box;transform-origin:center;animation:dream-pond-ripple 2.4s ease-out infinite}
+.dream-pond-scene.dream-cast .dream-pond-bobber,.dream-pond-scene.dream-tug .dream-pond-bobber{animation:dream-bobber-tug .46s ease-out}
+.dream-pond-scene.dream-caught .dream-fishing-catch{animation:dream-catch-rise .65s ease-out both}
+@keyframes dream-bobber-idle{50%{transform:translateY(3px)}}
+@keyframes dream-pond-ripple{50%{transform:scale(1.12);opacity:.45}100%{opacity:.7}}
+@keyframes dream-bobber-tug{35%{transform:translateY(-8px)}70%{transform:translateY(4px)}}
+@keyframes dream-catch-rise{from{opacity:.35;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.dream-farm-beds .dream-pot-visual{display:inline-flex;align-items:flex-end;justify-content:center;width:42px;height:39px;margin:0 auto 2px;position:relative}
+.dream-farm-beds .dream-pot-visual::before{content:"";position:absolute;bottom:0;width:30px;height:13px;border:1px solid #9ba9ac;border-radius:2px 2px 9px 9px;background:#c6b6b0}
+.dream-farm-beds .dream-pot-visual::after{content:"";position:absolute;bottom:11px;width:18px;height:22px;border-left:2px solid #8ba99d;border-radius:40%;transform-origin:bottom;box-shadow:-6px -4px 0 -4px #90ad9d;animation:dream-sprout-sway 3.2s ease-in-out infinite}
+.dream-farm-beds .dream-pot-visual.is-empty::after{display:none}
+.dream-farm-beds .dream-just-planted .dream-pot-visual::after{animation:dream-sprout-grow .55s ease-out both}
+.dream-farm-beds .dream-just-harvested .dream-pot-visual::before{animation:dream-pot-harvest .6s ease-out}
+@keyframes dream-sprout-sway{50%{transform:rotate(7deg)}}
+@keyframes dream-sprout-grow{from{transform:scaleY(.2);opacity:.25}to{transform:scaleY(1);opacity:1}}
+@keyframes dream-pot-harvest{50%{filter:brightness(1.2)}}
+.dream-kitchen-scene .dream-table-food::before,.dream-kitchen-scene .dream-table-food::after{content:"";position:absolute;z-index:2;left:42%;bottom:69%;width:9px;height:22px;border-left:2px solid #f9f4ed;border-radius:50%;opacity:0;animation:dream-dish-steam 2.8s ease-in-out infinite;pointer-events:none}
+.dream-kitchen-scene .dream-table-food::after{left:59%;animation-delay:1.2s}
+.dream-kitchen-scene.dream-served .dream-table-food{animation:dream-dish-serve .55s ease-out both}
+@keyframes dream-dish-steam{20%{opacity:.65}80%{opacity:.25;transform:translateY(-10px)}100%{opacity:0;transform:translateY(-16px)}}
+@keyframes dream-dish-serve{from{opacity:.25;transform:translate(-50%,-42%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media(prefers-reduced-motion:reduce){#combat-in-progress-view .hp-bar-echo,#combat-in-progress-view .compact-combat-card.combat-hit,#combat-in-progress-view #combat-monster-area.combat-hit,#rogue-incident.is-success>p:first-of-type,#rogue-incident.is-failure>p:first-of-type,#breeding-result-reveal .inspiration-new-card::before,#breeding-result-reveal .inspiration-new-card img,.dream-pond-scene .dream-pond-bobber,.dream-pond-scene .dream-pond-ripple,.dream-pond-scene .dream-fishing-catch,.dream-farm-beds .dream-pot-visual::after,.dream-farm-beds .dream-pot-visual::before,.dream-kitchen-scene .dream-table-food,.dream-kitchen-scene .dream-table-food::before,.dream-kitchen-scene .dream-table-food::after{animation:none!important;transition:none!important;filter:none!important}}
+</style>
 <style id="skill-readability-style">
 #battle-options .battle-skill-effect{display:block;font-size:12px;font-weight:400;line-height:1.65;margin-top:7px;color:#465264;white-space:normal;overflow-wrap:anywhere}
 #battle-options .battle-skill-cooldown{display:block;font-size:11px;font-weight:600;line-height:1.5;margin-top:9px;color:#59647b}
@@ -1629,6 +1678,12 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
         💡 구상 시작
     </button>
 </div>
+<section id="breeding-result-reveal" class="hidden" role="status" aria-live="polite" aria-label="영감 결과">
+    <span class="menu-eyebrow">A NEW POSSIBILITY</span><h3 tabindex="-1">새로운 가능성</h3>
+    <div class="inspiration-new-card"><img alt=""><strong></strong></div>
+    <p class="inspiration-result-details"></p>
+    <button type="button" onclick="switchTab('inventory')">서고에서 보기 ↗</button>
+</section>
 <div id="insp-item-modal" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-gray-800 border-2 border-indigo-500 rounded-2xl p-6 w-full max-w-sm shadow-[0_0_20px_rgba(79,70,229,0.5)]">
             <h3 class="text-xl font-bold text-white mb-2 text-center">영감 아이템 선택</h3>
@@ -3975,15 +4030,18 @@ function updateDispatchClock() {
         function renderRogueIncidentPanel() {
             const panel=document.getElementById('rogue-incident'),incident=rogueIncident();
             const show=incident&&['event','event-result'].includes(rogueState.phase);
-            panel.classList.toggle('hidden',!show);if(!show){panel.replaceChildren();return;}
+            panel.classList.toggle('hidden',!show);if(!show){panel.classList.remove('is-success','is-failure');panel.replaceChildren();return;}
             if(rogueState.phase==='event-result'){
                 const result=rogueState.eventResult;if(!result){panel.replaceChildren();return;}
+                panel.classList.toggle('is-success',result.success);
+                panel.classList.toggle('is-failure',!result.success);
                 const leader=rogueState.team[result.leaderIndex],companion=rogueState.team[result.companionIndex];
                 const cast={leader:leader?.name,companion:companion?.name};
                 const actor=(card,line)=>card?`<div class="rg-incident-person"><img src="${rogueEscape(card.cardImageUrl||card.imageUrl||'')}" alt="${rogueEscape(card.name)}"><strong>${rogueEscape(card.name)}</strong><p>${rogueEscape(rogueInterpolateDialogue(line,cast))}</p></div>`:'';
                 panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(rogueInterpolateDialogue(result.narration,cast))}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p>`;
                 return;
             }
+            panel.classList.remove('is-success','is-failure');
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
             const {leader,companion}=rogueActors();
             const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')} · 성향 ${rogueEscape(rogueCardTrait(x.card))}</option>`).join('');
@@ -5683,11 +5741,11 @@ function useAffinityPotion(){
         function dreamFishUpdateOptions(){const panel=document.getElementById('dream-fishing-content');if(!panel)return;for(const select of panel.querySelectorAll('select[data-fish-role]')){const id=select.value;select.innerHTML=dreamFishRoleOptions(id);select.value=id||'';}const count=panel.querySelector('[data-fish-count]');if(count)count.textContent=`${dreamFishFilteredCards().length}장 표시 · 전체 ${playerInventory.length}장`;}
         function dreamFishActor(role,id,position){const card=dreamFishCard(id),name=card?.name||'카드 선택';return `<figure class="dream-fishing-actor ${position}">${card?`<img src="${dispatchEscape(memoryFigureImage(card.name))}" alt="${dispatchEscape(card.name)} 치비">`:'<span class="dream-fishing-empty" aria-hidden="true">◇</span>'}<figcaption>${role} · ${dispatchEscape(name)}</figcaption></figure>`;}
         function dreamSelectedMeal(f){return [f.selectedMealId,f.lastCookedId,...Object.keys(DREAM_RECIPES)].find(id=>DREAM_RECIPES[id]&&f.meals[id]>0)||null;}
-        function dreamFishScene(kind,f){const fishing=kind==='fish';const backdrop=fishing?`<defs><linearGradient id="dream-pond-bg" x2="0" y2="1"><stop stop-color="#dce9f2"/><stop offset="1" stop-color="#edf0f8"/></linearGradient></defs><rect width="800" height="300" fill="url(#dream-pond-bg)"/><circle cx="661" cy="71" r="33" fill="#fff9de" opacity=".8"/><path d="M0 140 150 87 230 137 366 79 498 142 623 97 800 158v142H0" fill="#c7d8df"/><path d="M0 161 125 124 266 155 410 116 555 157 705 127 800 160v140H0" fill="#a8c7cb"/><path d="M0 196 Q183 166 386 185 T800 177v123H0" fill="#83acbc"/><path d="M0 210 Q180 181 385 205 T800 193m-763 41q95-13 195-2m280 9q93-14 214 0" fill="none" stroke="#d5e8e6" stroke-width="3" opacity=".7"/><path d="M0 210h302v14H0m80-13v89m168-89v89" fill="#b7a4a4" stroke="#70889b" stroke-width="4"/><path d="M207 116 Q340 89 436 201" fill="none" stroke="#597086" stroke-width="2"/><circle cx="436" cy="201" r="5" fill="#fffbef"/><ellipse cx="430" cy="219" rx="49" ry="8" fill="none" stroke="#d9edf0" stroke-width="3"/>`:`<defs><linearGradient id="dream-kitchen-bg" x2="0" y2="1"><stop stop-color="#f3e9e4"/><stop offset="1" stop-color="#e5dce8"/></linearGradient></defs><rect width="800" height="300" fill="url(#dream-kitchen-bg)"/><path d="M0 216 398 169 800 210v90H0" fill="#d4c6cf"/><path d="M42 30h153v105H42z" fill="#fffaf5" stroke="#b7bac8" stroke-width="5"/><path d="M118 30v105M42 81h153" stroke="#b7bac8" stroke-width="4"/><circle cx="660" cy="70" r="38" fill="#fbf1e4" opacity=".85"/><path d="M154 212 Q399 171 638 212l-21 28H171z" fill="#b49baa" stroke="#7e798e" stroke-width="4"/><path d="M184 239v61m409-61v61" stroke="#7e798e" stroke-width="13"/><ellipse cx="400" cy="217" rx="73" ry="19" fill="#fff9f5" stroke="#9ea9b7" stroke-width="4"/><path d="M383 197q-8-22 5-34m20 34q-7-19 6-32" fill="none" stroke="#fdf7ee" stroke-width="6" opacity=".8"/>`;
+        function dreamFishScene(kind,f){const fishing=kind==='fish';const backdrop=fishing?`<defs><linearGradient id="dream-pond-bg" x2="0" y2="1"><stop stop-color="#dce9f2"/><stop offset="1" stop-color="#edf0f8"/></linearGradient></defs><rect width="800" height="300" fill="url(#dream-pond-bg)"/><circle cx="661" cy="71" r="33" fill="#fff9de" opacity=".8"/><path d="M0 140 150 87 230 137 366 79 498 142 623 97 800 158v142H0" fill="#c7d8df"/><path d="M0 161 125 124 266 155 410 116 555 157 705 127 800 160v140H0" fill="#a8c7cb"/><path d="M0 196 Q183 166 386 185 T800 177v123H0" fill="#83acbc"/><path d="M0 210 Q180 181 385 205 T800 193m-763 41q95-13 195-2m280 9q93-14 214 0" fill="none" stroke="#d5e8e6" stroke-width="3" opacity=".7"/><path d="M0 210h302v14H0m80-13v89m168-89v89" fill="#b7a4a4" stroke="#70889b" stroke-width="4"/><path d="M207 116 Q340 89 436 201" fill="none" stroke="#597086" stroke-width="2"/><circle class="dream-pond-bobber" cx="436" cy="201" r="5" fill="#fffbef"/><ellipse class="dream-pond-ripple" cx="430" cy="219" rx="49" ry="8" fill="none" stroke="#d9edf0" stroke-width="3"/>`:`<defs><linearGradient id="dream-kitchen-bg" x2="0" y2="1"><stop stop-color="#f3e9e4"/><stop offset="1" stop-color="#e5dce8"/></linearGradient></defs><rect width="800" height="300" fill="url(#dream-kitchen-bg)"/><path d="M0 216 398 169 800 210v90H0" fill="#d4c6cf"/><path d="M42 30h153v105H42z" fill="#fffaf5" stroke="#b7bac8" stroke-width="5"/><path d="M118 30v105M42 81h153" stroke="#b7bac8" stroke-width="4"/><circle cx="660" cy="70" r="38" fill="#fbf1e4" opacity=".85"/><path d="M154 212 Q399 171 638 212l-21 28H171z" fill="#b49baa" stroke="#7e798e" stroke-width="4"/><path d="M184 239v61m409-61v61" stroke="#7e798e" stroke-width="13"/><ellipse cx="400" cy="217" rx="73" ry="19" fill="#fff9f5" stroke="#9ea9b7" stroke-width="4"/><path d="M383 197q-8-22 5-34m20 34q-7-19 6-32" fill="none" stroke="#fdf7ee" stroke-width="6" opacity=".8"/>`;
             const left=fishing?dreamFishActor('낚시꾼',f.anglerId,'first'):dreamFishActor('요리',f.cookId,'first'),right=fishing?dreamFishActor('관찰자',f.observerId,'second'):dreamFishActor('시식',f.tasterId,'second');
             const mealId=fishing?null:dreamSelectedMeal(f);
             const mealOptions=!fishing?Object.entries(DREAM_RECIPES).filter(([id])=>f.meals[id]>0):[];
-            return `<div class="dream-fishing-scene ${fishing?'':'dream-kitchen-scene'}" role="group" aria-label="${fishing?'연못에서 낚시하는 두 담당 카드':'식탁에서 요리하고 시식하는 두 담당 카드'}"><svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${backdrop}</svg>${fishing&&f.active?`<div class="dream-fishing-catch" aria-hidden="true">${dreamFishPicture(f.active.id)}</div>`:''}${mealId?`<div class="dream-table-food" aria-label="${dispatchEscape(DREAM_RECIPES[mealId].name)}">${dreamDishPicture(mealId,true)}</div>`:''}${left}${right}${fishing?'':`<div class="dream-table-serving"><select data-fish-meal="1" aria-label="먹을 음식 선택" ${mealId?'':'disabled'}>${mealOptions.length?mealOptions.map(([id,r])=>`<option value="${id}" ${id===mealId?'selected':''}>${r.name} · ${f.meals[id]}접시</option>`).join(''):'<option value="">완성된 음식 없음</option>'}</select><button type="button" data-fish-serve="1" ${mealId?'':'disabled'}>먹기</button></div>`}</div>`;
+            return `<div class="dream-fishing-scene ${fishing?'dream-pond-scene':'dream-kitchen-scene'} ${dreamVisualCue?.kind===kind?'dream-'+dreamVisualCue.action:''}" role="group" aria-label="${fishing?'연못에서 낚시하는 두 담당 카드':'식탁에서 요리하고 시식하는 두 담당 카드'}"><svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${backdrop}</svg>${fishing&&f.active?`<div class="dream-fishing-catch" aria-hidden="true">${dreamFishPicture(f.active.id)}</div>`:fishing&&dreamVisualCue?.kind==='fish'&&dreamVisualCue.action==='caught'?`<div class="dream-fishing-catch" aria-hidden="true">${dreamFishPicture(dreamVisualCue.fishId)}</div>`:''}${mealId?`<div class="dream-table-food" aria-label="${dispatchEscape(DREAM_RECIPES[mealId].name)}">${dreamDishPicture(mealId,true)}</div>`:''}${left}${right}${fishing?'':`<div class="dream-table-serving"><select data-fish-meal="1" aria-label="먹을 음식 선택" ${mealId?'':'disabled'}>${mealOptions.length?mealOptions.map(([id,r])=>`<option value="${id}" ${id===mealId?'selected':''}>${r.name} · ${f.meals[id]}접시</option>`).join(''):'<option value="">완성된 음식 없음</option>'}</select><button type="button" data-fish-serve="1" ${mealId?'':'disabled'}>먹기</button></div>`}</div>`;
         }
         function dreamFishPicture(id){const fish=DREAM_FISH[id];if(!fish)return '';
             const motif={clock:'<circle cx="92" cy="50" r="18" fill="none" stroke="#55677d" stroke-width="2"/><path d="M92 35v15l9 6" stroke="#55677d" fill="none" stroke-width="2"/>',block:'<path d="M61 32h19v13H61zm27 0h17v13H88zm-17 15h19v17H71z" fill="#ecebf5" stroke="#52647a"/>',receipt:'<path d="M67 32h40v37H67m7-26h25m-25 7h18m-18 7h23" fill="none" stroke="#52647a" stroke-width="2"/>',zipper:'<path d="M68 29v44m-5-42 10 6-10 6 10 6-10 6 10 6-10 6" fill="none" stroke="#52647a" stroke-width="2"/>',map:'<path d="M67 34q18 18 3 32m12-34q-6 23 16 36m11-27-17 14" fill="none" stroke="#52647a" stroke-width="2"/>',blank:'<path d="M76 40h8m8 0h8M75 54h8m12 0h9" fill="none" stroke="#52647a" stroke-width="2" stroke-dasharray="3 3"/>',glassfish:'<path d="m74 30 15 18-14 20m22-39-10 19 12 22" fill="none" stroke="#f2f8fa" stroke-width="3"/>',ribbonfish:'<path d="M65 44q29-25 46 0T66 63m15-29q-9 8 0 17" fill="none" stroke="#785b8c" stroke-width="3"/>',bellfish:'<path d="M84 32q-20 12-13 29h32q7-17-13-29m-3 32v5" fill="none" stroke="#657b75" stroke-width="3"/>',inkfish:'<path d="M68 35q28 5 9 15 31 2 9 20m12-35-9 33" fill="none" stroke="#485568" stroke-width="4"/>',keyfish:'<circle cx="79" cy="43" r="8" fill="none" stroke="#6a6258" stroke-width="3"/><path d="M87 43h26m-8 0v9m-7-9v6" fill="none" stroke="#6a6258" stroke-width="3"/>',mirrorfish:'<rect x="68" y="31" width="38" height="35" rx="4" fill="#dce4ed" stroke="#64748b" stroke-width="2"/><path d="m78 58 18-20" stroke="#fff" stroke-width="3"/>'}[id]||'';
@@ -5715,6 +5773,7 @@ function useAffinityPotion(){
             return `<svg viewBox="0 0 160 110" role="img" aria-label="${dispatchEscape(recipe.name)} 음식 그림">${plate}${food}</svg>`;
         }
         let dreamRecipeFilter='ready';
+        let dreamVisualCue=null; // One render only; never persisted in player data.
         function dreamVegetableDiscovered(f,id){return !!(f.vegetableRecords[id]||(f.vegetables[id]||0)>0);}
         function dreamFishDiscovered(f,id){return !!(f.records[id]||f.stock.includes(id));}
         function dreamRecipeDiscovered(id,recipe,f){return !!((f.meals[id]||0)>0||(!recipe.fish||dreamFishDiscovered(f,recipe.fish))&&Object.keys(recipe.vegetables).every(veg=>dreamVegetableDiscovered(f,veg)));}
@@ -5730,7 +5789,7 @@ function useAffinityPotion(){
                     const savedChoice=playerLife.planterChoices[i]||'leaf:normal';
                     const choiceValue=savedChoice.startsWith('veg:')&&!dreamVegetableDiscovered(f,savedChoice.slice(4))?'leaf:normal':savedChoice;
                     const choice=dreamGrowSelection(i);
-                    return `<div class="dream-fishing-card"><strong>화분 ${i+1} · ${job?veg?.name||'새벽 잎':'비어 있음'}</strong><p>${job?(now>=job.readyAt?'수확 준비 완료':`${lifeTime(job.readyAt-now)} 남음`):'재료 한 개를 심어 늘려보세요.'}</p>
+                    return `<div class="dream-fishing-card ${dreamVisualCue?.kind==='farm'&&dreamVisualCue.slot===i?'dream-just-'+dreamVisualCue.action:''}"><span class="dream-pot-visual ${job?'':'is-empty'}" aria-hidden="true"></span><strong>화분 ${i+1} · ${job?veg?.name||'새벽 잎':'비어 있음'}</strong><p>${job?(now>=job.readyAt?'수확 준비 완료':`${lifeTime(job.readyAt-now)} 남음`):'재료 한 개를 심어 늘려보세요.'}</p>
                         <button type="button" data-dream-worker="${i}">👤 ${worker?dispatchEscape(worker.name):'담당 카드 선택'}</button>
                         ${job?'':`<label>심을 재료<select data-dream-grow="${i}">
                             ${['quick','normal','long'].map(id=>`<option value="leaf:${id}" ${choiceValue===`leaf:${id}`?'selected':''}>새벽 잎 · ${id==='quick'?'짧은':id==='normal'?'보통':'긴'} 재배 · ${playerLife.materials.leaf}개</option>`).join('')}
@@ -5788,18 +5847,19 @@ function useAffinityPotion(){
                 html+=`<h3>유리 별병</h3><p>마이룸에 배치한 유리 별병에 발견한 이물의 작은 형상을 담습니다. 도감 기록을 활용하므로 재료가 소모되지 않아요.</p>${jars.length?jars.map(({item,index},n)=>`<label class="dream-fishing-card" style="display:block;margin:10px 0">${n+1}번째 별병 · ${item.specimenId&&DREAM_FISH[item.specimenId]?DREAM_FISH[item.specimenId].name:'비어 있음'}<select data-fish-jar="${index}"><option value="">비우기</option>${Object.entries(DREAM_FISH).filter(([id])=>f.records[id]).map(([id,s])=>`<option value="${id}" ${item.specimenId===id?'selected':''}>${s.name}</option>`).join('')}</select></label>`).join(''):'<p class="dream-fishing-status">별병을 마이룸에 배치해 주세요. 꿈의 공방 교환에서 얻을 수 있습니다.</p>'}`;
             }
             panel.innerHTML=html;panel.scrollTop=previousScroll;
+            dreamVisualCue=null;
         }
         function dreamFishValidRoles(a,b){const x=dreamFishCard(a),y=dreamFishCard(b);return !!(x&&y&&(affinityBase(x)||x.name)!==(affinityBase(y)||y.name));}
         function dreamFishCast(){const f=playerLife.fishing;if(f.active||currentVisitTargetUid)return;if(!dreamFishValidRoles(f.anglerId,f.observerId)){f.message='베이스 캐릭터가 서로 다른 카드 두 장을 골라주세요.';renderDreamFishing();return;}
             if(f.stock.length>=30)return;if(f.zone==='rift'&&Object.keys(f.records).length<2)return;
             const pool=Object.keys(DREAM_FISH).filter(id=>DREAM_FISH[id].zone===f.zone);
             const unseen=pool.filter(id=>!f.records[id]);const boosted=f.baitCharges>0;if(boosted)f.baitCharges--;const candidates=(boosted||f.pity>=5)&&unseen.length?unseen:pool;
-            const id=candidates[Math.floor(Math.random()*candidates.length)],angler=dreamFishCard(f.anglerId);const skill=f.proficiency[affinityBase(angler)]||0;const sight=f.sightCharges>0;if(sight)f.sightCharges--;f.active={id,step:0,tension:(affinityLevel(affinityBase(angler))>=4||skill>=10?3:2)+(dreamFishBuff('blank')?1:0)+(dreamFishBuff('ribbonfish')?1:0),mapHint:sight||dreamFishBuff('map')||dreamFishBuff('mirrorfish')};f.message='낚싯줄 끝이 움직입니다.';lifeRefresh();renderDreamFishing();}
-        function dreamFishMove(move){const f=playerLife.fishing,a=f.active;if(!a)return;if(move==='release'){f.active=null;f.message='이물을 놓아주었습니다.';}else if(move===DREAM_FISH[a.id].pattern[a.step]){a.step++;if(a.step===3){const first=!f.records[a.id];if(first)f.records[a.id]={count:0,first:getTodayDateString()};f.records[a.id].count++;f.stock.push(a.id);f.pity=first?0:Math.min(12,f.pity+1);for(const role of ['anglerId','observerId']){const base=affinityBase(dreamFishCard(f[role]));if(base){f.proficiency[base]=Math.min(999,(f.proficiency[base]||0)+1);gainAffinity(base,2);}}const requestDone=progressVisitorRequest('fish',DREAM_FISH[a.id].name,dreamFishCard(f.anglerId));f.message=`${DREAM_FISH[a.id].name}을(를) 낚았습니다!${first?' 새 도감 기록!':''}${requestDone?' 방문객의 부탁도 달성했어요.':''}`;f.active=null;}else f.message='줄의 감각을 잘 읽었습니다.';}else {a.tension--;if(a.tension<1){f.active=null;f.message='줄이 풀리면서 이물이 달아났습니다.';}else f.message=`방향이 맞지 않았습니다. 남은 여유 ${a.tension}.`;}lifeRefresh();renderDreamFishing();}
+            const id=candidates[Math.floor(Math.random()*candidates.length)],angler=dreamFishCard(f.anglerId);const skill=f.proficiency[affinityBase(angler)]||0;const sight=f.sightCharges>0;if(sight)f.sightCharges--;f.active={id,step:0,tension:(affinityLevel(affinityBase(angler))>=4||skill>=10?3:2)+(dreamFishBuff('blank')?1:0)+(dreamFishBuff('ribbonfish')?1:0),mapHint:sight||dreamFishBuff('map')||dreamFishBuff('mirrorfish')};f.message='낚싯줄 끝이 움직입니다.';dreamVisualCue={kind:'fish',action:'cast'};lifeRefresh();renderDreamFishing();}
+        function dreamFishMove(move){const f=playerLife.fishing,a=f.active;if(!a)return;const stockBefore=f.stock.length;if(move==='release'){f.active=null;f.message='이물을 놓아주었습니다.';}else if(move===DREAM_FISH[a.id].pattern[a.step]){a.step++;if(a.step===3){const first=!f.records[a.id];if(first)f.records[a.id]={count:0,first:getTodayDateString()};f.records[a.id].count++;f.stock.push(a.id);f.pity=first?0:Math.min(12,f.pity+1);for(const role of ['anglerId','observerId']){const base=affinityBase(dreamFishCard(f[role]));if(base){f.proficiency[base]=Math.min(999,(f.proficiency[base]||0)+1);gainAffinity(base,2);}}const requestDone=progressVisitorRequest('fish',DREAM_FISH[a.id].name,dreamFishCard(f.anglerId));f.message=`${DREAM_FISH[a.id].name}을(를) 낚았습니다!${first?' 새 도감 기록!':''}${requestDone?' 방문객의 부탁도 달성했어요.':''}`;f.active=null;}else f.message='줄의 감각을 잘 읽었습니다.';}else {a.tension--;if(a.tension<1){f.active=null;f.message='줄이 풀리면서 이물이 달아났습니다.';}else f.message=`방향이 맞지 않았습니다. 남은 여유 ${a.tension}.`;}dreamVisualCue={kind:'fish',action:f.stock.length>stockBefore?'caught':move==='reel'?'tug':'drift',fishId:a.id};lifeRefresh();renderDreamFishing();}
         function dreamFishCook(id){const f=playerLife.fishing,recipe=DREAM_RECIPES[id];if(!recipe||!dreamRecipeCanCook(recipe,f))return;if(!dreamFishValidRoles(f.cookId,f.tasterId)){f.message='서로 다른 베이스 캐릭터의 요리 담당과 시식 담당을 골라주세요.';renderDreamFishing();return;}
             if(recipe.fish)f.stock.splice(f.stock.indexOf(recipe.fish),1);
             for(const [veg,count] of Object.entries(recipe.vegetables))f.vegetables[veg]-=count;
-            const cookBase=affinityBase(dreamFishCard(f.cookId)),bonus=cookBase&&affinityLevel(cookBase)>=4&&Math.random()<.15?1:0;f.meals[id]=Math.min(99,(f.meals[id]||0)+1+bonus);f.lastCookedId=id;f.selectedMealId=id;gainAffinity(cookBase,2);gainAffinity(affinityBase(dreamFishCard(f.tasterId)),1);const requestDone=progressVisitorRequest('cook',recipe.name,dreamFishCard(f.cookId));f.message=`${recipe.name} ${bonus?'두 접시':'한 접시'} 완성! 식탁에서 먹으면 다음 생활 행동에 효과가 적용됩니다.${requestDone?' 방문객의 부탁도 달성했어요.':''}`;lifeRefresh();renderDreamFishing();}
+            const cookBase=affinityBase(dreamFishCard(f.cookId)),bonus=cookBase&&affinityLevel(cookBase)>=4&&Math.random()<.15?1:0;f.meals[id]=Math.min(99,(f.meals[id]||0)+1+bonus);f.lastCookedId=id;f.selectedMealId=id;gainAffinity(cookBase,2);gainAffinity(affinityBase(dreamFishCard(f.tasterId)),1);const requestDone=progressVisitorRequest('cook',recipe.name,dreamFishCard(f.cookId));f.message=`${recipe.name} ${bonus?'두 접시':'한 접시'} 완성! 식탁에서 먹으면 다음 생활 행동에 효과가 적용됩니다.${requestDone?' 방문객의 부탁도 달성했어요.':''}`;dreamVisualCue={kind:'table',action:'served'};lifeRefresh();renderDreamFishing();}
         function dreamFishEat(id){const f=playerLife.fishing,recipe=DREAM_RECIPES[id];if(!recipe||!(f.meals[id]>0))return;f.meals[id]--;f.selectedMealId=f.meals[id]>0?id:null;f.buff={id:recipe.effectId,recipeId:id,charges:1};f.message=`${recipe.name}을(를) 먹었습니다. ${DREAM_FISH[recipe.effectId].effect}`;lifeRefresh();renderDreamFishing();}
         const dreamFishModal=document.getElementById('dream-fishing-modal');
         document.getElementById('open-dream-fishing').addEventListener('click',openDreamFishing);
@@ -5807,7 +5867,7 @@ function useAffinityPotion(){
         dreamFishModal.addEventListener('click',event=>{if(event.target===dreamFishModal)closeDreamFishing();});
         document.getElementById('dream-fishing-content').addEventListener('input',event=>{if(event.target.dataset.fishFilter==='query'){dreamFishFilters[dreamFishingTab].query=event.target.value;dreamFishUpdateOptions();}});
         document.getElementById('dream-fishing-content').addEventListener('change',event=>{const node=event.target,f=playerLife.fishing;if(node.dataset.fishFilter){dreamFishFilters[dreamFishingTab][node.dataset.fishFilter]=node.value;dreamFishUpdateOptions();}else if(node.dataset.fishRole){f[node.dataset.fishRole]=node.value||null;saveGame();renderDreamFishing();}else if(node.dataset.fishMeal!==undefined){if(DREAM_RECIPES[node.value]&&f.meals[node.value]>0){f.selectedMealId=node.value;saveGame();renderDreamFishing();}}else if(node.dataset.dreamGrow!==undefined){const slot=Number(node.dataset.dreamGrow);if(Number.isInteger(slot)&&slot>=0&&slot<playerLife.planters.length){playerLife.planterChoices[slot]=node.value;saveGame();renderDreamFishing();}}else if(node.dataset.dreamRecipeFilter){dreamRecipeFilter=node.value;renderDreamFishing();}else if(node.dataset.fishJar!==undefined){const item=playerRoom.furniture[Number(node.dataset.fishJar)];if(!item||item.id!==LIFE_STARJAR_ID)return;item.specimenId=f.records[node.value]?node.value:null;lifeRefresh();renderDreamFishing();}});
-        document.getElementById('dream-fishing-content').addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;const d=button.dataset;if(d.fishTab){dreamFishingTab=d.fishTab;renderDreamFishing();document.getElementById('dream-fishing-content').scrollTop=0;}else if(d.fishDirection){const state=dreamFishFilters[dreamFishingTab];state.ascending=!state.ascending;button.textContent=state.ascending?'정렬 반전 ▲':'기본 정렬 ▼';dreamFishUpdateOptions();}else if(d.fishReset){dreamFishFilters[dreamFishingTab]={query:'',rarity:'All',faction:'all',sort:'rarity',ascending:false};renderDreamFishing();}else if(d.dreamWorker!==undefined){openLifeWorkerPicker('pot',Number(d.dreamWorker));}else if(d.dreamPlant!==undefined){const slot=Number(d.dreamPlant),choice=dreamGrowSelection(slot);plantLife(slot,choice.seed,choice.crop);renderDreamFishing();}else if(d.dreamHarvest!==undefined){harvestLife(Number(d.dreamHarvest));renderDreamFishing();}else if(d.fishZone){playerLife.fishing.zone=d.fishZone;saveGame();renderDreamFishing();}else if(d.fishCast)dreamFishCast();else if(d.fishMove)dreamFishMove(d.fishMove);else if(d.fishCook)dreamFishCook(d.fishCook);else if(d.fishServe)dreamFishEat(dreamSelectedMeal(playerLife.fishing));else if(d.fishEat)dreamFishEat(d.fishEat);});
+        document.getElementById('dream-fishing-content').addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;const d=button.dataset;if(d.fishTab){dreamFishingTab=d.fishTab;renderDreamFishing();document.getElementById('dream-fishing-content').scrollTop=0;}else if(d.fishDirection){const state=dreamFishFilters[dreamFishingTab];state.ascending=!state.ascending;button.textContent=state.ascending?'정렬 반전 ▲':'기본 정렬 ▼';dreamFishUpdateOptions();}else if(d.fishReset){dreamFishFilters[dreamFishingTab]={query:'',rarity:'All',faction:'all',sort:'rarity',ascending:false};renderDreamFishing();}else if(d.dreamWorker!==undefined){openLifeWorkerPicker('pot',Number(d.dreamWorker));}else if(d.dreamPlant!==undefined){const slot=Number(d.dreamPlant),choice=dreamGrowSelection(slot),before=playerLife.planters[slot];plantLife(slot,choice.seed,choice.crop);if(!before&&playerLife.planters[slot])dreamVisualCue={kind:'farm',action:'planted',slot};renderDreamFishing();}else if(d.dreamHarvest!==undefined){const slot=Number(d.dreamHarvest),before=playerLife.planters[slot];harvestLife(slot);if(before&&!playerLife.planters[slot])dreamVisualCue={kind:'farm',action:'harvested',slot};renderDreamFishing();}else if(d.fishZone){playerLife.fishing.zone=d.fishZone;saveGame();renderDreamFishing();}else if(d.fishCast)dreamFishCast();else if(d.fishMove)dreamFishMove(d.fishMove);else if(d.fishCook)dreamFishCook(d.fishCook);else if(d.fishServe)dreamFishEat(dreamSelectedMeal(playerLife.fishing));else if(d.fishEat)dreamFishEat(d.fishEat);});
         function gainLifeXp(skill,amount){playerLife.xp[skill]=lifeAmount((playerLife.xp[skill]||0)+amount);}
         function lifeCostText(cost){return Object.entries(cost).map(([id,n])=>`${LIFE_MATERIALS[id].name} ${n}`).join(' · ');}
         function lifeTime(ms){const m=Math.ceil(Math.max(0,ms)/60000);return m<60?`${m}분`:`${Math.floor(m/60)}시간 ${m%60}분`;}
@@ -9232,6 +9292,8 @@ function rogueBossDisplay(session,monster,deck) {
     const banner=document.getElementById('rogue-boss-warning');if(!banner)return;
     const state=session.rogueBoss,pending=state?.pending;
     banner.classList.toggle('hidden',!pending&&!state?.clone);
+    banner.classList.toggle('boss-warning-marked',!!pending);
+    deck.forEach((card,index)=>document.getElementById(`combat-card-${index}`)?.classList.toggle('boss-targeted',Boolean(pending?.targetIndices.includes(index)&&card.stats.hp>0)));
     if(!state)return;
     const area=document.getElementById('combat-monster-area');
     let cloneCard=area?.querySelector('.rogue-clone-card');
@@ -9605,6 +9667,19 @@ function logCombat(message) {
                 alert(`로그아웃 실패: ${error.message}`);
             }
         }
+function animateCombatHealth(bar,health,percent,card){
+    if(!bar)return;
+    const previous=Number(bar.dataset.previousHealth),previousPercent=Number(bar.dataset.previousPercent);
+    if(bar.dataset.previousHealth!==undefined&&health<previous){
+        const background=bar.parentElement;
+        let echo=background?.querySelector(':scope > .hp-bar-echo');
+        if(background&&!echo){echo=document.createElement('span');echo.className='hp-bar-echo';background.prepend(echo);}
+        if(echo){echo.style.transition='none';echo.style.width=`${Math.max(0,Math.min(100,previousPercent))}%`;void echo.offsetWidth;echo.style.transition='';echo.style.width=`${Math.max(0,Math.min(100,percent))}%`;}
+        if(card){card.classList.remove('combat-hit');void card.offsetWidth;card.classList.add('combat-hit');clearTimeout(card.combatHitTimer);card.combatHitTimer=setTimeout(()=>card.classList.remove('combat-hit'),360);}
+    }
+    bar.dataset.previousHealth=String(health);
+    bar.dataset.previousPercent=String(percent);
+}
 function updateCombatUI(deck, originalBonusDeck, monster) {
     // 1. 내 캐릭터(플레이어) 덱 업데이트
     if (deck && originalBonusDeck) {
@@ -9620,6 +9695,7 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
             const hpTextEl = document.getElementById(`player-hp-text-${index}`);
             // UI 반영
             if (hpBarEl) {
+                animateCombatHealth(hpBarEl,currentHp,hpPercent,document.getElementById(`combat-card-${index}`));
                 hpBarEl.style.width = `${hpPercent}%`;
                 // 체력 상태에 따라 색상 변경 (선택 사항)
                 if (hpPercent < 30) hpBarEl.classList.add('bg-red-500');
@@ -9655,6 +9731,7 @@ function updateCombatUI(deck, originalBonusDeck, monster) {
         const monsterHpBar = document.getElementById('monster-hp-bar');
         const monsterHpText = document.getElementById('monster-hp-text');
         if (monsterHpBar) {
+            animateCombatHealth(monsterHpBar,monster.stats.hp,monsterHpPercent,document.getElementById('combat-monster-area'));
             monsterHpBar.style.width = `${monsterHpPercent}%`;
         }
         if (monsterHpText) {
@@ -14767,13 +14844,14 @@ function executeBreeding() {
 
     breedingSlots = { a: null, b: null };
     displayBreedingView();
-
-    // 6. 결과 알림
-    alert(`💡 구상 완료! ${rarityChangeMsg}\n\n[${childRarity}] ${childName}\n진영: ${childFaction}\nHP: ${childHp} / ATK: ${childAtk} / DEF: ${childDef}`);
-
-    if(confirm("서고에서 확인하시겠습니까?")) {
-        switchTab('inventory');
-    }
+    // 방금 탄생한 카드의 진영색이 스며드는 짧은 결과 연출.
+    const reveal=document.getElementById('breeding-result-reveal');
+    reveal.style.setProperty('--inspiration-tone',summonFactionTones[childFaction]||'#e7edf5');
+    const portrait=reveal.querySelector('img');portrait.src=charA.cardImageUrl||charA.imageUrl||'';portrait.alt=`${childName} 카드`;
+    reveal.querySelector('strong').textContent=`[${childRarity}] ${childName} · ${childFaction}`;
+    reveal.querySelector('.inspiration-result-details').textContent=`구상 완료 ${rarityChangeMsg} · HP ${childHp} / ATK ${childAtk} / DEF ${childDef}`;
+    reveal.classList.add('hidden');void reveal.offsetWidth;reveal.classList.remove('hidden');
+    reveal.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});
 }
 
 
