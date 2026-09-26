@@ -1255,6 +1255,20 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-char-selector-modal>div>div:last-child .gacha-button:first-child{background:#485a70!important;color:#fff!important;border-color:#485a70!important}
 @media(max-width:900px){#myroom-view .room-dashboard{grid-template-columns:1fr}#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}#myroom-view .room-rail #room-affinity-list{grid-template-columns:repeat(auto-fit,minmax(185px,1fr));max-height:260px}}
 @media(max-width:580px){#myroom-view .room-dashboard{gap:12px}#myroom-view .room-hero{padding:17px}#myroom-view .room-hero h3{font-size:20px}#myroom-view .room-rail{grid-template-columns:1fr}#myroom-view .room-rail .affinity-panel{grid-column:auto}#myroom-view .room-tools-panel{padding:14px}#myroom-view .room-tools-panel .room-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#myroom-view .room-tools-panel .room-toolbar .gacha-button{padding:8px!important}#myroom-view .room-rail #room-affinity-list{grid-template-columns:1fr}#myroom-char-selector-modal>div{padding:14px!important}#myroom-char-list{grid-template-columns:repeat(3,minmax(0,1fr));padding:8px!important}}
+#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:9px}
+#myroom-view .room-rail-tabs{grid-column:1/-1;order:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border:1px solid #dfe6ee;border-radius:13px;background:#f4f7fb}
+#myroom-view .room-rail-tabs button{min-width:0;min-height:36px;padding:6px 2px;border:0;border-radius:9px;background:transparent;color:#687a91;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+#myroom-view .room-rail-tabs button[aria-selected="true"]{background:#fff;color:#374c69;box-shadow:0 1px 5px #64758d24}
+#myroom-view .room-rail-tabs button:focus-visible{outline:2px solid #799ac2;outline-offset:1px}
+#myroom-view .room-rail>[data-room-pane]{grid-column:1/-1;order:1;min-width:0;min-height:0}
+#myroom-view .room-rail>[data-room-pane][hidden]{display:none!important}
+#myroom-view .room-rail .room-visitor-list,#myroom-view .room-rail .room-request-list{max-height:310px;overflow-y:auto;overscroll-behavior:contain;padding-right:3px}
+#myroom-view .room-rail .room-workshop-launch,#myroom-view .room-rail .dream-fishing-launch{grid-column:auto;order:2;min-width:0;padding:11px}
+#myroom-view .room-rail .room-workshop-launch .menu-eyebrow,#myroom-view .room-rail .dream-fishing-launch .menu-eyebrow,#myroom-view .room-rail .room-workshop-launch>p,#myroom-view .room-rail .dream-fishing-launch>p{display:none}
+#myroom-view .room-rail .room-workshop-launch h3,#myroom-view .room-rail .dream-fishing-launch h3{font-size:12px}
+#myroom-view .room-rail .room-workshop-launch button,#myroom-view .room-rail .dream-fishing-launch button{width:100%;min-height:36px;margin-top:7px;padding:6px 7px;font-size:11px;text-align:center}
+#myroom-view .room-rail #life-workshop-summary,#myroom-view .room-rail #dream-fishing-summary{display:none}
+@media(max-width:900px){#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -2068,13 +2082,14 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 <div id="room-expansion" class="room-expansion"><span id="room-expansion-status">객실 크기 · 기본</span><button id="room-expand-button" type="button">공간 확장 · 💎 400</button></div>
   </div>
   </div>
-  <aside class="room-rail">
-    <section class="room-rail-card room-visitor-panel">
+  <aside class="room-rail" aria-label="마이룸 정보">
+    <div class="room-rail-tabs" role="tablist" aria-label="마이룸 정보"><button type="button" id="room-tab-visitors" role="tab" data-room-tab="visitors" aria-controls="room-pane-visitors" aria-selected="true">방문객</button><button type="button" id="room-tab-requests" role="tab" data-room-tab="requests" aria-controls="room-pane-requests" aria-selected="false">작은 부탁</button><button type="button" id="room-tab-affinity" role="tab" data-room-tab="affinity" aria-controls="room-pane-affinity" aria-selected="false">호감도</button></div>
+    <section id="room-pane-visitors" class="room-rail-card room-visitor-panel" data-room-pane="visitors" role="tabpanel" aria-labelledby="room-tab-visitors">
       <div class="room-rail-heading"><div><span class="menu-eyebrow">VISITORS</span><h3>오늘의 방문객</h3></div><span id="room-visitor-count">0 / 5</span></div>
       <div id="room-visitor-list" class="room-visitor-list"></div>
       <p id="room-visitor-hint">방 안의 캐릭터를 누르면 대화하고 하루 한 번 호감도를 얻을 수 있어요.</p>
     </section>
-    <section class="room-rail-card room-request-panel">
+    <section id="room-pane-requests" class="room-rail-card room-request-panel" data-room-pane="requests" role="tabpanel" aria-labelledby="room-tab-requests" hidden>
       <div class="room-rail-heading"><div><span class="menu-eyebrow">SMALL WISHES</span><h3>방문객의 작은 부탁</h3></div></div>
       <div id="room-request-list" class="room-request-list" aria-live="polite"></div>
       <details class="room-request-history"><summary>기억 기록</summary><div id="room-request-memories"></div></details>
@@ -2089,7 +2104,7 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
       <p>낚시·재배로 이물 식재료를 모으고 요리하세요.</p>
       <button id="open-dream-fishing" type="button" aria-haspopup="dialog" aria-controls="dream-fishing-modal">식탁 열기 · <span id="dream-fishing-summary">도감 0/12</span> ↗</button>
     </section>
-    <section class="affinity-panel"><div class="affinity-panel-header"><div><h3>호감도</h3><small id="room-affinity-overview"></small></div><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 보기</button></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="방문객 외 캐릭터 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div><details class="room-affinity-rewards"><summary>획득 방법 · 단계 보상</summary><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div></details></section>
+    <section id="room-pane-affinity" class="affinity-panel" data-room-pane="affinity" role="tabpanel" aria-labelledby="room-tab-affinity" hidden><div class="affinity-panel-header"><div><h3>호감도</h3><small id="room-affinity-overview"></small></div><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 보기</button></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="방문객 외 캐릭터 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div><details class="room-affinity-rewards"><summary>획득 방법 · 단계 보상</summary><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div></details></section>
   </aside>
 </div>
 <div id="dream-fishing-modal" class="dream-fishing-overlay hidden" role="dialog" aria-modal="true" aria-label="꿈의 식탁"><div class="dream-fishing-dialog"><div class="dream-fishing-top"><strong>✦ 꿈의 식탁</strong><button id="dream-fishing-close" type="button">닫기 ✕</button></div><div id="dream-fishing-content" class="dream-fishing-content"></div></div></div>
@@ -15401,6 +15416,20 @@ function updateRaidDailyCountUI() {
     document.getElementById('trace-exchange-button').addEventListener('click',exchangeTraceCard);
     document.getElementById('archive-exchange-ink').addEventListener('click',()=>exchangeArchiveTokens('ink'));
     document.getElementById('archive-exchange-fragment').addEventListener('click',()=>exchangeArchiveTokens('fragment'));
+    const roomTabs=[...document.querySelectorAll('#myroom-view .room-rail-tabs [data-room-tab]')];
+    function selectRoomRailTab(name){
+        roomTabs.forEach(tab=>tab.setAttribute('aria-selected',String(tab.dataset.roomTab===name)));
+        document.querySelectorAll('#myroom-view .room-rail [data-room-pane]').forEach(panel=>{panel.hidden=panel.dataset.roomPane!==name;});
+    }
+    roomTabs.forEach((tab,index)=>{
+        tab.addEventListener('click',()=>selectRoomRailTab(tab.dataset.roomTab));
+        tab.addEventListener('keydown',event=>{
+            if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+            event.preventDefault();
+            const next=roomTabs[(index+(event.key==='ArrowRight'?1:roomTabs.length-1))%roomTabs.length];
+            selectRoomRailTab(next.dataset.roomTab);next.focus();
+        });
+    });
     document.getElementById('room-affinity-all-button').addEventListener('click',()=>{
         const panel=document.getElementById('room-affinity-all');
         panel.hidden=!panel.hidden;
