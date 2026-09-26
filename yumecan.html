@@ -9160,6 +9160,12 @@ function rogueBossResolve(session,monster,deck) {
     state.pending=null;
 }
 let rogueMobileHudListening=false;
+function shouldShowRogueMobileHud(session){
+    const hpBar=document.querySelector('#combat-monster-area > .hp-bar-background');
+    const controls=document.getElementById('battle-controls');
+    const view=document.getElementById('combat-in-progress-view');
+    return Boolean(window.innerWidth<=767&&session?.active&&session===battleSession&&session.rogueBoss&&!view?.classList.contains('hidden')&&hpBar&&controls&&hpBar.getBoundingClientRect().bottom<=0&&controls.getBoundingClientRect().bottom>75);
+}
 function updateRogueMobileHud(session,monster,deck){
     if(!session?.rogueBoss||!monster||!deck)return;
     let hud=document.getElementById('rogue-boss-mobile-hud');
@@ -9171,9 +9177,7 @@ function updateRogueMobileHud(session,monster,deck){
     }
     if(!rogueMobileHudListening){
         const position=()=>{
-            const arena=document.getElementById('combat-arena'),controls=document.getElementById('battle-controls'),view=document.getElementById('combat-in-progress-view');
-            const visible=window.innerWidth<=767&&battleSession?.active&&battleSession.rogueBoss&&!view?.classList.contains('hidden')&&arena&&controls&&arena.getBoundingClientRect().bottom<Math.max(240,window.innerHeight*.34)&&controls.getBoundingClientRect().bottom>75;
-            document.getElementById('rogue-boss-mobile-hud')?.classList.toggle('hidden',!visible);
+            document.getElementById('rogue-boss-mobile-hud')?.classList.toggle('hidden',!shouldShowRogueMobileHud(battleSession));
         };
         window.addEventListener('scroll',position,{passive:true});
         window.addEventListener('resize',position,{passive:true});
@@ -9206,8 +9210,7 @@ function updateRogueMobileHud(session,monster,deck){
     if(pending){const action={seal:'행동 봉인',portrait:'복제',reply:'반격',bloom:'즉사'}[pending.kind]||'특수 행동';warning.textContent=`⚠ ${pending.targetIndices.map(i=>deck[i]?.name).filter(Boolean).join(' · ')} · ${action} 예고`;
     }else if(session.rogueBoss.clone){warning.textContent=`⚠ 복제상 HP ${Math.ceil(session.rogueBoss.clone.hp)} · 일반 공격으로 제거`;
     }else warning.textContent='';
-    const arena=document.getElementById('combat-arena'),controls=document.getElementById('battle-controls');
-    hud.classList.toggle('hidden',!(window.innerWidth<=767&&session.active&&arena&&controls&&arena.getBoundingClientRect().bottom<Math.max(240,window.innerHeight*.34)&&controls.getBoundingClientRect().bottom>75));
+    hud.classList.toggle('hidden',!shouldShowRogueMobileHud(session));
 }
 function rogueBossDisplay(session,monster,deck) {
     const banner=document.getElementById('rogue-boss-warning');if(!banner)return;
