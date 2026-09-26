@@ -11,17 +11,25 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-window.yumecanSettings = { muted: false, quick: false, autoBattle: false, battleSpeed: 1, calm: matchMedia('(prefers-reduced-motion: reduce)').matches };
+window.yumecanSettings = { muted: false, quick: false, autoBattle: false, dark: false, battleSpeed: 1, calm: matchMedia('(prefers-reduced-motion: reduce)').matches };
 try { const saved = JSON.parse(localStorage.getItem('yumecan.preferences.v1') || '{}');
-  for (const key of ['muted', 'quick', 'calm', 'autoBattle']) if (typeof saved[key] === 'boolean') window.yumecanSettings[key] = saved[key];
+  for (const key of ['muted', 'quick', 'calm', 'autoBattle', 'dark']) if (typeof saved[key] === 'boolean') window.yumecanSettings[key] = saved[key];
   if ([1,2,4].includes(saved.battleSpeed)) window.yumecanSettings.battleSpeed = saved.battleSpeed;
 } catch (_) {}
 window.setYumecanPreference = function(key, value) {
   window.yumecanSettings[key] = key === 'battleSpeed' ? ([1,2,4].includes(Number(value)) ? Number(value) : 1) : Boolean(value);
   document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
+  document.documentElement.classList.toggle('dark-mode', window.yumecanSettings.dark);
+  if (key === 'dark') {
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) { toggle.textContent = window.yumecanSettings.dark ? '☀ 밝은 모드' : '☾ 다크 모드'; toggle.setAttribute('aria-pressed', String(window.yumecanSettings.dark)); }
+    const input = document.getElementById('pref-dark');
+    if (input) input.checked = window.yumecanSettings.dark;
+  }
   try { localStorage.setItem('yumecan.preferences.v1', JSON.stringify(window.yumecanSettings)); } catch (_) {}
 };
 document.documentElement.classList.toggle('calm-mode', window.yumecanSettings.calm);
+document.documentElement.classList.toggle('dark-mode', window.yumecanSettings.dark);
 window.yumecanLoading = (() => {
   const phrases = [
     '흩어진 페이지를 한 장씩 모으고 있어요.',
@@ -81,7 +89,7 @@ window.showYumecanStartupError = function(message) {
   panel.append(title, detail, retry); overlay.append(panel); overlay.classList.remove('hidden');
 };
 document.addEventListener('DOMContentLoaded', () => {
-  for (const key of ['muted','quick','calm','autoBattle']) {
+  for (const key of ['muted','quick','calm','autoBattle','dark']) {
     const input = document.getElementById('pref-' + key);
     input.checked = window.yumecanSettings[key];
     input.addEventListener('change', () => window.setYumecanPreference(key, input.checked));
@@ -89,6 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const speed = document.getElementById('pref-battleSpeed');
   speed.value = String(window.yumecanSettings.battleSpeed);
   speed.addEventListener('change', () => window.setYumecanPreference('battleSpeed', speed.value));
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle.textContent = window.yumecanSettings.dark ? '☀ 밝은 모드' : '☾ 다크 모드';
+  themeToggle.setAttribute('aria-pressed', String(window.yumecanSettings.dark));
+  themeToggle.addEventListener('click', () => window.setYumecanPreference('dark', !window.yumecanSettings.dark));
 });
 </script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -1368,6 +1380,84 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 @media(max-width:360px){#myroom-view .room-rail #room-fishing-card,#myroom-view .room-rail #room-farming-card{grid-column:1/-1}}
 @media(max-width:900px){#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}}
 </style>
+<style id="yumecan-dark-theme">
+/* Theme only the interface; character art, food drawings and rarity/faction marks retain their own colors. */
+.header-settings{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+#theme-toggle{padding:7px 12px;min-height:34px;border:1px solid #d9dce0;border-radius:999px;background:#fff;color:#4c5057;font-size:12px;cursor:pointer;white-space:nowrap}
+#theme-toggle:hover{background:#eaeced}
+html.dark-mode{color-scheme:dark;--dream-ink:#e7edf5;--dream-muted:#afbed0;--dream-line:#3b4b60;--dream-panel:#222d3d;--dream-soft:#1d2837;--archive-accent:#a9b9ce;background:#111822}
+html.dark-mode body{background:radial-gradient(ellipse at 18% 0%,#263445 0,transparent 55%),#111822!important;color:var(--dream-ink)!important}
+html.dark-mode body>.hud-scanline-container{background:#192331ed!important;border-color:#334458!important;box-shadow:0 18px 60px #0006!important;color:var(--dream-ink)!important}
+html.dark-mode body :is(.text-white,.text-black,[class*="text-gray-"],[class*="text-slate-"],[class*="text-cyan-"],[class*="text-blue-"],[class*="text-yellow-"],[class*="text-amber-"]):not(.faction-mark):not(.faction-btn):not(.dream-menu-item.dream-feature){color:var(--dream-ink)!important}
+html.dark-mode body :is([class*="bg-white"],[class*="bg-gray"],[class*="bg-black"],[class*="bg-[#"],[class*="bg-slate-"]):not(img):not(canvas){background-color:var(--dream-panel)!important}
+html.dark-mode body :is([class*="border-white"],[class*="border-gray"],[class*="border-slate-"]){border-color:var(--dream-line)!important}
+html.dark-mode body :is(button,summary,input,select,textarea):focus-visible{outline-color:#9ab9da!important}
+html.dark-mode body :is(input:not([type=checkbox]):not([type=radio]),select,textarea),
+html.dark-mode body .dream-secondary-menu :is(input:not([type=checkbox]),select,textarea){background:#182333!important;color:#e7edf5!important;border-color:#43556d!important}
+html.dark-mode body :is(input,textarea)::placeholder{color:#9babc0!important}
+html.dark-mode body :is(.gacha-button,.tab-button,.sub-tab-button,.rg-secondary),
+html.dark-mode body #theme-toggle{background:#263449!important;color:#e7edf5!important;border-color:#455771!important}
+html.dark-mode body :is(.gacha-button,.tab-button,.sub-tab-button,.rg-secondary):hover:not(:disabled),
+html.dark-mode body #theme-toggle:hover{background:#33465e!important;border-color:#8299b5!important}
+html.dark-mode body :is(.tab-button.active,.sub-tab-button.active,button[aria-selected="true"],.rg-primary),
+html.dark-mode body #event-view .sub-tab-button.active{background:#506785!important;color:#fff!important;border-color:#7793b3!important}
+html.dark-mode body :is(.menu-surface,.secondary-surface,.dream-secondary-menu .secondary-surface,.dream-secondary-menu [class*="bg-black/"],.rg-panel,.rg-status,.rg-choice,.rg-loot-card,.rg-resonance,.life-panel,.life-subpanel,.life-workshop,.life-worker-dialog,.room-tools-panel,.room-rail-card,.room-activity-card,.room-hero,.chapter-menu-card,.stage-menu-card,.menu-destination,.inspiration-result,.affinity-panel,.archive-settings-panel,.loading-scene,.startup-panel){background:#222e3f!important;background-image:none!important;border-color:#3b4c63!important;color:#e4ebf4!important;box-shadow:none!important}
+html.dark-mode body :is(.dream-menu-item,.dream-explore button,.dream-shortcuts button,.dream-dock button,.dream-dialogue,.dream-content-menu .menu-power,.room-visitor,.room-request-card,.room-activity-entry,.room-expansion,.room-color-choice,.life-worker-card,.rg-tags span,.rg-choice-heading,.stage-status,.room-request-stage,.room-request-person blockquote,.dream-fishing-card,.battle-speed-group,.archive-note,.archive-group-filter){background:#29384b!important;background-image:none!important;color:#e1eaf4!important;border-color:#43556b!important}
+html.dark-mode body :is(.dream-content-menu,.dream-secondary-menu,#roguelike-view,.rg-panel,.rg-status,.rg-choice,.rg-loot-card,.room-dashboard,#myroom-view .room-rail-card,#myroom-view .room-tools-panel,#battle-controls){color:#e5edf7!important}
+html.dark-mode body :is(.menu-page-heading,.menu-section-heading,#global-header,#global-currency-bar,.event-points-total,.stage-entry){border-color:#3b4d64!important}
+html.dark-mode body :is(.menu-page-heading h2,.menu-section-heading h3,.dream-secondary-menu h3,.rg-heading h2,.rg-panel h3,.rg-panel label,.rg-panel summary,.rg-choice strong,.room-hero h3,.room-tools-heading h3,.room-rail-heading h3,.room-request-card strong,.dream-explore button>strong,#global-header h1,#home-character-name,.loading-title){color:#f0f4fa!important}
+html.dark-mode body :is(.menu-page-heading p,.menu-meta,.menu-eyebrow,.archive-eyebrow,.archive-intro p,.rg-heading p,.rg-intro p,.rg-panel small,.rg-choice span,.rg-status p,.rg-status>div:nth-child(2),.rg-tags span,#rogue-log,.room-hero p,.room-summary,.room-rail-card>p,.room-visitor small,.room-request-card p,.room-request-card small,.room-activity-body,.room-mode-hint,.dream-menu-item small,.dream-explore button>small,#home-character-dialogue,.loading-note,.loading-footnote){color:#b7c5d8!important}
+html.dark-mode body #global-header .archive-settings summary{background:#263449!important;color:#e7edf5!important;border-color:#455771!important}
+html.dark-mode body .archive-settings :is(label,small),html.dark-mode body #save-status{color:#b9c8da!important}
+html.dark-mode body :is(.dream-scene,#results-container,.rg-intro,.room-toolbar,#myroom-view .room-wrapper,.room-tools-panel,.room-expansion,#archive-history,.room-activity-pot,.event-feature img){background:#1c2736!important;background-image:none!important;border-color:#3b4d64!important;color:#e5edf7!important}
+html.dark-mode body #home-dialogue-container.dream-dialogue{background:#253449ec!important;border-color:#44566e!important}
+html.dark-mode body .dream-menu-item.dream-feature{background:#405474!important;color:#fff!important;border-color:#6581a3!important}
+html.dark-mode body :is(.dream-menu-item strong,.dream-menu-index,.dream-menu-item small,.dream-explore button>span,.dream-explore button>b,.dream-arrow,.dream-caption h2,.dream-caption p,.dream-caption>span){color:#e6edf6!important}
+html.dark-mode body #myroom-view :is(.room-hero,.room-tools-panel,.room-rail-card,.room-activity-card,.room-visitor,.room-request-card,.room-expansion,.room-request-stage){background:#222e3f!important;background-image:none!important;border-color:#3b4c63!important;color:#e5edf7!important}
+html.dark-mode body #myroom-view :is(.room-hero h3,.room-tools-heading h3,.room-rail-heading h3,.room-request-card strong){color:#eef3f9!important}
+html.dark-mode body #myroom-view :is(.room-hero p,.room-summary,.room-rail-card>p,.room-visitor small,.room-request-card p,.room-request-card small,.room-activity-body){color:#bac9d9!important}
+html.dark-mode body #myroom-view :is(.room-tools-panel .room-toolbar .gacha-button,.room-activity-card button,.room-expansion button){background:#2b3b50!important;color:#e4edf8!important;border-color:#465b74!important}
+html.dark-mode body #myroom-view .room-wrapper{background:#1a2635!important;border-color:#3b4c63!important}
+html.dark-mode body #myroom-view #room-container{background:#222b3b!important}
+html.dark-mode body #myroom-view #room-container::after{background:linear-gradient(#aab9dd0b,#aab9dd0b),radial-gradient(ellipse at 50% 46%,transparent 28%,#0e1a2a28 100%)!important;box-shadow:inset 0 0 72px #101b2a36!important}
+html.dark-mode body #myroom-view .room-wall-left{background:repeating-linear-gradient(90deg,#384355 0 96px,#303b4e 97px,#384355 98px)!important}
+html.dark-mode body #myroom-view .room-wall-right{background:repeating-linear-gradient(90deg,#333e50 0 112px,#2d394b 113px,#333e50 114px)!important}
+html.dark-mode body #myroom-view .room-floor{background:linear-gradient(145deg,#414a5a,#354255 76%,#303b50)!important}
+html.dark-mode body #myroom-view .room-floor-glow{background:radial-gradient(ellipse at 35% 55%,#e4eaff16,transparent 58%)!important}
+html.dark-mode body #myroom-view .room-boundary path{stroke:#8091aa}html.dark-mode body #myroom-view .room-boundary .room-back-seam{stroke:#98aac3}
+html.dark-mode body #myroom-view #room-layer>.room-guest .chibi-bubble{background:#26374b!important;color:#e9eff8!important;border-color:#536783!important}
+html.dark-mode body #battle-controls,html.dark-mode body #rogue-boss-mobile-hud{background:#202d3e!important;color:#e7edf5!important;border-color:#435671!important}
+html.dark-mode body #battle-controls button,html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally{background:#2b3a4e!important;color:#e7edf5!important;border-color:#435671!important}
+html.dark-mode body #battle-controls :is(.battle-skill-button:disabled,.speed-button:disabled){background:#263246!important;color:#aab9ca!important}
+html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally.is-targeted{background:#4a3540!important}html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally.is-acting{background:#324b66!important}
+html.dark-mode body #combat-in-progress-view [id^="combat-card-"]{background:linear-gradient(160deg,var(--faction-bg),#29374b 80%)!important}
+html.dark-mode body #combat-in-progress-view .combat-card-name{background:#233247e8!important;color:#f0f4f9!important}
+html.dark-mode body #combat-in-progress-view [id^="player-hp-text-"]{color:#dce6f2!important}
+html.dark-mode body .fixed.inset-0:not(#gacha-3d-modal):not(#combat-3d-cutin):not(#combat-start-overlay){background:#101722df!important}
+html.dark-mode body :is(#furniture-shop-modal,#furniture-storage-modal,#profile-card-selector-modal,#insp-item-modal,#myroom-char-selector-modal)>div,
+html.dark-mode body :is(.room-request-result-window,.life-worker-dialog){background:#222e3f!important;color:#e5edf7!important;border-color:#43566e!important}
+html.dark-mode body :is(#gacha-3d-modal,#combat-3d-cutin,#combat-start-overlay){background:#101722ed!important}
+html.dark-mode body #combat-3d-cutin #cutin-card-wrapper,
+html.dark-mode body #combat-3d-cutin[data-side="enemy"] #cutin-card-wrapper{background:linear-gradient(155deg,#354157,#202c3c)!important;border-color:#596b83!important}
+html.dark-mode body #combat-3d-cutin :is(#cutin-character-name,#cutin-dialogue,#cutin-skill-name,#cutin-skill-effect),
+html.dark-mode body #combat-3d-cutin[data-side="enemy"] :is(#cutin-character-name,#cutin-dialogue,#cutin-skill-name,#cutin-skill-effect){color:#eff3fa!important}
+html.dark-mode body #combat-3d-cutin :is(#cutin-skill-name,#cutin-source){background:#34465d!important}
+html.dark-mode body #loading-overlay{background:#101722f5!important;color:#e8eff8!important}
+html.dark-mode body #loading-overlay .loading-scene{background:#222e3f!important;border-color:#455870!important;color:#e7edf5!important}
+html.dark-mode body #loading-overlay :is(.loading-title,.loading-progress-header strong){color:#f1f4fa!important}
+html.dark-mode body #loading-overlay :is(.loading-note,.loading-footnote,.loading-progress-header,.loading-progress-header span,.loading-eyebrow){color:#bac9da!important}
+html.dark-mode body #loading-overlay :is(.loading-progress,.loading-symbol){background:#314258!important;border-color:#526782!important;color:#d0def0!important}
+html.dark-mode body .dream-fishing-scene{background:#253648!important;border-color:#455c75!important}
+html.dark-mode body .dream-fishing-scene>svg{filter:brightness(.64) saturate(.8)}
+html.dark-mode body :is(.dream-fishing-dialog,.dream-fishing-top,.dream-fishing-card,.dream-fishing-filters,.dream-fishing-status,.dream-undiscovered,.dream-fishing-tabs button,.dream-fishing-actions button,.dream-fishing-card button){background:#222e3f!important;color:#e5edf7!important;border-color:#43566e!important}
+html.dark-mode body :is(.dream-fishing-tabs button.active,.dream-fishing-actions button.primary){background:#506785!important;color:#fff!important}
+html.dark-mode body .dream-fishing-content :is(p,small,label),html.dark-mode body .dream-farm-beds .dream-fishing-card label{color:#bac9dc!important}
+html.dark-mode body :is(.dream-fishing-actor figcaption,.dream-table-serving select,.dream-table-serving button){background:#26374beb!important;color:#eff3f9!important;border-color:#566b83!important}
+html.dark-mode body :is(#furniture-shop-modal,#furniture-storage-modal,#profile-card-selector-modal,#insp-item-modal,#myroom-char-selector-modal) :is(h2,h3,p,small,label){color:#dfe9f5!important}
+html.dark-mode body :is(.stage-menu-card,.chapter-menu-card,.menu-destination,.dream-content-menu .menu-surface,.dream-secondary-menu .secondary-surface) :is(strong,h2,h3){color:#eef3f9!important}
+html.dark-mode body :is(.stage-menu-card,.chapter-menu-card,.menu-destination) :is(small,.stage-entry,.stage-status){color:#becbdd!important}
+@media(max-width:480px){#theme-toggle{padding:6px 9px;font-size:11px}.header-settings{gap:5px}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -1403,11 +1493,13 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
                 </h1>
                 <p class="font-tech text-[10px] md:text-xs text-gray-500 tracking-[0.2em] mt-1">A QUIET PLACE FOR YOUR STORIES</p>
             </div>
-            <div>
+            <div class="header-settings">
+              <button id="theme-toggle" type="button" aria-label="화면 모드 전환" aria-pressed="false">☾ 다크 모드</button>
               <details class="archive-settings"><summary>환경 설정</summary><div class="archive-settings-panel">
                 <label><input id="pref-muted" type="checkbox">효과음 끄기</label>
                 <label><input id="pref-quick" type="checkbox">소환 연출 건너뛰기</label>
                 <label><input id="pref-calm" type="checkbox">움직임 줄이기</label>
+                <label><input id="pref-dark" type="checkbox">다크 모드</label>
                 <label><input id="pref-autoBattle" type="checkbox">항상 자동 진행</label>
                 <label>기본 전투 배속 <select id="pref-battleSpeed"><option value="1">1x</option><option value="2">2x</option><option value="4">4x</option></select></label><small>전투 설정은 다음 전투부터 적용됩니다.</small>
                 <button id="archive-backup" class="gacha-button" type="button" style="padding:8px 12px;width:100%">현재 데이터 백업</button>
