@@ -1268,6 +1268,20 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
 #myroom-view .room-rail .room-workshop-launch h3,#myroom-view .room-rail .dream-fishing-launch h3{font-size:12px}
 #myroom-view .room-rail .room-workshop-launch button,#myroom-view .room-rail .dream-fishing-launch button{width:100%;min-height:36px;margin-top:7px;padding:6px 7px;font-size:11px;text-align:center}
 #myroom-view .room-rail #life-workshop-summary,#myroom-view .room-rail #dream-fishing-summary{display:none}
+#myroom-view .room-activity-card{grid-column:1/-1;order:3;min-width:0;padding:12px 13px}
+#myroom-view .room-activity-card .menu-eyebrow{font-size:9px}
+#myroom-view .room-activity-card h3{font-size:13px}
+#myroom-view .room-activity-card .room-activity-body{margin-top:8px;color:#697d92;font-size:11px;line-height:1.5}
+#myroom-view .room-activity-card .room-activity-body p{margin:0 0 7px}
+#myroom-view .room-activity-card .room-activity-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+#myroom-view .room-activity-card button{min-width:0;padding:6px 9px;border:1px solid #cedbea;border-radius:8px;background:#f3f7fc;color:#455e7b;font-size:11px;font-weight:700;cursor:pointer}
+#myroom-view .room-activity-card button:hover:not(:disabled){background:#e5eef9}
+#myroom-view .room-activity-card button:disabled{opacity:.5;cursor:default}
+#myroom-view .room-activity-card .room-activity-entry{background:#eaf2fb}
+#myroom-view .room-activity-card .room-activity-pot{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 0;border-top:1px solid #edf1f6}
+#myroom-view .room-activity-card .room-activity-pot:first-child{border:0}
+#myroom-view .room-activity-card .room-activity-pot span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#myroom-view .room-activity-card .room-activity-pot button{flex:none}
 @media(max-width:900px){#myroom-view .room-rail{grid-template-columns:repeat(2,minmax(0,1fr))}#myroom-view .room-rail .affinity-panel{grid-column:1/-1}}
 </style>
 </head>
@@ -2096,14 +2110,17 @@ html body .dream-attendance button:disabled,.dream-redeem-panel button:disabled{
     </section>
     <section class="room-rail-card room-workshop-launch">
       <div class="room-rail-heading"><div><span class="menu-eyebrow">ATELIER</span><h3>꿈의 공방</h3></div></div>
-      <p>산책과 재배, 제작을 한곳에서 확인하세요.</p>
+      <p>제작과 공방 의뢰를 확인하세요.</p>
       <button id="open-life-workshop" type="button" aria-haspopup="dialog" aria-controls="life-workshop-modal"><strong>공방 열기</strong><span id="life-workshop-summary"></span><span aria-hidden="true">↗</span></button>
     </section>
     <section class="room-rail-card dream-fishing-launch">
       <div class="room-rail-heading"><div><span class="menu-eyebrow">DREAM TABLE</span><h3>꿈의 식탁</h3></div></div>
-      <p>낚시·재배로 이물 식재료를 모으고 요리하세요.</p>
+      <p>모은 식재료로 요리하고 도감을 확인하세요.</p>
       <button id="open-dream-fishing" type="button" aria-haspopup="dialog" aria-controls="dream-fishing-modal">식탁 열기 · <span id="dream-fishing-summary">도감 0/12</span> ↗</button>
     </section>
+    <section class="room-rail-card room-activity-card" id="room-gathering-card" aria-label="채집"><div class="room-rail-heading"><div><span class="menu-eyebrow">GATHERING</span><h3>꿈의 채집</h3></div></div><div class="room-activity-body" id="room-gathering-body"></div></section>
+    <section class="room-rail-card room-activity-card" id="room-fishing-card" aria-label="낚시"><div class="room-rail-heading"><div><span class="menu-eyebrow">FISHING</span><h3>꿈낚시</h3></div></div><div class="room-activity-body" id="room-fishing-body"></div></section>
+    <section class="room-rail-card room-activity-card" id="room-farming-card" aria-label="재배"><div class="room-rail-heading"><div><span class="menu-eyebrow">FARMING</span><h3>꿈의 재배</h3></div></div><div class="room-activity-body" id="room-farming-body"></div></section>
     <section id="room-pane-affinity" class="affinity-panel" data-room-pane="affinity" role="tabpanel" aria-labelledby="room-tab-affinity" hidden><div class="affinity-panel-header"><div><h3>호감도</h3><small id="room-affinity-overview"></small></div><button id="room-affinity-all-button" type="button" aria-controls="room-affinity-all" aria-expanded="false">전체 보기</button></div><div id="room-affinity-list" class="affinity-grid"></div><p id="room-affinity-status" role="status" aria-live="polite"></p><div id="room-affinity-all" class="affinity-all-panel" hidden><label for="room-affinity-search" class="sr-only">캐릭터 검색</label><input id="room-affinity-search" type="search" placeholder="방문객 외 캐릭터 검색"><p id="room-affinity-all-count" aria-live="polite"></p><div id="room-affinity-all-list" class="affinity-grid affinity-all-list"></div></div><details class="room-affinity-rewards"><summary>획득 방법 · 단계 보상</summary><p>마이룸 +12 (하루 1회) · 전투 승리 +3 · 조사 완료 +18 · 캐릭터별 하루 최대 150</p><div class="affinity-reward-strip" aria-label="호감도 단계별 보상"><span><b>Lv.1</b> HP +1%</span><span><b>Lv.2</b> 프로필 배지</span><span><b>Lv.3</b> ATK·DEF +1%</span><span><b>Lv.4</b> 명찰</span><span><b>Lv.5</b> 전용 장비</span></div></details></section>
   </aside>
 </div>
@@ -5694,7 +5711,7 @@ function useAffinityPotion(){
         function renderDreamFishing(){const panel=document.getElementById('dream-fishing-content');if(!panel)return;const previousScroll=panel.scrollTop;
             const f=playerLife.fishing||freshFishing(),found=Object.keys(DREAM_FISH).filter(id=>dreamFishDiscovered(f,id)).length,vegFound=Object.keys(DREAM_VEGETABLES).filter(id=>dreamVegetableDiscovered(f,id)).length;
             const summary=document.getElementById('dream-fishing-summary');if(summary)summary.textContent=`도감 ${found}/${Object.keys(DREAM_FISH).length} · 보관 ${f.stock.length}/30`;
-            const tabs=[['fish','낚시'],['farm','재배'],['table','꿈의 식탁'],['catalog','이물 도감'],['display','별병 전시']];
+            const tabs=[['table','요리'],['catalog','이물 도감'],['display','별병 전시']];
             let html=`<div class="dream-fishing-tabs" role="tablist">${tabs.map(([id,label])=>`<button type="button" role="tab" aria-selected="${dreamFishingTab===id}" class="${dreamFishingTab===id?'active':''}" data-fish-tab="${id}">${label}</button>`).join('')}</div>`;
             if(dreamFishingTab==='fish'){
                 const allowed=found>=2;
@@ -5847,7 +5864,7 @@ function useAffinityPotion(){
             setLifeColor(event.target.value);
             event.target.value=playerLife.roomColor;
         });
-                let selectedLifeTab='stroll';
+                let selectedLifeTab='craft';
         function lifeBoardTasks(){
             const day=getTodayDateString();
             const index=Number(day.replace(/\D/g,''))%8;
@@ -5929,10 +5946,10 @@ function useAffinityPotion(){
                 const worker=lifeWorkerCard(kind,slot);
                 return `<button type="button" class="life-worker-button" data-life-action="worker" data-life-kind="${kind}" data-life-slot="${slot}">👤 ${worker?dispatchEscape(worker.name):'담당 카드 선택'}</button>`;
             };
-            const tabs=[['stroll','채집'],['craft','제작'],['board','의뢰'],['journal','기록']];
+            const tabs=[['craft','제작'],['board','의뢰'],['journal','기록']];
             const stroll=playerLife.stroll;
             const board=selectedLifeTab==='board'?lifeBoardToday():playerLife.board;
-            panel.innerHTML=`<header class="life-heading"><div><span class="menu-eyebrow">DREAM ATELIER</span><h3>꿈의 공방</h3><p>꿈의 산책에서 재료를 모으고 제작품을 완성해 보세요. 화분 재배는 꿈의 식탁에서 할 수 있어요.</p></div></header>
+            panel.innerHTML=`<header class="life-heading"><div><span class="menu-eyebrow">DREAM ATELIER</span><h3>꿈의 공방</h3><p>마이룸에서 모은 재료로 제작품을 완성하고 의뢰를 해결하세요.</p></div></header>
               <div class="life-materials">${Object.entries(LIFE_MATERIALS).map(([id,v])=>`<span>${v.name} <b>${playerLife.materials[id]}</b></span>`).join('')}<span>생활 인장 <b>${playerLife.stamps}</b></span></div>
               <div class="life-skills">${[['gathering','채집'],['alchemy','조제'],['craft','세공']].map(([id,name])=>`<span>${name} Lv.${lifeLevel(id)} <small>${playerLife.xp[id]} XP</small></span>`).join('')}</div>
               <nav class="life-tabs" aria-label="꿈의 공방 메뉴">${tabs.map(([id,label])=>`<button type="button" data-life-action="tab" data-life-tab="${id}" class="${selectedLifeTab===id?'active':''}" aria-current="${selectedLifeTab===id?'page':'false'}">${label}</button>`).join('')}</nav>
@@ -7775,11 +7792,42 @@ function showRoomGuestBubble(character,text,duration=3000){
         character.classList.remove('room-guest-speaking');
     },duration);
 }
+let roomGatherRefreshTimer;
+function renderRoomActivities(){
+    const cards=['room-gathering-card','room-fishing-card','room-farming-card'];
+    for(const id of cards)document.getElementById(id)?.classList.toggle('hidden',!!currentVisitTargetUid);
+    if(currentVisitTargetUid)return;
+    const now=Date.now(),stroll=playerLife.stroll,f=playerLife.fishing;
+    const gather=document.getElementById('room-gathering-body');
+    if(gather){
+        gather.innerHTML=stroll?`<p><strong>${LIFE_STROLL_AREAS[stroll.area].name} · ${stroll.step}/3 구역</strong><br>${Object.entries(stroll.finds).filter(([,count])=>count).map(([id,count])=>`${LIFE_MATERIALS[id].name} ${count}`).join(' · ')||'재료를 찾는 중'}</p>${now<stroll.nextAt?`<p>다음 탐색까지 약 ${Math.ceil((stroll.nextAt-now)/1000)}초</p>`:''}<div class="room-activity-actions"><button type="button" data-room-activity="gather-focus" ${now<stroll.nextAt?'disabled':''}>꼼꼼히 찾기</button><button type="button" data-room-activity="gather-wander" ${now<stroll.nextAt?'disabled':''}>다른 길 살피기</button></div>`:
+            `<p>산책하며 공방 재료와 야채 이물을 발견하세요.</p><div class="room-activity-actions">${Object.entries(LIFE_STROLL_AREAS).map(([id,area])=>`<button type="button" data-room-activity="gather-start" data-area="${id}">${area.name}</button>`).join('')}</div>`;
+    }
+    const fishing=document.getElementById('room-fishing-body');
+    if(fishing)fishing.innerHTML=`<p>${f.active?`이물의 움직임 ${f.active.step+1}/3 · 남은 여유 ${f.active.tension}`:`보관 ${f.stock.length}/30 · 발견 ${Object.keys(f.records).length}/${Object.keys(DREAM_FISH).length}종`}</p><div class="room-activity-actions"><button type="button" class="room-activity-entry" data-room-activity="open-fishing" aria-haspopup="dialog" aria-controls="dream-fishing-modal">${f.active?'낚시 이어하기':'낚시터 열기'} ↗</button></div>`;
+    const farming=document.getElementById('room-farming-body');
+    if(farming)farming.innerHTML=`<div>${playerLife.planters.map((job,i)=>`<div class="room-activity-pot"><span>화분 ${i+1} · ${job?`${job.seed==='veg'?DREAM_VEGETABLES[job.crop]?.name||'야채 이물':'새벽 잎'} · ${job.readyAt<=now?'수확 가능':lifeTime(job.readyAt-now)+' 남음'}`:'비어 있음'}</span>${job&&job.readyAt<=now?`<button type="button" data-room-activity="harvest" data-slot="${i}">수확</button>`:''}</div>`).join('')||'<p>화분을 배치하면 이곳에 재배 상태가 표시돼요.</p>'}</div><div class="room-activity-actions"><button type="button" class="room-activity-entry" data-room-activity="open-farming" aria-haspopup="dialog" aria-controls="dream-fishing-modal">화분 관리 ↗</button></div>`;
+    clearTimeout(roomGatherRefreshTimer);
+    const nextUpdate=[stroll?.nextAt,...playerLife.planters.map(job=>job?.readyAt)].filter(time=>time>now).sort((a,b)=>a-b)[0];
+    if(nextUpdate)roomGatherRefreshTimer=setTimeout(()=>{if(!document.getElementById('myroom-view')?.classList.contains('hidden'))renderRoomActivities();},Math.min(nextUpdate-now+80,60000));
+}
+document.querySelector('#myroom-view .room-rail').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-room-activity]');
+    if(!button||currentVisitTargetUid||button.disabled)return;
+    switch(button.dataset.roomActivity){
+        case 'gather-start':lifeStartStroll(button.dataset.area);break;
+        case 'gather-focus':lifeStrollChoice('focus');break;
+        case 'gather-wander':lifeStrollChoice('wander');break;
+        case 'harvest':harvestLife(Number(button.dataset.slot));break;
+        case 'open-fishing':case 'open-farming':openDreamFishing();dreamFishingTab=button.dataset.roomActivity==='open-fishing'?'fish':'farm';renderDreamFishing();break;
+    }
+});
 function displayMyRoom(){
     syncRoomScale();
     if(!currentVisitTargetUid)ensureLifeFurniture();
     updateRoomGeometry();
     updateRoomExpansionUI();
+    renderRoomActivities();
     const visiting=!!currentVisitTargetUid;
     const editing=!!isEditMode;
     const view=document.getElementById('myroom-view');
