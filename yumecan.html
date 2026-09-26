@@ -784,6 +784,35 @@ html body #combat-monster-area.enemy-skill-active{border-color:#d89aaa!important
 #combat-player-deck .combat-card-name{font-size:10px!important;line-height:1.35!important}
 }
 </style>
+<style id="rogue-boss-mobile-hud-style">
+#rogue-boss-mobile-hud{display:none}
+@media(max-width:767px){
+ #rogue-boss-mobile-hud:not(.hidden){display:block;position:fixed;z-index:1000;top:64px;left:50%;transform:translateX(-50%);width:min(calc(100vw - 24px),470px);box-sizing:border-box;padding:7px 9px 8px;border:1px solid #b9c6d5;border-radius:13px;background:rgba(249,251,254,.97);box-shadow:0 7px 24px #26344736;color:#344154;backdrop-filter:blur(12px);pointer-events:none}
+ #rogue-boss-mobile-hud .boss-hud-enemy{display:flex;align-items:center;gap:7px;min-width:0}
+ #rogue-boss-mobile-hud .boss-hud-enemy img{width:28px;height:28px;object-fit:contain;image-rendering:pixelated;flex:none}
+ #rogue-boss-mobile-hud .boss-hud-enemy-text{min-width:0;flex:1}
+ #rogue-boss-mobile-hud .boss-hud-enemy-line{display:flex;justify-content:space-between;gap:6px;font-size:10px;line-height:1.4}
+ #rogue-boss-mobile-hud .boss-hud-enemy-line strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #rogue-boss-mobile-hud .boss-hud-enemy-line span{white-space:nowrap;font-variant-numeric:tabular-nums}
+ #rogue-boss-mobile-hud .boss-hud-meter{height:4px;background:#dbe2e9;border-radius:99px;overflow:hidden;margin-top:3px}
+ #rogue-boss-mobile-hud .boss-hud-meter i{display:block;height:100%;background:#93adab;border-radius:99px}
+ #rogue-boss-mobile-hud .boss-hud-enemy .boss-hud-meter i{background:#bd858b}
+ #rogue-boss-mobile-hud .boss-hud-party{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:6px}
+ #rogue-boss-mobile-hud .boss-hud-ally{display:flex;align-items:center;gap:2px;min-width:0;border:1px solid #e1e6ed;border-radius:7px;padding:2px;background:#fff}
+ #rogue-boss-mobile-hud .boss-hud-ally.is-acting{border-color:#658cbf;background:#eaf2fd}
+ #rogue-boss-mobile-hud .boss-hud-ally.is-targeted{border-color:#cf886a;background:#fff0e8}
+ #rogue-boss-mobile-hud .boss-hud-ally.is-down{opacity:.45;filter:grayscale(1)}
+ #rogue-boss-mobile-hud .boss-hud-ally img{width:23px;height:26px;object-fit:contain;image-rendering:pixelated;flex:none}
+ #rogue-boss-mobile-hud .boss-hud-ally-meta{flex:1;min-width:0}
+ #rogue-boss-mobile-hud .boss-hud-ally-meta small{display:block;font-size:8px;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums}
+ #rogue-boss-mobile-hud .boss-hud-ally .boss-hud-meter{height:3px;margin-top:2px}
+ #rogue-boss-mobile-hud .boss-hud-warning{margin:5px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#924e42;font-size:10px;font-weight:700}
+ #rogue-boss-mobile-hud .boss-hud-warning:empty{display:none}
+ body:has(#combat-3d-cutin:not(.hidden)) #rogue-boss-mobile-hud{display:none!important}
+ #battle-controls:has(#battle-auto:disabled) #battle-auto{display:none}
+ #battle-controls:has(#battle-auto:disabled) .battle-heading{align-items:center}
+}
+</style>
 <style id="skill-readability-style">
 #battle-options .battle-skill-effect{display:block;font-size:12px;font-weight:400;line-height:1.65;margin-top:7px;color:#465264;white-space:normal;overflow-wrap:anywhere}
 #battle-options .battle-skill-cooldown{display:block;font-size:11px;font-weight:600;line-height:1.5;margin-top:9px;color:#59647b}
@@ -9000,6 +9029,7 @@ function executeEnemySkill(enemy,skill,deck,random=Math.random) {
 function cancelBattleSession() {
     if (!battleSession) return;
     battleSession.active = false;
+    document.getElementById('rogue-boss-mobile-hud')?.classList.add('hidden');
     const pending = battleSession.pending;
     battleSession.pending = null;
     if (pending) pending.resolve(null);
@@ -9129,6 +9159,56 @@ function rogueBossResolve(session,monster,deck) {
     }
     state.pending=null;
 }
+let rogueMobileHudListening=false;
+function updateRogueMobileHud(session,monster,deck){
+    if(!session?.rogueBoss||!monster||!deck)return;
+    let hud=document.getElementById('rogue-boss-mobile-hud');
+    if(!hud){
+        hud=document.createElement('aside');hud.id='rogue-boss-mobile-hud';hud.className='hidden';
+        hud.setAttribute('aria-label','보스전 전황 요약');
+        hud.innerHTML='<div class="boss-hud-enemy"><img alt=""><div class="boss-hud-enemy-text"><div class="boss-hud-enemy-line"><strong></strong><span></span></div><div class="boss-hud-meter"><i></i></div></div></div><div class="boss-hud-party"></div><p class="boss-hud-warning"></p>';
+        document.body.appendChild(hud);
+    }
+    if(!rogueMobileHudListening){
+        const position=()=>{
+            const arena=document.getElementById('combat-arena'),controls=document.getElementById('battle-controls'),view=document.getElementById('combat-in-progress-view');
+            const visible=window.innerWidth<=767&&battleSession?.active&&battleSession.rogueBoss&&!view?.classList.contains('hidden')&&arena&&controls&&arena.getBoundingClientRect().bottom<Math.max(240,window.innerHeight*.34)&&controls.getBoundingClientRect().bottom>75;
+            document.getElementById('rogue-boss-mobile-hud')?.classList.toggle('hidden',!visible);
+        };
+        window.addEventListener('scroll',position,{passive:true});
+        window.addEventListener('resize',position,{passive:true});
+        rogueMobileHudListening=true;
+    }
+    const name=hud.querySelector('.boss-hud-enemy strong'),hp=hud.querySelector('.boss-hud-enemy-line span');
+    name.textContent=monster.name;name.title=monster.name;
+    hud.querySelector('.boss-hud-enemy img').src=monster.imageUrl||'';
+    const max=Math.max(1,monster.maxHp||monster.stats.hp);
+    hp.textContent=`${Math.max(0,Math.ceil(monster.stats.hp))}/${Math.ceil(max)}`;
+    hud.querySelector('.boss-hud-enemy .boss-hud-meter i').style.width=`${Math.max(0,Math.min(100,monster.stats.hp/max*100))}%`;
+    const party=hud.querySelector('.boss-hud-party');
+    while(party.children.length>deck.length)party.lastElementChild.remove();
+    deck.forEach((card,index)=>{
+        let tile=party.children[index];
+        if(!tile){tile=document.createElement('div');tile.className='boss-hud-ally';tile.innerHTML='<img alt=""><div class="boss-hud-ally-meta"><small></small><div class="boss-hud-meter"><i></i></div></div>';party.appendChild(tile);}
+        const current=Math.max(0,Math.ceil(card.stats.hp)),total=Math.max(1,Math.ceil(card.maxHp||card.stats.hp));
+        tile.title=`${card.name} · HP ${current}/${total}`;
+        tile.setAttribute('aria-label',tile.title);
+        const portrait=tile.querySelector('img'),url=card.cardImageUrl||card.imageUrl||'';
+        if(portrait.getAttribute('src')!==url)portrait.src=url;
+        tile.querySelector('small').textContent=`${current}/${total}`;
+        tile.querySelector('.boss-hud-meter i').style.width=`${Math.max(0,Math.min(100,current/total*100))}%`;
+        tile.classList.toggle('is-down',current===0);
+        tile.classList.toggle('is-acting',index===session.mobileActorIndex&&current>0);
+        tile.classList.toggle('is-targeted',Boolean(session.rogueBoss.pending?.targetIndices.includes(index)));
+    });
+    const pending=session.rogueBoss.pending;
+    const warning=hud.querySelector('.boss-hud-warning');
+    if(pending){const action={seal:'행동 봉인',portrait:'복제',reply:'반격',bloom:'즉사'}[pending.kind]||'특수 행동';warning.textContent=`⚠ ${pending.targetIndices.map(i=>deck[i]?.name).filter(Boolean).join(' · ')} · ${action} 예고`;
+    }else if(session.rogueBoss.clone){warning.textContent=`⚠ 복제상 HP ${Math.ceil(session.rogueBoss.clone.hp)} · 일반 공격으로 제거`;
+    }else warning.textContent='';
+    const arena=document.getElementById('combat-arena'),controls=document.getElementById('battle-controls');
+    hud.classList.toggle('hidden',!(window.innerWidth<=767&&session.active&&arena&&controls&&arena.getBoundingClientRect().bottom<Math.max(240,window.innerHeight*.34)&&controls.getBoundingClientRect().bottom>75));
+}
 function rogueBossDisplay(session,monster,deck) {
     const banner=document.getElementById('rogue-boss-warning');if(!banner)return;
     const state=session.rogueBoss,pending=state?.pending;
@@ -9180,6 +9260,7 @@ function battleSacrifice(card, target) {
     return true;
 }
 function renderBattleOrder(session, order, position) {
+    session.mobileActorIndex=order[position]?.index;
     document.getElementById('battle-round').textContent = `${session.round}턴 · ${position+1} / ${order.length} 행동`;
     const list = document.getElementById('battle-order');
     list.replaceChildren();
@@ -9192,12 +9273,14 @@ function renderBattleOrder(session, order, position) {
         if (index === position) item.setAttribute('aria-current','step');
         list.appendChild(item);
     });
+    if(session.rogueBoss)updateRogueMobileHud(session,session.mobileBoss,session.deck);
 }
 function requestBattleAction(session, card, deck) {
     const status = document.getElementById('battle-status');
     const threat=session.rogueBoss?.pending?.targetIndices.includes(deck.indexOf(card))?' · ⚠ 보스가 이 인물을 노립니다':'';
     const cloneNotice=session.rogueBoss?.clone?' · 공격 대상: 초상화 복제상':'';
     status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp}${threat}${cloneNotice} · 행동을 선택하세요`;
+    if(session.rogueBoss)updateRogueMobileHud(session,session.mobileBoss,deck);
     if (session.auto) return Promise.resolve(battleAutoAction(card));
     return new Promise(resolve => {
         const pending = {resolve, card};
@@ -9283,6 +9366,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     const refresh = () => {
         updateCombatUI(combatDeck, originalBonusDeck, monsterData);
         rogueBossDisplay(session,monsterData,combatDeck);
+        if(session.rogueBoss)updateRogueMobileHud(session,monsterData,combatDeck);
         combatDeck.forEach((c,i) => {
             const el = document.getElementById(`combat-card-${i}`);
             el?.classList.toggle('grayscale', c.stats.hp <= 0);
@@ -9295,6 +9379,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
         card.maxHp = i < combatDeck.length ? originalBonusDeck[i].stats.hp : (card.maxHp || card.stats.hp);
     });
     session.deck = combatDeck;
+    session.mobileBoss=monsterData;
     syncBattleAuto(session);
     document.getElementById('battle-auto').onclick = () => {
         if (!alive() || session.rogueBoss) return;
