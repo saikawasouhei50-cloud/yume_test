@@ -2637,7 +2637,8 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
                 name: row.name,
                 baseName: calculatedBaseName,
                 faction: row.faction,
-                rogueTrait: rogueCardTrait({name:row.name,baseName:calculatedBaseName,rogueTrait:row.rogue_trait||row.rogueTrait||row.trait}),
+                // The card-specific default is resolved in the roguelike UI after this data script loads.
+                rogueTrait: String(row.rogue_trait||row.rogueTrait||row.trait||'').trim(),
                 grade: row.grade, // 혹은 row.rarity
                 rarity: row.rarity,
                 publishTarget: row.publish_target,
