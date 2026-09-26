@@ -2637,6 +2637,7 @@ if (!rawCharacterData || rawCharacterData.length === 0) {
                 name: row.name,
                 baseName: calculatedBaseName,
                 faction: row.faction,
+                rogueTrait: rogueCardTrait({name:row.name,baseName:calculatedBaseName,rogueTrait:row.rogue_trait||row.rogueTrait||row.trait}),
                 grade: row.grade, // 혹은 row.rarity
                 rarity: row.rarity,
                 publishTarget: row.publish_target,
@@ -3627,12 +3628,21 @@ function updateDispatchClock() {
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
         const ROGUE_INCIDENTS = [
-            {id:'reversed_stairs',name:'올라갈수록 아래층이 되는 계단',base:{관찰:62,결단:52,교섭:58,보호:68},favored:['탐정','조수','마법사']},
-            {id:'extra_portrait',name:'인원이 늘어나는 초상화',base:{관찰:65,결단:48,교섭:55,보호:61},favored:['탐정','범인','초대객']},
-            {id:'early_reply',name:'먼저 도착한 답장',base:{관찰:65,결단:53,교섭:62,보호:50},favored:['도박사','마법사','사제']},
-            {id:'breathing_greenhouse',name:'숨을 쉬는 온실',base:{관찰:63,결단:57,교섭:49,보호:68},favored:['히어로','사제','악마']}
+            {id:'reversed_stairs',name:'올라갈수록 아래층이 되는 계단',base:{관찰:39,결단:31,교섭:35,보호:42},favored:['탐정','조수','마법사']},
+            {id:'extra_portrait',name:'인원이 늘어나는 초상화',base:{관찰:42,결단:29,교섭:33,보호:37},favored:['탐정','범인','초대객']},
+            {id:'early_reply',name:'먼저 도착한 답장',base:{관찰:43,결단:32,교섭:38,보호:30},favored:['도박사','마법사','사제']},
+            {id:'breathing_greenhouse',name:'숨을 쉬는 온실',base:{관찰:40,결단:36,교섭:29,보호:43},favored:['히어로','사제','악마']}
         ];
         const ROGUE_TRAITS = ['관찰','결단','교섭','보호'];
+        function rogueCardTrait(card) {
+            const explicit=String(card?.rogueTrait||'').trim();
+            if(ROGUE_TRAITS.includes(explicit))return explicit;
+            // Base identity stays the same across grades and copies; existing cards need no migration.
+            const identity=String(card?.baseName||card?.name||'').normalize('NFC').trim();
+            let hash=2166136261;
+            for(const char of identity){hash^=char.codePointAt(0);hash=Math.imul(hash,16777619);}
+            return ROGUE_TRAITS[(hash>>>0)%ROGUE_TRAITS.length];
+        }
         function emptyRogueState() { return {version:ROGUE_VERSION,incidentSchedule:1,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[],bossClues:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null,investigations:[]};
@@ -3675,7 +3685,8 @@ function updateDispatchClock() {
         function rogueIncidentChance(incident,trait,leader,companion) {
             const relation=companion?visitorRequestRelation(leader.card.faction,companion.card.faction):'neutral';
             const base=affinityBase(leader.card),level=base?affinityLevel(base):0;
-            return Math.min(90,Math.max(20,incident.base[trait]+(incident.favored.includes(leader.card.faction)?8:0)+level*4+(relation==='same'||relation==='friendly'?4:0)));
+            const aptitude=rogueCardTrait(leader.card)===trait?22:0;
+            return Math.min(90,Math.max(20,incident.base[trait]+aptitude+(incident.favored.includes(leader.card.faction)?6:0)+level*3+(relation==='same'||relation==='friendly'?4:0)));
         }
         function rogueIncidentEffect(incident,trait,success) {
             const clue=(kind,value,desc)=>{rogueState.bossClues=rogueState.bossClues||[];rogueState.bossClues.push({kind,value});return desc+' · 다음 보스전';};
@@ -3705,7 +3716,7 @@ function updateDispatchClock() {
                 narration:rogueDialogue(`${incident.id}.result.${trait}.${outcome}`,success?'사건을 해결했습니다.':'사건을 완전히 해결하지는 못했습니다.'),
                 leaderLine:rogueDialogue(leaderId,success?'길을 찾았어.':'다음에는 다른 방법을 찾아보자.'),
                 companionLine:companion?rogueDialogue(companionId,success?'함께 지나갈 수 있겠어.':'다시 시도해 보자.'):''};
-            const record={id:`${rogueState.runId}:${rogueState.floor}:${incident.id}`,at:Date.now(),floor:rogueState.floor,title:incident.name,trait,success,chance,effect,
+            const record={id:`${rogueState.runId}:${rogueState.floor}:${incident.id}`,at:Date.now(),floor:rogueState.floor,title:incident.name,trait,leaderTrait:rogueCardTrait(leader.card),success,chance,effect,
                 intro:rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'),choice:rogueDialogue(`${incident.id}.choice.${trait}`,trait),
                 leader:leader.card.name,companion:companion?.card.name||'',relation,narration:rogueState.eventResult.narration,
                 leaderLine:rogueState.eventResult.leaderLine,companionLine:rogueState.eventResult.companionLine};
@@ -3821,7 +3832,7 @@ function updateDispatchClock() {
             document.getElementById('rogue-investigation-count').textContent=`${entries.length}건`;
             document.getElementById('rogue-investigation-list').innerHTML=entries.map(entry=>{
                 const show=(label,value)=>value?`<p><strong>${label}</strong> ${rogueEscape(value)}</p>`:'';
-                return `<article class="rg-journal-entry"><h4>${rogueEscape(entry.title)} · ${entry.success?'성공':'실패'}</h4><small>${Number(entry.floor)||'?'}층 · ${rogueEscape(entry.trait||'')} · 성공 확률 ${Number(entry.chance)||0}%</small>${show('사건',entry.intro)}${show('조사',entry.choice)}${show('결과',entry.narration)}${show(entry.leader||'담당',entry.leaderLine)}${show(entry.companion||'동행인',entry.companionLine)}${show('획득',entry.effect)}</article>`;
+                return `<article class="rg-journal-entry"><h4>${rogueEscape(entry.title)} · ${entry.success?'성공':'실패'}</h4><small>${Number(entry.floor)||'?'}층 · ${rogueEscape(entry.trait||'')}${entry.leaderTrait?` · 담당 성향 ${rogueEscape(entry.leaderTrait)}`:''} · 성공 확률 ${Number(entry.chance)||0}%</small>${show('사건',entry.intro)}${show('조사',entry.choice)}${show('결과',entry.narration)}${show(entry.leader||'담당',entry.leaderLine)}${show(entry.companion||'동행인',entry.companionLine)}${show('획득',entry.effect)}</article>`;
             }).join('');
         }
         function updateRogueUI() {
@@ -3842,7 +3853,7 @@ function updateDispatchClock() {
             document.getElementById('rogue-archive-tokens').textContent=safeItemCount(rogueState.archiveTokens);
             document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'사건을 해결하세요', 'event-result':'사건의 결과'}[rogueState.phase]);
             document.getElementById('rogue-map').innerHTML=rogueState.map.map((row,i)=>`<div class="rg-map-row ${i+1===rogueState.floor?'current':''} ${i<rogueState.cleared?'done':''}"><span>${String(i+1).padStart(2,'0')}</span>${i+1>rogueState.floor&&i>=rogueState.cleared&&![6,12].includes(i+1)?'<span class="rg-map-node">미지의 경로</span>':row.map(n=>`<span class="rg-map-node ${n.id===rogueState.visited?.[i]?'taken':''}">${rogueNodeInfo[n.type][0]}</span>`).join('<span class="rg-or">/</span>')}</div>`).join('');
-            document.getElementById('rogue-team-status').innerHTML=rogueState.team.map(c=>`<div class="rg-member ${c.stats.hp<=0?'fallen':''}"><img src="${rogueEscape(c.cardImageUrl||c.imageUrl||'')}" alt="${rogueEscape(c.name)}"><strong>${rogueEscape(c.name)}</strong><progress max="${c.maxHp}" value="${c.stats.hp}" aria-label="${rogueEscape(c.name)} 체력"></progress><small>${Math.ceil(c.stats.hp)} / ${c.maxHp}</small></div>`).join('');
+            document.getElementById('rogue-team-status').innerHTML=rogueState.team.map(c=>`<div class="rg-member ${c.stats.hp<=0?'fallen':''}"><img src="${rogueEscape(c.cardImageUrl||c.imageUrl||'')}" alt="${rogueEscape(c.name)}"><strong>${rogueEscape(c.name)}</strong><small>성향 ${rogueEscape(rogueCardTrait(c))}</small><progress max="${c.maxHp}" value="${c.stats.hp}" aria-label="${rogueEscape(c.name)} 체력"></progress><small>${Math.ceil(c.stats.hp)} / ${c.maxHp}</small></div>`).join('');
             const counts={};for(const id of rogueState.buffs){const b=rogueBuffPool.find(b=>b.id===id);if(b)counts[b.school]=(counts[b.school]||0)+1;}
             document.getElementById('rogue-resonance').innerHTML=Object.entries(rogueSchools).map(([k,v])=>`<div class="rg-resonance ${rogueState.resonances.includes(k)?'lit':''}"><b>${v} ${counts[k]||0}/3</b><small>${{assault:'3개: 공격력 +25%',guard:'3개: 방어력 +25%, 최대 체력 +10%',renewal:'3개: 승리 시 생존자 체력 10% 회복'}[k]}</small></div>`).join('');
             document.getElementById('rogue-buffs-list').innerHTML=rogueState.buffs.map(id=>{const b=rogueBuffPool.find(b=>b.id===id);return b?`<span title="${rogueEscape(b.desc)}">${b.name}</span>`:'';}).join('')||'<span>아직 획득한 영감이 없습니다.</span>';
@@ -3856,7 +3867,7 @@ function updateDispatchClock() {
                 relic: ['유물을 하나 고르세요', '이번 탐사에 적용할 유물을 선택하면 다음 층으로 이어집니다.'],
                 rest: ['쉼터에서 할 일을 고르세요', '회복·퇴고·부활 중 하나를 선택할 수 있어요.'],
                 shop: ['필요한 보급품을 고르세요', '구매를 마쳤다면 ‘행상인을 떠난다’를 눌러 진행하세요.'],
-                event: ['사건을 해결할 방법을 고르세요', '담당자와 동행인을 고른 뒤 성향을 선택하세요. 호감도가 성공 확률을 높입니다.'],
+                event: ['사건을 해결할 방법을 고르세요', '담당 카드의 성향과 같은 방식을 고르면 성공 확률 +22%. 호감도와 진영 관계도 반영됩니다.'],
                 'event-result': ['사건의 결과', '성공하거나 실패해도 탐사는 이어집니다.'],
                 combat: ['교전 진행 중', '전투가 끝나면 이곳에서 다음 선택지를 고를 수 있어요.']
             };
@@ -3885,8 +3896,8 @@ function updateDispatchClock() {
             }
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
             const {leader,companion}=rogueActors();
-            const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')}</option>`).join('');
-            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div>`;
+            const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')} · 성향 ${rogueEscape(rogueCardTrait(x.card))}</option>`).join('');
+            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div><p>현재 담당 성향: <strong>${rogueEscape(leader?rogueCardTrait(leader.card):'없음')}</strong> · 일치하는 조사 방식 성공 확률 +22%</p>`;
             panel.querySelectorAll('select').forEach(select=>select.addEventListener('change',()=>{
                 if(rogueBusy||rogueState.phase!=='event')return;
                 const index=select.value===''?null:Number(select.value);
@@ -3927,7 +3938,8 @@ function updateDispatchClock() {
                 if(incident){
                     const {leader,companion}=rogueActors();
                     for(const trait of ROGUE_TRAITS){const chance=rogueIncidentChance(incident,trait,leader,companion);
-                        add(`${trait} · 성공 확률 ${chance}%`,rogueDialogue(`${incident.id}.choice.${trait}`,`${trait}의 방식으로 사건을 해결합니다.`),()=>resolveRogueIncident(trait));}
+                        const matched=leader&&rogueCardTrait(leader.card)===trait;
+                        add(`${trait}${matched?' · 담당 성향 일치 +22%':''} · 성공 확률 ${chance}%`,rogueDialogue(`${incident.id}.choice.${trait}`,`${trait}의 방식으로 사건을 해결합니다.`),()=>resolveRogueIncident(trait));}
                     return;
                 }
                 const e=rogueState.node.event;
