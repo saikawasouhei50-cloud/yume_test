@@ -400,7 +400,7 @@ html.calm-mode .hud-scanline-container::after { display: none; }
 @media(max-width:640px){.rg-heading{padding-top:10px}.rg-layout,.rg-lobby-grid{grid-template-columns:1fr}.rg-map-panel{padding:12px}.rg-map-panel small{display:none}#rogue-map{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.rg-map-row{font-size:9px;padding:5px 2px;flex-wrap:wrap;gap:3px}.rg-map-row>span:first-child{width:100%}.rg-status{gap:16px;flex-wrap:wrap}.rg-status p{margin-left:0;width:100%}.rg-choices{grid-template-columns:1fr}.rg-choice{min-height:100px}.rg-resonances{grid-template-columns:1fr}.rg-resonance small{display:inline;margin-left:8px}.rg-panel{padding:14px}.rg-member img{height:60px}.rg-team{gap:5px}.rg-intro{padding:22px}.rg-intro h3{font-size:28px}}
 .rg-incident{margin-bottom:12px;line-height:1.65;color:#455369}.rg-incident h4{font-size:17px;font-weight:750;color:#303d52;margin:0 0 6px}.rg-incident p{margin:0 0 10px}.rg-incident-actors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.rg-incident-actors label{font-size:12px;font-weight:700}.rg-incident-actors select{display:block;width:100%;margin:5px 0;padding:9px;border:1px solid #c9d5e3;border-radius:8px;background:#fff;color:#34455a}.rg-incident-result{display:flex;gap:10px;align-items:flex-start}.rg-incident-person{flex:1;min-width:0;border:1px solid #dce4f0;border-radius:10px;padding:10px;background:#f8f9fd}.rg-incident-person img{height:68px;width:68px;object-fit:contain;image-rendering:pixelated}.rg-incident-person strong{display:block}.rg-incident-person p{margin:5px 0 0;white-space:pre-line;word-break:keep-all}@media(max-width:640px){.rg-incident-actors{grid-template-columns:1fr}.rg-incident-result{flex-direction:column}.rg-incident-person{width:100%}}
 #rogue-boss-warning:not(.hidden){display:block;margin:8px 0;padding:9px 12px;border:1px solid #dcab7c;border-radius:8px;background:#3c2731;color:#ffe6c9;font-size:12px;line-height:1.6}
-.rg-dialogue-source{display:block;margin:4px 0 12px;color:#74849a;font-size:12px}.rg-journal-entry{margin:12px 0;padding:12px;border:1px solid #dce4f0;border-radius:10px;background:#f8f9fd}.rg-journal-entry h4{margin:0 0 6px;color:#303d52}.rg-journal-entry p{margin:6px 0;white-space:pre-line;word-break:keep-all}.rg-journal-entry small{color:#64748b}
+.rg-journal-entry{margin:12px 0;padding:12px;border:1px solid #dce4f0;border-radius:10px;background:#f8f9fd}.rg-journal-entry h4{margin:0 0 6px;color:#303d52}.rg-journal-entry p{margin:6px 0;white-space:pre-line;word-break:keep-all}.rg-journal-entry small{color:#64748b}
 </style>
 
 <style id="yumecan-typography-v3">
@@ -759,6 +759,12 @@ html body #combat-monster-area.enemy-skill-active{border-color:#d89aaa!important
 #battle-controls button:focus-visible{outline:3px solid #7b8fb4;outline-offset:2px}
 #battle-controls button:disabled{opacity:.5;cursor:not-allowed}
 #battle-controls #battle-auto[aria-pressed="true"]{background:#465369;color:white}
+#combat-monster-area .rogue-clone-card{width:min(100%,340px);display:flex;align-items:center;gap:12px;padding:10px 12px;border:2px solid #9d72ad;border-radius:12px;background:#f5eef8;color:#493453;text-align:left;box-shadow:0 0 0 3px #e9daf0}
+#combat-monster-area .rogue-clone-card[hidden]{display:none}
+#combat-monster-area .rogue-clone-card img{width:54px;height:54px;object-fit:contain;image-rendering:pixelated;flex:none}
+#combat-monster-area .rogue-clone-card strong,#combat-monster-area .rogue-clone-card small{display:block;line-height:1.4}
+#combat-monster-area .rogue-clone-card progress{width:100%;height:9px;accent-color:#88559a}
+@media(max-width:767px){html body #combat-monster-area .rogue-clone-card{grid-column:1/-1;grid-row:3;width:100%;box-sizing:border-box;padding:7px;gap:7px}#combat-monster-area .rogue-clone-card img{width:42px;height:42px}}
 #battle-order{display:flex;gap:6px;overflow-x:auto;padding:10px 0;overscroll-behavior-x:contain}
 .battle-order-item{flex:0 0 auto;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:8px;background:#edf0f5;padding:5px 8px;font-size:11px}
 .battle-order-item.is-current{background:#dfe6f7;box-shadow:inset 0 0 0 1px #96a8cc;font-weight:700}
@@ -3801,10 +3807,10 @@ function updateDispatchClock() {
             const f=rogueState.floor,b=rogueState.baseline;
             const elite=node.type==='elite',boss=node.type==='boss';
             const source=monsters[node.monsterName]||{};
-            const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
+            const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?2.8:elite?1.35:1));
             const aoe=boss&&f>=8;
             const planned={name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
-                baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
+                baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:boss?Math.floor((b.def*1.15+b.hp*(.22+f*.012))*(aoe?.85:1)):Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)),def:Math.floor(b.atk/5*(boss ? .32+f*.016 : .08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
                 speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?f>=12?'답장 반격 · 유리꽃 즉사(예고 후 대응 가능)':'2명 행동 봉인 · 초상화 복제(예고 후 대응 가능)':elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
             return boss?rogueBossPreparedStats(planned):planned;
         }
@@ -3874,13 +3880,13 @@ function updateDispatchClock() {
                 const result=rogueState.eventResult;if(!result){panel.replaceChildren();return;}
                 const leader=rogueState.team[result.leaderIndex],companion=rogueState.team[result.companionIndex];
                 const actor=(card,line)=>card?`<div class="rg-incident-person"><img src="${rogueEscape(card.cardImageUrl||card.imageUrl||'')}" alt="${rogueEscape(card.name)}"><strong>${rogueEscape(card.name)}</strong><p>${rogueEscape(line)}</p></div>`:'';
-                panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(result.narration)}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p><small class="rg-dialogue-source">${rogueDialogueSource==='sheet'?'RogueDialogues 시트 대사':'시트 연결 대기 · 제공된 대사 원본 표시'}</small>`;
+                panel.innerHTML=`<h4>${rogueEscape(incident.name)} · ${result.success?'성공':'실패'}</h4><p>${rogueEscape(result.narration)}</p><div class="rg-incident-result">${actor(leader,result.leaderLine)}${actor(companion,result.companionLine)}</div><p>성공 확률 ${result.chance}% · ${rogueEscape(result.effect)}</p>`;
                 return;
             }
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
             const {leader,companion}=rogueActors();
             const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')}</option>`).join('');
-            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><small class="rg-dialogue-source">${rogueDialogueSource==='sheet'?'RogueDialogues 시트 대사':'시트 연결 대기 · 제공된 대사 원본 표시'}</small><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div>`;
+            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div>`;
             panel.querySelectorAll('select').forEach(select=>select.addEventListener('change',()=>{
                 if(rogueBusy||rogueState.phase!=='event')return;
                 const index=select.value===''?null:Number(select.value);
@@ -8692,6 +8698,7 @@ function startStageCombat(chapterIndex, stageIndex) {
     } else if (type === 'rogue') {
             monsterData = rogueEnemyPlan(rogueState.node);
             rogueBossSetup(session,monsterData);
+            if(monsterData.rogueBoss)session.auto=false;
     } else if (type === 'main_stage') {
         const combatData = mainChapters[indices.chapter].stages[indices.stage];
         monsterData = JSON.parse(JSON.stringify(monsters[combatData.monsterName]));
@@ -8958,11 +8965,12 @@ function rogueBossPreparedStats(monster) {
     const party=rogueState.team.filter(card=>card.stats.hp>0);
     const burst=party.reduce((sum,card)=>{
         const power=Math.max(1,...(card.skills||[]).filter(skill=>!['heal','buff_atk','buff_def','debuff_atk','debuff_def'].includes(skill.type))
-            .map(skill=>Math.min(5,Math.max(1,Number(skill.power)||1))));
+            .map(skill=>Math.min(10,Math.max(1,Number(skill.power)||1))));
         return sum+Math.max(1,Math.floor(card.stats.atk*power)-monster.stats.def);
     },0);
     const steady=party.reduce((sum,card)=>sum+Math.max(1,card.stats.atk-monster.stats.def),0);
-    const minimum=Math.ceil(burst*(rogueState.floor>=12?2:1.7)+steady*(rogueState.floor>=12?2.6:2));
+    // Five actors can unload all ready skills before the boss moves; allow several full turns.
+    const minimum=Math.ceil(burst*(rogueState.floor>=12?4.4:3.5)+steady*(rogueState.floor>=12?3:2.5));
     monster.maxHp=monster.stats.hp=Math.max(monster.maxHp,minimum);
     return monster;
 }
@@ -9019,7 +9027,7 @@ function rogueBossResolve(session,monster,deck) {
         if(!limited.length)logCombat('대상이 모두 방어해 이름을 지켰습니다.');
     } else if(pending.kind==='portrait'){
         if(pending.damage>=threshold)logCombat('초상화가 완성되기 전에 찢어졌습니다.');
-        else if(target?.stats.hp>0){const hp=Math.max(1,Math.floor(monster.maxHp*(state.clues.cloneHp?.05:.10)*(guarded.has(pending.targetIndices[0])?.5:1)));state.clone={targetIndex:pending.targetIndices[0],hp};logCombat(`${rogueEscape(target.name)}의 복제상 생성 · 체력 ${hp}. 아군의 공격으로 없앨 때까지 해당 인물의 스킬이 봉인됩니다.`);}
+        else if(target?.stats.hp>0){const hp=Math.max(1,Math.floor(monster.maxHp*(state.clues.cloneHp?.05:.10)*(guarded.has(pending.targetIndices[0])?.5:1)));state.clone={targetIndex:pending.targetIndices[0],hp,maxHp:hp};logCombat(`${rogueEscape(target.name)}의 복제상 생성 · 체력 ${hp}. 아군의 공격으로 없앨 때까지 해당 인물의 스킬이 봉인됩니다.`);}
     } else if(pending.kind==='reply'){
         if(!pending.countered)logCombat('표식 대상이 공격하지 않아 답장의 반격이 빗나갔습니다.');
     } else if(pending.kind==='bloom'){
@@ -9035,6 +9043,24 @@ function rogueBossDisplay(session,monster,deck) {
     const state=session.rogueBoss,pending=state?.pending;
     banner.classList.toggle('hidden',!pending&&!state?.clone);
     if(!state)return;
+    const area=document.getElementById('combat-monster-area');
+    let cloneCard=area?.querySelector('.rogue-clone-card');
+    if(area&&!cloneCard){
+        cloneCard=document.createElement('section');cloneCard.className='rogue-clone-card';cloneCard.hidden=true;
+        cloneCard.setAttribute('aria-label','초상화 복제상');
+        cloneCard.innerHTML='<img alt=""><div><strong>초상화 복제상</strong><small></small><progress></progress></div>';
+        area.appendChild(cloneCard);
+    }
+    if(cloneCard){
+        cloneCard.hidden=!state.clone;
+        if(state.clone){
+            const original=deck[state.clone.targetIndex];
+            cloneCard.querySelector('img').src=original?.cardImageUrl||original?.imageUrl||'';
+            cloneCard.querySelector('img').alt=`${original?.name||'아군'}의 복제상`;
+            cloneCard.querySelector('small').textContent=`${original?.name||'아군'}의 스킬 봉인 · HP ${Math.ceil(state.clone.hp)} / ${state.clone.maxHp||state.clone.hp}`;
+            const gauge=cloneCard.querySelector('progress');gauge.max=state.clone.maxHp||state.clone.hp;gauge.value=Math.max(0,state.clone.hp);
+        }
+    }
     if(pending){
         const names=pending.targetIndices.map(index=>deck[index]?.name).filter(Boolean).join(', ');
         const needed=Math.ceil(monster.maxHp*(pending.kind==='seal'?.10:pending.kind==='portrait'?.12:state.clues.bloomHp?.066:.12));
@@ -9079,7 +9105,8 @@ function renderBattleOrder(session, order, position) {
 function requestBattleAction(session, card, deck) {
     const status = document.getElementById('battle-status');
     const threat=session.rogueBoss?.pending?.targetIndices.includes(deck.indexOf(card))?' · ⚠ 보스가 이 인물을 노립니다':'';
-    status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp}${threat} · 행동을 선택하세요`;
+    const cloneNotice=session.rogueBoss?.clone?' · 공격 대상: 초상화 복제상':'';
+    status.textContent = `${card.name}의 차례 · SPD ${battleSpeed(card)} · HP ${card.stats.hp}/${card.maxHp}${threat}${cloneNotice} · 행동을 선택하세요`;
     if (session.auto) return Promise.resolve(battleAutoAction(card));
     return new Promise(resolve => {
         const pending = {resolve, card};
@@ -9110,10 +9137,10 @@ function requestBattleAction(session, card, deck) {
         };
         const attack = () => {
             options.replaceChildren();
-            const normal = button('일반 공격', () => choose({type:'normal'}));
+            const normal = button(session.rogueBoss?.clone?'복제상 공격 · 일반 공격':'일반 공격', () => choose({type:'normal'}));
             const normalDesc = document.createElement('span');
             normalDesc.className = 'battle-skill-effect';
-            normalDesc.textContent = '적 1명에게 공격력에서 적 방어력을 뺀 피해를 줍니다(최소 1). 재사용 대기 없음.';
+            normalDesc.textContent = session.rogueBoss?.clone?'모든 공격은 복제상에 먼저 적중합니다. 복제상을 없애면 다시 보스를 공격합니다.':'적 1명에게 공격력에서 적 방어력을 뺀 피해를 줍니다(최소 1). 재사용 대기 없음.';
             normal.appendChild(normalDesc);
             (card.skills || []).forEach((skill,index) => {
                 const wait = battleRemaining(card,index);
@@ -9154,7 +9181,8 @@ function requestBattleAction(session, card, deck) {
 }
 function syncBattleAuto(session) {
     const button = document.getElementById('battle-auto');
-    button.textContent = session.auto ? '자동 진행 ON' : '자동 진행 OFF';
+    button.disabled=Boolean(session.rogueBoss);
+    button.textContent = session.rogueBoss ? '보스전 · 수동 진행' : session.auto ? '자동 진행 ON' : '자동 진행 OFF';
     button.setAttribute('aria-pressed', String(session.auto));
 }
 async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices, type, session) {
@@ -9178,7 +9206,7 @@ async function runCombatLoop(combatDeck, originalBonusDeck, monsterData, indices
     session.deck = combatDeck;
     syncBattleAuto(session);
     document.getElementById('battle-auto').onclick = () => {
-        if (!alive()) return;
+        if (!alive() || session.rogueBoss) return;
         session.auto = !session.auto;
         syncBattleAuto(session);
         if (session.auto && session.pending) session.pending.choose(battleAutoAction(session.pending.card));
