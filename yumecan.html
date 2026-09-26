@@ -2399,7 +2399,7 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
  </div>
  <div id="rogue-active" class="hidden">
   <div class="rg-status"><div><span class="rg-kicker">CURRENT DEPTH</span><h3 id="rogue-floor-display">1 / 12</h3></div><div><span>탐사 조각</span><b id="rogue-shards">0</b></div><div><span>발견한 서표</span><b id="rogue-archive-tokens">0</b></div><p id="rogue-phase" role="status"></p></div>
-  <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small id="rogue-map-boss-hint">다음 층의 갈림길은 도착할 때 공개<br>6층 중간 보스 · 12층 최종 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
+  <div class="rg-layout"><aside class="rg-panel rg-map-panel"><h3>탐사 경로</h3><small id="rogue-map-boss-hint">2·4·8·10층 사건 · 6층 중간 보스 · 12층 최종 보스</small><div id="rogue-map"></div></aside><div class="rg-main">
    <div id="rogue-choice-heading" class="rg-choice-heading" tabindex="-1">
     <h3 id="rogue-choice-title">다음 선택지를 고르세요</h3>
     <p id="rogue-choice-hint" aria-live="polite"></p>
@@ -3608,7 +3608,7 @@ function updateDispatchClock() {
             {id:'breathing_greenhouse',name:'숨을 쉬는 온실',base:{관찰:63,결단:57,교섭:49,보호:68},favored:['히어로','사제','악마']}
         ];
         const ROGUE_TRAITS = ['관찰','결단','교섭','보호'];
-        function emptyRogueState() { return {version:ROGUE_VERSION,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[],bossClues:[]}; }
+        function emptyRogueState() { return {version:ROGUE_VERSION,incidentSchedule:1,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[],bossClues:[]}; }
         let rogueState = emptyRogueState();
         let rogueMeta = {runs:0,clears:0,best:0,last:null};
         let rogueBusy = false;
@@ -3734,15 +3734,17 @@ function updateDispatchClock() {
         }
         function makeRogueNode(floor,type,index){
             const names=Object.keys(monsters).filter(name=>monsters[name]?.stats);
-            // 사건에서 얻은 보스 단서가 실제 다음 보스의 패턴과 맞도록 구역을 나눕니다.
-            const pool=floor<6?[0,1]:[2,3];
-            const event=pool[Math.floor(rogueRand()*pool.length)];
+            const storyByFloor={2:0,4:1,8:2,10:3};
+            const event=storyByFloor[floor]??Math.floor(rogueRand()*ROGUE_INCIDENTS.length);
             return {id:`${floor}-${index}`,type,monsterName:names[Math.floor(rogueRand()*names.length)],event,eventId:type==='event'?ROGUE_INCIDENTS[event].id:null};
         }
         function revealRogueFloor(floor){
             if(!rogueState.map[floor-1]||rogueState.map[floor-1].length)return;
-            const types=rogueShuffle(['battle','battle','battle','elite','event','rest','shop']);
-            rogueState.map[floor-1]=types.slice(0,2).map((type,index)=>makeRogueNode(floor,type,index));
+            if([2,4,8,10].includes(floor))rogueState.map[floor-1]=[makeRogueNode(floor,'event',0)];
+            else {
+                const types=rogueShuffle(['battle','battle','battle','elite','rest','shop']);
+                rogueState.map[floor-1]=types.slice(0,2).map((type,index)=>makeRogueNode(floor,type,index));
+            }
         }
         async function startRoguelike() {
             if(rogueBusy||isCombatRunning)return;
@@ -3776,9 +3778,10 @@ function updateDispatchClock() {
             const source=monsters[node.monsterName]||{};
             const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?1.7:elite?1.35:1));
             const aoe=boss&&f>=8;
-            return {name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
+            const planned={name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
                 baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)*(aoe?.8:1)),def:Math.floor(b.atk/5*(.08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
                 speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?f>=12?'답장 반격 · 유리꽃 즉사(예고 후 대응 가능)':'2명 행동 봉인 · 초상화 복제(예고 후 대응 가능)':elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
+            return boss?rogueBossPreparedStats(planned):planned;
         }
         function updateRogueUI() {
             const lobby=document.getElementById('rogue-lobby');if(!lobby)return;
@@ -3792,7 +3795,7 @@ function updateDispatchClock() {
             if(!rogueState.active){revealRogueStep();return;}
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
             const bossFloors=rogueState.map.flatMap((row,index)=>row.some(node=>node.type==='boss')?[index+1]:[]);
-            document.getElementById('rogue-map-boss-hint').textContent=`${bossFloors.length>2?'진행 중인 기존 경로 유지':'다음 층의 갈림길은 도착할 때 공개'} · ${bossFloors.join(' · ')}층 보스`;
+            document.getElementById('rogue-map-boss-hint').textContent=`${rogueState.incidentSchedule?'':'이미 공개된 기존 경로 유지 · '}2·4·8·10층 사건 · ${bossFloors.join(' · ')}층 보스`;
             document.getElementById('rogue-shards').textContent=rogueState.shards;
             document.getElementById('rogue-archive-tokens').textContent=safeItemCount(rogueState.archiveTokens);
             document.getElementById('rogue-phase').textContent=rogueBusy?'저장 중…':({route:'다음 경로를 선택하세요',combat:'교전 진행 중',buff:'영감을 하나 선택하세요',relic:'유물을 하나 선택하세요',rest:'쉼터에서 숨을 고르세요',shop:'이번 탐사에서 사용할 보급품',event:'사건을 해결하세요', 'event-result':'사건의 결과'}[rogueState.phase]);
@@ -8905,18 +8908,37 @@ function battleAutoAction(card) {
     const pick = ready.find(({skill}) => ['damage','true_damage','vampire'].includes(skill.type)) || ready[0];
     return pick ? {type:'skill', index:pick.index} : {type:'normal'};
 }
-function rogueBossSetup(session,monster) {
-    if(!monster.rogueBoss)return;
+function rogueBossClueValues() {
     const clues=rogueState.bossClues||[],values={};
     for(const clue of clues){if(!clue||!Number.isFinite(clue.value))continue;values[clue.kind]=['atkDown','defDown'].includes(clue.kind)?Math.min(.35,(values[clue.kind]||0)+clue.value):Math.max(values[clue.kind]||0,clue.value);}
+    return values;
+}
+function rogueBossPreparedStats(monster) {
+    if(!monster.rogueBoss)return monster;
+    const values=rogueBossClueValues();
     if(values.atkDown)monster.stats.atk=Math.max(1,Math.floor(monster.stats.atk*(1-values.atkDown)));
     if(values.defDown)monster.stats.def=Math.max(0,Math.floor(monster.stats.def*(1-values.defDown)));
-    session.rogueBoss={clues:values,nextWarningRound:2+(values.delaySpecial?1:0),warnings:0,pending:null,clone:null,bloomUsed:false};
+    // 경로 미리보기와 실제 전투에 동일한 체력을 표시합니다.
+    const party=rogueState.team.filter(card=>card.stats.hp>0);
+    const burst=party.reduce((sum,card)=>{
+        const power=Math.max(1,...(card.skills||[]).filter(skill=>!['heal','buff_atk','buff_def','debuff_atk','debuff_def'].includes(skill.type))
+            .map(skill=>Math.min(5,Math.max(1,Number(skill.power)||1))));
+        return sum+Math.max(1,Math.floor(card.stats.atk*power)-monster.stats.def);
+    },0);
+    const steady=party.reduce((sum,card)=>sum+Math.max(1,card.stats.atk-monster.stats.def),0);
+    const minimum=Math.ceil(burst*(rogueState.floor>=12?2:1.7)+steady*(rogueState.floor>=12?2.6:2));
+    monster.maxHp=monster.stats.hp=Math.max(monster.maxHp,minimum);
+    return monster;
+}
+function rogueBossSetup(session,monster) {
+    if(!monster.rogueBoss)return;
+    const values=rogueBossClueValues();
+    session.rogueBoss={clues:values,nextWarningRound:1+(values.delaySpecial?1:0),warnings:0,pending:null,clone:null,bloomUsed:false};
 }
 function rogueBossWarn(session,monster,deck) {
     const state=session.rogueBoss;if(!state||session.round!==state.nextWarningRound||state.pending)return;
     const patterns=rogueState.floor>=12?['reply','bloom','seal']:['seal','portrait'];
-    const kind=patterns[state.warnings++%patterns.length];state.nextWarningRound=session.round+3;
+    const kind=patterns[state.warnings++%patterns.length];state.nextWarningRound=session.round+2;
     if(kind==='bloom'&&state.bloomUsed)return;
     if(kind==='bloom')state.bloomUsed=true;
     if(state.clues.skipFirstSpecial){delete state.clues.skipFirstSpecial;logCombat('사건의 단서로 첫 보스 특수 행동을 무효화했습니다.');return;}
