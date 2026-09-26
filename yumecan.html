@@ -3713,6 +3713,17 @@ function updateDispatchClock() {
         }
         function emptyRogueState() { return {version:ROGUE_VERSION,incidentSchedule:1,active:false,floor:1,team:[],buffs:[],relics:[],resonances:[],map:[],phase:'route',shards:0,archiveTokens:0,cleared:0,wins:0,bosses:0,rerolls:1,choices:[],history:[],loot:[],lootedNodes:[],bossClues:[]}; }
         let rogueState = emptyRogueState();
+        function syncRogueTeamIdentity(inventory=playerInventory){
+            if(!rogueState.active||!Array.isArray(inventory))return;
+            const owned=new Map(inventory.map(card=>[card.id,card]));
+            for(const member of rogueState.team){
+                const card=owned.get(member.instanceId);
+                if(!card)continue;
+                const base=findCharacter(card.name);
+                member.faction=card.inherited?.faction||base?.faction||member.faction;
+                member.rarity=card.inherited?.originalRarity||base?.rarity||member.rarity;
+            }
+        }
         let rogueMeta = {runs:0,clears:0,best:0,last:null,investigations:[]};
         let rogueBusy = false;
         let rogueVisibleStep = '';
@@ -3835,6 +3846,7 @@ function updateDispatchClock() {
                 &&['buffs','relics','resonances','choices','history'].every(k=>Array.isArray(r[k]));
             if(!valid){console.warn('Invalid rogue checkpoint ignored');return;}
             rogueState=JSON.parse(JSON.stringify(r));
+            syncRogueTeamIdentity(saved.inventory);
             rogueState.archiveTokens=safeItemCount(r.archiveTokens);
             if(!rogueState.map[rogueState.floor-1]?.length)revealRogueFloor(rogueState.floor);
             rogueState.loot=Array.isArray(r.loot)?r.loot.filter(e=>e&&typeof e.id==='string'&&equipmentTemplates.some(t=>t.id===e.templateId&&t.source==='rogue')):[];
@@ -3875,7 +3887,7 @@ function updateDispatchClock() {
                 team=playerDeck.map(card=>{
                     const base=findCharacter(card.name),stats=getEnhancedStats(card);
                     if(!base||!stats||![stats.hp,stats.atk,stats.def].every(Number.isFinite)||stats.hp<=0)throw Error('Invalid card');
-                    return {...JSON.parse(JSON.stringify(base)),instanceId:card.id,level:card.level,stats:{...stats},skills:JSON.parse(JSON.stringify(card.inherited?.skills||base.skills||[])),activeEffects:[]};
+                    return {...JSON.parse(JSON.stringify(base)),instanceId:card.id,level:card.level,faction:card.inherited?.faction||base.faction,rarity:card.inherited?.originalRarity||base.rarity,stats:{...stats},skills:JSON.parse(JSON.stringify(card.inherited?.skills||base.skills||[])),activeEffects:[]};
                 });
                 team=applySynergyBonusesToDeck(team);team.forEach(c=>c.maxHp=c.stats.hp);
             } catch(error){console.error(error);return alert('편성의 캐릭터 데이터를 확인해 주세요.');}
@@ -3922,6 +3934,7 @@ function updateDispatchClock() {
             renderRogueInvestigations();
             document.getElementById('rogue-start-button').disabled=rogueBusy;
             if(!rogueState.active){revealRogueStep();return;}
+            syncRogueTeamIdentity();
             document.getElementById('rogue-floor-display').textContent=`${rogueState.floor} / 12`;
             const bossFloors=rogueState.map.flatMap((row,index)=>row.some(node=>node.type==='boss')?[index+1]:[]);
             document.getElementById('rogue-map-boss-hint').textContent=`${rogueState.incidentSchedule?'':'이미 공개된 기존 경로 유지 · '}2·4·8·10층 사건 · ${bossFloors.join(' · ')}층 보스`;
@@ -6372,6 +6385,7 @@ window.displayWarehouse=displayWarehouse;
         // 인연 조건 확인을 위해 필요한 'faction'과 'baseName'을 가진 객체 반환
         return {
             ...charData, // faction, baseName, rarity 등을 모두 포함
+            faction: cardInstance.inherited?.faction || cardInstance.faction || charData.faction,
         };
     }).filter(Boolean); // 유효하지 않은 카드 제거
 
@@ -8848,6 +8862,8 @@ function startStageCombat(chapterIndex, stageIndex) {
                 }
                 return {
                     ...baseCard,
+                    faction: cardInstance.inherited?.faction || baseCard.faction,
+                    rarity: cardInstance.inherited?.originalRarity || baseCard.rarity,
                     skills: activeSkills, // 덮어쓰기
                     stats: enhancedStats,
                     activeEffects: [],
