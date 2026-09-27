@@ -8332,8 +8332,18 @@ function renderRoomActivities(){
     const farming=document.getElementById('room-farming-body');
     if(farming)farming.innerHTML=`<div>${playerLife.planters.map((job,i)=>`<div class="room-activity-pot"><span>화분 ${i+1} · ${job?`${job.seed==='veg'?DREAM_VEGETABLES[job.crop]?.name||'야채 이물':'새벽 잎'} · ${job.readyAt<=now?'수확 가능':lifeTime(job.readyAt-now)+' 남음'}`:'비어 있음'}</span>${job&&job.readyAt<=now?`<button type="button" data-room-activity="harvest" data-slot="${i}">수확</button>`:''}</div>`).join('')||'<p>화분을 배치하면 이곳에 재배 상태가 표시돼요.</p>'}</div><div class="room-activity-actions"><button type="button" class="room-activity-entry" data-room-activity="open-farming" aria-haspopup="dialog" aria-controls="dream-fishing-modal">화분 관리 ↗</button></div>`;
     clearTimeout(roomGatherRefreshTimer);
+    const strollWaiting=Number(stroll?.nextAt)>now;
     const nextUpdate=[stroll?.nextAt,...playerLife.planters.map(job=>job?.readyAt)].filter(time=>time>now).sort((a,b)=>a-b)[0];
-    if(nextUpdate)roomGatherRefreshTimer=setTimeout(()=>{if(!document.getElementById('myroom-view')?.classList.contains('hidden'))renderRoomActivities();},Math.min(nextUpdate-now+80,60000));
+    if(nextUpdate){
+        // 채집 중에는 남은 초와 버튼 상태를 실시간으로 갱신합니다.
+        // 재배만 진행 중일 때는 기존처럼 최대 1분 간격으로 확인합니다.
+        const refreshDelay=strollWaiting
+            ?Math.min(1000,Math.max(80,Number(stroll.nextAt)-now+80))
+            :Math.min(nextUpdate-now+80,60000);
+        roomGatherRefreshTimer=setTimeout(()=>{
+            if(!document.getElementById('myroom-view')?.classList.contains('hidden'))renderRoomActivities();
+        },refreshDelay);
+    }
 }
 document.querySelector('#myroom-view .room-rail').addEventListener('click',event=>{
     const button=event.target.closest('button[data-room-activity]');
