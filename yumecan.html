@@ -3994,7 +3994,7 @@ function updateDispatchClock() {
         ];
         const rogueNodeInfo = {
             battle:['교전','일반 적 · 영감 1개 / 조각 25'], elite:['정예','강한 적 · 영감 + 유물 / 조각 45'],
-            rest:['쉼터','회복 / 퇴고 / 부활 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
+            rest:['쉼터','회복 / 강화 / 재정비 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
         const ROGUE_INCIDENTS = [
@@ -4073,7 +4073,13 @@ function updateDispatchClock() {
             const relation=companion?visitorRequestRelation(leader.card.faction,companion.card.faction):'neutral';
             const base=affinityBase(leader.card),level=base?affinityLevel(base):0;
             const aptitude=rogueCardTrait(leader.card)===trait?22:0;
-            return Math.min(90,Math.max(20,incident.base[trait]+aptitude+(incident.favored.includes(leader.card.faction)?6:0)+level*3+(relation==='same'||relation==='friendly'?4:0)));
+            return Math.min(90,Math.max(20,incident.base[trait]+aptitude+(incident.favored.includes(leader.card.faction)?6:0)+level*3+(relation==='same'||relation==='friendly'?4:0)+(rogueState.incidentPrepared?12:0)));
+        }
+        async function prepareRogueIncident() {
+            if(rogueBusy||!rogueState.active||rogueState.phase!=='event'||!rogueIncident()||rogueState.incidentPrepared||rogueState.shards<20)return;
+            rogueState.shards-=20;rogueState.incidentPrepared=true;
+            rogueLog(`${rogueState.floor}층 사건 · 단서 정리 (조각 -20, 조사 성공 확률 +12%)`);
+            await roguePersist();
         }
         function rogueIncidentEffect(incident,trait,success) {
             const clue=(kind,value,desc)=>{rogueState.bossClues=rogueState.bossClues||[];rogueState.bossClues.push({kind,value});return desc+' · 다음 보스전';};
@@ -4114,7 +4120,7 @@ function updateDispatchClock() {
         }
         async function finishRogueIncident() {
             if(rogueBusy||rogueState.phase!=='event-result'||!rogueState.eventResult)return;
-            rogueState.eventResult=null;advanceRogueFloor();await roguePersist();
+            rogueState.eventResult=null;rogueState.incidentPrepared=false;advanceRogueFloor();await roguePersist();
         }
         function rogueRand() { let x=rogueState.seed|0; x^=x<<13;x^=x>>>17;x^=x<<5;rogueState.seed=x>>>0;return (x>>>0)/4294967296; }
         function rogueShuffle(items) { const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(rogueRand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
@@ -4173,8 +4179,8 @@ function updateDispatchClock() {
             if(!rogueState.map[floor-1]||rogueState.map[floor-1].length)return;
             if([2,4,8,10].includes(floor))rogueState.map[floor-1]=[makeRogueNode(floor,'event',0)];
             else {
-                const types=rogueShuffle(['battle','battle','battle','elite','rest','shop']);
-                rogueState.map[floor-1]=types.slice(0,2).map((type,index)=>makeRogueNode(floor,type,index));
+                const types=rogueShuffle(['battle','battle','battle','elite','rest','shop',...(floor>=3?['event']:[])]);
+                rogueState.map[floor-1]=types.slice(0,floor===1?2:3).map((type,index)=>makeRogueNode(floor,type,index));
             }
         }
         async function startRoguelike() {
@@ -4292,7 +4298,7 @@ function updateDispatchClock() {
             const living=rogueState.team.map((card,index)=>({card,index})).filter(x=>x.card.stats.hp>0);
             const {leader,companion}=rogueActors();
             const options=(selected,omit)=>'<option value="">'+(omit?'동행인 없음':'담당자 선택')+'</option>'+living.filter(x=>x.index!==omit).map(x=>`<option value="${x.index}" ${x.index===selected?'selected':''}>${rogueEscape(x.card.name)} · ${rogueEscape(x.card.faction||'진영 없음')} · 성향 ${rogueEscape(rogueCardTrait(x.card))}</option>`).join('');
-            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div><p>현재 담당 성향: <strong>${rogueEscape(leader?rogueCardTrait(leader.card):'없음')}</strong> · 일치하는 조사 방식 성공 확률 +22%</p>`;
+            panel.innerHTML=`<h4>${rogueEscape(incident.name)}</h4><p>${rogueEscape(rogueDialogue(`${incident.id}.intro`,'기록 속에서 새로운 사건이 시작됩니다.'))}</p><div class="rg-incident-actors"><label>해결 담당<select data-rogue-actor="leader">${options(leader?.index,null)}</select></label><label>동행인<select data-rogue-actor="companion">${options(companion?.index,leader?.index)}</select></label></div><p>현재 담당 성향: <strong>${rogueEscape(leader?rogueCardTrait(leader.card):'없음')}</strong> · 일치하는 조사 방식 성공 확률 +22%${rogueState.incidentPrepared?' · 단서 정리 +12%':''}</p>`;
             panel.querySelectorAll('select').forEach(select=>select.addEventListener('change',()=>{
                 if(rogueBusy||rogueState.phase!=='event')return;
                 const index=select.value===''?null:Number(select.value);
@@ -4309,6 +4315,7 @@ function updateDispatchClock() {
                 for(const node of rogueState.map[rogueState.floor-1]) {
                     const info=rogueNodeInfo[node.type];let detail=info[1];
                     if(['battle','elite','boss'].includes(node.type)){const m=rogueEnemyPlan(node);detail+=`\n${m.name}\nHP ${m.stats.hp} · ATK ${m.stats.atk} · DEF ${m.stats.def}\n${m.rogueTactic}`;}
+                    if(node.type==='event')detail+=`\n${ROGUE_INCIDENTS.find(incident=>incident.id===node.eventId)?.name||'사건 조사'}`;
                     if(node.type==='elite')detail+='\n장비 드롭 25% · 획득 시 SR 90% / SSR 10%';
                     if(node.type==='boss')detail+=rogueState.floor===12?'\n전용 장비 확정 · SSR 85% / UR 15%':[6,8].includes(rogueState.floor)?'\n장비 드롭 75% · 획득 시 SR 65% / SSR 35%':'\n장비 드롭 50% · SR';
                     add(info[0],detail,()=>chooseRogueNode(node.id),Boolean(rogueState.retryNode&&rogueState.retryNode!==node.id));
@@ -4322,15 +4329,22 @@ function updateDispatchClock() {
                 add('휴식','생존자 최대 체력 40% 회복',()=>resolveRogueRoom('rest'));
                 add('퇴고','회복을 포기하고 전원 공격력 +12%',()=>resolveRogueRoom('forge'));
                 add('페이지 복원','전투불능 1명 체력 40%로 복귀',()=>resolveRogueRoom('revive'),!rogueState.team.some(c=>c.stats.hp<=0));
+                add('표지 덧대기','전원 방어력 +10% · 생존자 최대 체력 15% 회복',()=>resolveRogueRoom('fortify'));
+                add('초고 정리','영감 후보 새로고침 +2회 · 탐사 조각 +10',()=>resolveRogueRoom('prepare'));
             } else if(phase==='shop') {
                 const sold=rogueState.purchases||[];
                 add('복원액 · 조각 30','생존자 최대 체력 35% 회복 · 1회 한정',()=>resolveRogueRoom('buyHeal'),rogueState.shards<30||sold.includes('buyHeal'));
                 const b=rogueBuffPool.find(b=>b.id===rogueState.shopBuff);
                 if(b)add(`${b.name} · 조각 45`,`[${rogueSchools[b.school]}] ${b.desc} · 1회 한정`,()=>resolveRogueRoom('buyBuff'),rogueState.shards<45||sold.includes('buyBuff'));
+                add('교정권 · 조각 25','영감 후보 새로고침 +2회 · 1회 한정',()=>resolveRogueRoom('buyReroll'),rogueState.shards<25||sold.includes('buyReroll'));
+                add('복원 원고 · 조각 50','전투불능 1명 체력 40%로 복귀 · 1회 한정',()=>resolveRogueRoom('buyRevive'),rogueState.shards<50||sold.includes('buyRevive')||!rogueState.team.some(c=>c.stats.hp<=0));
+                const relic=rogueRelics.find(r=>r.id===rogueState.shopRelic&&!rogueState.relics.includes(r.id));
+                if(relic)add(`${relic.name} · 조각 75`,`${relic.desc} · 1회 한정`,()=>resolveRogueRoom('buyRelic'),rogueState.shards<75||sold.includes('buyRelic'));
                 add('행상인을 떠난다','남은 조각은 이번 탐사 중에만 사용됩니다.',()=>resolveRogueRoom('leave'));
             } else if(phase==='event') {
                 const incident=rogueIncident();
                 if(incident){
+                    if(!rogueState.incidentPrepared)add('단서를 더 정리한다 · 조각 20','이번 사건의 모든 조사 방식 성공 확률 +12% · 1회 한정',prepareRogueIncident,rogueState.shards<20);
                     const {leader,companion}=rogueActors();
                     for(const trait of ROGUE_TRAITS){const chance=rogueIncidentChance(incident,trait,leader,companion);
                         const matched=leader&&rogueCardTrait(leader.card)===trait;
@@ -4358,8 +4372,12 @@ function updateDispatchClock() {
                 catch(error){console.error(error);isCombatRunning=false;stopCombat3DBackground();rogueState.phase='route';rogueState.retryNode=id;switchTab('roguelike');alert('전투를 시작하지 못했습니다. 같은 경로로 다시 시도해 주세요.');}
             } else {
                 rogueState.phase=node.type;
-                if(node.type==='event'&&node.eventId){const living=rogueState.team.map((card,index)=>card.stats.hp>0?index:-1).filter(index=>index>=0);rogueState.eventActors={leaderIndex:living[0]??0,companionIndex:living[1]??null};}
-                if(node.type==='shop'){rogueState.purchases=[];rogueState.shopBuff=rogueShuffle(rogueBuffPool)[0].id;}
+                if(node.type==='event'&&node.eventId){const living=rogueState.team.map((card,index)=>card.stats.hp>0?index:-1).filter(index=>index>=0);rogueState.eventActors={leaderIndex:living[0]??0,companionIndex:living[1]??null};rogueState.incidentPrepared=false;}
+                if(node.type==='shop'){
+                    rogueState.purchases=[];
+                    rogueState.shopBuff=rogueShuffle(rogueBuffPool)[0].id;
+                    rogueState.shopRelic=rogueShuffle(rogueRelics.filter(relic=>!rogueState.relics.includes(relic.id)))[0]?.id||null;
+                }
                 await roguePersist();
             }
         }
@@ -4420,20 +4438,31 @@ function updateDispatchClock() {
         async function resolveRogueRoom(action) {
             if(rogueBusy||!rogueState.active)return;
             const phase=rogueState.phase;
-            const allowed={rest:['rest','forge','revive'],shop:['buyHeal','buyBuff','leave'],event:rogueState.node?.event===0?['risk','safe']:rogueState.node?.event===1?['help','ask']:['memory','collect']};
+            const allowed={rest:['rest','forge','revive','fortify','prepare'],shop:['buyHeal','buyBuff','buyReroll','buyRevive','buyRelic','leave'],event:rogueState.node?.event===0?['risk','safe']:rogueState.node?.event===1?['help','ask']:['memory','collect']};
             if(!allowed[phase]?.includes(action))return;
             if(action==='revive'&&!rogueState.team.some(c=>c.stats.hp<=0))return;
             if(phase==='shop'&&action!=='leave') {
-                const cost=action==='buyHeal'?30:45;
-                if(rogueState.shards<cost||rogueState.purchases.includes(action))return;
+                const costs={buyHeal:30,buyBuff:45,buyReroll:25,buyRevive:50,buyRelic:75};
+                const cost=costs[action];
+                if(rogueState.shards<cost||rogueState.purchases?.includes(action))return;
+                if(action==='buyRevive'&&!rogueState.team.some(c=>c.stats.hp<=0))return;
+                const relic=rogueRelics.find(r=>r.id===rogueState.shopRelic&&!rogueState.relics.includes(r.id));
+                if(action==='buyRelic'&&!relic)return;
+                if(action==='buyBuff'&&!rogueBuffPool.some(b=>b.id===rogueState.shopBuff))return;
                 rogueState.shards-=cost;rogueState.purchases.push(action);
-                if(action==='buyHeal')rogueHeal(.35);else applyRogueBuff(rogueBuffPool.find(b=>b.id===rogueState.shopBuff));
+                if(action==='buyHeal')rogueHeal(.35);
+                if(action==='buyBuff')applyRogueBuff(rogueBuffPool.find(b=>b.id===rogueState.shopBuff));
+                if(action==='buyReroll')rogueState.rerolls+=2;
+                if(action==='buyRevive')rogueRevive(.40);
+                if(action==='buyRelic')grantRogueRelic(relic);
                 rogueLog(`행상인 · ${cost} 조각 사용`);await roguePersist();return;
             }
             if(action==='help'&&rogueState.shards<20)return;
             if(action==='rest')rogueHeal(.40);
             if(action==='forge')rogueStat('atk',1.12);
             if(action==='revive')rogueRevive(.40);
+            if(action==='fortify'){rogueStat('def',1.10);rogueHeal(.15);}
+            if(action==='prepare'){rogueState.rerolls+=2;rogueState.shards+=10;}
             if(action==='risk') {rogueState.team.forEach(c=>{if(c.stats.hp>0)c.stats.hp=Math.max(1,Math.floor(c.stats.hp*.80));});applyRogueBuff(rogueShuffle(rogueBuffPool.filter(b=>b.school==='assault'))[0]);}
             if(action==='safe')rogueState.shards+=20;
             if(action==='help'){rogueState.shards-=20;rogueStat('maxHp',1.15);}
