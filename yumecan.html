@@ -1601,6 +1601,15 @@ html.dark-mode body #story-view #main-story-container>div[class*="bg-black/30"] 
 html.dark-mode body #story-view :is(#main-story-container,#event-archive-container,#archive-story-list) :is(h3,span){color:#eaf1fa!important}
 html.dark-mode body #story-view :is(#main-story-container,#event-archive-container,#archive-story-list) p{color:#c1d0e2!important}
 html.dark-mode body #story-view #archive-back-btn{background:#334962!important;color:#f0f4fb!important;border-color:#607996!important}
+.dream-guide{margin:18px 0;padding:18px 20px;border:1px solid #cbd7e5;border-radius:18px;background:linear-gradient(120deg,#f3f5fc,#eef4fa);color:#35465e;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.dream-guide-copy{min-width:0;flex:1}.dream-guide small{font-size:10px;font-weight:800;letter-spacing:.12em;color:#647996}.dream-guide h3{font-size:18px;font-weight:800;margin:5px 0}.dream-guide p{font-size:13px;line-height:1.55;margin:0;color:#526780}
+.dream-guide-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.dream-guide button{border:1px solid #b7cbe0;border-radius:10px;padding:9px 13px;background:#fff;color:#405673;font-weight:700;font-size:12px;cursor:pointer}.dream-guide button.guide-primary{background:#455772;color:#fff;border-color:#455772}.dream-guide[hidden],.dream-guide [hidden]{display:none!important}.dream-guide-extra{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+#summon-guide-next[hidden],#combat-guide-next[hidden]{display:none!important}
+html.dark-mode body .dream-guide{background:linear-gradient(120deg,#263348,#223047);border-color:#435b78;color:#f0f5fc}html.dark-mode body .dream-guide p{color:#c5d3e6}html.dark-mode body .dream-guide small{color:#9eb5d3}html.dark-mode body .dream-guide button{background:#30425b;border-color:#526d8a;color:#eaf2fc}html.dark-mode body .dream-guide button.guide-primary{background:#859bc3;border-color:#859bc3;color:#152033}
+@media(max-width:640px){.dream-guide{align-items:stretch;flex-direction:column;padding:14px;gap:12px}.dream-guide-actions button{flex:1}.dream-guide h3{font-size:16px}}
+#home-view.guide-visible .dream-guide{grid-column:1/-1;grid-row:3}#home-view.guide-visible .dream-explore{grid-row:4}#home-view.guide-visible .dream-bottom{grid-row:5}
+#home-view.guide-visible.attendance-claimed .dream-guide{grid-row:2}#home-view.guide-visible.attendance-claimed .dream-explore{grid-row:3}#home-view.guide-visible.attendance-claimed .dream-bottom{grid-row:4}
+@media(max-width:767px){#home-view.guide-visible .dream-guide{grid-column:1;grid-row:3}#home-view.guide-visible .dream-menu{grid-row:4}#home-view.guide-visible .dream-explore{grid-row:5}#home-view.guide-visible .dream-bottom{grid-row:6}#home-view.guide-visible.attendance-claimed .dream-guide{grid-row:2}#home-view.guide-visible.attendance-claimed .dream-menu{grid-row:3}#home-view.guide-visible.attendance-claimed .dream-explore{grid-row:4}#home-view.guide-visible.attendance-claimed .dream-bottom{grid-row:5}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -1708,6 +1717,7 @@ html.dark-mode body #story-view #archive-back-btn{background:#334962!important;c
   <span class="dream-scene-footer">YUMECAN / A PLACE FOR UNTOLD STORIES</span>
  </div>
  <section id="home-attendance" class="dream-attendance"><div><span class="menu-eyebrow">DAILY VISIT</span><h3>오늘의 출석</h3><p id="attendance-status" role="status">매일 접속해 보상을 받아보세요.</p></div><div id="attendance-rewards" class="dream-attendance-days"></div><button id="attendance-claim" type="button">오늘 보상 받기</button></section>
+ <section id="home-guide" class="dream-guide" aria-label="게임 길잡이" aria-live="polite" hidden><div class="dream-guide-copy"><small id="guide-progress"></small><h3 id="guide-title"></h3><p id="guide-description"></p><div id="guide-extras" class="dream-guide-extra" hidden></div></div><div class="dream-guide-actions"><button id="guide-action" class="guide-primary" type="button">바로 가기</button><button id="guide-later" type="button">나중에</button><button id="guide-reopen" type="button" hidden>길잡이 보기</button></div></section>
  <nav class="dream-menu" aria-label="주요 메뉴">
   <div class="dream-menu-title"><span>YOUR ARCHIVE</span><p>이야기를 이어가다</p></div>
   <div class="dream-menu-grid">
@@ -1868,7 +1878,7 @@ html.dark-mode body #story-view #archive-back-btn{background:#334962!important;c
         </button>
     </div>
 </div>
-                <p id="summon-summary" role="status" aria-live="polite"></p>
+                <p id="summon-summary" role="status" aria-live="polite"></p><button id="summon-guide-next" type="button" class="gacha-button" hidden>소환한 카드로 5장 편찬하기 ↗</button>
                 <div id="results-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] bg-black/20 p-4 rounded-xl"></div>
                 <div class="collection-toolbar"><button id="summon-share" type="button" disabled>이번 소환 공유</button><button id="summon-save" type="button" disabled>이미지 저장</button><span id="summon-share-status" role="status"></span></div>
                 <details id="archive-history"><summary>최근 소환 기록 · 최대 30회</summary><ol id="summon-history-list"><li>아직 기록된 소환이 없습니다.</li></ol></details>
@@ -2751,8 +2761,9 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
         </div>
 
         <button id="close-combat-result" class="gacha-button w-full py-3 text-xs md:text-sm border-cyan-500 text-cyan-400 hover:bg-cyan-900/30 tracking-widest font-bold">
-            확인 및 로비 복귀
+            확인 및 안정화로 돌아가기
         </button>
+        <button id="combat-guide-next" class="gacha-button w-full py-3 mt-2 text-xs md:text-sm border-cyan-500 text-cyan-400 font-bold" type="button" hidden></button>
     </div>
 </div>
 
@@ -4609,6 +4620,7 @@ let playerProfile = { repCardId: null, statusMessage: "" }; // 반드시 초기�
             let selectedCardsToDismantle = new Set(); // ✨ 선택된 카드 ID Set 추가
             let playerInventory = [];
 			let playerTutorialFinished = true;
+            let playerGuide = freshPlayerGuide();
 			let collectedCardNames = new Set(); // 👈 이 줄을 추가하세요.
 		let playerRoom = { furniture: [], characters: [] }; // 마이룸 데이터 (가구 배치, 캐릭터)
 let ownedFurniture = []; // 보유한 가구 목록
@@ -5025,6 +5037,7 @@ function buildGameSnapshot() {
         attendance: playerAttendance,
         summonHistory: summonHistory,
         tutorialFinished: playerTutorialFinished,
+        guide: playerGuide,
         rogueRun: JSON.stringify(rogueState),
         rogueMeta: rogueMeta,
         clearedStageStories: clearedStageStories || [],
@@ -5077,6 +5090,7 @@ async function loadGameFromFirebase(uid) {
 	window.yumecanLoading.stage(3, '저장된 이야기를 정리하는 중');
     if (doc.exists) {
         const savedData = doc.data();
+        playerGuide = { ...freshPlayerGuide(), ...(savedData.guide?.version === 1 ? savedData.guide : {}) };
         restoreRogueProgress(savedData);
         summonHistory = Array.isArray(savedData.summonHistory) ? savedData.summonHistory.filter(entry =>
             entry && Number.isFinite(entry.at) && Array.isArray(entry.cards) && entry.cards.every(card => card && typeof card.name === 'string' && typeof card.rarity === 'string')
@@ -5198,6 +5212,13 @@ playerInspHp = savedData.inspHp ?? 0;
         const nickInput = document.getElementById('profile-nickname-edit');
         if(nickInput) nickInput.value = currentPlayerNickname;
 		 playerTutorialFinished = (savedData.tutorialFinished !== undefined) ? savedData.tutorialFinished : true;
+        if (savedData.guide?.version !== 1) {
+            // 이전 저장에는 길잡이가 없으므로 확인 가능한 완료 기록만 반영합니다.
+            playerGuide.mainWins = clearedStages.length;
+            playerGuide.returnedAfterUpgrade = clearedStages.length >= 3 && playerInventory.some(card => Number(card.level) > 0);
+            playerGuide.dispatched = Object.keys(playerDispatches).length > 0 || dispatchReports.length > 0;
+            playerGuide.roomVisited = Boolean(playerRoom.characters.length || savedData.life?.journal?.strolls || savedData.life?.journal?.harvests || savedData.life?.journal?.crafts && Object.values(savedData.life.journal.crafts).some(Boolean));
+        }
     } else {
         initializeNewGameData();
 		playerSystemMailHistory = [];
@@ -5229,9 +5250,11 @@ playerInspHp = savedData.inspHp ?? 0;
     }
 }
 function saveGame() {
+    renderGuide();
     return saveGameToFirebase();
 }
             function initializeNewGameData() {
+                playerGuide = freshPlayerGuide();
                 playerDispatches = {}; dispatchReports = [];
     playerDreamFragments=0;playerCharacterTraces={};playerAffinityPotions=0;playerArchiveTokens=0;playerAttendance={lastDate:'',streak:0};playerAffinity={};playerLife=freshLife();
     playerRoom={furniture:[],characters:[],expansionLevel:0};ownedFurniture=[];ensureLifeFurniture();
@@ -6779,6 +6802,10 @@ window.displayWarehouse=displayWarehouse;
                 else if (tabName === 'friends' && typeof loadFriendList === 'function') loadFriendList();
                 else if (tabName === 'trade' && typeof loadTradeList === 'function') loadTradeList();
                 else if (tabName === 'profile' && typeof displayProfileView === 'function') displayProfileView();
+                if (tabName === 'myroom' && currentUser && !currentVisitTargetUid && !playerGuide.roomVisited) {
+                    playerGuide.roomVisited = true;
+                    saveGame();
+                }
             }
             // 전역 스코프에 등록
             window.switchTab = switchTab;
@@ -6863,7 +6890,89 @@ function checkEventStatus() {
         }
     }
 }
+function freshPlayerGuide() {
+    return {version:1,mainWins:0,returnedAfterUpgrade:false,dispatched:false,roomVisited:false,deckReady:false,everEnhanced:false,collapsed:false,lastStep:-1};
+}
+const GUIDE_STEPS = [
+    {title:'이야기의 시작',description:'먼저 이곳의 이야기를 만나볼까요?',button:'프롤로그 보기',tab:'intro'},
+    {title:'첫 등장인물 만나기',description:'가입 선물로 받은 보석 100개로 등장인물 10명을 만나보세요.',button:'10회 소환하러 가기',tab:'gacha'},
+    {title:'함께할 이야기 편찬하기',description:'등장인물 5장을 편찬해 보세요. 자동 편성도 가능해요.',button:'편찬하러 가기',tab:'deck'},
+    {title:'첫 안정화',description:'준비됐어요. 안정화 1-1에서 첫 이야기를 시작하세요.',button:'안정화 1-1 보기',tab:'combat'},
+    {title:'다음 이야기',description:'첫 승리의 보상을 확인했다면 다음 스테이지에도 도전해 보세요.',button:'다음 스테이지 보기',tab:'combat'},
+    {title:'카드 한 장 퇴고하기',description:'자주 쓰는 카드 한 장을 골라 만년필로 퇴고해 보세요.',button:'서고로 가기',tab:'inventory'},
+    {title:'강해진 편찬으로 재도전',description:'퇴고한 카드와 함께 안정화에서 다시 승리해 보세요.',button:'안정화로 가기',tab:'combat'},
+    {title:'남는 인원과 현장 조사',description:'편찬에 넣지 않은 카드를 1시간 현장 조사에 보내 보세요.',button:'현장 조사 보기',tab:'dispatch'},
+    {title:'대표 캐릭터 선택',description:'좋아하는 등장인물을 대표로 세워 보세요.',button:'서고에서 선택',tab:'inventory'},
+    {title:'마이룸에 방문하기',description:'나의 공간을 둘러보고 방문객을 맞아 보세요.',button:'마이룸으로 가기',tab:'myroom'},
+    {title:'꿈의 공방',description:'현장 조사나 꿈의 산책으로 재료를 모아 작업대에서 물건을 만들어 보세요.',button:'마이룸 공방 보기',tab:'craft'},
+    {title:'낚시와 재배',description:'꿈낚시에서 이물을 낚거나 화분에서 첫 수확을 해 보세요.',button:'낚시·재배 보기',tab:'gather'},
+    {title:'꿈의 식탁',description:'모은 재료로 요리 담당과 시식 담당을 정해 음식을 완성해 보세요.',button:'꿈의 식탁 보기',tab:'table'}
+];
+function guideProgress() {
+    if (!playerGuide || !currentUser) return -1;
+    playerGuide.mainWins = Math.max(0, Math.floor(Number(playerGuide.mainWins) || 0));
+    if (playerDeck.length === DECK_CAPACITY) playerGuide.deckReady = true;
+    if (playerInventory.some(card => Number(card.level) > 0)) playerGuide.everEnhanced = true;
+    if (Object.keys(playerDispatches).length || dispatchReports.length) playerGuide.dispatched = true;
+    const f = playerLife?.fishing;
+    const done = [
+        playerTutorialFinished, (playerStats.totalPulls || 0) >= 10 || playerGuide.deckReady || playerGuide.mainWins >= 1, playerGuide.deckReady,
+        playerGuide.mainWins >= 1, playerGuide.mainWins >= 2, playerGuide.everEnhanced,
+        playerGuide.returnedAfterUpgrade, playerGuide.dispatched, Boolean(representativeCharacter),
+        playerGuide.roomVisited, Object.values(playerLife?.journal?.crafts || {}).some(Number),
+        Boolean(playerLife?.journal?.harvests || Object.keys(f?.records || {}).length),
+        Boolean(f?.lastCookedId || Object.values(f?.meals || {}).some(Number))
+    ];
+    return done.findIndex(value => !value) === -1 ? GUIDE_STEPS.length : done.findIndex(value => !value);
+}
+function guideCanCraft() {
+    return Object.values(LIFE_RECIPES).some(recipe => lifeLevel(recipe.skill) >= recipe.level && Object.entries(recipe.cost).every(([key,count]) => (playerLife.materials[key] || 0) >= count));
+}
+function guideCanCook() {
+    return Object.values(DREAM_RECIPES).some(recipe => dreamRecipeCanCook(recipe,playerLife.fishing));
+}
+function renderGuide() {
+    const panel = document.getElementById('home-guide');
+    if (!panel) return;
+    const index = guideProgress();
+    panel.hidden = index < 0;
+    document.getElementById('home-view').classList.toggle('guide-visible',index >= 0);
+    if (index < 0) return;
+    if (playerGuide.lastStep !== index) { playerGuide.lastStep = index; playerGuide.collapsed = false; }
+    const finished = index === GUIDE_STEPS.length, collapsed = playerGuide.collapsed;
+    document.getElementById('guide-progress').textContent = finished ? '길잡이 완료' : `다음 이야기 · ${index + 1} / ${GUIDE_STEPS.length}`;
+    document.getElementById('guide-title').textContent = collapsed ? '길잡이를 잠시 접어두었어요' : finished ? '이제 원하는 이야기를 펼쳐보세요' : GUIDE_STEPS[index].title;
+    document.getElementById('guide-description').textContent = collapsed ? '' : finished ? '폐기된 서고, 영감, 도감에서도 새로운 이야기를 만나보세요.' : index===10 && !guideCanCraft() ? '재료가 부족하다면 마이룸의 꿈의 산책이나 현장 조사 보상으로 모을 수 있어요.' : index===12 && !guideCanCook() ? '요리할 재료가 아직 부족해요. 꿈낚시나 재배에서 더 모아 보세요.' : GUIDE_STEPS[index].description;
+    const action = document.getElementById('guide-action');
+    action.hidden = collapsed || finished;
+    if (!finished) action.textContent = index===10 && !guideCanCraft() ? '마이룸에서 재료 모으기' : index===12 && !guideCanCook() ? '요리 재료 모으기' : GUIDE_STEPS[index].button;
+    document.getElementById('guide-later').hidden = collapsed || finished;
+    document.getElementById('guide-reopen').hidden = !collapsed;
+    const extras = document.getElementById('guide-extras');extras.replaceChildren();extras.hidden = collapsed || !finished;
+    if (finished) {
+        const links = [['폐기된 서고','roguelike'],['영감','breeding'],['도감','collection'],['친구','friends']];
+        if (currentEventInfo?.startDate && currentEventInfo?.endDate && Date.now() >= new Date(currentEventInfo.startDate).getTime() && Date.now() <= new Date(currentEventInfo.endDate).getTime()) links.push(['진행 중인 이벤트','event']);
+        for (const [label,tab] of links) {const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.guideTab=tab;extras.appendChild(button);}
+    }
+}
+function openGuideDestination() {
+    const index=guideProgress();if (index < 0 || index >= GUIDE_STEPS.length) return;
+    const tab=GUIDE_STEPS[index].tab;
+    if (tab === 'intro') return startIntroTutorial();
+    if (['craft','gather','table'].includes(tab)) {
+        switchTab('myroom');
+        if (tab === 'craft' && guideCanCraft()) document.getElementById('open-life-workshop')?.click();
+        else if (tab !== 'craft') {openDreamFishing();dreamFishingTab=tab==='gather'||!guideCanCook()?'fish':'table';renderDreamFishing();}
+    } else switchTab(tab);
+}
+document.getElementById('guide-action').addEventListener('click',openGuideDestination);
+document.getElementById('guide-later').addEventListener('click',()=>{playerGuide.collapsed=true;renderGuide();saveGame();});
+document.getElementById('guide-reopen').addEventListener('click',()=>{playerGuide.collapsed=false;renderGuide();saveGame();});
+document.getElementById('guide-extras').addEventListener('click',e=>{const tab=e.target.closest('[data-guide-tab]')?.dataset.guideTab;if(tab)switchTab(tab);});
+document.getElementById('summon-guide-next').addEventListener('click',openGuideDestination);
+document.getElementById('combat-guide-next').addEventListener('click',()=>{document.getElementById('close-combat-result').click();openGuideDestination();});
 function displayHomeView(cycleDialogue = false) {
+    renderGuide();
     const backdropEl = document.getElementById('home-char-backdrop');
     if (representativeCharacter) {
         homeCharacterContainer.classList.remove('hidden');
@@ -7532,6 +7641,7 @@ document.getElementById('summon-share').onclick=async()=>{
             playerCurrency -= cost;
             playerStats.totalPulls += results.length;
             playerDreamFragments += results.length;
+            renderGuide();
             recordSummon(results, gachaType);
             updateUI();renderCardExchange();
             saveGame();
@@ -7552,6 +7662,8 @@ document.getElementById('summon-share').onclick=async()=>{
             prepareSummonShare(pulledCharacters);
             resultsContainer.innerHTML = ''; // 이전 결과 초기화
             document.getElementById('summon-summary').textContent = `${pulledCharacters.length}장 소환 완료 · 꿈의 파편 +${pulledCharacters.length} · 새로 수집한 등장인물 ${discovered.size}종`;
+            renderGuide();
+            document.getElementById('summon-guide-next').hidden = guideProgress() !== 2;
             const marked = new Set();
             // 반복문을 돌며 10장의 카드를 각각 생성해서 그리드에 모두 추가합니다.
             pulledCharacters.forEach((character, index) => {
@@ -10061,6 +10173,8 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
         resultModal.style.display = 'flex';
         if (resultTitle) resultTitle.textContent = "전투 종료 처리 중...";
     }
+    document.getElementById('close-combat-result').textContent = combatInfo?.type==='event'?'확인 및 이벤트로 돌아가기':'확인 및 안정화로 돌아가기';
+    document.getElementById('combat-guide-next').hidden = true;
     if (combatInfo && combatInfo.type === 'rogue') {
         if(resultModal){resultModal.style.display='none';resultModal.classList.add('hidden');}
         document.getElementById('roguelike-view').classList.remove('hidden');
@@ -10102,6 +10216,8 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
                 const stage = mainChapters[combatInfo.indices.chapter].stages[combatInfo.indices.stage];
                 const stageId = `${combatInfo.indices.chapter + 1}-${combatInfo.indices.stage + 1}`;
                 if (!clearedStages.includes(stageId)) clearedStages.push(stageId);
+                playerGuide.mainWins = (Number(playerGuide.mainWins) || 0) + 1;
+                if (playerGuide.mainWins >= 3 && (playerGuide.everEnhanced || playerInventory.some(card => Number(card.level) > 0))) playerGuide.returnedAfterUpgrade = true;
                 if (stage.rewards) {
                     if (stage.rewards.fountainPens) {
                         playerFountainPens += stage.rewards.fountainPens;
@@ -10150,6 +10266,11 @@ function endCombat(isVictory, combatInfo, totalDamageDealt = 0, finalDeck = null
         updateUI();
         checkAchievements();
         saveGame();
+        if (isVictory && combatInfo?.type === 'main_stage') {
+            const next=guideProgress(),button=document.getElementById('combat-guide-next');
+            button.hidden=next<0||next>=GUIDE_STEPS.length;
+            if(!button.hidden)button.textContent=GUIDE_STEPS[next].button+' ↗';
+        }
     } catch (error) {
         console.error("보상 계산 에러:", error);
     }
@@ -11566,6 +11687,7 @@ function enhanceCard() {
 
             function closeInteractiveStory() {
     interactiveStoryModal.classList.add('hidden');
+    interactiveStoryModal.dataset.callback = '';
     storyCharLeft.src = ''; // 이미지 리소스 정리
     storyCharRight.src = '';
     currentInteractiveStory = null;
@@ -12365,7 +12487,11 @@ interactiveStoryModal.addEventListener('click', handleStoryInteraction);
 document.getElementById('close-stats-modal').addEventListener('click', () => {
     document.getElementById('choice-stats-modal').classList.add('hidden');
 });
-storySkipButton.addEventListener('click', closeInteractiveStory);
+storySkipButton.addEventListener('click', () => {
+    const wasIntro = interactiveStoryModal.dataset.callback === 'finishIntroTutorial()';
+    closeInteractiveStory();
+    if (wasIntro) finishIntroTutorial();
+});
 
 // ✨ 카드 상세 스토리 페이지네이션
 detailStoryPrevButton.addEventListener('click', () => {
@@ -15715,54 +15841,6 @@ function getTodayDateString(dateObj = new Date()) {
     }).replace(/\. /g, '-').replace('.', ''); // "2025. 10. 19." -> "2025-10-19" 형태로 통일
 }
 
-// [확인] 버튼 클릭 시 동작 정의 (기존 리스너를 이 내용으로 교체하세요)
-document.getElementById('close-combat-result').onclick = () => {
-    // 1. 결과창 모달 숨기기
-    const resultModal = document.getElementById('combat-result-modal');
-    if (resultModal) {
-        resultModal.style.display = 'none'; // flex로 켜진 것을 확실히 끕니다.
-        resultModal.classList.add('hidden');
-    }
-
-    // 2. 이벤트 관련 뷰 요소들 가져오기
-    const eventHome = document.getElementById('event-home-view');
-    const eventMainView = document.getElementById('event-view');
-
-    // 3. 전투 타입에 따른 화면 이동 처리
-    if (typeof lastCombatType !== 'undefined' && lastCombatType === 'event') {
-        // --- 이벤트 전투 종료 시 ---
-
-        // (1) 전체 탭 배경 설정을 위해 switchTab 호출
-        switchTab('event');
-
-        // (2) inline style로 인한 먹통 현상 방지 (중요!)
-        if (eventHome) eventHome.style.display = '';
-        if (eventMainView) eventMainView.style.display = '';
-
-        // (3) 찰나의 순간에 화면 갈아치우기 (깜빡임 방지)
-        if (eventHome) eventHome.classList.add('hidden');
-        if (eventMainView) eventMainView.classList.remove('hidden');
-
-        // (4) 데이터 갱신 및 전투 리스트 탭 활성화
-        if (typeof displayEventView === 'function') displayEventView();
-
-        // 기존 정의된 switchEventSubTab 함수를 사용하여 '전투' 탭을 활성화합니다.
-        if (typeof switchEventSubTab === 'function') {
-            switchEventSubTab('battle');
-        }
-
-    } else {
-        // --- 일반 전투 종료 시 ---
-
-        // 다른 곳에서 display = 'none'이 되었을지 모르니 초기화해둡니다.
-        if (eventHome) eventHome.style.display = '';
-        if (eventMainView) eventMainView.style.display = '';
-
-        // 일반 전투 선택 화면으로 이동
-        switchTab('combat');
-    }
-};
-
 // ✅ [신규] 항복/도주 로직 함수
 // ✅ [수정됨] 항복/도주 로직 함수 (확실한 종료 처리)
 function fleeCombat() {
@@ -15815,6 +15893,7 @@ function startIntroTutorial() {
 
 // 2. 튜토리얼 종료 후 처리 함수 (10회 뽑기 유도)
 function finishIntroTutorial() {
+    if (playerTutorialFinished) return;
     // 상태 변경 및 저장
     playerTutorialFinished = true;
     saveGame(); // Firebase에 저장
@@ -15824,18 +15903,15 @@ function finishIntroTutorial() {
 
     // 알림 메시지 띄우기
     setTimeout(() => {
-        alert("📖 프롤로그 완료!\n신규 유저님을 위해 [보석 100개]가 지급되었습니다.\n\n지금 바로 '10회 뽑기'를 진행하여 등장인물을 모아보세요!");
+        alert("📖 프롤로그 완료!\n가입 선물로 받은 보석 100개로 10회 소환을 진행해 등장인물을 모아보세요!");
 
         // 10회 뽑기 버튼 강조 효과
         const tenPullBtn = document.getElementById('pull-ten');
         if (tenPullBtn) {
             tenPullBtn.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
-            // 한번 클릭하면 효과 제거
-            const originalOnClick = tenPullBtn.onclick;
-            tenPullBtn.onclick = (e) => {
+            tenPullBtn.addEventListener('click', () => {
                 tenPullBtn.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
-                handlePull(10, PULL_TEN_COST, 'normal'); // 원래 기능 실행
-            };
+            }, {once:true});
         }
     }, 500);
 }
