@@ -6891,7 +6891,7 @@ function checkEventStatus() {
     }
 }
 function freshPlayerGuide() {
-    return {version:1,mainWins:0,returnedAfterUpgrade:false,dispatched:false,roomVisited:false,deckReady:false,everEnhanced:false,collapsed:false,lastStep:-1};
+    return {version:1,mainWins:0,returnedAfterUpgrade:false,dispatched:false,roomVisited:false,deckReady:false,everEnhanced:false,collapsed:false,dismissed:false,lastStep:-1};
 }
 const GUIDE_STEPS = [
     {title:'이야기의 시작',description:'먼저 이곳의 이야기를 만나볼까요?',button:'프롤로그 보기',tab:'intro'},
@@ -6935,9 +6935,9 @@ function renderGuide() {
     const panel = document.getElementById('home-guide');
     if (!panel) return;
     const index = guideProgress();
-    panel.hidden = index < 0;
-    document.getElementById('home-view').classList.toggle('guide-visible',index >= 0);
-    if (index < 0) return;
+    panel.hidden = index < 0 || index === GUIDE_STEPS.length && playerGuide.dismissed;
+    document.getElementById('home-view').classList.toggle('guide-visible',!panel.hidden);
+    if (panel.hidden) return;
     if (playerGuide.lastStep !== index) { playerGuide.lastStep = index; playerGuide.collapsed = false; }
     const finished = index === GUIDE_STEPS.length, collapsed = playerGuide.collapsed;
     document.getElementById('guide-progress').textContent = finished ? '길잡이 완료' : `다음 이야기 · ${index + 1} / ${GUIDE_STEPS.length}`;
@@ -6946,7 +6946,8 @@ function renderGuide() {
     const action = document.getElementById('guide-action');
     action.hidden = collapsed || finished;
     if (!finished) action.textContent = index===10 && !guideCanCraft() ? '마이룸에서 재료 모으기' : index===12 && !guideCanCook() ? '요리 재료 모으기' : GUIDE_STEPS[index].button;
-    document.getElementById('guide-later').hidden = collapsed || finished;
+    document.getElementById('guide-later').hidden = collapsed;
+    document.getElementById('guide-later').textContent = finished ? '길잡이 닫기' : '나중에';
     document.getElementById('guide-reopen').hidden = !collapsed;
     const extras = document.getElementById('guide-extras');extras.replaceChildren();extras.hidden = collapsed || !finished;
     if (finished) {
@@ -6966,7 +6967,7 @@ function openGuideDestination() {
     } else switchTab(tab);
 }
 document.getElementById('guide-action').addEventListener('click',openGuideDestination);
-document.getElementById('guide-later').addEventListener('click',()=>{playerGuide.collapsed=true;renderGuide();saveGame();});
+document.getElementById('guide-later').addEventListener('click',()=>{if(guideProgress()===GUIDE_STEPS.length)playerGuide.dismissed=true;else playerGuide.collapsed=true;renderGuide();saveGame();});
 document.getElementById('guide-reopen').addEventListener('click',()=>{playerGuide.collapsed=false;renderGuide();saveGame();});
 document.getElementById('guide-extras').addEventListener('click',e=>{const tab=e.target.closest('[data-guide-tab]')?.dataset.guideTab;if(tab)switchTab(tab);});
 document.getElementById('summon-guide-next').addEventListener('click',openGuideDestination);
