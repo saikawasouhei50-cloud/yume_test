@@ -1429,6 +1429,11 @@ html.dark-mode body #myroom-view #room-layer>.room-guest .chibi-bubble{backgroun
 html.dark-mode body #battle-controls,html.dark-mode body #rogue-boss-mobile-hud{background:#202d3e!important;color:#e7edf5!important;border-color:#435671!important}
 html.dark-mode body #battle-controls button,html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally{background:#2b3a4e!important;color:#e7edf5!important;border-color:#435671!important}
 html.dark-mode body #battle-controls :is(.battle-skill-button:disabled,.speed-button:disabled){background:#263246!important;color:#aab9ca!important}
+html.dark-mode body #battle-options .battle-skill-effect{color:#c8d5e5!important}
+html.dark-mode body #battle-options .battle-skill-cooldown{color:#aebfd3!important}
+html.dark-mode body #battle-controls #battle-options .battle-skill-button:disabled{opacity:.72!important}
+html.dark-mode body #battle-options .battle-skill-button:disabled .battle-skill-effect{color:#b3c1d2!important}
+html.dark-mode body #battle-options .battle-skill-button:disabled .battle-skill-cooldown{color:#9fadc0!important}
 html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally.is-targeted{background:#4a3540!important}html.dark-mode body #rogue-boss-mobile-hud .boss-hud-ally.is-acting{background:#324b66!important}
 html.dark-mode body #combat-in-progress-view [id^="combat-card-"]{background:linear-gradient(160deg,var(--faction-bg),#29374b 80%)!important}
 html.dark-mode body #combat-in-progress-view .combat-card-name{background:#233247e8!important;color:#f0f4f9!important}
@@ -1514,6 +1519,30 @@ html.dark-mode body #myroom-filter-container .myroom-filter-btn.bg-blue-500{back
 html.dark-mode body #myroom-char-list p{color:#d8e5f5!important}
 html.dark-mode body :is(.rg-map-row.current,.rg-resonance.lit,.rg-choice-heading,.rg-incident-person,.rg-journal-entry){color:#e6eef8!important}
 html.dark-mode body .rg-choice-heading :is(h3,p),html.dark-mode body .rg-map-row.current{color:#eaf1fa!important}
+/* 폐기된 서고는 라이트모드용 회색을 직접 지정한 요소가 많아 별도로 대비를 복원합니다. */
+html.dark-mode body #roguelike-view{color:#e8eef7!important}
+html.dark-mode body #roguelike-view .rg-status{background:#26364a!important;border-color:#50647d!important}
+html.dark-mode body #roguelike-view .rg-status>div>span{color:#b8c7d9!important}
+html.dark-mode body #roguelike-view .rg-status :is(h3,b){color:#f2f6fb!important}
+html.dark-mode body #roguelike-view #rogue-phase{color:#d0dbea!important}
+html.dark-mode body #roguelike-view .rg-map-panel{background:#243347!important;border-color:#4b6079!important}
+html.dark-mode body #roguelike-view .rg-map-row{color:#aebdd0!important;border-color:#4b5f76!important}
+html.dark-mode body #roguelike-view .rg-map-row.done{opacity:.82!important}
+html.dark-mode body #roguelike-view .rg-map-row.current{background:#31445c!important;color:#f1f5fa!important;border-color:#68819e!important}
+html.dark-mode body #roguelike-view .rg-map-node.taken{color:#c8d9eb!important}
+html.dark-mode body #roguelike-view .rg-or{opacity:.7!important}
+html.dark-mode body #roguelike-view .rg-choice-heading{background:#2d4056!important;border-color:#718aa7!important}
+html.dark-mode body #roguelike-view .rg-choice-heading h3{color:#f3f6fb!important}
+html.dark-mode body #roguelike-view .rg-choice-heading p{color:#cbd7e6!important}
+html.dark-mode body #roguelike-view .rg-incident{color:#d4dfec!important}
+html.dark-mode body #roguelike-view .rg-incident>h4{color:#f2f6fb!important}
+html.dark-mode body #roguelike-view .rg-incident>p{color:#c5d2e2!important}
+html.dark-mode body #roguelike-view .rg-incident-person{background:#2a3b50!important;color:#eaf0f8!important;border-color:#536982!important}
+html.dark-mode body #roguelike-view .rg-incident-person :is(strong,p){color:#edf3fa!important}
+html.dark-mode body #roguelike-view .rg-choice{background:#29394e!important;border-color:#4c617a!important}
+html.dark-mode body #roguelike-view .rg-choice strong{color:#f0f4fa!important}
+html.dark-mode body #roguelike-view .rg-choice span{color:#c5d2e2!important}
+html.dark-mode body #roguelike-view :is(.rg-rules,#rogue-log,#rogue-report,.rg-panel small,.rg-journal-entry small){color:#bdccde!important}
 html.dark-mode body .rogue-clone-card,html.dark-mode body .battle-order-item{background:#2b3b50!important;color:#edf2f9!important;border-color:#516986!important}
 html.dark-mode body .rg-loot-card[data-rarity=UR]{background:#353247!important;border-color:#967aab!important}
 html.dark-mode body #combat-view .chapter-menu-card.is-selected,
