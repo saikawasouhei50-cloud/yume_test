@@ -840,64 +840,66 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
 @media(min-width:960px) and (max-width:1140px){.detail-wide-layout{grid-template-columns:210px minmax(0,1fr);grid-template-areas:"portrait info" "portrait growth";overflow-y:auto;align-content:start}.detail-wide-layout>section{overflow:visible}.detail-portrait-column{position:sticky;top:0;align-self:start;max-height:100%;overflow-y:auto!important}.detail-info-column,.detail-growth-column{padding-right:4px}}
 </style>
 <style id="rogue-tactical-v3-style">
-#rogue-tactical-panel{padding:18px!important;overflow:hidden}
-.rg-tactical-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid #dce1e7;padding-bottom:14px;margin-bottom:14px}
-.rg-tactical-header h3{font-size:20px;margin:5px 0 4px;color:#3c4654}
-.rg-tactical-header p{font-size:12px;color:#6d7888;line-height:1.7}
-.rg-tactical-round{min-width:72px;text-align:right}
-.rg-tactical-round small{display:block;font-size:9px;letter-spacing:.15em;color:#8994a2}
-.rg-tactical-round b{font-size:28px;font-weight:500;color:#455365}
-.rg-tactical-body{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.7fr);gap:16px;align-items:start}
-.rg-tactical-board-wrap{overflow:auto;overscroll-behavior:contain;border:1px solid #d5dde7;border-radius:20px;background:linear-gradient(180deg,#edf1f6 0%,#e5ebf2 100%);padding:14px;box-shadow:inset 0 1px 0 #fff,0 10px 24px rgba(77,92,113,.08)}
-.rg-tactical-grid{display:grid;grid-template-columns:repeat(6,minmax(58px,1fr));grid-template-rows:repeat(5,96px);gap:10px;min-width:460px;padding:8px;perspective:1100px}
-.rg-tactical-cell{position:relative;border:1px solid #ced7e2;border-radius:14px;background:linear-gradient(180deg,#ffffff 0%,#f5f8fb 62%,#e7edf3 100%);min-width:0;overflow:visible;padding:4px;cursor:pointer;transition:border-color .12s,background .12s,transform .12s,box-shadow .12s;box-shadow:0 7px 0 #d7dfe8,0 11px 18px rgba(78,91,108,.08)}
-.rg-tactical-cell::before{content:'';position:absolute;left:10px;right:10px;top:5px;height:18px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,0));pointer-events:none;opacity:.8}
-.rg-tactical-cell:hover{border-color:#8d9cad;transform:translateY(-2px);box-shadow:0 9px 0 #d7dfe8,0 15px 22px rgba(78,91,108,.13)}
-.rg-tactical-cell.is-obstacle{cursor:default;background:repeating-linear-gradient(135deg,#d8dde5 0 10px,#e7ebf0 10px 20px);border-color:#c8d0da;box-shadow:0 7px 0 #d3dae3}
-.rg-tactical-cell.is-rift{background:radial-gradient(circle at 50% 48%,#d4c4eb 0,#e9e2f4 40%,#f7f8fb 72%);border-color:#b9a5d8;box-shadow:0 7px 0 #ddd4ec,0 12px 18px rgba(125,96,171,.12)}
-.rg-tactical-cell.is-exit{box-shadow:inset 0 0 0 2px #8eb8a7,0 7px 0 #d5e7df,0 11px 18px rgba(81,124,104,.12);background:linear-gradient(180deg,#f6fffb 0%,#eef8f3 100%)}
-.rg-tactical-cell.is-current{outline:3px solid #596779;outline-offset:2px}
-.rg-tactical-cell.is-reachable{background:linear-gradient(180deg,#f5fdf9 0%,#e8f3ef 100%);border-color:#87ae9f;box-shadow:0 7px 0 #d7e8e0,0 11px 18px rgba(68,118,95,.14)}
-.rg-tactical-cell.is-targetable{background:linear-gradient(180deg,#fff9f9 0%,#f7e9e9 100%);border-color:#bc8585;box-shadow:inset 0 0 0 1px #bc8585,0 7px 0 #ecd8d8,0 11px 18px rgba(145,88,88,.13)}
-.rg-tactical-terrain{position:absolute;inset:auto 7px 8px auto;font-size:9px;color:#738090;font-weight:800;pointer-events:none;letter-spacing:.02em}
-.rg-tactical-unit{position:absolute;inset:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;pointer-events:none;transform:translateY(-10px)}
-.rg-tactical-unit::after{content:'';width:72%;height:12px;margin-top:-2px;border-radius:50%;background:radial-gradient(circle,#cad5e0 0,rgba(202,213,224,.25) 60%,rgba(202,213,224,0) 100%);filter:blur(1px);opacity:.9}
-.rg-tactical-unit img,.rg-tactical-unit .rg-unit-fallback{width:44px;height:50px;object-fit:contain;border-radius:10px;background:linear-gradient(180deg,#ffffff 0%,#eef2f6 100%);border:1px solid #d4dce6;box-shadow:0 8px 16px rgba(62,72,87,.12)}
-.rg-tactical-unit .rg-unit-fallback{display:grid;place-items:center;font-size:18px;font-weight:800;color:#445263}
-.rg-tactical-unit strong{max-width:100%;font-size:9px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rg-tactical-unit small{font-size:8px;color:#6f7987}
-.rg-tactical-unit em{font-style:normal;font-size:8px;padding:2px 6px;border-radius:999px;background:#eef2f6;color:#586678;border:1px solid #dbe1e8;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rg-tactical-unit[data-side="enemy"] img,.rg-tactical-unit[data-side="enemy"] .rg-unit-fallback{border-color:#d8b2b2;background:linear-gradient(180deg,#fffafa 0%,#f8eaea 100%)}
-.rg-tactical-unit[data-side="enemy"] strong{color:#814f4f}
-.rg-tactical-unit[data-side="enemy"] em{background:#fcf0f0;color:#85565a;border-color:#e4c8c8}
-.rg-tactical-unit[data-side="player"] strong{color:#43546a}
-.rg-unit-hp{width:82%;height:5px;border-radius:20px;background:#d8dde4;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
-.rg-unit-hp>i{display:block;height:100%;background:linear-gradient(90deg,#7f93a8 0%,#60788f 100%)}
-.rg-tactical-intent-badge{position:absolute;left:6px;top:6px;z-index:2;font-size:8px;font-weight:800;background:#ffffffdc;padding:2px 5px;border-radius:6px;color:#7e4b4b;border:1px solid #ecd6d6}
+#rogue-tactical-panel{padding:18px!important;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.56),rgba(255,255,255,.38));border:1px solid rgba(154,168,188,.28);backdrop-filter:blur(18px) saturate(120%);box-shadow:0 22px 60px rgba(77,90,108,.10)}
+.rg-tactical-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(129,143,164,.20);padding-bottom:16px;margin-bottom:16px}
+.rg-tactical-header h3{font-size:20px;margin:4px 0;color:#415064;letter-spacing:-.02em}
+.rg-tactical-header p{font-size:12px;color:#6d7b8f;line-height:1.7}
+.rg-tactical-round{min-width:88px;text-align:right;padding:8px 10px;border-radius:18px;background:rgba(255,255,255,.35);border:1px solid rgba(164,177,197,.20);backdrop-filter:blur(14px)}
+.rg-tactical-round small{display:block;font-size:9px;letter-spacing:.22em;color:#94a0b2}
+.rg-tactical-round b{font-size:34px;font-weight:600;color:#445365}
+.rg-tactical-body{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(270px,.72fr);gap:18px;align-items:start}
+.rg-tactical-board-wrap{overflow:auto;overscroll-behavior:contain;border:1px solid rgba(165,178,197,.28);border-radius:28px;background:linear-gradient(180deg,rgba(248,250,253,.72),rgba(235,240,247,.58));backdrop-filter:blur(24px);padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(97,111,132,.12)}
+.rg-tactical-grid{display:grid;grid-template-columns:repeat(6,minmax(64px,1fr));grid-template-rows:repeat(5,118px);gap:12px;min-width:500px;padding:4px}
+.rg-tactical-cell{position:relative;border-radius:24px;min-width:0;overflow:hidden;padding:6px;cursor:pointer;transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease,background .14s ease;border:1px solid rgba(162,175,194,.28);background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(244,247,252,.52));backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 18px 32px rgba(103,115,136,.10)}
+.rg-tactical-cell::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 45%);pointer-events:none}
+.rg-tactical-cell::after{content:'';position:absolute;left:14px;right:14px;bottom:10px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(169,181,198,.26) 0,rgba(169,181,198,.08) 52%,rgba(169,181,198,0) 70%);pointer-events:none}
+.rg-tactical-cell:hover{transform:translateY(-2px);border-color:rgba(119,136,160,.46);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 22px 34px rgba(91,104,127,.14)}
+.rg-tactical-cell.is-obstacle{cursor:default;background:linear-gradient(180deg,rgba(241,244,249,.72),rgba(225,231,241,.68));border-color:rgba(178,188,202,.32)}
+.rg-tactical-cell.is-obstacle::before{background:repeating-linear-gradient(135deg,rgba(207,216,230,.58) 0 10px,rgba(242,246,251,.42) 10px 20px)}
+.rg-tactical-cell.is-rift{background:linear-gradient(180deg,rgba(250,245,255,.72),rgba(240,230,252,.64));border-color:rgba(186,155,221,.40)}
+.rg-tactical-cell.is-rift::before{background:radial-gradient(circle at 50% 42%,rgba(204,177,242,.38),rgba(255,255,255,0) 56%)}
+.rg-tactical-cell.is-exit{background:linear-gradient(180deg,rgba(243,255,249,.72),rgba(227,247,237,.60));border-color:rgba(123,183,151,.42)}
+.rg-tactical-cell.is-current{outline:2px solid rgba(86,102,124,.85);outline-offset:2px;box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 0 0 4px rgba(86,102,124,.09),0 20px 38px rgba(88,100,122,.16)}
+.rg-tactical-cell.is-reachable{background:linear-gradient(180deg,rgba(244,255,250,.76),rgba(226,246,237,.64));border-color:rgba(111,170,140,.50)}
+.rg-tactical-cell.is-targetable{background:linear-gradient(180deg,rgba(255,248,248,.76),rgba(252,234,234,.70));border-color:rgba(191,131,131,.50)}
+.rg-tactical-cell.is-targetable::after{background:radial-gradient(circle,rgba(212,146,146,.24) 0,rgba(212,146,146,.06) 55%,rgba(212,146,146,0) 76%)}
+.rg-tactical-terrain{position:absolute;right:12px;bottom:10px;font-size:10px;color:#6d788b;font-weight:800;letter-spacing:.05em;pointer-events:none;z-index:2}
+.rg-tactical-unit{position:absolute;inset:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;pointer-events:none;z-index:3}
+.rg-tactical-unit img,.rg-tactical-unit .rg-unit-fallback{width:56px;height:60px;object-fit:contain;border-radius:18px;background:rgba(255,255,255,.34);border:1px solid rgba(215,224,236,.54);backdrop-filter:blur(10px);box-shadow:0 12px 24px rgba(77,91,110,.12)}
+.rg-tactical-unit .rg-unit-fallback{display:grid;place-items:center;font-size:24px;font-weight:800;color:#445263}
+.rg-tactical-unit strong{max-width:94%;font-size:10px;line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#465568;text-shadow:0 1px 0 rgba(255,255,255,.75)}
+.rg-tactical-unit em{font-style:normal;font-size:8px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.52);border:1px solid rgba(202,212,226,.36);color:#5a697c;max-width:92%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg-tactical-unit small{font-size:8px;color:#6f7987;text-shadow:0 1px 0 rgba(255,255,255,.62)}
+.rg-tactical-unit[data-side="enemy"] strong{color:#825862}
+.rg-tactical-unit[data-side="enemy"] em{background:rgba(255,245,246,.56);border-color:rgba(232,203,208,.42);color:#8a6168}
+.rg-unit-hp{width:84%;height:5px;border-radius:999px;background:rgba(167,177,191,.28);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
+.rg-unit-hp>i{display:block;height:100%;background:linear-gradient(90deg,#7f94aa 0%,#607a91 100%)}
+.rg-tactical-intent-badge{position:absolute;left:10px;top:10px;z-index:4;font-size:8px;font-weight:800;background:rgba(255,255,255,.62);padding:3px 6px;border-radius:999px;color:#8a5a61;border:1px solid rgba(228,204,207,.55);backdrop-filter:blur(10px)}
 .rg-tactical-sidebar{display:flex;flex-direction:column;gap:12px;min-width:0}
-.rg-tactical-turn{padding:12px;border:1px solid #dce2e9;border-radius:12px;background:#fff;box-shadow:0 6px 16px rgba(71,84,103,.05)}
+.rg-tactical-turn,.rg-tactical-help,.rg-tactical-intent,.rg-tactical-logbox{background:rgba(255,255,255,.42);border:1px solid rgba(170,183,201,.24);backdrop-filter:blur(18px);box-shadow:0 10px 24px rgba(101,112,131,.08)}
+.rg-tactical-turn{padding:14px;border-radius:18px}
 .rg-tactical-turn strong{display:block;font-size:14px;color:#404c5d}
-.rg-tactical-turn span{display:block;font-size:11px;color:#748092;margin-top:5px}
-.rg-tactical-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.rg-tactical-actions button{min-height:44px;border:1px solid #d4dbe4;border-radius:10px;background:#fff;color:#465365;font-size:12px;font-weight:650;padding:8px;box-shadow:0 4px 12px rgba(79,92,109,.05)}
-.rg-tactical-actions button:hover:not(:disabled){background:#eef2f5;border-color:#9ba9b8}
-.rg-tactical-actions button.is-selected{background:#455365;color:#fff;border-color:#455365}
-.rg-tactical-actions button:disabled{opacity:.4}
-.rg-tactical-help{padding:11px;border-left:3px solid #8996a7;background:#f4f6f8;border-radius:7px}
+.rg-tactical-turn span{display:block;font-size:11px;color:#748092;margin-top:6px}
+.rg-tactical-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rg-tactical-actions button{min-height:50px;border:1px solid rgba(164,177,197,.28);border-radius:16px;background:rgba(255,255,255,.42);backdrop-filter:blur(16px);color:#465365;font-size:12px;font-weight:700;padding:10px;box-shadow:0 12px 22px rgba(96,109,128,.08)}
+.rg-tactical-actions button:hover:not(:disabled){background:rgba(255,255,255,.62);border-color:rgba(124,141,164,.44)}
+.rg-tactical-actions button.is-selected{background:linear-gradient(180deg,rgba(79,93,116,.92),rgba(66,78,98,.92));color:#fff;border-color:rgba(79,93,116,.9)}
+.rg-tactical-actions button:disabled{opacity:.45}
+.rg-tactical-help{padding:12px;border-left:3px solid rgba(126,141,161,.72);border-radius:16px}
 .rg-tactical-help b,.rg-tactical-sidebar h4{font-size:11px;color:#4d5868}
-.rg-tactical-help p{font-size:10px;line-height:1.65;color:#768190;margin-top:4px}
-.rg-tactical-intents{display:flex;flex-direction:column;gap:5px;margin-top:7px}
-.rg-tactical-intent{display:flex;justify-content:space-between;gap:8px;padding:7px 8px;background:#fff;border:1px solid #e0e5eb;border-radius:8px;font-size:10px}
-.rg-tactical-intent b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rg-tactical-intent small{color:#778394;margin-left:4px}
+.rg-tactical-help p{font-size:10px;line-height:1.7;color:#768190;margin-top:4px}
+.rg-tactical-intents{display:flex;flex-direction:column;gap:6px;margin-top:7px}
+.rg-tactical-intent{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:14px;font-size:10px}
+.rg-tactical-intent b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4b5768}
+.rg-tactical-intent small{color:#8290a3;margin-left:4px}
 .rg-tactical-intent span{color:#875b5b;white-space:nowrap}
-.rg-tactical-logbox{border-top:1px solid #e0e4e9;padding-top:8px}
+.rg-tactical-logbox{border-top:0;padding:10px 12px;border-radius:16px}
 .rg-tactical-logbox summary{cursor:pointer;font-size:11px;font-weight:700;color:#5d6877}
-.rg-tactical-logbox ol{max-height:150px;overflow:auto;margin-top:7px;font-size:10px;line-height:1.6;color:#6e7988}
-.rg-tactical-logbox li{padding:3px 0;border-bottom:1px solid #edf0f3}
+.rg-tactical-logbox ol{max-height:160px;overflow:auto;margin-top:8px;font-size:10px;line-height:1.62;color:#6e7988}
+.rg-tactical-logbox li{padding:4px 0;border-bottom:1px solid rgba(229,233,239,.6)}
 .rg-tactical-legend{font-size:9px;color:#7b8490}
-@media(max-width:820px){.rg-tactical-body{grid-template-columns:1fr}.rg-tactical-sidebar{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rg-tactical-actions{grid-column:1/-1}.rg-tactical-help,.rg-tactical-logbox{grid-column:1/-1}.rg-tactical-grid{grid-template-rows:repeat(5,78px)}}
-@media(max-width:520px){#rogue-tactical-panel{padding:12px!important}.rg-tactical-header{gap:8px}.rg-tactical-header h3{font-size:17px}.rg-tactical-grid{min-width:330px;grid-template-columns:repeat(6,minmax(48px,1fr));grid-template-rows:repeat(5,68px);gap:6px}.rg-tactical-board-wrap{padding:8px}.rg-tactical-unit img,.rg-tactical-unit .rg-unit-fallback{width:34px;height:38px}.rg-tactical-unit strong{font-size:8px}.rg-tactical-unit small,.rg-tactical-unit em{font-size:7px}.rg-tactical-sidebar{display:flex}.rg-tactical-actions button{font-size:11px;min-height:42px}}
+@media(max-width:820px){.rg-tactical-body{grid-template-columns:1fr}.rg-tactical-sidebar{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rg-tactical-actions{grid-column:1/-1}.rg-tactical-help,.rg-tactical-logbox{grid-column:1/-1}.rg-tactical-grid{grid-template-rows:repeat(5,96px)}}
+@media(max-width:520px){#rogue-tactical-panel{padding:12px!important}.rg-tactical-header{gap:8px}.rg-tactical-header h3{font-size:17px}.rg-tactical-grid{min-width:350px;grid-template-columns:repeat(6,minmax(50px,1fr));grid-template-rows:repeat(5,78px);gap:8px}.rg-tactical-board-wrap{padding:10px}.rg-tactical-unit img,.rg-tactical-unit .rg-unit-fallback{width:38px;height:42px}.rg-tactical-unit strong{font-size:8px}.rg-tactical-unit small,.rg-tactical-unit em{font-size:7px}.rg-tactical-sidebar{display:flex}.rg-tactical-actions button{font-size:11px;min-height:42px}}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -3520,7 +3522,7 @@ function updateDispatchClock() {
         function rogueTacticalAlive(u){return u&&u.hp>0&&!u.escaped;}
         function rogueTacticalUnit(id){return rogueState.tactical?.units?.find(u=>u.id===id)||null;}
         function isValidRogueTacticalState(t){
-            return !!(t&&t.version===1&&t.width===ROGUE_TACTICAL_W&&t.height===ROGUE_TACTICAL_H
+            return !!(t&&(t.version===1||t.version===2)&&t.width===ROGUE_TACTICAL_W&&t.height===ROGUE_TACTICAL_H
                 &&['annihilate','survive','escape'].includes(t.objective)&&Number.isInteger(t.round)&&t.round>=1
                 &&Number.isInteger(t.turnIndex)&&Array.isArray(t.order)&&Array.isArray(t.units)&&t.units.length>=3
                 &&t.units.every(u=>u&&typeof u.id==='string'&&['player','enemy'].includes(u.side)&&Number.isFinite(u.hp)&&Number.isFinite(u.maxHp)&&u.maxHp>0&&Number.isFinite(u.atk)&&Number.isFinite(u.def)&&Number.isFinite(u.speed)&&Number.isInteger(u.x)&&Number.isInteger(u.y)&&u.x>=0&&u.x<t.width&&u.y>=0&&u.y<t.height)
@@ -3553,33 +3555,80 @@ function updateDispatchClock() {
             if(t.objective==='escape')return {title:`${t.escapeNeeded}명 탈출`,desc:`오른쪽 EXIT 칸으로 ${t.escapeNeeded}명을 이동시키면 승리합니다. 탈출한 캐릭터는 생존 처리됩니다.`};
             return {title:'적 전멸',desc:'전장의 적을 모두 쓰러뜨리면 승리합니다.'};
         }
+        function rogueSvgUri(svg){return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;}
         function rogueTacticalTheme(){
             const themes=[
-                {name:'잉크 오염체',prefix:'잉크'},
-                {name:'파편 추적자',prefix:'파편'},
-                {name:'금서의 망령',prefix:'금서'},
-                {name:'몽환 잠식체',prefix:'몽환'}
+                {
+                    name:'잉크 오염체',prefix:'잉크',
+                    palette:{accent:'#d96480',accentSoft:'#ffe2ea',hair:'#413049',robe:'#9c5876',skin:'#f5dcc8',line:'#775062',glass:'#fff7fa'},
+                    names:{striker:['추격자 레다','추격자 이오'],sniper:['저격수 비오','저격수 미르'],bulwark:['수문장 모라','수문장 테브'],hexer:['술사 네라','술사 셀렌'],hound:['포식체 렌','포식체 카론'],boss:['붉은 제본관']}
+                },
+                {
+                    name:'파편 추적자',prefix:'파편',
+                    palette:{accent:'#4d8dc9',accentSoft:'#dff0ff',hair:'#2f4858',robe:'#648fb4',skin:'#efdcc9',line:'#496373',glass:'#f3fbff'},
+                    names:{striker:['추적자 오르','추적자 피엔'],sniper:['파편 사수 티아','파편 사수 리엔'],bulwark:['중장 루헨','중장 베토'],hexer:['분해술사 실프','분해술사 나인'],hound:['수색수 라크','수색수 에닌'],boss:['유리 감식관']}
+                },
+                {
+                    name:'금서의 망령',prefix:'금서',
+                    palette:{accent:'#8a6edc',accentSoft:'#eee7ff',hair:'#2e2347',robe:'#68509d',skin:'#f1dcc9',line:'#5c4f86',glass:'#faf7ff'},
+                    names:{striker:['망령 기사 아벨','망령 기사 레반'],sniper:['비문 사수 케인','비문 사수 오르'],bulwark:['봉인 경비 베른','봉인 경비 시온'],hexer:['낙인 사서 루나','낙인 사서 니벨'],hound:['야행 서수 노크','야행 서수 하인'],boss:['침묵의 서고주']}
+                },
+                {
+                    name:'몽환 잠식체',prefix:'몽환',
+                    palette:{accent:'#3fbeaf',accentSoft:'#dcfaf5',hair:'#284d4a',robe:'#4e948c',skin:'#f1ddcb',line:'#46716c',glass:'#f4fffd'},
+                    names:{striker:['잠식자 헤이즈','잠식자 이든'],sniper:['환몽 사수 리오','환몽 사수 벨'],bulwark:['몽벽 수호자 녹트','몽벽 수호자 라엘'],hexer:['혼몽 술사 엘라','혼몽 술사 시프'],hound:['허상 추적수 켈','허상 추적수 로아'],boss:['경계 붕괴자']}
+                }
             ];
             return themes[(rogueState.floor-1)%themes.length];
+        }
+        function rogueTacticalEnemyAvatar(kind,theme){
+            const p=theme.palette;
+            const body={
+                striker:`<path d="M25 25 L36 12 L44 22 L52 11 L63 25 L60 36 H28 Z" fill="${p.hair}"/><circle cx="44" cy="34" r="12" fill="${p.skin}"/><rect x="30" y="45" width="28" height="20" rx="10" fill="${p.accent}"/><path d="M56 43 L68 31" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/><path d="M65 27 L72 34" stroke="${p.accent}" stroke-width="4" stroke-linecap="round"/>`,
+                sniper:`<path d="M24 24 C30 14,58 14,64 24 L61 32 H27 Z" fill="${p.hair}"/><circle cx="44" cy="35" r="12" fill="${p.skin}"/><rect x="29" y="47" width="30" height="18" rx="9" fill="${p.accent}"/><path d="M18 47 H62" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/><circle cx="56" cy="47" r="4" fill="${p.accentSoft}" stroke="${p.line}" stroke-width="2"/>`,
+                bulwark:`<rect x="28" y="13" width="32" height="16" rx="8" fill="${p.hair}"/><circle cx="44" cy="35" r="12" fill="${p.skin}"/><rect x="30" y="47" width="28" height="17" rx="8" fill="${p.accent}"/><path d="M17 34 Q17 55 29 62 Q39 57 41 43 Q31 34 17 34 Z" fill="${p.accentSoft}" stroke="${p.line}" stroke-width="3"/><path d="M52 46 H65" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/>`,
+                hexer:`<path d="M23 60 L32 22 H56 L65 60 Z" fill="${p.accent}" opacity=".96"/><path d="M31 24 Q44 9 57 24" fill="${p.hair}"/><circle cx="44" cy="35" r="10" fill="${p.skin}"/><path d="M66 34 l8 4 l-8 4 l4-8 z" fill="${p.accentSoft}" stroke="${p.line}" stroke-width="2"/><circle cx="69" cy="38" r="7" fill="none" stroke="${p.line}" stroke-width="2" opacity=".65"/>`,
+                hound:`<ellipse cx="45" cy="53" rx="19" ry="13" fill="${p.accent}"/><circle cx="42" cy="33" r="12" fill="${p.skin}"/><path d="M31 26 L36 14 L43 24 Z" fill="${p.hair}"/><path d="M53 25 L61 15 L57 28 Z" fill="${p.hair}"/><path d="M57 48 L68 56" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/><path d="M29 48 H18" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/>`,
+                boss:`<path d="M23 21 L31 10 L44 20 L56 10 L65 21 L60 33 H28 Z" fill="${p.hair}"/><path d="M31 10 L35 18 L44 9 L53 18 L57 10" stroke="${p.accent}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="44" cy="34" r="13" fill="${p.skin}"/><path d="M24 63 Q44 40 64 63" fill="${p.accent}"/><path d="M30 44 H58" stroke="${p.line}" stroke-width="4" stroke-linecap="round"/><path d="M16 48 Q11 58 20 65" stroke="${p.line}" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M68 48 Q75 58 66 65" stroke="${p.line}" stroke-width="4" stroke-linecap="round" fill="none"/>`
+            };
+            const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${p.glass}"/><stop offset="1" stop-color="${p.accentSoft}"/></linearGradient></defs><rect x="6" y="6" width="76" height="76" rx="24" fill="url(#g)" stroke="${p.accent}" stroke-opacity=".35"/><ellipse cx="44" cy="72" rx="18" ry="6" fill="${p.accent}" opacity=".13"/>${body[kind]||body.striker}<circle cx="39" cy="35" r="1.4" fill="#353b48"/><circle cx="49" cy="35" r="1.4" fill="#353b48"/><path d="M39 41 Q44 44 49 41" stroke="#7a5863" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
+            return rogueSvgUri(svg);
+        }
+        function rogueTacticalName(theme,key,index=0){
+            const list=theme.names[key]||[key];
+            return `${theme.prefix} ${list[index%list.length]}`;
+        }
+        function rogueTacticalBossPattern(enemy,t){
+            const cycle=['burst','repulse','ray'];
+            return cycle[(Math.max(1,t.round)-1)%cycle.length];
+        }
+        function rogueTacticalBossPatternLabel(key){
+            return ({burst:'흑잉크 폭발',repulse:'충격 박치기',ray:'절단 광선'})[key]||'보스 패턴';
         }
         function rogueTacticalEnemySet(node,plan){
             const theme=rogueTacticalTheme();
             const rangedRange=node.type==='boss'&&rogueState.floor>=8?3:2;
-            const book=rogueState.floor>=9?'금서':'기록';
             const roster={
-                striker:{key:'striker',label:`${theme.prefix} 추격자`,icon:'⚔',roleLabel:'돌격형',hp:.40,atk:.48,def:.74,speed:2,range:1,ai:'rush'},
-                sniper:{key:'sniper',label:`${theme.prefix} 저격수`,icon:'✦',roleLabel:'사격형',hp:.33,atk:.44,def:.62,speed:1,range:rangedRange,ai:'snipe'},
-                bulwark:{key:'bulwark',label:`${theme.prefix} 방패수`,icon:'🛡',roleLabel:'수비형',hp:.58,atk:.34,def:1.14,speed:-1,range:1,ai:'guard'},
-                hexer:{key:'hexer',label:`${theme.prefix} 술사`,icon:'✧',roleLabel:'약화형',hp:.36,atk:.39,def:.68,speed:0,range:2,ai:'hex'},
-                hound:{key:'hound',label:`${theme.prefix} 포식체`,icon:'☄',roleLabel:'기동형',hp:.31,atk:.42,def:.58,speed:3,range:1,ai:'rush'}
+                striker:{key:'striker',roleLabel:'돌격형',hp:.41,atk:.49,def:.74,speed:2,range:1,ai:'rush'},
+                sniper:{key:'sniper',roleLabel:'사격형',hp:.34,atk:.45,def:.62,speed:1,range:rangedRange,ai:'snipe'},
+                bulwark:{key:'bulwark',roleLabel:'수비형',hp:.60,atk:.34,def:1.12,speed:-1,range:1,ai:'guard'},
+                hexer:{key:'hexer',roleLabel:'약화형',hp:.36,atk:.39,def:.69,speed:0,range:2,ai:'hex'},
+                hound:{key:'hound',roleLabel:'기동형',hp:.32,atk:.44,def:.58,speed:3,range:1,ai:'hound'}
             };
+            const spawn=(key,x,y,index=0,extra={})=>({
+                id:`e${index}`,
+                name:rogueTacticalName(theme,key,index),
+                image:rogueTacticalEnemyAvatar(key,theme),
+                icon:key[0].toUpperCase(),
+                x,y,...roster[key],...extra
+            });
             if(node.type==='boss'){
                 return {
                     theme:theme.name,
                     enemies:[
-                        {id:'e0',name:plan.name,icon:'☠',image:plan.imageUrl||'',roleLabel:'보스',hp:.88,atk:.58,def:1.02,speed:2,range:rogueState.floor>=8?2:1,ai:'boss',boss:true,x:5,y:2},
-                        {id:'e1',x:5,y:0,...roster.bulwark},
-                        {id:'e2',x:5,y:4,...(rogueState.floor>=8?roster.sniper:roster.hexer)}
+                        {id:'e0',name:`${plan.name} · ${theme.names.boss[0]}`,image:rogueTacticalEnemyAvatar('boss',theme),roleLabel:'보스',hp:.96,atk:.60,def:1.05,speed:2,range:rogueState.floor>=8?2:1,ai:'boss',boss:true,x:5,y:2},
+                        spawn('bulwark',5,0,1),
+                        spawn(rogueState.floor>=8?'sniper':'hexer',5,4,2)
                     ]
                 };
             }
@@ -3587,23 +3636,22 @@ function updateDispatchClock() {
                 return {
                     theme:theme.name,
                     enemies:[
-                        {id:'e0',x:5,y:0,...roster.bulwark},
-                        {id:'e1',x:4,y:2,...roster.hexer},
-                        {id:'e2',x:5,y:4,...roster.sniper},
-                        {id:'e3',x:5,y:2,...(rogueState.floor>=6?roster.hound:roster.striker)}
+                        spawn('bulwark',5,0,0),
+                        spawn('hexer',4,2,1),
+                        spawn('sniper',5,4,2),
+                        spawn(rogueState.floor>=6?'hound':'striker',5,2,3)
                     ]
                 };
             }
-            const lowSet=[roster.striker,roster.sniper,roster.bulwark];
-            const highSet=[roster.striker,roster.sniper,roster.hexer];
+            const lowSet=['striker','sniper','bulwark'];
+            const highSet=['hound','sniper','hexer'];
             const mix=(rogueState.floor%2===0?highSet:lowSet).slice();
-            if(rogueState.floor>=7)mix[0]=roster.hound;
             return {
                 theme:theme.name,
                 enemies:[
-                    {id:'e0',x:5,y:0,...mix[0]},
-                    {id:'e1',x:4,y:2,...mix[1]},
-                    {id:'e2',x:5,y:4,...mix[2]}
+                    spawn(mix[0],5,0,0),
+                    spawn(mix[1],4,2,1),
+                    spawn(mix[2],5,4,2)
                 ]
             };
         }
@@ -3620,13 +3668,13 @@ function updateDispatchClock() {
                 units.push({id:`p${i}`,side:'player',teamIndex:i,name:card.name,image:card.cardImageUrl||card.imageUrl||'',rarity:card.rarity||'',faction:card.faction||'',hp:Math.max(1,Math.floor(card.stats.hp)),maxHp:Math.max(1,Math.floor(card.maxHp)),atk:Math.max(1,Math.floor(card.stats.atk)),def:Math.max(0,Math.floor(card.stats.def)),speed:battleSpeed(card),range:p.range,skillRange:p.skillRange,block:p.block,role:p.role,roleLabel:p.role,x:0,y:i,ap:0,defended:false,escaped:false,cooldowns:[0],blockedBy:null,icon:card.rarity==='SSR'?'★':'◎'});
             });
             const encounter=rogueTacticalEnemySet(node,plan);
-            const addEnemy=(spec,index)=>{
+            encounter.enemies.forEach((spec,index)=>{
                 units.push({
                     id:spec.id||`e${index}`,
                     side:'enemy',
                     name:spec.name,
-                    image:spec.boss?(spec.image||''):'',
-                    icon:spec.icon||'✦',
+                    image:spec.image||'',
+                    icon:spec.icon||'E',
                     hp:Math.max(1,Math.floor(plan.stats.hp*spec.hp)),
                     maxHp:Math.max(1,Math.floor(plan.stats.hp*spec.hp)),
                     atk:Math.max(1,Math.floor(plan.stats.atk*spec.atk)),
@@ -3634,22 +3682,18 @@ function updateDispatchClock() {
                     speed:Math.max(0,(Number(plan.speed)||0)+(spec.speed||0)),
                     range:Math.max(1,Math.min(3,Math.floor(spec.range||1))),
                     skillRange:Math.max(1,Math.min(3,Math.floor(spec.range||1))),
-                    block:0,
-                    role:spec.ai,
-                    roleLabel:spec.roleLabel||'적',
-                    x:spec.x,y:spec.y,ap:0,defended:false,escaped:false,cooldowns:[],blockedBy:null,boss:!!spec.boss,ai:spec.ai||'rush',debuffUsed:false
+                    block:0,role:spec.ai,roleLabel:spec.roleLabel||'적',x:spec.x,y:spec.y,ap:0,defended:false,escaped:false,cooldowns:[],blockedBy:null,boss:!!spec.boss,ai:spec.ai||'rush',debuffUsed:false
                 });
-            };
-            encounter.enemies.forEach(addEnemy);
+            });
             const order=[...units].sort((a,b)=>b.speed-a.speed||(a.side===b.side?0:a.side==='player'?-1:1)).map(u=>u.id);
             const livingPlayers=units.filter(u=>u.side==='player').length;
-            return {version:1,width:ROGUE_TACTICAL_W,height:ROGUE_TACTICAL_H,objective,surviveRounds:5,escapeNeeded:Math.min(3,livingPlayers),round:1,turnIndex:0,activeId:null,selectedAction:null,order,units,obstacles,rifts:riftCandidates,theme:encounter.theme,log:[`${rogueState.floor}층 전술 교전 개시 · AP 2 · 적 계열 ${encounter.theme}`],finished:false};
+            return {version:2,width:ROGUE_TACTICAL_W,height:ROGUE_TACTICAL_H,objective,surviveRounds:5,escapeNeeded:Math.min(3,livingPlayers),round:1,turnIndex:0,activeId:null,selectedAction:null,order,units,obstacles,rifts:riftCandidates,theme:encounter.theme,log:[`${rogueState.floor}층 전술 교전 개시 · AP 2 · 적 계열 ${encounter.theme}`],finished:false};
         }
         function rogueTacticalObstacle(t,x,y){return t.obstacles.some(o=>o.x===x&&o.y===y);}
         function rogueTacticalRift(t,x,y){return t.rifts.some(o=>o.x===x&&o.y===y);}
         function rogueTacticalAt(t,x,y,side=null){return t.units.find(u=>rogueTacticalAlive(u)&&u.x===x&&u.y===y&&(!side||u.side===side))||null;}
         function rogueTacticalCurrent(){const t=rogueState.tactical;if(!t)return null;return rogueTacticalUnit(t.order[t.turnIndex]);}
-        function rogueTacticalLog(message){const t=rogueState.tactical;if(!t)return;t.log.unshift(message);t.log=t.log.slice(0,24);}
+        function rogueTacticalLog(message){const t=rogueState.tactical;if(!t)return;t.log.unshift(message);t.log=t.log.slice(0,28);}
         function rogueTacticalSkill(unit){return unit?.side==='player'?rogueState.team[unit.teamIndex]?.skills?.[0]||null:null;}
         function rogueTacticalSkillWait(unit){return Math.max(0,Number(unit?.cooldowns?.[0])||0);}
         function rogueTacticalBeginCurrent(){
@@ -3672,6 +3716,42 @@ function updateDispatchClock() {
             return damage;
         }
         function rogueTacticalHeal(unit,amount){const before=unit.hp;unit.hp=Math.min(unit.maxHp,unit.hp+Math.max(1,Math.floor(amount)));return unit.hp-before;}
+        function rogueTacticalIsBackAttack(attacker,target){
+            if(!attacker||!target||attacker.id===target.id)return false;
+            if(attacker.x===target.x)return false;
+            return target.side==='enemy' ? attacker.x>target.x : attacker.x<target.x;
+        }
+        function rogueTacticalPush(target,from,steps=1){
+            const t=rogueState.tactical;if(!t||!target||!from)return false;
+            let dx=Math.sign(target.x-from.x),dy=Math.sign(target.y-from.y);
+            if(dx&&dy){if(Math.abs(target.x-from.x)>=Math.abs(target.y-from.y))dy=0;else dx=0;}
+            if(!dx&&!dy)return false;
+            let moved=false;
+            for(let i=0;i<steps;i++){
+                const nx=target.x+dx,ny=target.y+dy;
+                if(nx<0||nx>=t.width||ny<0||ny>=t.height||rogueTacticalObstacle(t,nx,ny)||rogueTacticalAt(t,nx,ny))break;
+                target.x=nx;target.y=ny;moved=true;
+            }
+            return moved;
+        }
+        function rogueTacticalApplyAttack(attacker,target,options={}){
+            const t=rogueState.tactical;if(!t||!attacker||!target)return {damage:0,back:false,pushed:false,splashResults:[]};
+            let mult=Number(options.mult??1),trueDamage=!!options.trueDamage;
+            const back=(options.allowBack!==false)&&rogueTacticalIsBackAttack(attacker,target);
+            if(back)mult*=1.25;
+            const damage=rogueTacticalDamage(attacker,target,mult,trueDamage);
+            let pushed=false;
+            if(options.knockback&&rogueTacticalAlive(target))pushed=rogueTacticalPush(target,attacker,options.knockback);
+            const splashResults=[];
+            if(options.splashRadius){
+                const splashMult=Number(options.splashMult??.55);
+                t.units.filter(u=>u.side===target.side&&u.id!==target.id&&rogueTacticalAlive(u)&&rogueTacticalDist(u,target)<=options.splashRadius).forEach(other=>{
+                    const d=rogueTacticalDamage(attacker,other,splashMult,false);
+                    splashResults.push({target:other,damage:d});
+                });
+            }
+            return {damage,back,pushed,splashResults};
+        }
         function rogueTacticalEnemyIntent(enemy){
             const t=rogueState.tactical;if(!t||!rogueTacticalAlive(enemy))return '행동 불가';
             let blocker=enemy.blockedBy?rogueTacticalUnit(enemy.blockedBy):null;
@@ -3679,15 +3759,18 @@ function updateDispatchClock() {
             const target=blocker||rogueTacticalNearestPlayer(t,enemy);
             if(!target)return '대기';
             const dist=rogueTacticalDist(enemy,target);
+            if(enemy.boss)return `☠ ${rogueTacticalBossPatternLabel(rogueTacticalBossPattern(enemy,t))}`;
             if(enemy.ai==='hex')return dist<=enemy.range?`✧ 약화 · ${target.name}`:`→ 저주 위치`;
             if(enemy.ai==='guard')return dist<=enemy.range?`🛡 견제 · ${target.name}`:`→ 전열 유지`;
             if(enemy.ai==='snipe')return dist<=enemy.range?`✦ 저격 · ${target.name}`:`→ 조준`;
-            if(enemy.boss&&t.round%3===0&&dist<=enemy.range)return `☠ 강공 · ${target.name}`;
+            if(enemy.ai==='hound')return dist<=enemy.range?`☄ 급습 · ${target.name}`:`→ 우회 이동`;
             return dist<=enemy.range?`⚔ ${target.name}`:`→ ${target.name}`;
         }
         function rogueTacticalNextStep(t,enemy,target){
             const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-            return dirs.map(([dx,dy])=>({x:enemy.x+dx,y:enemy.y+dy})).filter(p=>p.x>=0&&p.x<t.width&&p.y>=0&&p.y<t.height&&!rogueTacticalObstacle(t,p.x,p.y)&&!rogueTacticalAt(t,p.x,p.y)).sort((a,b)=>(Math.abs(a.x-target.x)+Math.abs(a.y-target.y))-(Math.abs(b.x-target.x)+Math.abs(b.y-target.y))||b.x-a.x)[0]||null;
+            return dirs.map(([dx,dy])=>({x:enemy.x+dx,y:enemy.y+dy}))
+                .filter(p=>p.x>=0&&p.x<t.width&&p.y>=0&&p.y<t.height&&!rogueTacticalObstacle(t,p.x,p.y)&&!rogueTacticalAt(t,p.x,p.y))
+                .sort((a,b)=>(Math.abs(a.x-target.x)+Math.abs(a.y-target.y))-(Math.abs(b.x-target.x)+Math.abs(b.y-target.y))||Math.abs(a.y-target.y)-Math.abs(b.y-target.y)||b.x-a.x)[0]||null;
         }
         function rogueTacticalApplyRift(unit){
             const t=rogueState.tactical;if(!t||!rogueTacticalAlive(unit)||!rogueTacticalRift(t,unit.x,unit.y))return;
@@ -3710,6 +3793,10 @@ function updateDispatchClock() {
             t.activeId=null;t.selectedAction=null;t.turnIndex++;
             if(t.turnIndex>=t.order.length){t.turnIndex=0;t.round++;rogueTacticalLog(`── ${t.round} 라운드 ──`);}
         }
+        function rogueTacticalBossRayTargets(enemy,target){
+            const t=rogueState.tactical;if(!t)return [];
+            return t.units.filter(u=>u.side==='player'&&rogueTacticalAlive(u)&&u.y===target.y).sort((a,b)=>a.x-b.x);
+        }
         function rogueTacticalEnemyAct(enemy){
             const t=rogueState.tactical;if(!t||!rogueTacticalAlive(enemy))return;
             enemy.defended=false;
@@ -3722,10 +3809,31 @@ function updateDispatchClock() {
                 target=(enemy.blockedBy&&rogueTacticalAlive(rogueTacticalUnit(enemy.blockedBy)))?rogueTacticalUnit(enemy.blockedBy):rogueTacticalNearestPlayer(t,enemy);
                 if(!target)return;
                 const dist=rogueTacticalDist(enemy,target);
-                if(enemy.ai==='guard'&&!enemy.defended&&enemy.hp<=Math.ceil(enemy.maxHp*.55)&&ap===2){
-                    enemy.defended=true;rogueTacticalLog(`${enemy.name} 방어 태세`);break;
-                }
+                if(enemy.ai==='guard'&&!enemy.defended&&enemy.hp<=Math.ceil(enemy.maxHp*.55)&&ap===2){enemy.defended=true;rogueTacticalLog(`${enemy.name} 방어 태세`);break;}
                 if(dist<=enemy.range){
+                    if(enemy.boss){
+                        const pattern=rogueTacticalBossPattern(enemy,t);
+                        if(pattern==='burst'){
+                            const result=rogueTacticalApplyAttack(enemy,target,{mult:1.12,splashRadius:1,splashMult:.58});
+                            rogueTacticalLog(`${enemy.name} · 흑잉크 폭발 → ${target.name} ${result.damage} 피해${result.back?' · 배후':''}`);
+                            result.splashResults.forEach(r=>rogueTacticalLog(`↳ ${r.target.name} ${r.damage} 확산 피해`));
+                            break;
+                        }
+                        if(pattern==='repulse'){
+                            const result=rogueTacticalApplyAttack(enemy,target,{mult:1.06,knockback:1});
+                            rogueTacticalLog(`${enemy.name} · 충격 박치기 → ${target.name} ${result.damage} 피해${result.pushed?' · 밀쳐냄':''}`);
+                            break;
+                        }
+                        if(pattern==='ray'){
+                            const victims=rogueTacticalBossRayTargets(enemy,target);
+                            victims.forEach(v=>{
+                                const back=rogueTacticalIsBackAttack(enemy,v);
+                                const damage=rogueTacticalDamage(enemy,v,back?1.05:.95,false);
+                                rogueTacticalLog(`${enemy.name} · 절단 광선 → ${v.name} ${damage} 피해${back?' · 배후':''}`);
+                            });
+                            break;
+                        }
+                    }
                     if(enemy.ai==='hex'&&!enemy.debuffUsed&&ap>=2){
                         target.atk=Math.max(1,Math.floor(target.atk*.9));
                         target.def=Math.max(0,Math.floor(target.def*.92));
@@ -3733,14 +3841,13 @@ function updateDispatchClock() {
                         rogueTacticalLog(`${enemy.name} → ${target.name} 약화 부여 · 공격력 -10% / 방어력 -8%`);
                         break;
                     }
-                    let mult=1;
-                    let suffix='';
-                    if(enemy.boss&&t.round%3===0){mult=1.4;suffix=' · 강공';}
-                    else if(enemy.ai==='snipe'&&dist>=2){mult=1.15;suffix=' · 저격';}
-                    else if((enemy.ai==='rush'||enemy.ai==='hound')&&movedThisTurn){mult=1.1;suffix=' · 돌격';}
-                    else if(enemy.ai==='guard'){mult=.92;suffix=' · 견제';}
-                    const damage=rogueTacticalDamage(enemy,target,mult,false);
-                    rogueTacticalLog(`${enemy.name} → ${target.name} ${damage} 피해${suffix}${target.hp<=0?' · 전투불능':''}`);
+                    let options={mult:1};
+                    if(enemy.ai==='snipe'&&dist>=2)options.mult=1.16;
+                    if((enemy.ai==='rush'||enemy.ai==='hound')&&movedThisTurn)options.mult=1.12;
+                    if(enemy.ai==='guard')options.mult=.92;
+                    if(enemy.ai==='hound')options.knockback=1;
+                    const result=rogueTacticalApplyAttack(enemy,target,options);
+                    rogueTacticalLog(`${enemy.name} → ${target.name} ${result.damage} 피해${result.back?' · 배후':''}${result.pushed?' · 밀침':''}${target.hp<=0?' · 전투불능':''}`);
                     break;
                 }
                 const step=rogueTacticalNextStep(t,enemy,target);if(!step)break;
@@ -3748,9 +3855,8 @@ function updateDispatchClock() {
                 const newBlocker=rogueTacticalAdjacentBlocker(t,enemy);
                 if(newBlocker){
                     enemy.blockedBy=newBlocker.id;
-                    const engage=enemy.ai==='guard'?0.9:1;
-                    const damage=rogueTacticalDamage(enemy,newBlocker,engage,false);
-                    rogueTacticalLog(`${newBlocker.name}이 ${enemy.name} 저지 · ${damage} 피해`);
+                    const result=rogueTacticalApplyAttack(enemy,newBlocker,{mult:enemy.ai==='guard'?.9:1});
+                    rogueTacticalLog(`${newBlocker.name}이 ${enemy.name} 저지 · ${result.damage} 피해`);
                     break;
                 }
             }
@@ -3815,7 +3921,10 @@ function updateDispatchClock() {
                 if(t.objective==='escape'&&x===t.width-1){u.escaped=true;u.ap=0;rogueTacticalLog(`${u.name} 탈출 성공`);}
             }else if(action==='attack'){
                 if(u.ap<1||!target||rogueTacticalDist(u,target)>u.range)return;
-                const damage=rogueTacticalDamage(u,target,1,false);u.ap--;t.selectedAction=null;rogueTacticalLog(`${u.name} 일반 공격 → ${target.name} ${damage} 피해${target.hp<=0?' · 격파':''}`);
+                const options={mult:1};
+                if(u.range===1&&u.role!=='사격형')options.knockback=1;
+                const result=rogueTacticalApplyAttack(u,target,options);u.ap--;t.selectedAction=null;
+                rogueTacticalLog(`${u.name} 일반 공격 → ${target.name} ${result.damage} 피해${result.back?' · 배후':''}${result.pushed?' · 밀침':''}${target.hp<=0?' · 격파':''}`);
             }else if(action==='skill'){
                 const skill=rogueTacticalSkill(u);if(!skill||u.ap<2||rogueTacticalSkillWait(u)>0)return;
                 const power=Number.isFinite(Number(skill.power))?Number(skill.power):1.5;
@@ -3826,7 +3935,15 @@ function updateDispatchClock() {
                     if(skill.type==='debuff_def'){target.def=Math.max(0,Math.floor(target.def*.8));rogueTacticalLog(`${u.name} · ${skill.name} → ${target.name} 방어력 -20%`);}
                     else if(skill.type==='debuff_atk'){target.atk=Math.max(1,Math.floor(target.atk*.9));rogueTacticalLog(`${u.name} · ${skill.name} → ${target.name} 공격력 -10%`);}
                     else if(skill.type==='buff_atk'){u.atk=Math.max(1,Math.floor(u.atk*1.1));rogueTacticalLog(`${u.name} · ${skill.name} → 공격력 +10%`);}
-                    else {const damage=rogueTacticalDamage(u,target,power,skill.type==='true_damage');rogueTacticalLog(`${u.name} · ${skill.name} → ${target.name} ${damage} 피해${target.hp<=0?' · 격파':''}`);if(skill.type==='vampire'){const healed=rogueTacticalHeal(u,damage*.5);rogueTacticalLog(`${u.name} 체력 ${healed} 흡수`);}}
+                    else {
+                        const options={mult:power,trueDamage:skill.type==='true_damage'};
+                        if(u.role==='사격형'){options.splashRadius=1;options.splashMult=.48;}
+                        if(u.role!=='사격형')options.knockback=1;
+                        const result=rogueTacticalApplyAttack(u,target,options);
+                        rogueTacticalLog(`${u.name} · ${skill.name} → ${target.name} ${result.damage} 피해${result.back?' · 배후':''}${result.pushed?' · 밀침':''}${target.hp<=0?' · 격파':''}`);
+                        result.splashResults.forEach(r=>rogueTacticalLog(`↳ ${r.target.name} ${r.damage} 범위 피해`));
+                        if(skill.type==='vampire'){const healed=rogueTacticalHeal(u,result.damage*.5);rogueTacticalLog(`${u.name} 체력 ${healed} 흡수`);}
+                    }
                 }
                 u.ap-=2;u.cooldowns[0]=battleCooldown(skill)+1;t.selectedAction=null;
             }
@@ -3839,7 +3956,7 @@ function updateDispatchClock() {
             panel.classList.remove('hidden');const info=rogueTacticalObjectiveInfo(t),u=rogueTacticalCurrent();
             document.getElementById('rogue-tactical-objective').textContent=info.title;document.getElementById('rogue-tactical-subtitle').textContent=info.desc;document.getElementById('rogue-tactical-round').textContent=`${t.objective==='survive'?Math.min(t.round,t.surviveRounds):t.round}`;
             const turn=document.getElementById('rogue-tactical-turn');
-            if(u&&u.side==='player'&&rogueTacticalAlive(u)){const p=rogueTacticalProfile(rogueState.team[u.teamIndex]);turn.innerHTML=`<strong>${rogueEscape(u.name)}의 차례 · AP ${u.ap}/2</strong><span>${p.role} · 공격 범위 ${u.range} · 저지 ${u.block}${u.defended?' · 방어 중':''}</span>`;}else turn.innerHTML=`<strong>적 행동 처리 중…</strong><span>${rogueEscape(t.theme||'적 계열')} · 행동 예고를 확인하세요.</span>`;
+            if(u&&u.side==='player'&&rogueTacticalAlive(u)){const p=rogueTacticalProfile(rogueState.team[u.teamIndex]);turn.innerHTML=`<strong>${rogueEscape(u.name)}의 차례 · AP ${u.ap}/2</strong><span>${p.role} · 공격 범위 ${u.range} · 저지 ${u.block}${u.defended?' · 방어 중':''} · 배후 공격 +25%</span>`;}else turn.innerHTML=`<strong>적 행동 처리 중…</strong><span>${rogueEscape(t.theme||'적 계열')} · 보스 패턴/범위기를 주의하세요.</span>`;
             const grid=document.getElementById('rogue-tactical-grid');grid.replaceChildren();
             for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){
                 const cell=document.createElement('button');cell.type='button';cell.className='rg-tactical-cell';cell.setAttribute('role','gridcell');cell.onclick=()=>rogueTacticalCellClick(x,y);
@@ -3858,7 +3975,7 @@ function updateDispatchClock() {
                     const name=document.createElement('strong');name.textContent=unit.name;wrap.appendChild(name);
                     if(unit.roleLabel||unit.rarity){const type=document.createElement('em');type.textContent=unit.side==='enemy'?(unit.roleLabel||'적'):(unit.rarity||unit.roleLabel||'아군');wrap.appendChild(type);}
                     const hp=document.createElement('div');hp.className='rg-unit-hp';const fill=document.createElement('i');fill.style.width=`${Math.max(0,Math.min(100,unit.hp/unit.maxHp*100))}%`;hp.appendChild(fill);wrap.appendChild(hp);const meta=document.createElement('small');meta.textContent=`${Math.ceil(unit.hp)}/${unit.maxHp}`;wrap.appendChild(meta);cell.appendChild(wrap);
-                    if(unit.side==='enemy'){const badge=document.createElement('span');badge.className='rg-tactical-intent-badge';const intent=rogueTacticalEnemyIntent(unit);badge.textContent=/(⚔|☠|✦|✧|🛡)/.test(intent)?intent.split(' ')[0]:'MOVE';cell.appendChild(badge);}
+                    if(unit.side==='enemy'){const badge=document.createElement('span');badge.className='rg-tactical-intent-badge';const intent=rogueTacticalEnemyIntent(unit);badge.textContent=/(⚔|☠|✦|✧|🛡|☄)/.test(intent)?intent.split(' ')[0]:'MOVE';cell.appendChild(badge);}
                 }
                 grid.appendChild(cell);
             }
