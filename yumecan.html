@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-09-27-user-collection-v2">
+    <meta name="yumecan-build" content="2026-10-16-tactical-v7-clean">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1644,60 +1644,171 @@ html.dark-mode body .dream-guide{background:linear-gradient(120deg,#263348,#2230
 @media(max-width:767px){#home-view.guide-visible .dream-guide{grid-column:1;grid-row:3}#home-view.guide-visible .dream-menu{grid-row:4}#home-view.guide-visible .dream-explore{grid-row:5}#home-view.guide-visible .dream-bottom{grid-row:6}#home-view.guide-visible.attendance-claimed .dream-guide{grid-row:2}#home-view.guide-visible.attendance-claimed .dream-menu{grid-row:3}#home-view.guide-visible.attendance-claimed .dream-explore{grid-row:4}#home-view.guide-visible.attendance-claimed .dream-bottom{grid-row:5}}
 </style>
 <style id="rogue-tactical-v3-css">
-#roguelike-view{--rt-bg:#0b1522;--rt-surface:#131f2e;--rt-panel:#182536d9;--rt-panel-2:#233248d9;--rt-line:rgba(160,186,214,.22);--rt-text:#e8f1ff;--rt-sub:#94abc7;--rt-accent:#64d3ff;--rt-enemy:#ff7a87;--rt-move:#52d7a5;--rt-warn:#ffb761}
-#roguelike-view .rg-panel,#roguelike-view .rg-choice,#roguelike-view .rg-status,#roguelike-view .rg-intro,#roguelike-view .rg-resonance,#roguelike-view .rg-loot-card{border:1px solid rgba(123,152,184,.16)!important;border-radius:19px!important;background:linear-gradient(180deg,rgba(19,31,46,.9),rgba(12,22,34,.88))!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 28px rgba(0,0,0,.18)!important;color:var(--rt-text)}
-#roguelike-view .rg-heading,#roguelike-view .rg-map-node,#roguelike-view .rg-map-path{color:var(--rt-text)!important}
-#rogue-tactical{position:relative;color:var(--rt-text);margin-bottom:24px;padding:16px 18px 20px;border:1px solid rgba(112,146,180,.28);border-radius:28px;background:radial-gradient(circle at top left,rgba(55,92,135,.28),transparent 25%),linear-gradient(180deg,#0e1725,#0a121d 70%);box-shadow:0 28px 90px rgba(0,0,0,.32);overflow:hidden}
-#rogue-tactical::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.04),transparent 28%),radial-gradient(circle at 80% 20%,rgba(79,159,255,.08),transparent 18%);pointer-events:none}
-#rogue-tactical .rt-top{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;margin-bottom:10px}
-#rogue-tactical .rt-heading-copy small{display:block;color:#7ca2d4;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
-#rogue-tactical .rt-heading-copy h3{font-size:clamp(26px,3vw,40px);line-height:1.02;font-weight:900;letter-spacing:-.03em;color:#f3f8ff;margin:8px 0 6px;text-shadow:0 0 20px rgba(67,181,255,.15)}
-#rogue-tactical .rt-heading-copy p{color:#8fa6c3;font-size:12px}
-#rogue-tactical .rt-turn-label{min-width:252px;padding:12px 14px;border:1px solid rgba(134,170,205,.22);border-radius:20px;background:linear-gradient(180deg,rgba(28,43,63,.92),rgba(20,31,47,.9));box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 20px rgba(0,0,0,.18)}
-#rogue-tactical .rt-label-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}#rogue-tactical .rt-turn-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(95,149,210,.18);color:#86c9ff;font-size:11px;font-weight:900}#rogue-tactical .rt-turn-badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(147,176,205,.25);font-size:10px;font-weight:800;color:#d6e5fb;letter-spacing:.08em}
-#rogue-tactical .rt-turn-name{display:flex;gap:10px;align-items:center}#rogue-tactical .rt-turn-avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(145deg,#1e344c,#152638);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 18px rgba(0,0,0,.22);display:grid;place-items:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(138,173,209,.18)}#rogue-tactical .rt-turn-avatar img{width:100%;height:100%;object-fit:cover}#rogue-tactical .rt-turn-avatar span{font-size:30px}#rogue-tactical .rt-turn-name b{display:block;font-size:16px;color:#f0f6ff;max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}#rogue-tactical .rt-turn-name small{display:block;font-size:11px;color:#8ca6c7}
-#rogue-tactical .rt-warning{position:relative;z-index:2;background:linear-gradient(90deg,rgba(120,44,44,.75),rgba(71,28,28,.72));border:1px solid rgba(232,126,113,.35);color:#ffd6d1;border-radius:14px;padding:11px 13px;font-size:12px;margin-bottom:8px}
-#rogue-tactical .rt-main{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.95fr) 330px;gap:16px;align-items:start}
-#rogue-tactical .rt-board-wrap{position:relative;min-width:0}
-#rogue-tactical .rt-board-shell{position:relative;padding:16px 20px 34px;border-radius:34px;background:radial-gradient(circle at 30% 20%,rgba(65,95,126,.18),transparent 28%),linear-gradient(180deg,#152130,#0e1723);border:1px solid rgba(118,149,182,.24);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 18px 44px rgba(0,0,0,.28);overflow:visible}
-#rogue-tactical .rt-board-shell::before{content:'';position:absolute;left:18px;right:18px;top:54px;bottom:24px;border-radius:28px;background:linear-gradient(180deg,#213144,#19283a 28%,#111d2a 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 40px rgba(0,0,0,.32);transform:perspective(1300px) rotateX(55deg);transform-origin:center top;pointer-events:none}
-#rogue-tactical .rt-board-shell::after{content:'';position:absolute;left:8%;right:8%;bottom:8px;height:24px;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.45),transparent 70%);filter:blur(12px);pointer-events:none}
+/* 폐기된 서고 — 전술전 UI v7. 밝은 테마 기준 / 게임 나머지 영역에 영향 없음. */
+#rogue-tactical{
+  --rt-bg:#f7f9fc;--rt-panel:#ffffff;--rt-panel-alt:#f7f9fc;
+  --rt-field:#edf2f8;--rt-field-edge:#e2e9f2;
+  --rt-text:#26354b;--rt-title:#1e2c42;--rt-muted:#667790;
+  --rt-border:#d8e1ec;--rt-blue:#376ea8;--rt-blue-bg:#eaf2fc;
+  --rt-green:#26826a;--rt-red:#b85461;--rt-btn:#f7f9fc;
+  --rt-shadow:0 6px 24px rgba(37,56,88,.055);
+  position:relative;width:100%;min-width:0;max-width:100%;box-sizing:border-box;
+  margin:0 0 18px;padding:18px;border:1px solid var(--rt-border);border-radius:18px;
+  background:var(--rt-bg);color:var(--rt-text);box-shadow:var(--rt-shadow);overflow:hidden;
+  font-family:inherit;font-size:13px;line-height:1.45;
+}
+#rogue-tactical *,#rogue-tactical *::before,#rogue-tactical *::after{box-sizing:border-box}
+#rogue-tactical::before,#rogue-tactical::after{display:none}
+#rogue-tactical .rt-top{position:relative;display:flex;gap:16px;align-items:center;justify-content:space-between;margin:0 0 14px;min-width:0;z-index:1}
+#rogue-tactical .rt-heading-copy{min-width:0}
+#rogue-tactical .rt-heading-copy small{display:block;font-size:10px;color:var(--rt-muted);font-weight:700;letter-spacing:.12em}
+#rogue-tactical .rt-heading-copy h3{margin:3px 0 4px;font-size:clamp(20px,2.1vw,27px);font-weight:850;letter-spacing:-.035em;line-height:1.25;color:var(--rt-title);text-shadow:none}
+#rogue-tactical .rt-heading-copy p{margin:0;font-size:12px;color:var(--rt-muted)}
+#rogue-tactical .rt-turn-label{display:flex;flex-direction:column;justify-content:center;flex:0 1 265px;min-width:0;min-height:72px;padding:10px 12px;background:var(--rt-panel);border:1px solid var(--rt-border);border-radius:13px;box-shadow:none}
+#rogue-tactical .rt-label-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 7px}
+#rogue-tactical .rt-turn-chip,#rogue-tactical .rt-turn-badge{padding:3px 8px;border-radius:7px;font-size:10px;font-weight:800;line-height:1.5}
+#rogue-tactical .rt-turn-chip{background:var(--rt-blue-bg);color:var(--rt-blue);border:0}
+#rogue-tactical .rt-turn-badge{background:var(--rt-panel-alt);color:var(--rt-muted);border:1px solid var(--rt-border)}
+#rogue-tactical .rt-turn-name{display:flex;align-items:center;gap:9px;min-width:0}
+#rogue-tactical .rt-turn-avatar{flex-shrink:0;width:38px;height:38px;border:1px solid var(--rt-border);border-radius:9px;display:grid;place-items:center;background:var(--rt-panel-alt);box-shadow:none;overflow:hidden}
+#rogue-tactical .rt-turn-avatar img{width:100%;height:100%;object-fit:contain}
+#rogue-tactical .rt-turn-avatar span{font-size:23px}
+#rogue-tactical .rt-turn-name>div{min-width:0}
+#rogue-tactical .rt-turn-name b{display:block;font-size:12px;font-weight:800;max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--rt-text)}
+#rogue-tactical .rt-turn-name small{display:block;font-size:10px;color:var(--rt-muted)}
+#rogue-tactical .rt-warning{position:relative;z-index:1;margin:0 0 12px;padding:10px 12px;border:1px solid #ecc5bf;border-radius:10px;background:#fff4f1;color:#974e48;font-size:12px}
+#rogue-tactical .rt-main{display:grid;position:relative;z-index:1;grid-template-columns:minmax(0,1fr) minmax(285px,320px);gap:14px;align-items:start;min-width:0;width:100%}
+#rogue-tactical .rt-board-wrap,#rogue-tactical .rt-board-shell,#rogue-tactical .rt-side{min-width:0;width:100%}
+#rogue-tactical .rt-board-shell{position:relative;border:1px solid var(--rt-border);border-radius:14px;padding:15px 12px 11px;background:var(--rt-field);box-shadow:none;overflow:hidden}
+#rogue-tactical .rt-board-shell::before,#rogue-tactical .rt-board-shell::after{display:none}
 #rogue-tactical .rt-axis{display:none}
-#rogue-tactical .rt-board{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;aspect-ratio:6/5;padding:36px 18px 28px;transform-style:preserve-3d;transform:perspective(1300px) rotateX(58deg);transform-origin:center top}
-#rogue-tactical .rt-tile{position:relative;display:flex;align-items:stretch;justify-content:stretch;min-width:0;aspect-ratio:1;border:none!important;border-radius:8px!important;background:transparent!important;box-shadow:none!important;overflow:visible;cursor:pointer;padding:0;isolation:isolate;transition:transform .12s ease,filter .12s ease}
-#rogue-tactical .rt-tile::before{content:'';position:absolute;inset:0;border-radius:8px;background:linear-gradient(180deg,#eff6fd,#b9c7d7);box-shadow:inset 0 1px 0 rgba(255,255,255,.94),0 0 0 1px rgba(74,97,123,.24);clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);z-index:0}
-#rogue-tactical .rt-tile::after{content:'';position:absolute;left:4%;right:4%;bottom:-11px;height:13px;border-radius:0 0 7px 7px;background:linear-gradient(180deg,#6f8093,#4b5c70);clip-path:polygon(8% 0,100% 0,92% 100%,0 100%);opacity:.9;z-index:-1}
-#rogue-tactical .rt-tile:hover:not(:disabled){filter:brightness(1.04);transform:translateY(-2px)}
-#rogue-tactical .rt-tile.rt-shelf::before{background:linear-gradient(180deg,#807b8f,#585367)}#rogue-tactical .rt-tile.rt-rift::before{background:linear-gradient(180deg,#cbb9f7,#8d77bc)}#rogue-tactical .rt-tile.rt-spike::before{background:linear-gradient(180deg,#f2b0b0,#b56f6f)}#rogue-tactical .rt-tile.rt-trap::before{background:linear-gradient(180deg,#efd1a5,#b9925a)}#rogue-tactical .rt-tile.rt-cover::before{background:linear-gradient(180deg,#9ec2cc,#6e92a1)}#rogue-tactical .rt-tile.rt-platform::before{background:linear-gradient(180deg,#97e3cc,#4fad97)}
-#rogue-tactical .rt-tile.rt-current::before{background:linear-gradient(180deg,#dff4ff,#8dd9ff);box-shadow:0 0 0 2px rgba(98,211,255,.92),0 0 22px rgba(98,211,255,.35),inset 0 1px 0 rgba(255,255,255,.95)}
-#rogue-tactical .rt-tile.rt-reachable:not(.rt-danger)::before{background:linear-gradient(180deg,#dcfff4,#82dcbc);box-shadow:0 0 0 2px rgba(82,215,165,.9),0 0 18px rgba(82,215,165,.28)}
-#rogue-tactical .rt-tile.rt-targetable::before{background:linear-gradient(180deg,#ffe8eb,#ff98a4);box-shadow:0 0 0 2px rgba(255,122,135,.96),0 0 20px rgba(255,122,135,.34)}
-#rogue-tactical .rt-tile.rt-danger::before{background:linear-gradient(180deg,#ffdbd5,#ff856d);box-shadow:0 0 0 2px rgba(255,124,96,.95),0 0 20px rgba(255,124,96,.32)}
-#rogue-tactical .rt-tile.rt-exit::before{background:linear-gradient(180deg,#e2fff3,#72e0b7);box-shadow:0 0 0 2px rgba(82,215,165,.95),0 0 18px rgba(82,215,165,.28)}
-#rogue-tactical .rt-cell-surface{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:8px;overflow:visible;transform-style:preserve-3d}
-#rogue-tactical .rt-terrain-icon{position:absolute;left:8px;bottom:6px;color:rgba(10,18,29,.55);font-size:15px;z-index:2;transform:rotateX(-58deg) translateY(-10px)}
-#rogue-tactical .rt-exit-label{position:absolute;right:7px;top:5px;padding:2px 7px;border-radius:999px;background:rgba(10,20,28,.82);box-shadow:0 0 0 1px rgba(92,255,194,.2);font-size:9px;font-weight:900;letter-spacing:.08em;color:#98ffdb;z-index:3;transform:rotateX(-58deg) translateY(-8px)}
-#rogue-tactical .rt-avatar{position:relative;z-index:5;display:flex;align-items:flex-end;justify-content:center;width:100%;height:116%;background:transparent;overflow:visible;pointer-events:none;transform:rotateX(-58deg) translateY(-18px) scale(1.16);transform-origin:center bottom}
-#rogue-tactical .rt-avatar::after{content:'';position:absolute;left:18%;right:18%;bottom:7px;height:11px;border-radius:50%;background:radial-gradient(circle,rgba(0,0,0,.38),transparent 72%);filter:blur(3px);z-index:-1}#rogue-tactical .rt-avatar-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 10px rgba(0,0,0,.26))}#rogue-tactical .rt-avatar-icon{font-size:36px;transform:translateY(-2px);filter:drop-shadow(0 4px 4px rgba(0,0,0,.28))}
-#rogue-tactical .rt-facing{position:absolute;right:6px;bottom:-1px;font-size:12px;color:#0e2030;font-weight:900;text-shadow:0 1px 0 rgba(255,255,255,.75);z-index:6;transform:rotateX(-58deg) translateY(-15px)}
-#rogue-tactical .rt-cell-hp{position:absolute;left:16%;right:16%;bottom:-2px;height:6px;background:rgba(0,0,0,.26);border-radius:999px;overflow:hidden;z-index:6;box-shadow:0 0 0 1px rgba(255,255,255,.06);transform:rotateX(-58deg) translateY(-16px)}#rogue-tactical .rt-cell-hp i{display:block;height:100%;background:linear-gradient(90deg,#7dffe0,#1ac88f)}#rogue-tactical .rt-enemy .rt-cell-hp i{background:linear-gradient(90deg,#ffafba,#ff6073)}
-#rogue-tactical .rt-target-marker{position:absolute;top:6px;left:5px;padding:2px 6px;border-radius:999px;background:rgba(12,18,24,.88);border:1px solid rgba(255,122,135,.44);box-shadow:0 8px 18px rgba(0,0,0,.18);font-size:9px;color:#ffbcc3;font-weight:900;z-index:7;transform:rotateX(-58deg) translateY(-10px)}#rogue-tactical .rt-target-ally{border-color:rgba(100,211,255,.38);color:#9edfff}
-#rogue-tactical .rt-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;color:#7d97b7;font-size:11px}
-#rogue-tactical .rt-side{display:grid;gap:10px;min-width:0}#rogue-tactical .rt-glass{background:linear-gradient(180deg,rgba(26,38,55,.94),rgba(14,24,38,.92));border:1px solid rgba(122,152,183,.22);border-radius:18px;padding:13px;box-shadow:0 14px 30px rgba(0,0,0,.2)}#rogue-tactical .rt-glass h4{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#d7e8ff;font-weight:900;margin-bottom:10px;letter-spacing:.02em}
-#rogue-tactical .rt-active-card{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center;margin-bottom:10px}#rogue-tactical .rt-portrait{width:70px;height:70px;border-radius:14px;background:linear-gradient(145deg,#20344a,#152638);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 18px rgba(0,0,0,.22);border:1px solid rgba(125,157,191,.16)}#rogue-tactical .rt-portrait img{width:100%;height:100%;object-fit:cover}#rogue-tactical .rt-portrait span{display:grid;place-items:center;width:100%;height:100%;font-size:34px}
-#rogue-tactical .rt-active-meta b{display:block;font-size:15px;color:#f3f8ff;line-height:1.25;margin-bottom:3px}#rogue-tactical .rt-active-meta small{display:block;font-size:11px;color:#8ea8c8}#rogue-tactical .rt-skill-chip{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 9px;border-radius:999px;background:rgba(94,135,191,.18);color:#a9d9ff;font-size:11px;font-weight:800;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid rgba(116,166,226,.15)}
-#rogue-tactical .rt-action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}#rogue-tactical .rt-action{min-height:72px;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;padding:8px 4px;border-radius:14px!important;background:linear-gradient(180deg,#24354c,#18293c)!important;border:1px solid rgba(129,160,193,.18)!important;font-size:12px;font-weight:800;color:#dcecff!important;box-shadow:none}#rogue-tactical .rt-action.selected{background:linear-gradient(180deg,#2b4f71,#21405c)!important;border-color:#54bbff!important;box-shadow:0 0 0 1px rgba(84,187,255,.45),0 0 18px rgba(84,187,255,.12)}#rogue-tactical .rt-action span{font-size:10px;color:#7d97b7}#rogue-tactical .rt-action-icon{font-size:18px;line-height:1}
-#rogue-tactical .rt-glass p{margin:9px 0;color:#8aa4c2;font-size:11px;line-height:1.55}
-#rogue-tactical .rt-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}#rogue-tactical .rt-buttons button{min-height:62px;border:1px solid rgba(129,160,193,.18)!important;background:linear-gradient(180deg,#24354c,#18293c)!important;color:#dcecff!important;padding:8px 5px;border-radius:14px!important;font-size:12px;font-weight:800;box-shadow:none}#rogue-tactical .rt-buttons .rt-surrender{background:linear-gradient(180deg,#4a2730,#311820)!important;border-color:#a95d69!important;color:#ffd5dc!important}#rogue-tactical .rt-buttons small{display:block;font-size:10px;color:#8ca5c3}
-#rogue-tactical .rt-initiative{display:grid;grid-template-columns:1fr;gap:6px;max-height:210px;overflow:auto}#rogue-tactical .rt-initiative>span{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border-radius:12px;background:linear-gradient(180deg,#1f3045,#172536);border:1px solid rgba(115,148,180,.16);font-size:11px;color:#9eb4cf}#rogue-tactical .rt-initiative .is-active{background:linear-gradient(180deg,#264f72,#1d3a55);border-color:#54bbff;color:#e5f5ff}#rogue-tactical .rt-initiative .is-done{opacity:.45}
-#rogue-tactical .rt-forecast{display:grid;gap:8px}#rogue-tactical .rt-forecast>div{display:grid;grid-template-columns:48px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(108,137,166,.16)}#rogue-tactical .rt-forecast-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(145deg,#20344a,#152638);display:grid;place-items:center;overflow:hidden;border:1px solid rgba(125,157,191,.16)}#rogue-tactical .rt-forecast-avatar img{width:100%;height:100%;object-fit:contain}#rogue-tactical .rt-forecast-avatar span{font-size:24px}#rogue-tactical .rt-forecast-copy span{display:block;font-size:12px;font-weight:900;color:#ebf4ff;line-height:1.45}#rogue-tactical .rt-forecast-copy b{display:block;font-size:11px;color:#ffb3bd;margin-top:3px}#rogue-tactical .rt-forecast-copy small{display:block;font-size:10px;color:#89a3c2;margin-top:4px;line-height:1.5}
-#rogue-tactical .rt-bottom{position:relative;z-index:2;margin-top:12px}#rogue-tactical .rt-team{display:flex;gap:8px;flex-wrap:wrap}#rogue-tactical .rt-team span{font-size:11px;color:#a7bdd8;padding:7px 10px;border:1px solid rgba(122,152,183,.18);background:rgba(26,38,55,.88);border-radius:999px;box-shadow:none}#rogue-tactical .rt-team b{color:#f1f7ff}#rogue-tactical .rt-team .is-fallen{opacity:.42}#rogue-tactical .rt-team .is-escaped{border-color:#52d7a5}
-#rogue-tactical .rt-log{margin-top:10px;font-size:11px;color:#8fa8c6}#rogue-tactical .rt-log summary{cursor:pointer;font-weight:900;color:#d7e8ff}#rogue-tactical .rt-log ol{max-height:170px;overflow:auto;margin-top:6px;padding-left:14px}#rogue-tactical .rt-log li{margin:3px 0}
-#rogue-tactical .rt-save-note{font-size:11px;color:#7e96b5;margin:12px 0 0}
-#rogue-tactical .rt-fx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotateX(-58deg);z-index:20;pointer-events:none;font-weight:900;letter-spacing:.04em;animation:rtFxFloat .48s ease forwards;text-shadow:0 0 14px rgba(255,255,255,.4)}#rogue-tactical .rt-fx.move{color:#64f3ba}#rogue-tactical .rt-fx.hit{color:#ff6c80;font-size:18px}#rogue-tactical .rt-fx.guard{color:#72bfff}#rogue-tactical .rt-fx.skill{color:#d498ff;font-size:16px}#rogue-tactical .rt-board.is-shaking{animation:rtBoardShake .28s linear 1}
-@keyframes rtFxFloat{0%{opacity:0;transform:translate(-50%,-18%) rotateX(-58deg) scale(.72)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-105%) rotateX(-58deg) scale(1.05)}}@keyframes rtBoardShake{0%,100%{transform:perspective(1300px) rotateX(58deg) translateX(0)}25%{transform:perspective(1300px) rotateX(58deg) translateX(-5px)}50%{transform:perspective(1300px) rotateX(58deg) translateX(5px)}75%{transform:perspective(1300px) rotateX(58deg) translateX(-3px)}}
-@media(max-width:1200px){#rogue-tactical .rt-main{grid-template-columns:1fr}#rogue-tactical .rt-side{grid-template-columns:repeat(2,minmax(0,1fr))}#rogue-tactical .rt-active{grid-column:1/-1}}
-@media(max-width:760px){#rogue-tactical{padding:12px;border-radius:18px}#rogue-tactical .rt-top{grid-template-columns:1fr}#rogue-tactical .rt-turn-label{min-width:0;width:100%}#rogue-tactical .rt-main{gap:12px}#rogue-tactical .rt-board-shell{padding:10px 10px 24px}#rogue-tactical .rt-board{gap:7px;padding:24px 8px 18px}#rogue-tactical .rt-avatar{transform:rotateX(-58deg) translateY(-10px) scale(1.02)}#rogue-tactical .rt-side{grid-template-columns:1fr}#rogue-tactical .rt-action-grid{grid-template-columns:1fr}#rogue-tactical .rt-buttons{grid-template-columns:1fr}}
+#rogue-tactical .rt-board{
+  position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:5px;width:100%;max-width:720px;margin:0 auto;height:auto;aspect-ratio:6/5;padding:7px;
+  overflow:visible;perspective:none;transform-style:preserve-3d;
+  transform:perspective(1150px) rotateX(18deg) scale(.95);transform-origin:center center;
+}
+#rogue-tactical .rt-tile{
+  position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;
+  padding:0;border:1px solid #cbd6e3!important;border-radius:4px!important;aspect-ratio:1;
+  background:linear-gradient(160deg,#ffffff,#f0f4f8)!important;color:var(--rt-text)!important;
+  box-shadow:0 5px 0 #c6d0dd!important;overflow:visible;isolation:isolate;
+  cursor:pointer;transition:filter .13s,transform .13s,border-color .13s;
+}
+#rogue-tactical .rt-tile::before,#rogue-tactical .rt-tile::after{display:none}
+#rogue-tactical .rt-tile:disabled{cursor:default!important;opacity:1!important}
+#rogue-tactical .rt-tile:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.025);box-shadow:0 7px 0 #becbdb!important}
+#rogue-tactical .rt-tile.rt-shelf{background:linear-gradient(150deg,#dde0e9,#bdc5d2)!important;box-shadow:0 5px 0 #9ba8b9!important}
+#rogue-tactical .rt-tile.rt-rift{background:#ede8f8!important;box-shadow:0 5px 0 #c7b7e2!important}
+#rogue-tactical .rt-tile.rt-spike{background:#fcebea!important;box-shadow:0 5px 0 #e8c3c0!important}
+#rogue-tactical .rt-tile.rt-trap{background:#f7eee2!important;box-shadow:0 5px 0 #d9c7b0!important}
+#rogue-tactical .rt-tile.rt-cover{background:#e5eef1!important;box-shadow:0 5px 0 #b4cbd3!important}
+#rogue-tactical .rt-tile.rt-platform{background:#e0f1ec!important;box-shadow:0 5px 0 #a6d3c6!important}
+#rogue-tactical .rt-tile.rt-reachable:not(.rt-danger){border-color:#66bea4!important;background:#e9faf3!important;box-shadow:inset 0 0 0 1px #66bea4,0 5px 0 #a7d7c7!important}
+#rogue-tactical .rt-tile.rt-targetable{border-color:#d37b83!important;background:#fcebed!important;box-shadow:inset 0 0 0 1px #d37b83,0 5px 0 #e6b9bd!important}
+#rogue-tactical .rt-tile.rt-current{outline:2px solid #4a83bd!important;outline-offset:0;background:#e6f0fc!important;box-shadow:0 5px 0 #acc5e1!important}
+#rogue-tactical .rt-tile.rt-danger{border-color:#db8081!important;background:#ffe3e1!important;box-shadow:0 5px 0 #deb1ad!important}
+#rogue-tactical .rt-tile.rt-exit{border-right:3px solid #4aa48b!important}
+#rogue-tactical .rt-cell-surface{position:relative;display:flex;justify-content:center;align-items:center;width:100%;height:100%;border-radius:3px;overflow:visible;transform:none}
+#rogue-tactical .rt-avatar{position:relative;z-index:3;display:flex;align-items:flex-end;justify-content:center;width:100%;height:108%;border:0;border-radius:0;background:transparent;overflow:visible;pointer-events:none;
+  transform:rotateX(-16deg) translateY(-7px) scale(1.10);transform-origin:center bottom;
+}
+#rogue-tactical .rt-avatar::after{content:'';position:absolute;bottom:3px;left:17%;right:17%;height:8px;border-radius:50%;background:rgba(45,58,76,.18);filter:blur(4px);z-index:-1}
+#rogue-tactical .rt-avatar-img{display:block;width:100%;height:100%;object-fit:contain;transform:scale(1.12);transform-origin:center bottom;filter:drop-shadow(0 3px 2px rgba(51,68,89,.22));image-rendering:auto}
+#rogue-tactical .rt-avatar-icon{font-size:clamp(27px,3.5vw,43px)}
+#rogue-tactical .rt-terrain-icon{position:absolute;z-index:1;bottom:6px;left:6px;color:#728199;font-size:clamp(10px,1.5vw,15px);transform:none}
+#rogue-tactical .rt-exit-label{position:absolute;z-index:5;right:3px;top:3px;border:0;border-radius:4px;background:#e9f7f1;color:#24745e;padding:2px 3px;font-size:9px;font-weight:900;transform:none}
+#rogue-tactical .rt-facing{position:absolute;z-index:5;right:2px;bottom:7px;color:#335472;font-size:11px;font-weight:900;text-shadow:0 1px 2px white;transform:none}
+#rogue-tactical .rt-cell-hp{position:absolute;z-index:5;bottom:2px;left:8%;right:8%;height:5px;border-radius:10px;background:rgba(35,51,69,.19);overflow:hidden;transform:none}
+#rogue-tactical .rt-cell-hp i{display:block;height:100%;background:#33a989}
+#rogue-tactical .rt-enemy .rt-cell-hp i{background:#d86974}
+#rogue-tactical .rt-target-marker{position:absolute;z-index:5;top:2px;left:2px;border:0;border-radius:3px;padding:2px 3px;background:#b9535e;color:white;font-size:9px;line-height:1.2;font-weight:850;transform:none;box-shadow:none}
+#rogue-tactical .rt-target-ally{background:#397bb4}
+#rogue-tactical .rt-legend{display:flex;align-items:center;gap:6px 13px;flex-wrap:wrap;padding:0 3px;margin:4px 0 0;font-size:11px;color:var(--rt-muted);line-height:1.7}
+#rogue-tactical .rt-side{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+#rogue-tactical .rt-glass{min-width:0;border:1px solid var(--rt-border);border-radius:13px;padding:12px;background:var(--rt-panel);color:var(--rt-text);box-shadow:none}
+#rogue-tactical .rt-glass h4{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--rt-title);font-size:12px;font-weight:850;line-height:1.3;margin:0 0 10px}
+#rogue-tactical .rt-glass h4 span:last-child{font-size:10px;color:var(--rt-muted);font-weight:700}
+#rogue-tactical .rt-active-card{display:grid;grid-template-columns:45px minmax(0,1fr);gap:9px;align-items:center;margin:0 0 11px}
+#rogue-tactical .rt-portrait{width:45px;height:45px;border:1px solid var(--rt-border);border-radius:9px;overflow:hidden;background:var(--rt-panel-alt);box-shadow:none}
+#rogue-tactical .rt-portrait img{width:100%;height:100%;object-fit:contain}
+#rogue-tactical .rt-portrait span{display:grid;place-items:center;width:100%;height:100%;font-size:24px}
+#rogue-tactical .rt-active-meta{min-width:0}
+#rogue-tactical .rt-active-meta b{display:block;font-size:12px;font-weight:800;color:var(--rt-text);line-height:1.4;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#rogue-tactical .rt-active-meta small{display:block;font-size:10px;color:var(--rt-muted);line-height:1.55}
+#rogue-tactical .rt-skill-chip{display:inline-block;max-width:100%;margin-top:3px;padding:3px 7px;background:var(--rt-blue-bg);color:var(--rt-blue);border:0;border-radius:5px;font-size:10px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rogue-tactical .rt-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#rogue-tactical .rt-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:57px;padding:6px 3px;border:1px solid var(--rt-border)!important;border-radius:8px!important;background:var(--rt-btn)!important;color:var(--rt-text)!important;box-shadow:none!important;font-size:11.5px;font-weight:800;line-height:1.3;cursor:pointer}
+#rogue-tactical .rt-action.selected{background:var(--rt-blue-bg)!important;border-color:#78a6d6!important;color:var(--rt-blue)!important;box-shadow:inset 0 0 0 1px #a8c6e6!important}
+#rogue-tactical .rt-action .rt-action-icon{font-size:17px;line-height:1.15}
+#rogue-tactical .rt-action span:last-child{font-size:10px;color:var(--rt-muted)}
+#rogue-tactical .rt-action:disabled,#rogue-tactical .rt-buttons button:disabled{cursor:default;opacity:.5!important}
+#rogue-tactical .rt-glass p{font-size:11px;line-height:1.55;color:var(--rt-muted);margin:8px 1px 10px}
+#rogue-tactical .rt-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#rogue-tactical .rt-buttons button{min-width:0;min-height:57px;padding:7px 3px;border:1px solid var(--rt-border)!important;border-radius:8px!important;background:var(--rt-btn)!important;color:var(--rt-text)!important;box-shadow:none!important;font-size:11.5px;font-weight:800;line-height:1.3;cursor:pointer}
+#rogue-tactical .rt-buttons small{display:block;margin-top:3px;color:var(--rt-muted);font-size:9px;font-weight:600;line-height:1.25}
+#rogue-tactical .rt-buttons .rt-surrender{color:var(--rt-red)!important;background:#fff5f5!important;border-color:#e9c9cd!important}
+#rogue-tactical .rt-initiative{display:flex;flex-wrap:wrap;gap:5px;max-height:110px;overflow-y:auto}
+#rogue-tactical .rt-initiative>span{display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;padding:5px 7px;border:1px solid var(--rt-border);border-radius:6px;background:var(--rt-panel-alt);color:var(--rt-muted);font-size:10px;line-height:1.3}
+#rogue-tactical .rt-initiative>span strong{display:block;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:750}
+#rogue-tactical .rt-initiative>span small{color:var(--rt-muted);font-size:10px}
+#rogue-tactical .rt-initiative .is-active{border-color:#8cb1df;background:var(--rt-blue-bg);color:var(--rt-blue)}
+#rogue-tactical .rt-initiative .is-done{opacity:.5}
+#rogue-tactical .rt-forecast{display:grid;gap:0;max-height:200px;overflow:auto}
+#rogue-tactical .rt-forecast>div{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rt-border)}
+#rogue-tactical .rt-forecast>div:last-child{border-bottom:0}
+#rogue-tactical .rt-forecast-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:7px;border:1px solid var(--rt-border);background:var(--rt-panel-alt);overflow:hidden}
+#rogue-tactical .rt-forecast-avatar img{width:100%;height:100%;object-fit:contain}
+#rogue-tactical .rt-forecast-avatar span{font-size:20px}
+#rogue-tactical .rt-forecast-copy{min-width:0}
+#rogue-tactical .rt-forecast-copy span{display:block;color:var(--rt-text);font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35}
+#rogue-tactical .rt-forecast-copy b{display:block;color:var(--rt-red);font-size:10px;font-weight:800;line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+#rogue-tactical .rt-forecast-copy small{display:block;color:var(--rt-muted);font-size:10.5px;line-height:1.4;overflow-wrap:anywhere}
+#rogue-tactical .rt-bottom{position:relative;z-index:1;margin:12px 0 0}
+#rogue-tactical .rt-team{display:flex;gap:6px;flex-wrap:wrap}
+#rogue-tactical .rt-team span{padding:5px 8px;border:1px solid var(--rt-border);border-radius:6px;color:var(--rt-muted);font-size:10px;background:var(--rt-panel);box-shadow:none}
+#rogue-tactical .rt-team b{color:var(--rt-text)}
+#rogue-tactical .rt-team .is-fallen{opacity:.45}
+#rogue-tactical .rt-team .is-escaped{border-color:#7dc4b1}
+#rogue-tactical .rt-log{color:var(--rt-muted);font-size:11px;margin:10px 0 0}
+#rogue-tactical .rt-log summary{color:var(--rt-text);font-size:11px;font-weight:750;cursor:pointer}
+#rogue-tactical .rt-log ol{max-height:160px;overflow:auto;margin:8px 0 0;padding-left:18px}
+#rogue-tactical .rt-save-note{font-size:10px;color:var(--rt-muted);margin:10px 0 0}
+#rogue-tactical .rt-fx{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);pointer-events:none;z-index:10;font-size:15px;font-weight:900;animation:rtFxFloat .52s ease forwards;text-shadow:0 1px 3px white}
+#rogue-tactical .rt-fx.move{color:var(--rt-green)}#rogue-tactical .rt-fx.hit{color:var(--rt-red)}#rogue-tactical .rt-fx.guard{color:var(--rt-blue)}#rogue-tactical .rt-fx.skill{color:#7b57a5}
+#rogue-tactical .rt-board.is-shaking{animation:rtBoardShake .28s ease 1}
+@keyframes rtFxFloat{from{opacity:0;transform:translate(-50%,-30%) scale(.85)}24%{opacity:1}to{opacity:0;transform:translate(-50%,-105%) scale(1.07)}}
+@keyframes rtBoardShake{0%,100%{transform:perspective(1150px) rotateX(18deg) scale(.95) translateX(0)}25%{transform:perspective(1150px) rotateX(18deg) scale(.95) translateX(-3px)}75%{transform:perspective(1150px) rotateX(18deg) scale(.95) translateX(3px)}}
+
+/* 야간 테마: 같은 구조와 대비 유지, 색상 변수만 전환. */
+html.dark-mode #rogue-tactical{
+  --rt-bg:#1b2738;--rt-panel:#263449;--rt-panel-alt:#2b3c52;
+  --rt-field:#233145;--rt-field-edge:#32465d;
+  --rt-text:#e8eff8;--rt-title:#f2f6fc;--rt-muted:#b2c1d3;
+  --rt-border:#4b5f78;--rt-blue:#a7d0ff;--rt-blue-bg:#334e6c;
+  --rt-green:#80dcc1;--rt-red:#ffb1b6;--rt-btn:#2e4056;
+  --rt-shadow:0 8px 26px rgba(0,0,0,.14);
+}
+html.dark-mode #rogue-tactical .rt-tile{background:linear-gradient(160deg,#dfe7f0,#b7c5d7)!important;border-color:#7890a5!important;box-shadow:0 5px 0 #72869a!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-shelf{background:#aab3c3!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-rift{background:#c6b5e6!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-spike{background:#e5b8b6!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-trap{background:#e5cda8!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-cover{background:#b0cbd2!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-platform{background:#aadccb!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-reachable:not(.rt-danger){background:#b4f2d9!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-targetable{background:#ffbec2!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-current{background:#b8ddff!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-danger{background:#ffc2b8!important}
+html.dark-mode #rogue-tactical .rt-buttons .rt-surrender{background:#4f303d!important;border-color:#895865!important}
+html.dark-mode #rogue-tactical .rt-warning{background:#4a3339;border-color:#965c62;color:#ffe2db}
+html.dark-mode #rogue-tactical .rt-facing{color:#21445a}
+html.dark-mode #rogue-tactical .rt-fx{text-shadow:0 1px 3px #263449}
+
+@media(max-width:1120px){#rogue-tactical .rt-main{grid-template-columns:minmax(0,1fr)}#rogue-tactical .rt-side{grid-template-columns:repeat(2,minmax(0,1fr))}#rogue-tactical .rt-active{grid-column:1/-1}}
+@media(max-width:660px){#rogue-tactical{padding:11px;border-radius:13px}#rogue-tactical .rt-top{flex-direction:column;align-items:stretch;gap:9px}#rogue-tactical .rt-heading-copy h3{font-size:21px}#rogue-tactical .rt-turn-label{flex:none;min-height:55px}#rogue-tactical .rt-main{gap:9px}#rogue-tactical .rt-board-shell{padding:9px 5px 6px}#rogue-tactical .rt-board{gap:3px;padding:4px}#rogue-tactical .rt-avatar{transform:rotateX(-16deg) translateY(-2px) scale(1.02)}#rogue-tactical .rt-avatar-icon{font-size:23px}#rogue-tactical .rt-terrain-icon{font-size:10px;left:3px;bottom:4px}#rogue-tactical .rt-facing{font-size:8px}#rogue-tactical .rt-cell-hp{height:4px}#rogue-tactical .rt-target-marker{font-size:7px}#rogue-tactical .rt-glass{padding:10px}#rogue-tactical .rt-side{grid-template-columns:minmax(0,1fr)}#rogue-tactical .rt-active{grid-column:auto}#rogue-tactical .rt-action-grid,#rogue-tactical .rt-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}#rogue-tactical .rt-legend{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#rogue-tactical .rt-tile,#rogue-tactical .rt-board{transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
