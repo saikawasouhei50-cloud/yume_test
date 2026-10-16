@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v11-ally-facing">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v12-card-preview">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1050,7 +1050,7 @@ html body #detail-card-story{height:auto!important;max-height:none!important;ove
   html body #card-detail-modal{padding:10px!important;align-items:center;justify-content:center}
   html body #card-detail-modal>.detail-wide-panel{box-sizing:border-box!important;width:100%!important;max-width:min(560px,100%)!important;max-height:calc(100vh - 20px)!important;max-height:calc(100dvh - 20px)!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 16px calc(26px + env(safe-area-inset-bottom))!important;border-radius:18px!important}
   html body #card-detail-modal #close-card-detail{position:sticky!important;top:0!important;right:auto!important;display:flex;align-items:center;justify-content:center;margin-left:auto;margin-bottom:3px;background:#fff!important;border:1px solid #dce2eb;box-shadow:0 3px 12px #52617415}
-  .detail-mobile-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;position:sticky;top:40px;z-index:4;padding:8px 0;background:#fafbfeef;backdrop-filter:blur(8px)}
+  .detail-mobile-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;position:sticky;top:40px;z-index:4;padding:8px 0;background:#fafbfeef;backdrop-filter:blur(8px)}
   .detail-mobile-shortcuts button{min-width:0;min-height:40px;padding:7px 3px;border-radius:10px;border:1px solid #dce2eb;background:#fff;color:#4c5d73;font-size:12px;font-weight:700}
   .detail-mobile-shortcuts button:focus-visible{outline:2px solid #778fb3;outline-offset:2px}
   .detail-wide-layout{gap:12px!important}.detail-wide-layout section{width:100%;min-width:0}
@@ -1976,6 +1976,29 @@ body:has(#rogue-tactical:not(.hidden))>.hud-scanline-container{max-width:1200px!
 
 @media(min-width:900px){#rogue-tactical .rt-board{width:min(100%,880px,calc((100svh - 320px)*1.6667))}}
 </style>
+<style id="card-tactical-preview-style">
+#detail-tactical-container{padding:14px;margin:14px 0;border:1px solid #bccfe0;border-radius:12px;background:#f0f6fb;color:#2c4359;font-size:12px;line-height:1.65;scroll-margin-top:60px}
+#detail-tactical-container header small{font-size:10px;color:#536e88;font-weight:700}
+#detail-tactical-container h3{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:15px;font-weight:800;margin:2px 0 12px}
+#detail-tactical-container h3 span{font-size:11px;background:#d5e7f5;border-radius:5px;padding:3px 9px;color:#2a6289;white-space:nowrap}
+#detail-tactical-container .detail-tactical-ranges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 12px}
+#detail-tactical-container .detail-tactical-ranges>div{padding:8px 3px;border:1px solid #c8d8e6;border-radius:7px;text-align:center;background:#fff}
+#detail-tactical-container dt{font-size:10px;color:#5a6e82;white-space:nowrap}
+#detail-tactical-container dd{font:800 23px sans-serif;margin:6px 0 0}
+#detail-tactical-container dd small{font:500 11px sans-serif;margin-left:3px}
+#detail-tactical-container .detail-tactical-effect{padding:10px 11px;border-left:3px solid #4c89b0;background:#fff;border-radius:5px}
+#detail-tactical-container .detail-tactical-effect b{font-size:13px;overflow-wrap:anywhere}
+#detail-tactical-container p{margin:5px 0 0;overflow-wrap:anywhere}
+#detail-tactical-container .detail-tactical-effect small,#detail-tactical-container .detail-tactical-note{font-size:11px;color:#526c82;display:block;margin-top:7px}
+#detail-tactical-container details{margin-top:10px;border-top:1px solid #c8d8e6;padding-top:8px;font-size:11px}
+#detail-tactical-container summary{cursor:pointer;font-weight:700}
+html.dark-mode #detail-tactical-container{background:#243549;color:#e2ecf6;border-color:#536d88}
+html.dark-mode #detail-tactical-container :is(header small,dt,.detail-tactical-effect small,.detail-tactical-note){color:#b4c9df}
+html.dark-mode #detail-tactical-container :is(.detail-tactical-ranges>div,.detail-tactical-effect){background:#2c4058;border-color:#526d89}
+html.dark-mode #detail-tactical-container h3 span{background:#3c5b78;color:#e0f2ff}
+html.dark-mode #detail-tactical-container details{border-color:#526d89}
+
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -2867,6 +2890,7 @@ body:has(#rogue-tactical:not(.hidden))>.hud-scanline-container{max-width:1200px!
     <button type="button" data-detail-target="revision-container">개정</button>
     <button type="button" data-detail-target="detail-stat-hp">능력치</button>
     <button type="button" data-detail-target="detail-skills-container">스킬</button>
+    <button type="button" data-detail-target="detail-tactical-container">전술전</button>
 </nav><div class="detail-wide-layout">
 <section class="detail-portrait-column" aria-label="등장인물"><div class="w-full md:w-3/5 mx-auto bg-black/60 border border-gray-800 p-2 rounded-sm relative">
                             <div class="absolute top-1 left-1 w-2 h-2 border-t border-l border-gray-500"></div>
@@ -2967,7 +2991,7 @@ body:has(#rogue-tactical:not(.hidden))>.hud-scanline-container{max-width:1200px!
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-red-500"></div>
                                 <h3 class="font-tech text-red-500 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">COMBAT SKILLS // 스킬</h3>
                                 <div id="detail-skills-container" class="space-y-3"></div>
-                            </div><div id="detail-card-story-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
+                            </div><div id="detail-tactical-container" aria-label="폐기된 서고 전술전 정보"></div><div id="detail-card-story-container" class="mt-4 bg-gray-900/80 border border-gray-800 p-4 rounded-sm relative">
                                 <div class="absolute -left-[1px] top-2 bottom-2 w-[2px] bg-purple-500"></div>
                                 <h3 class="font-tech text-purple-400 text-xs tracking-widest mb-3 border-b border-gray-700 pb-1">ARCHIVE RECORD // 등장인물 스토리</h3>
                                 <div id="detail-card-story" class="text-gray-300 text-xs leading-relaxed story-content h-24 overflow-y-auto pr-2"></div>
@@ -5067,6 +5091,28 @@ function tacticalUnit(name,side,x,y,props){
 }
 function tacticalSafeImage(card){return (typeof chibiImages!=='undefined'&&card&&chibiImages[card.name])||card?.chibi_image||card?.cardImageUrl||card?.imageUrl||'';}
 function tacticalSafePortrait(card){return card?.cardImageUrl||card?.imageUrl||tacticalSafeImage(card)||'';}
+// Card previews and allied combat units share their role, movement and range definition.
+function tacticalCardProfile(card){
+  const role=tacticalRole(card),skill=tacticalPickSkill(card,role);
+  return {role,skill,move:role==='수비형'?1:2,range:role==='사격형'?3:1,skillRange:role==='사격형'?4:role==='수비형'?1:2};
+}
+function tacticalCardEffect(profile){
+  const p=profile.skill.power;
+  if(profile.role==='사격형')return '지정한 적과 그 적에 상하좌우로 인접한 적들에게 ATK × 1.22 기준 피해.';
+  if(profile.role==='수비형')return `적 1명에게 ATK × ${p} 기준 피해. 대상 방어력의 65%를 무시합니다.`;
+  return `자신으로부터 거리 2칸 이내의 모든 적에게 ATK × ${p} 기준 피해. 지정한 적이 인접해 있고 생존하면 밀쳐냅니다.`;
+}
+function renderTacticalCardDetails(character,stats,instance=null){
+  const box=document.getElementById('detail-tactical-container');if(!box||!character)return;
+  const source={...character,stats:{...(stats||character.stats)},skills:instance?.inherited?.skills||character.skills||[]};
+  const profile=tacticalCardProfile(source),esc=rogueEscape;
+  box.innerHTML=`<header><small>폐기된 서고</small><h3>전술전 정보 <span>${esc(profile.role)}</span></h3></header>
+    <dl class="detail-tactical-ranges"><div><dt>이동 · 1 AP</dt><dd>${profile.move}<small>칸</small></dd></div><div><dt>일반 공격 · 1 AP</dt><dd>${profile.range}<small>칸</small></dd></div><div><dt>스킬 · 2 AP</dt><dd>${profile.skillRange}<small>칸</small></dd></div></dl>
+    <div class="detail-tactical-effect"><b>${esc(profile.skill.name)}</b><p>${esc(tacticalCardEffect(profile))}</p><small>아군 쿨타임 없음 · AP가 2 남아 있으면 사용 가능</small></div>
+    <p class="detail-tactical-note">거리는 상하좌우 칸 수를 합산합니다. 피해량은 대상 방어력·방향·엄폐·방어 상태에 따라 달라집니다.</p>
+    <details><summary>역할·이동·사거리 판정 기준</summary><p>① DEF ≥ ATK × 0.7 → 수비형<br>② 그 외에 ATK ≥ DEF × 1.55 또는 SPD ≥ 12 → 사격형<br>③ 나머지 → 근접형</p><p>수비형은 이동 1칸, 근접형·사격형은 이동 2칸입니다. SPD는 행동 순서를 정합니다.</p><p>${instance?'현재 강화·장비 능력치와 계승 스킬 기준입니다. 편성 효과·탐사 영감에 따라 역할이 달라질 수 있습니다.':'도감의 기본 능력치 기준입니다. 강화·장비·편성 효과·탐사 영감에 따라 역할이 달라질 수 있습니다.'}</p></details>`;
+}
+
 function tacticalPickSkill(card,role){const skills=(card?.skills||[]).filter(Boolean);const picked=skills.find(v=>['damage','true_damage','debuff_atk','debuff_def','vampire'].includes(v.type))||skills[0]||{name:role==='사격형'?'정밀 사격':'전술 스킬',type:'damage',power:1.55,dialogue:'여기까지야.'};return {...picked,name:picked.name||'전술 스킬',type:picked.type||'damage',power:Math.min(2.3,Math.max(1.2,Number(picked.power)||1.55))};}
 function tacticalEnemyPool(){const allyBases=new Set((rogueState?.team||[]).map(c=>String(c.baseName||c.name||'').trim()).filter(Boolean));const unique=new Map();(characters||[]).forEach(card=>{if(!card||!card.name||!(card.skills||[]).length)return;const key=String(card.baseName||card.name||'').trim();if(!key||allyBases.has(key)||unique.has(key))return;unique.set(key,card);});const rank={SSR:4,SR:3,R:2,N:1};const pool=[...unique.values()].sort((a,b)=>(rank[b.rarity]||0)-(rank[a.rarity]||0)||String(a.name).localeCompare(String(b.name),'ko'));return pool.length?pool:[...(characters||[]).filter(card=>card&&card.name).slice(0,12)];}
 function tacticalEnemyKind(card,role,index){const skill=tacticalPickSkill(card,role),type=String(skill.type||'');if(role==='수비형')return 'warden';if(role==='사격형')return type.includes('debuff')?'scribe':'marksman';if(type==='vampire')return 'phantom';return index%2===0?'cutter':'stalker';}
@@ -5133,7 +5179,7 @@ function tacticalMake(){
   put(2,4,'rift');put(3,0,'rift');put(1,2,'cover');put(4,3,'cover');
   if(floor>=3)put(2,2,'trap');if(floor>=4)put(3,1,'spike');if(floor>=5){put(1,4,'platform');put(4,4,'platform');}
   if(floor>=9){put(2,0,'cover');put(3,4,'spike');}
-  const allies=rogueState.team.map((c,i)=>{if(c.stats.hp<=0)return null;const role=tacticalRole(c),speed=battleSpeed(c),skill=tacticalPickSkill(c,role);return tacticalUnit(c.name,'ally',0,i,{id:`a${i}`,hp:c.stats.hp,maxHp:c.maxHp,atk:c.stats.atk,def:c.stats.def,spd:speed,role,kind:role,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:'ally',image:tacticalSafeImage(c),portrait:tacticalSafePortrait(c),range:role==='사격형'?3:1,skillRange:role==='사격형'?4:role==='수비형'?1:2,move:role==='수비형'?1:2,memberIndex:i,cardData:c,faction:c.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});}).filter(Boolean);
+  const allies=rogueState.team.map((c,i)=>{if(c.stats.hp<=0)return null;const profile=tacticalCardProfile(c),{role,skill}=profile,speed=battleSpeed(c);return tacticalUnit(c.name,'ally',0,i,{id:`a${i}`,hp:c.stats.hp,maxHp:c.maxHp,atk:c.stats.atk,def:c.stats.def,spd:speed,role,kind:role,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:'ally',image:tacticalSafeImage(c),portrait:tacticalSafePortrait(c),range:profile.range,skillRange:profile.skillRange,move:profile.move,memberIndex:i,cardData:c,faction:c.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});}).filter(Boolean);
   const count=boss?1:elite?4:3+(floor>=7?1:0), pool=tacticalEnemyPool();
   const enemies=Array.from({length:count},(_,i)=>{const card=pool[(i*3+floor+Math.floor(rogueRand()*Math.max(pool.length,1)))%Math.max(pool.length,1)]||pool[i%Math.max(pool.length,1)]||characters[0]||{name:'기록 누락',stats:{hp:100,atk:10,def:5},skills:[]};const role=tacticalRole(card),kind=boss?'boss':tacticalEnemyKind(card,role,i),t=TACTICAL_ENEMIES[kind]||TACTICAL_ENEMIES.cutter,skill=tacticalPickSkill(card,role),hp=Math.max(5,Math.round(base.stats.hp*(boss?1:t.hp/count))),atk=Math.max(2,Math.round(base.stats.atk*(boss?1:t.atk*.64))),def=Math.max(0,Math.round(base.stats.def*t.def)),y=boss?2:[0,1,3,4][i],x=boss?5:5;return tacticalUnit(boss?`[봉인] ${card.name}`:card.name,'enemy',x,y,{id:`e${i}`,kind,role:boss?(role==='수비형'?'수비형':role):role,hp,atk,def,spd:boss?2:t.spd+Math.min(6,Math.floor(floor/3)),range:boss?2+(floor>=8?1:0):t.range,skillRange:boss?4:Math.max(2,t.range),move:t.move,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:tacticalToneForKind(kind),image:tacticalSafeImage(card),portrait:tacticalSafePortrait(card),cardData:card,faction:card.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});});
   enemies.forEach(tacticalEaseEnemy);
@@ -11459,6 +11505,7 @@ function getSkillDescription(skill) {
     document.getElementById('detail-stat-def').textContent = currentStats.def;
     document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
+    renderTacticalCardDetails(character,currentStats,cardInstance);
     // --- 3. 스킬 및 스토리 표시 ---
     const skillsContainer = document.getElementById('detail-skills-container');
     skillsContainer.innerHTML = '';
@@ -11925,6 +11972,7 @@ function openCollectionCardModal(cardBaseName) {
     document.getElementById('detail-stat-def').textContent = character.stats.def;
     document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
+    renderTacticalCardDetails(character,character.stats);
     // 5. 스킬 표시
     const skillsContainer = document.getElementById('detail-skills-container');
     skillsContainer.innerHTML = '';
@@ -16253,6 +16301,7 @@ function openTradeCardDetail(tradeId) {
     document.getElementById('detail-stat-def').textContent = currentStats.def;
     document.getElementById('detail-stat-speed').textContent = battleSpeed(character);
 
+    renderTacticalCardDetails(character,currentStats,cardInstance);
     // --- 스킬 표시 (유전 스킬 포함) ---
     const skillsContainer = document.getElementById('detail-skills-container');
     skillsContainer.innerHTML = '';
