@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-16-tactical-v7-clean">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v8-isometric">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1808,6 +1808,77 @@ html.dark-mode #rogue-tactical .rt-fx{text-shadow:0 1px 3px #263449}
 @media(max-width:1120px){#rogue-tactical .rt-main{grid-template-columns:minmax(0,1fr)}#rogue-tactical .rt-side{grid-template-columns:repeat(2,minmax(0,1fr))}#rogue-tactical .rt-active{grid-column:1/-1}}
 @media(max-width:660px){#rogue-tactical{padding:11px;border-radius:13px}#rogue-tactical .rt-top{flex-direction:column;align-items:stretch;gap:9px}#rogue-tactical .rt-heading-copy h3{font-size:21px}#rogue-tactical .rt-turn-label{flex:none;min-height:55px}#rogue-tactical .rt-main{gap:9px}#rogue-tactical .rt-board-shell{padding:9px 5px 6px}#rogue-tactical .rt-board{gap:3px;padding:4px}#rogue-tactical .rt-avatar{transform:rotateX(-16deg) translateY(-2px) scale(1.02)}#rogue-tactical .rt-avatar-icon{font-size:23px}#rogue-tactical .rt-terrain-icon{font-size:10px;left:3px;bottom:4px}#rogue-tactical .rt-facing{font-size:8px}#rogue-tactical .rt-cell-hp{height:4px}#rogue-tactical .rt-target-marker{font-size:7px}#rogue-tactical .rt-glass{padding:10px}#rogue-tactical .rt-side{grid-template-columns:minmax(0,1fr)}#rogue-tactical .rt-active{grid-column:auto}#rogue-tactical .rt-action-grid,#rogue-tactical .rt-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}#rogue-tactical .rt-legend{font-size:10px}}
 @media(prefers-reduced-motion:reduce){#rogue-tactical .rt-tile,#rogue-tactical .rt-board{transition:none!important;animation:none!important}}
+
+</style>
+<style id="rogue-tactical-v8-isometric">
+/* Orthographic 2.5D: a projected floor, independent upright actors, readable horizontal HUD. */
+#rogue-tactical .rt-board-shell{padding:12px 10px 10px;background:radial-gradient(ellipse at 48% 50%,#fff8,transparent 65%),var(--rt-field);overflow:hidden}
+#rogue-tactical .rt-board{display:block;position:relative;width:100%;max-width:1000px;aspect-ratio:1000/600;height:auto;padding:0;transform:none;perspective:none;isolation:isolate}
+#rogue-tactical .rt-grid-plane{position:absolute;left:3%;top:30%;width:70.8%;aspect-ratio:6/5;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:4px;transform:matrix(1,-.13,.4,.65,0,0);transform-origin:0 0;filter:drop-shadow(0 20px 12px #34445a1a)}
+#rogue-tactical .rt-grid-plane::before{content:'';position:absolute;inset:-9px;background:var(--rt-field-edge);border:1px solid var(--rt-border);border-radius:5px;box-shadow:0 12px 0 #a6b5c6;z-index:-1}
+#rogue-tactical .rt-tile{aspect-ratio:auto;border-radius:2px!important;box-shadow:0 4px 0 #becbd9!important;isolation:auto}
+#rogue-tactical .rt-tile:hover:not(:disabled){transform:none;filter:brightness(1.04);outline:2px solid #6f91af;outline-offset:-3px}
+#rogue-tactical .rt-tile.rt-current{outline:3px solid #4289b8!important;outline-offset:-3px}
+#rogue-tactical .rt-tile.rt-danger{background:repeating-linear-gradient(135deg,#ffe0db,#ffe0db 9px,#f4ccc5 9px,#f4ccc5 13px)!important}
+#rogue-tactical .rt-cell-surface{pointer-events:none}
+#rogue-tactical .rt-coordinate{position:absolute;top:4px;right:5px;font-size:9px;color:#64778c;opacity:.65;font-variant-numeric:tabular-nums}
+#rogue-tactical .rt-terrain-icon{font-size:18px;left:11%;bottom:8%}
+#rogue-tactical .rt-unit-layer{position:absolute;inset:0;pointer-events:none}
+#rogue-tactical .rt-piece{position:absolute;width:9.8%;height:23%;transform:translate(-50%,-100%);pointer-events:none;container-type:inline-size}
+#rogue-tactical .rt-piece .rt-avatar{position:absolute;inset:0 0 9%;width:100%;height:91%;transform:none!important;z-index:2}
+#rogue-tactical .rt-piece .rt-avatar-img{transform:none;filter:drop-shadow(2px 4px 2px #27384a30);object-position:center bottom}
+#rogue-tactical .rt-piece .rt-avatar-icon{font-size:clamp(25px,4vw,45px);align-self:center}
+#rogue-tactical .rt-base{position:absolute;left:9%;right:9%;bottom:5%;height:15%;border-radius:50%;background:#51a6b64d;border:2px solid #428aa2;box-shadow:0 3px 0 #2c5f7840}
+#rogue-tactical .rt-piece.rt-enemy .rt-base{background:#cf73744a;border-color:#ba6871}
+#rogue-tactical .rt-piece.rt-acting .rt-base{border-color:#187fbe;box-shadow:0 0 0 4px #459cd229,0 0 16px #4d9eca66}
+#rogue-tactical .rt-piece.rt-boss .rt-base{border-color:#b39051;background:#d5b16355}
+#rogue-tactical .rt-piece .rt-cell-hp{bottom:0;left:5%;right:5%;height:5px;background:#263b4f99;border:1px solid #ffffffaa;border-radius:1px;transform:none}
+#rogue-tactical .rt-piece-label{position:absolute;top:101%;left:50%;transform:translateX(-50%);display:block;max-width:140%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 4px;border-radius:3px;background:var(--rt-panel);color:var(--rt-text);font-size:9px;font-weight:700;z-index:7}
+#rogue-tactical .rt-piece .rt-facing{right:-5%;bottom:4%;font-size:9px;transform:none}
+#rogue-tactical .rt-piece .rt-target-marker{left:50%;top:0;transform:translate(-50%,-95%);font-size:8px;white-space:nowrap;padding:2px 4px}
+#rogue-tactical .rt-prop{position:absolute;width:8.6%;height:22%;transform:translate(-50%,-100%) skewY(-7deg);background:linear-gradient(90deg,#768b9d,#a7b8c5);border:3px solid #627c91;box-shadow:8px 7px 0 #536b7b55;display:flex;gap:4%;align-items:flex-end;padding:12% 8% 8%;padding:8px 7px;pointer-events:none;border-radius:2px}
+#rogue-tactical .rt-prop::after{content:'';position:absolute;left:0;right:0;top:47%;height:4px;background:#5a7489;box-shadow:0 2px 1px #cedae9}
+#rogue-tactical .rt-prop i{display:block;width:23%;height:82%;background:repeating-linear-gradient(to bottom,#c4cdd4 0 4px,#879ba8 4px 7px);border-left:2px solid #d8dfe4}
+#rogue-tactical .rt-prop i:nth-child(even){height:92%;background:#91a7b4}
+#rogue-tactical .rt-legend{padding:8px 5px 0;border-top:1px solid var(--rt-border);margin:0;font-size:10px}
+#rogue-tactical .rt-save-note{font-size:10px;opacity:.8}
+.rt-scene-cutin{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;background:#14243870;backdrop-filter:blur(3px);pointer-events:auto;overflow:hidden;--cutin:#3c8dab;--cutin-soft:#e5f5fb;animation:rtCutinFade .16s ease-out}
+.rt-scene-cutin.rt-cutin-enemy{--cutin:#b55369;--cutin-soft:#fbeaf0;background:#38212e80}
+.rt-scene-cutin .rt-cutin-band{position:relative;display:grid;grid-template-columns:40% 1fr;align-items:center;width:min(880px,96vw);height:300px;background:linear-gradient(115deg,var(--cutin-soft),#fffffff5 65%);border-top:3px solid var(--cutin);border-bottom:1px solid var(--cutin);box-shadow:0 20px 80px #14243855;animation:rtCutinSlide .22s ease-out;overflow:hidden}
+.rt-scene-cutin .rt-cutin-art{height:100%;position:relative;overflow:hidden;background:linear-gradient(125deg,transparent,#94b7cb30);clip-path:polygon(0 0,100% 0,85% 100%,0 100%)}
+.rt-scene-cutin .rt-cutin-art>span[hidden]{display:none}
+.rt-scene-cutin .rt-cutin-art img{position:absolute;width:100%;height:100%;inset:0;object-fit:contain;object-position:50% 35%;transform:scale(1.08)}
+.rt-scene-cutin .rt-cutin-art>span{position:absolute;inset:0;display:grid;place-items:center;font-size:100px;color:var(--cutin)}
+.rt-scene-cutin .rt-cutin-copy{position:relative;padding:30px 30px 30px 10px;z-index:1;text-align:left}
+.rt-scene-cutin .rt-cutin-copy small{display:block;color:var(--cutin);font:800 11px sans-serif;letter-spacing:.15em}
+.rt-scene-cutin .rt-cutin-copy p{margin:16px 0 5px;font-size:15px;font-weight:700;color:#526375}
+.rt-scene-cutin .rt-cutin-copy h2{font:850 clamp(22px,4vw,40px)/1.2 sans-serif;letter-spacing:-.04em;color:#25394c;margin:0 0 16px;overflow-wrap:anywhere}
+.rt-scene-cutin .rt-cutin-copy blockquote{margin:0 0 15px;padding:0;font-size:14px;color:#4c6475;line-height:1.6}
+.rt-scene-cutin .rt-cutin-copy>span{font-size:10px;color:#758694}
+.rt-scene-cutin .rt-cutin-index{position:absolute;right:18px;bottom:-15px;font:900 72px sans-serif;letter-spacing:-.05em;opacity:.045;color:#1c3446}
+.rt-screen-fx{position:fixed;z-index:11900;pointer-events:none;--fx:#58c7e4}
+.rt-fx-enemy{--fx:#f28b9e}
+.rt-number{color:#fff;text-shadow:0 1px 3px #132b45,1px 0 2px #132b45,-1px 0 2px #132b45;font:900 19px sans-serif;transform:translate(-50%,-50%);animation:rtFloatNumber .8s ease-out forwards}
+.rt-number-guard{color:#94e6ed}.rt-number-move{font-size:11px;color:#e0ffff}
+.rt-beam{height:3px;background:#fff;box-shadow:0 0 6px var(--fx),0 0 15px var(--fx);transform-origin:left center;animation:rtBeamPulse .3s ease-out both}
+.rt-beam-laser{height:9px;border-top:2px solid var(--fx);border-bottom:2px solid var(--fx)}
+.rt-impact{width:88px;height:88px;transform:translate(-50%,-50%);border:3px solid var(--fx);border-radius:50%;box-shadow:0 0 15px var(--fx),inset 0 0 18px var(--fx);animation:rtImpactRing .35s ease-out both}
+.rt-impact i{position:absolute;left:50%;top:50%;width:4px;height:45px;background:linear-gradient(#fff,var(--fx),transparent);transform-origin:50% 0;transform:rotate(45deg);box-shadow:0 0 7px var(--fx)}
+.rt-impact i:nth-child(2){transform:rotate(135deg)}.rt-impact i:nth-child(3){transform:rotate(225deg)}.rt-impact i:nth-child(4){transform:rotate(315deg)}
+.rt-impact-slash{border:0;border-radius:0;box-shadow:none;transform:translate(-50%,-50%) rotate(-25deg)}
+.rt-impact-slash i{width:6px;height:85px;transform:rotate(45deg)}
+.rt-impact-ink{--fx:#b794e8;background:#7152a95c;filter:blur(1px)}
+.rt-impact-shield{border-radius:20% 20% 45% 45%;background:#7ed8ef33}
+.rt-impact-ram{border-width:6px}.rt-impact-laser{--fx:#f18bcd;border-width:1px}
+@keyframes rtCutinFade{from{opacity:0}to{opacity:1}}
+@keyframes rtCutinSlide{from{transform:translateX(-35px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes rtFloatNumber{0%{opacity:0;translate:0 8px}20%{opacity:1}100%{opacity:0;translate:0 -45px}}
+@keyframes rtBeamPulse{0%{opacity:0;scale:.2 1}30%{opacity:1;scale:1 1}100%{opacity:0;scale:1 1}}
+@keyframes rtImpactRing{0%{opacity:0;scale:.25}35%{opacity:1}100%{opacity:0;scale:1.4}}
+.rt-cutin-calm,.rt-cutin-calm .rt-cutin-band,.rt-fx-calm{animation:none!important}.rt-fx-calm{opacity:.6;box-shadow:none}
+html.calm-mode .rt-screen-fx{animation:none!important}
+@media(max-width:660px){#rogue-tactical .rt-grid-plane{gap:3px}#rogue-tactical .rt-piece-label{font-size:7px;padding:0 2px}#rogue-tactical .rt-piece .rt-cell-hp{height:4px}#rogue-tactical .rt-piece .rt-target-marker{font-size:6px;padding:1px 3px}#rogue-tactical .rt-coordinate{font-size:7px;right:3px;top:2px}#rogue-tactical .rt-terrain-icon{font-size:11px}#rogue-tactical .rt-prop{border-width:2px;padding:4px 3px;gap:1px}#rogue-tactical .rt-prop::after{height:2px}#rogue-tactical .rt-prop i{border-left-width:1px}.rt-scene-cutin .rt-cutin-band{height:235px;grid-template-columns:38% 1fr}.rt-scene-cutin .rt-cutin-copy{padding:18px 12px 18px 0}.rt-scene-cutin .rt-cutin-copy small{font-size:8px;letter-spacing:.07em}.rt-scene-cutin .rt-cutin-copy p{font-size:11px;margin-top:12px}.rt-scene-cutin .rt-cutin-copy h2{font-size:23px;margin-bottom:12px}.rt-scene-cutin .rt-cutin-copy blockquote{font-size:11px}.rt-impact{width:58px;height:58px}.rt-number{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.rt-scene-cutin,.rt-cutin-band,.rt-screen-fx{animation:none!important}}
 
 </style>
 </head>
@@ -4477,7 +4548,7 @@ function updateDispatchClock() {
                 if(!validTactical){
                     rogueState.tactical=null;rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;
                     rogueLog(r.version===2?'v2 전투 데이터를 계승했습니다. 해당 전투만 시작 지점에서 다시 진행합니다.':'초기 전투 저장을 복구했습니다. 해당 경로를 다시 선택하세요.');
-                }else{tacticalSyncHP(t);rogueLog(`${t.round}라운드 전술 체크포인트 복원 · 현재 AP/위치 보존`);}
+                }else{tacticalBalanceUpgrade(t);tacticalSyncHP(t);rogueLog(`${t.round}라운드 전술 체크포인트 복원 · 현재 AP/위치 보존`);}
             }
             if(['rest','shop','event','event-result','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
             if(rogueState.phase==='event-result'&&!rogueState.eventResult){rogueState.phase='event';}
@@ -4540,11 +4611,11 @@ function updateDispatchClock() {
             const f=rogueState.floor,b=rogueState.baseline;
             const elite=node.type==='elite',boss=node.type==='boss';
             const source=monsters[node.monsterName]||{};
-            const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?2.8:elite?1.35:1));
+            const hp=Math.floor(b.atk*(1.5+f*.22)*(boss?2.0:elite?1.35:1));
             const aoe=boss&&f>=8;
             const planned={name:boss?({4:'제1봉인 · 지워진 문지기',6:'중간봉인 · 침묵의 편집자',8:'제2봉인 · 침묵의 편집자',12:'최종봉인 · 미완의 결말'}[f]):`${elite?'정예 · ':''}${source.name||node.monsterName}`,
-                baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:boss?Math.floor((b.def*1.15+b.hp*(.22+f*.012))*(aoe?.85:1)):Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)),def:Math.floor(b.atk/5*(boss ? .32+f*.016 : .08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
-                speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?f>=12?'답장 반격 · 유리꽃 즉사(예고 후 대응 가능)':'2명 행동 봉인 · 초상화 복제(예고 후 대응 가능)':elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
+                baseName:source.baseName||'',skillBaseName:node.monsterName,faction:source.faction||'',cardName:source.cardName||'',sourceName:source.name||node.monsterName,key:source.key||node.monsterName,skills:source.skills||[],stats:{hp,atk:boss?Math.floor((b.def*1.05+b.hp*(.15+f*.008))*(aoe?.85:1)):Math.floor((b.def+b.hp*(.13+f*.012))*(elite?1.2:1)),def:Math.floor(b.atk/5*(boss ? .23+f*.012 : .08+f*.008))},maxHp:hp,imageUrl:source.imageUrl,isAoE:aoe,
+                speed:source.speed ?? 0,rogueBoss:boss,rogueTactic:boss?'위험 칸 사전 예고 · 4라운드 간격 강공 · 체력 45%에 복제상 1회':elite?'일반 교전보다 높은 체력·공격력':'단일 대상 공격'};
             return boss?rogueBossPreparedStats(planned):planned;
         }
         function renderRogueInvestigations() {
@@ -4897,7 +4968,7 @@ function tacticalCell(s,x,y){return s.terrain[y*TACTICAL_W+x];}
 function tacticalOccupant(s,x,y,exclude){return tacticalLive(s).find(u=>u!==exclude&&u.x===x&&u.y===y);}
 function tacticalRole(c){const atk=Math.max(1,Number(c.stats.atk)||1),def=Math.max(0,Number(c.stats.def)||0),spd=battleSpeed(c);return def>=atk*.70?'수비형':atk>=def*1.55||spd>=12?'사격형':'근접형';}
 function tacticalUnit(name,side,x,y,props){
-  return {id:props.id,name,side,x,y,facing:side==='ally'?'E':'W',hp:props.hp,maxHp:props.hp,atk:props.atk,def:props.def,spd:props.spd||0,role:props.role,kind:props.kind||'',icon:props.icon||'◇',tone:props.tone||'silver',image:props.image||'',portrait:props.portrait||props.image||'',cardData:props.cardData||null,faction:props.faction||props.cardData?.faction||'기타',range:props.range||1,skillRange:props.skillRange||2,move:props.move||2,ap:2,guarded:false,block:props.role==='수비형',trapped:0,escaped:false,memberIndex:props.memberIndex??null,skillData:props.skillData||null,skillName:props.skillName||props.skillData?.name||'전술 스킬',skillType:props.skillType||props.skillData?.type||'damage',skillPower:props.skillPower||props.skillData?.power||1.4};
+  return {id:props.id,name,side,x,y,facing:side==='ally'?'E':'W',hp:props.hp,maxHp:props.maxHp||props.hp,atk:props.atk,def:props.def,spd:props.spd||0,role:props.role,kind:props.kind||'',icon:props.icon||'◇',tone:props.tone||'silver',image:props.image||'',portrait:props.portrait||props.image||'',cardData:props.cardData||null,faction:props.faction||props.cardData?.faction||'기타',range:props.range||1,skillRange:props.skillRange||2,move:props.move||2,ap:2,guarded:false,block:props.role==='수비형',trapped:0,escaped:false,memberIndex:props.memberIndex??null,skillData:props.skillData||null,skillName:props.skillName||props.skillData?.name||'전술 스킬',skillType:props.skillType||props.skillData?.type||'damage',skillPower:props.skillPower||props.skillData?.power||1.4};
 }
 function tacticalSafeImage(card){return (typeof chibiImages!=='undefined'&&card&&chibiImages[card.name])||card?.chibi_image||card?.cardImageUrl||card?.imageUrl||'';}
 function tacticalSafePortrait(card){return card?.cardImageUrl||card?.imageUrl||tacticalSafeImage(card)||'';}
@@ -4907,8 +4978,46 @@ function tacticalEnemyKind(card,role,index){const skill=tacticalPickSkill(card,r
 function tacticalToneForKind(kind){return ({warden:'bronze',marksman:'blue',scribe:'teal',phantom:'violet',stalker:'rose',cutter:'rose',boss:'gold'})[kind]||'blue';}
 function tacticalUnitEnvelope(unit){const card=unit?.cardData||{};return {name:unit?.name||card.name||'',faction:unit?.faction||card.faction||'기타',imageUrl:tacticalSafePortrait(card)||unit?.portrait||unit?.image||'',cardImageUrl:tacticalSafePortrait(card)||unit?.portrait||unit?.image||''};}
 function tacticalSound(kind){try{if(window.yumecanSettings?.muted)return;const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;if(!window.__tacticalAudioCtx)window.__tacticalAudioCtx=new AudioContext();const ctx=window.__tacticalAudioCtx;if(ctx.state==='suspended')ctx.resume().catch(()=>{});const now=ctx.currentTime;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);if(kind==='move'){osc.type='triangle';osc.frequency.setValueAtTime(420,now);osc.frequency.exponentialRampToValueAtTime(640,now+.08);gain.gain.setValueAtTime(.08,now);gain.gain.exponentialRampToValueAtTime(.001,now+.09);osc.start(now);osc.stop(now+.09);}else if(kind==='guard'){osc.type='sine';osc.frequency.setValueAtTime(540,now);osc.frequency.exponentialRampToValueAtTime(320,now+.16);gain.gain.setValueAtTime(.10,now);gain.gain.exponentialRampToValueAtTime(.001,now+.16);osc.start(now);osc.stop(now+.16);}else if(kind==='hit'){osc.type='square';osc.frequency.setValueAtTime(170,now);osc.frequency.exponentialRampToValueAtTime(68,now+.07);gain.gain.setValueAtTime(.10,now);gain.gain.exponentialRampToValueAtTime(.001,now+.07);osc.start(now);osc.stop(now+.07);}else if(kind==='attack'){osc.type='sawtooth';osc.frequency.setValueAtTime(280,now);osc.frequency.exponentialRampToValueAtTime(120,now+.11);gain.gain.setValueAtTime(.12,now);gain.gain.exponentialRampToValueAtTime(.001,now+.11);osc.start(now);osc.stop(now+.11);}else if(kind==='surrender'){osc.type='triangle';osc.frequency.setValueAtTime(240,now);osc.frequency.exponentialRampToValueAtTime(70,now+.35);gain.gain.setValueAtTime(.12,now);gain.gain.exponentialRampToValueAtTime(.001,now+.35);osc.start(now);osc.stop(now+.35);} }catch(_){}}
-function tacticalSpawnFx(x,y,kind,text){const tile=document.querySelector(`#rogue-tactical [data-tactical-cell="${x},${y}"]`);if(!tile)return;const fx=document.createElement('span');fx.className=`rt-fx ${kind}`;fx.textContent=text||'';tile.appendChild(fx);setTimeout(()=>fx.remove(),480);}
-function tacticalShakeBoard(){const board=document.querySelector('#rogue-tactical .rt-board');if(!board)return;board.classList.remove('is-shaking');void board.offsetWidth;board.classList.add('is-shaking');setTimeout(()=>board.classList.remove('is-shaking'),300);}
+// Floor projection and upright sprite anchors use the same orthographic camera.
+function tacticalProject(x,y){return {x:30+118*(x+.5)+.4*118*(y+.72),y:180-.13*118*(x+.5)+.65*118*(y+.72)};}
+function tacticalScreenPoint(x,y){const board=document.querySelector('#rogue-tactical .rt-board');if(!board)return null;const r=board.getBoundingClientRect(),p=tacticalProject(x,y);return {x:r.left+r.width*p.x/1000,y:r.top+r.height*p.y/600};}
+function tacticalPause(ms){const speed=[1,2,4].includes(Number(window.yumecanSettings?.battleSpeed))?Number(window.yumecanSettings.battleSpeed):1;return new Promise(resolve=>setTimeout(resolve,window.yumecanSettings?.calm?Math.min(100,ms):ms/speed));}
+function tacticalBalanceUpgrade(s){
+  if(s.balanceVersion===8)return;
+  for(const u of s.units.filter(v=>v.side==='ally')){const c=rogueState.team[u.memberIndex];if(c)u.maxHp=c.maxHp;}
+  const boss=s.units.find(u=>u.kind==='boss');
+  if(boss){const plan=rogueEnemyPlan(rogueState.node),ratio=boss.hp/boss.maxHp;boss.maxHp=plan.maxHp;boss.hp=ratio>0?Math.max(1,Math.round(boss.maxHp*ratio)):0;boss.atk=plan.stats.atk;boss.def=plan.stats.def;const clone=s.units.find(u=>u.id==='echo');if(clone){const r=clone.hp/clone.maxHp;clone.maxHp=Math.max(1,Math.floor(boss.maxHp*.06));clone.hp=r>0?Math.max(1,Math.round(clone.maxHp*r)):0;clone.atk=Math.max(2,Math.round(boss.atk*.45));}}
+  s.balanceVersion=8;
+}
+function tacticalSpawnFx(x,y,kind,label){
+  const pt=tacticalScreenPoint(x,y);if(!pt)return;
+  const fx=document.createElement('span');fx.className=`rt-screen-fx rt-number rt-number-${kind}`;fx.textContent=label||'';fx.style.left=`${pt.x}px`;fx.style.top=`${pt.y-20}px`;document.body.appendChild(fx);setTimeout(()=>fx.remove(),850);
+}
+function tacticalShakeBoard(){
+  const board=document.querySelector('#rogue-tactical .rt-board-shell');if(!board||window.yumecanSettings?.calm)return;
+  board.animate([{transform:'translateX(0)'},{transform:'translateX(-2px)'},{transform:'translateX(2px)'},{transform:'translateX(0)'}],{duration:150});
+}
+async function tacticalPlayCutin(unit,skill){
+  const enemy=unit.side==='enemy',card=tacticalUnitEnvelope(unit),calm=window.yumecanSettings?.calm;
+  const layer=document.createElement('div');layer.className=`rt-scene-cutin ${enemy?'rt-cutin-enemy':''} ${calm?'rt-cutin-calm':''}`;layer.setAttribute('role','status');layer.setAttribute('aria-live','polite');
+  layer.innerHTML=`<div class="rt-cutin-band"><div class="rt-cutin-art"><span>${unit.icon||'✦'}</span>${card.imageUrl?`<img src="${rogueEscape(card.imageUrl)}" alt="${rogueEscape(unit.name)}">`:''}</div><div class="rt-cutin-copy"><small>${enemy?'ENEMY SKILL · 적 스킬':'SKILL ACTIVATE · 아군 스킬'}</small><p>${rogueEscape(unit.name)}</p><h2>${rogueEscape(skill.name||unit.skillName||'전술 스킬')}</h2>${skill.dialogue?`<blockquote>“${rogueEscape(skill.dialogue)}”</blockquote>`:''}<span>${rogueEscape(unit.faction||'서고의 기록')} / ${rogueEscape(unit.role||'전술')}</span></div><b class="rt-cutin-index">${unit.kind==='boss'?'BOSS':enemy?'ENEMY':'ALLY'}</b></div>`;
+  const img=layer.querySelector('img');if(img){img.onload=()=>img.previousElementSibling.hidden=true;img.onerror=()=>img.remove();}
+  document.body.appendChild(layer);
+  try{if(!window.yumecanSettings?.muted){try{if(typeof sfx!=='undefined')sfx.playSkillUltimate();}catch(_){}}await tacticalPause(calm?500:950);}
+  finally{layer.remove();}
+}
+async function tacticalSkillEffect(actor,targets,kind='skill'){
+  const origin=tacticalScreenPoint(actor.x,actor.y);if(!origin)return;
+  const nodes=[],enemy=actor.side==='enemy',calm=window.yumecanSettings?.calm;
+  const theme=kind==='ink'?'ink':kind==='laser'?'laser':kind==='ram'?'ram':actor.role==='사격형'?'shot':actor.role==='수비형'?'shield':'slash';
+  for(const target of targets){const pt=tacticalScreenPoint(target.x,target.y);if(!pt)continue;
+    if(!calm){const dx=pt.x-origin.x,dy=pt.y-origin.y,beam=document.createElement('span');beam.className=`rt-screen-fx rt-beam ${enemy?'rt-fx-enemy':''} ${kind==='laser'?'rt-beam-laser':''}`;beam.style.cssText=`left:${origin.x}px;top:${origin.y-18}px;width:${Math.hypot(dx,dy)}px;transform:rotate(${Math.atan2(dy,dx)}rad)`;document.body.appendChild(beam);nodes.push(beam);}
+    const hit=document.createElement('span');hit.className=`rt-screen-fx rt-impact rt-impact-${theme} ${enemy?'rt-fx-enemy':''} ${calm?'rt-fx-calm':''}`;hit.style.left=`${pt.x}px`;hit.style.top=`${pt.y-15}px`;hit.innerHTML='<i></i><i></i><i></i><i></i>';document.body.appendChild(hit);nodes.push(hit);
+  }
+  tacticalSound('attack');
+  try{await tacticalPause(kind==='attack'?160:340);}finally{nodes.forEach(el=>el.remove());}
+}
+
 function tacticalMake(){
   const node=rogueState.node, floor=rogueState.floor, base=rogueEnemyPlan(node), boss=node.type==='boss',elite=node.type==='elite';
   const objective=boss||elite?'kill':rogueRand()<.5?'kill':rogueRand()<.5?'survive':'escape';
@@ -4917,11 +5026,11 @@ function tacticalMake(){
   put(2,1,'shelf');put(3,3,'shelf');put(2,4,'rift');put(3,0,'rift');put(1,2,'cover');put(4,3,'cover');
   if(floor>=3)put(2,2,'trap');if(floor>=4)put(3,1,'spike');if(floor>=5){put(1,4,'platform');put(4,4,'platform');}
   if(floor>=9){put(2,0,'cover');put(3,4,'spike');}
-  const allies=rogueState.team.map((c,i)=>{if(c.stats.hp<=0)return null;const role=tacticalRole(c),speed=battleSpeed(c),skill=tacticalPickSkill(c,role);return tacticalUnit(c.name,'ally',0,i,{id:`a${i}`,hp:c.stats.hp,atk:c.stats.atk,def:c.stats.def,spd:speed,role,kind:role,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:'ally',image:tacticalSafeImage(c),portrait:tacticalSafePortrait(c),range:role==='사격형'?3:1,skillRange:role==='사격형'?4:role==='수비형'?1:2,move:role==='수비형'?1:2,memberIndex:i,cardData:c,faction:c.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});}).filter(Boolean);
+  const allies=rogueState.team.map((c,i)=>{if(c.stats.hp<=0)return null;const role=tacticalRole(c),speed=battleSpeed(c),skill=tacticalPickSkill(c,role);return tacticalUnit(c.name,'ally',0,i,{id:`a${i}`,hp:c.stats.hp,maxHp:c.maxHp,atk:c.stats.atk,def:c.stats.def,spd:speed,role,kind:role,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:'ally',image:tacticalSafeImage(c),portrait:tacticalSafePortrait(c),range:role==='사격형'?3:1,skillRange:role==='사격형'?4:role==='수비형'?1:2,move:role==='수비형'?1:2,memberIndex:i,cardData:c,faction:c.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});}).filter(Boolean);
   const count=boss?1:elite?4:3+(floor>=7?1:0), pool=tacticalEnemyPool();
   const enemies=Array.from({length:count},(_,i)=>{const card=pool[(i*3+floor+Math.floor(rogueRand()*Math.max(pool.length,1)))%Math.max(pool.length,1)]||pool[i%Math.max(pool.length,1)]||characters[0]||{name:'기록 누락',stats:{hp:100,atk:10,def:5},skills:[]};const role=tacticalRole(card),kind=boss?'boss':tacticalEnemyKind(card,role,i),t=TACTICAL_ENEMIES[kind]||TACTICAL_ENEMIES.cutter,skill=tacticalPickSkill(card,role),hp=Math.max(5,Math.round(base.stats.hp*(boss?1:t.hp/count))),atk=Math.max(2,Math.round(base.stats.atk*(boss?1:t.atk*.64))),def=Math.max(0,Math.round(base.stats.def*t.def)),y=boss?2:[0,1,3,4][i],x=boss?5:5;return tacticalUnit(boss?`[봉인] ${card.name}`:card.name,'enemy',x,y,{id:`e${i}`,kind,role:boss?(role==='수비형'?'수비형':role):role,hp,atk,def,spd:boss?2:t.spd+Math.min(6,Math.floor(floor/3)),range:boss?2+(floor>=8?1:0):t.range,skillRange:boss?4:Math.max(2,t.range),move:t.move,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:tacticalToneForKind(kind),image:tacticalSafeImage(card),portrait:tacticalSafePortrait(card),cardData:card,faction:card.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});});
   const clues=rogueBossClueValues();
-  const s={version:3,width:6,height:5,runId:rogueState.runId,nodeId:node.id,objective,round:1,terrain,units:[...allies,...enemies],order:[],cursor:0,mode:'move',messages:[],escaped:0,bossPatterns:boss?Math.floor(rogueRand()*3):0,nextBossRound:clues.delaySpecial?4:3,telegraph:null,firstSpecialSkipped:false,spawnedClone:false,firstInkResolved:false,firstLaserResolved:false};
+  const s={version:3,width:6,height:5,runId:rogueState.runId,nodeId:node.id,objective,round:1,terrain,units:[...allies,...enemies],order:[],cursor:0,mode:'move',messages:[],escaped:0,bossPatterns:boss?Math.floor(rogueRand()*3):0,balanceVersion:8,nextBossRound:clues.delaySpecial?5:4,telegraph:null,firstSpecialSkipped:false,spawnedClone:false,firstInkResolved:false,firstLaserResolved:false};
   tacticalRoundStart(s);tacticalRecord(s,objective==='kill'?'목표: 적 전멸':objective==='survive'?'목표: 5라운드 생존':'목표: 3명을 오른쪽 EXIT로 탈출');
   return s;
 }
@@ -4967,18 +5076,18 @@ function tacticalHurt(s,attacker,target,mult=1,opts={}){
     const guards=tacticalLive(s,target.side).filter(u=>u.id!==target.id&&u.role==='수비형'&&u.guarded&&tacticalDist(u,target)===1);
     if(guards.length){target=guards[0];tacticalRecord(s,`🛡 ${target.name} 저지 · 아군 대신 공격을 받음`);}
   }
-  const rel=attacker?tacticalFlank(attacker,target):'front',flank=rel==='rear'?1.35:rel==='side'?1.15:1;
+  const rel=attacker?tacticalFlank(attacker,target):'front',flank=opts.pattern?1:rel==='rear'?1.35:rel==='side'?1.15:1;
   const ranged=attacker&&attacker.range>1&&tacticalDist(attacker,target)>1,cover=ranged&&tacticalCell(s,target.x,target.y)==='cover'?.75:1;
-  const raw=Math.max(1,Math.round((attacker?.atk||target.maxHp*.08)*mult*flank-target.def*(opts.pierce?.35:1)));
-  const dmg=Math.min(target.hp,Math.max(1,Math.round(raw*(target.guarded?.6:1)*(opts.pierce?1:cover))));target.hp-=dmg;
+  const raw=Math.max(1,Math.round((attacker?.atk||target.maxHp*.08)*mult*flank-target.def*(opts.pierce?(opts.pattern?.65:.35):1)));
+  const dmg=Math.min(target.hp,Math.max(1,Math.round(Math.min(raw,opts.hpCap?target.maxHp*opts.hpCap:Infinity)*(target.guarded?.6:1)*(opts.pierce?1:cover))));target.hp-=dmg;
   tacticalRecord(s,`${attacker?.name||'지형'} → ${target.name} ${dmg} 피해${rel==='rear'?' · 배후':rel==='side'?' · 측면':''}${target.guarded?' · 방어 40%':''}${target.hp<=0?' · 전투불능':''}`);
   tacticalSound('hit'); tacticalSpawnFx(target.x,target.y,'hit',`-${dmg}`); tacticalShakeBoard();
-  if(target.kind==='boss'&&target.hp>0&&target.hp<=target.maxHp*.55&&!s.spawnedClone){
+  if(target.kind==='boss'&&target.hp>0&&target.hp<=target.maxHp*.45&&!s.spawnedClone){
     s.spawnedClone=true;
     const slot=[{x:4,y:2},{x:4,y:1},{x:4,y:3},{x:3,y:2},{x:5,y:0}].find(p=>tacticalPassable(s,p.x,p.y,target));
     if(slot){
       const clue=rogueBossClueValues(),m=TACTICAL_ENEMIES.phantom;
-      const clone=tacticalUnit('초상화 복제상','enemy',slot.x,slot.y,{id:'echo',kind:'phantom',role:'근접형',hp:Math.max(1,Math.floor(target.maxHp*(clue.cloneHp?.05:.10))),atk:Math.max(2,Math.floor(target.atk*.6)),def:Math.max(0,Math.floor(target.def*.5)),spd:m.spd,range:1,move:3,icon:m.icon,tone:m.tone});
+      const clone=tacticalUnit('초상화 복제상','enemy',slot.x,slot.y,{id:'echo',kind:'phantom',role:'근접형',hp:Math.max(1,Math.floor(target.maxHp*(clue.cloneHp?.03:.06))),atk:Math.max(2,Math.floor(target.atk*.45)),def:Math.max(0,Math.floor(target.def*.5)),spd:m.spd,range:1,move:3,icon:m.icon,tone:m.tone});
       s.units.push(clone);tacticalRecord(s,`🪞 초상화 복제상 출현 · HP ${clone.hp}${clue.cloneHp?' (단서/유물 효과 적용)':''}`);
     }
   }
@@ -4999,15 +5108,19 @@ function tacticalMove(s,u,x,y){const path=tacticalPath(s,u,{x,y},u.move);if(!pat
   if(stop>=0)tacticalRecord(s,`🛡 ${u.name} 이동 저지 · 방어형이 전진 차단`);
   tacticalRecord(s,`${u.name} 이동 (${walked.length}칸 · 1 AP)`);tacticalSound('move');tacticalSpawnFx(u.x,u.y,'move','MOVE');return true;
 }
-function tacticalAttack(s,a,target,skill=false,byAI=false){if(!tacticalCanHit(s,a,target,skill)||a.ap<(skill?2:1))return false;
+async function tacticalAttack(s,a,target,skill=false,byAI=false){if(!tacticalCanHit(s,a,target,skill)||a.ap<(skill?2:1))return false;
   a.ap-=skill?2:1;
-  if(skill&&a.skillData&&typeof playUltimateCutin==='function'){try{playUltimateCutin(tacticalUnitEnvelope(a),a.skillData,{enemy:a.side==='enemy',speed:window.yumecanSettings?.battleSpeed||1});}catch(_){}}
+  renderTactical();
+  if(skill)await tacticalPlayCutin(a,a.skillData||{name:a.skillName});
   const affected=skill&&a.role==='사격형'?tacticalLive(s,target.side).filter(u=>tacticalDist(u,target)<=1):skill&&a.role==='근접형'?tacticalLive(s,target.side).filter(u=>tacticalDist(u,a)<=2):[target];
+  await tacticalSkillEffect(a,affected,skill?'skill':'attack');
+
   for(const u of affected){tacticalHurt(s,a,u,skill?(a.role==='사격형'?1.22:a.skillPower):1,{pierce:skill&&a.role==='수비형'});}
   if((a.role==='근접형'||a.kind==='cutter'||a.kind==='boss')&&target.hp>0&&tacticalDist(a,target)===1)tacticalPush(s,a,target);
   tacticalFacing(a,target.x-a.x,target.y-a.y);
   if(skill){tacticalRecord(s,`✦ ${a.name} · ${a.skillName}${affected.length>1?' (AOE)':''}`);tacticalSpawnFx(target.x,target.y,'skill',a.side==='enemy'?'ENEMY':'SKILL');}
-  else{tacticalSound('attack');tacticalSpawnFx(target.x,target.y,'hit','HIT');}
+  else{tacticalSound('attack');}
+  renderTactical();await tacticalPause(230);
   return true;
 }
 function tacticalGuard(s,a){if(a.ap<1)return false;a.ap--;a.guarded=true;const enemies=tacticalLive(s,a.side==='ally'?'enemy':'ally').sort((left,right)=>tacticalDist(left,a)-tacticalDist(right,a));if(enemies.length)tacticalFacing(a,enemies[0].x-a.x,enemies[0].y-a.y);tacticalRecord(s,`${a.name} 방어 태세 · 피해 -40%${a.role==='수비형'?' / 주변 아군 저지':''}`);tacticalSound('guard');tacticalSpawnFx(a.x,a.y,'guard','GUARD');return true;}
@@ -5033,22 +5146,25 @@ function tacticalClosestReachable(s,u,target){let best=null,score=Infinity;
   }
   return best;
 }
-function tacticalAI(s,u){
+async function tacticalAI(s,u){
   const target=tacticalAIIntent(s,u);if(!target||u.ap<=0)return;
   if(u.kind==='boss'&&s.telegraph?.resolveRound===s.round&&u.ap>=2){
     const t=s.telegraph;u.ap-=2;
     if(!s.firstSpecialSkipped&&rogueBossClueValues().skipFirstSpecial){s.firstSpecialSkipped=true;tacticalRecord(s,'봉인 방패 · 첫 보스 특수 행동 무효화');}
     else{
       const area=tacticalTelegraphCells(s),clue=rogueBossClueValues();
+      const victims=tacticalLive(s,'ally').filter(v=>area.has(tacticalKey(v.x,v.y)));
+      await tacticalPlayCutin(u,{name:t.label,dialogue:'봉인을 넘을 수 있을까.',type:'damage'});
+      await tacticalSkillEffect(u,[...area].map(k=>{const [x,y]=k.split(',').map(Number);return {x,y};}),t.kind);
       const firstInk=t.kind==='ink'&&!s.firstInkResolved,firstLaser=t.kind==='laser'&&!s.firstLaserResolved;
       const skipInk=firstInk&&Boolean(clue.skipBloom);
       if(skipInk)tacticalRecord(s,'온실 단서 · 첫 흑잉크 폭발 피해 무효');
-      for(const ally of tacticalLive(s,'ally').filter(v=>area.has(tacticalKey(v.x,v.y)))){
-        let damage=t.kind==='ink'?1.5:t.kind==='laser'?1.85:1.65;
+      for(const ally of victims){
+        let damage=t.kind==='ink'?1.15:t.kind==='laser'?1.4:1.25;
         if(firstInk&&clue.bloomHp)damage*=.65;
         if(firstInk&&clue.bloomGuard)damage*=.6;
         if(firstLaser&&clue.replySafe)damage*=.6;
-        if(!skipInk)tacticalHurt(s,u,ally,damage,{pierce:t.kind==='laser'});
+        if(!skipInk)tacticalHurt(s,u,ally,damage,{pierce:t.kind==='laser',pattern:true,ignoreBlock:true,hpCap:t.kind==='laser'?.38:.32});
         if(t.kind==='ram'&&ally.hp>0)tacticalPush(s,u,ally);
       }
       if(firstInk)s.firstInkResolved=true;if(firstLaser)s.firstLaserResolved=true;
@@ -5056,10 +5172,10 @@ function tacticalAI(s,u){
       if(t.kind==='ram'){const dest={x:Math.min(4,t.x+1),y:t.y};if(tacticalPassable(s,dest.x,dest.y,u))tacticalMoveForced(s,u,dest.x,dest.y);}
       tacticalRecord(s,`💥 보스 패턴 발동 · ${t.label}`);
     }
-    s.bossPatterns++;s.nextBossRound+=3;s.telegraph=null;return;
+    s.bossPatterns++;s.nextBossRound+=4;s.telegraph=null;renderTactical();await tacticalPause(320);return;
   }
-  if(u.side==='enemy'&&u.ap>=2&&u.skillData&&target&&tacticalCanHit(s,u,target,true)&&(u.role==='사격형'||['debuff_atk','debuff_def','true_damage','vampire'].includes(u.skillType)||rogueRand()<.35)){
-    tacticalAttack(s,u,target,true,true);
+  if(u.side==='enemy'&&(u.kind!=='boss'||s.round-(u.lastSkillRound||-2)>=2)&&u.ap>=2&&u.skillData&&target&&tacticalCanHit(s,u,target,true)&&(u.role==='사격형'||['debuff_atk','debuff_def','true_damage','vampire'].includes(u.skillType)||rogueRand()<.35)){
+    await tacticalAttack(s,u,target,true,true);u.lastSkillRound=s.round;
     if(u.ap>0&&u.role==='수비형')tacticalGuard(s,u);
     return;
   }
@@ -5077,7 +5193,7 @@ function tacticalAI(s,u){
   if(u.kind==='warden'&&u.ap>=1&&tacticalLive(s,'enemy').some(v=>v!==u&&tacticalDist(v,u)<=1&&v.hp/v.maxHp<.65))tacticalGuard(s,u);
   while(u.ap>0){
     const t=tacticalAIIntent(s,u);if(!t)break;
-    if(tacticalCanHit(s,u,t)){tacticalAttack(s,u,t,false,true);continue;}
+    if(tacticalCanHit(s,u,t)){await tacticalAttack(s,u,t,false,true);continue;}
     const path=tacticalClosestReachable(s,u,t);
     if(path&&path.length){const step=path[Math.min(u.move,path.length)-1];if(!tacticalMove(s,u,step[0],step[1]))break;}else{tacticalGuard(s,u);break;}
   }
@@ -5085,7 +5201,7 @@ function tacticalAI(s,u){
 }
 function tacticalMoveForced(s,u,x,y){tacticalFacing(u,x-u.x,y-u.y);u.x=x;u.y=y;tacticalEnter(s,u);}
 function tacticalTelegraphCells(s){const t=s.telegraph,set=new Set();if(!t)return set;
-  for(let y=0;y<5;y++)for(let x=0;x<6;x++)if(t.kind==='ink'&&Math.max(Math.abs(x-t.x),Math.abs(y-t.y))<=1||t.kind==='laser'&&y===t.y||t.kind==='ram'&&y===t.y&&x>=Math.min(5,t.x)&&x<=5)set.add(tacticalKey(x,y));return set;
+  for(let y=0;y<5;y++)for(let x=0;x<6;x++)if(t.kind==='ink'&&Math.abs(x-t.x)+Math.abs(y-t.y)<=1||t.kind==='laser'&&y===t.y||t.kind==='ram'&&y===t.y&&x>=Math.min(5,t.x)&&x<=5)set.add(tacticalKey(x,y));return set;
 }
 function tacticalEndActor(s,u){
   if(u.hp>0&&!u.escaped&&tacticalCell(s,u.x,u.y)==='rift'){const d=Math.max(1,Math.ceil(u.maxHp*.08));u.hp=Math.max(0,u.hp-d);tacticalRecord(s,`⚡ ${u.name} 균열 · 최대 HP 8% (${d}) 피해`);}
@@ -5099,7 +5215,7 @@ function tacticalOutcome(s){
   if(s.objective==='survive')return s.round>5?'win':null;
   return !tacticalLive(s,'enemy').length?'win':null;
 }
-function tacticalProceed(s){
+async function tacticalProceed(s){
   let loop=0;
   while(loop++<60){
     const outcome=tacticalOutcome(s);if(outcome)return outcome;
@@ -5109,18 +5225,22 @@ function tacticalProceed(s){
     if(!u.ap){tacticalEndActor(s,u);continue;}
     if(!u.activated){u.guarded=false;u.activated=true;}
     if(u.side==='ally')return null;
-    tacticalAI(s,u);tacticalEndActor(s,u);
+    renderTactical();await tacticalPause(180);
+    await tacticalAI(s,u);tacticalEndActor(s,u);renderTactical();await tacticalPause(160);
   }
   console.warn('Tactical turn loop limit exceeded');return null;
 }
 function tacticalSyncHP(s){for(const u of s.units.filter(v=>v.side==='ally')){const card=rogueState.team[u.memberIndex];if(card)card.stats.hp=Math.max(0,Math.min(card.maxHp,Math.round(u.hp)));}}
 async function tacticalSave(s){tacticalSyncHP(s);await roguePersist();}
 async function tacticalStart(){
-  if(rogueState.phase!=='combat')return;
-  if(!rogueState.tactical)rogueState.tactical=tacticalMake();
-  const s=rogueState.tactical,result=tacticalProceed(s);
-  if(result){tacticalSyncHP(s);rogueState.tactical=null;completeRogueCombat(result==='win',rogueState.team);}
-  else await tacticalSave(s);
+  if(rogueState.phase!=='combat'||tacticalBusy)return;
+  tacticalBusy=true;
+  try{
+    if(!rogueState.tactical)rogueState.tactical=tacticalMake();
+    const s=rogueState.tactical,result=await tacticalProceed(s);
+    if(result){tacticalSyncHP(s);rogueState.tactical=null;completeRogueCombat(result==='win',rogueState.team);}
+    else await tacticalSave(s);
+  }finally{tacticalBusy=false;updateRogueUI();}
 }
 let tacticalBusy=false;
 async function tacticalInput(action,x,y){
@@ -5142,13 +5262,13 @@ async function tacticalInput(action,x,y){
   try{
     let valid=false;
     if(action==='move'&&Number.isInteger(x)&&Number.isInteger(y))valid=tacticalMove(s,u,x,y);
-    else if((action==='attack'||action==='skill')&&x&&typeof x==='object')valid=tacticalAttack(s,u,x,action==='skill');
+    else if((action==='attack'||action==='skill')&&x&&typeof x==='object')valid=await tacticalAttack(s,u,x,action==='skill');
     else if(action==='guard')valid=tacticalGuard(s,u);
     else if(action==='end'){tacticalEndActor(s,u);valid=true;}
     if(!valid){updateRogueUI();return;}
     if(action!=='end'&&(u.ap<=0||u.hp<=0||u.escaped))tacticalEndActor(s,u);
     let result=tacticalOutcome(s);
-    if(!result)result=tacticalProceed(s);
+    if(!result)result=await tacticalProceed(s);
     if(result){tacticalSyncHP(s);rogueState.tactical=null;tacticalRecord(s,result==='win'?'전술전 승리':'전술전 패배');completeRogueCombat(result==='win',rogueState.team);}
     else await tacticalSave(s);
   }finally{tacticalBusy=false;updateRogueUI();}
@@ -5164,8 +5284,8 @@ function renderTactical(){
   panel.classList.toggle('hidden',!visible);if(!visible)return;
   const u=tacticalActor(s),isAlly=u?.side==='ally',danger=tacticalTelegraphCells(s);
   const objective={kill:'모든 적 격파',survive:'5라운드 생존',escape:`3명 탈출 ${s.escaped}/3`}[s.objective];
-  const enemies=tacticalLive(s,'enemy'),forecast=enemies.map(e=>{const t=tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'SPECIAL':tacticalCanHit(s,e,t)?'ATK':'MOVE'};});
-  const board=[];
+  const enemies=tacticalLive(s,'enemy'),forecast=enemies.map(e=>{const t=tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'SPECIAL':e.ap>=2&&e.skillData&&(e.kind!=='boss'||s.round-(e.lastSkillRound||-2)>=2)&&tacticalCanHit(s,e,t,true)?'SKILL':tacticalCanHit(s,e,t)?'ATK':'MOVE'};});
+  const board=[],pieces=[];
   for(let y=0;y<TACTICAL_H;y++)for(let x=0;x<TACTICAL_W;x++){
     const actor=tacticalOccupant(s,x,y),terrain=tacticalCell(s,x,y),goal=s.objective==='escape'&&x===5;
     const canMove=isAlly&&s.mode==='move'&&!actor&&tacticalPath(s,u,{x,y},u.move)?.length>0;
@@ -5175,11 +5295,15 @@ function renderTactical(){
     const enemyAction=actor?.side==='enemy'?forecast.find(item=>item.e.id===actor.id):null;
     const marked=actor?.side==='ally'?forecast.find(item=>item.t?.id===actor.id):null;
     const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp:terrain==='plain'?'빈 공간':{shelf:'책장 장애물',rift:'균열(턴 종료 8%)',cover:'엄폐(+원거리 피해 경감)',spike:'가시(진입 5%)',trap:'함정(진입 7%, 다음 턴 AP -1)',platform:'이동 발판'}[terrain]}${tele?' · 강공 예고 지역':''}`;
-    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?' rt-targetable':''}${tele?' rt-danger':''}${goal?' rt-exit':''}" data-tactical-cell="${x},${y}" title="${rogueEscape(title)}" aria-label="${rogueEscape(title)}" ${!isAlly||rogueBusy||tacticalBusy?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${tileIcon}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${actor?`<span class="rt-avatar rt-${actor.tone}">${tacticalUnitArt(actor)}</span><span class="rt-facing">${{E:'▶',W:'◀',N:'▲',S:'▼'}[actor.facing]}</span><span class="rt-cell-hp"><i style="width:${Math.max(0,Math.min(100,actor.hp/actor.maxHp*100))}%"></i></span>`:''}${enemyAction?`<span class="rt-target-marker">${enemyAction.kind}</span>`:''}${marked?'<span class="rt-target-marker rt-target-ally">표적</span>':''}</span></button>`);
+    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?' rt-targetable':''}${tele?' rt-danger':''}${goal?' rt-exit':''}" data-tactical-cell="${x},${y}" title="${rogueEscape(title)}" aria-label="${rogueEscape(title)}" ${!isAlly||rogueBusy||tacticalBusy?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${terrain==='shelf'?'':tileIcon}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}<span class="rt-coordinate">${x+1}.${y+1}</span></span></button>`);
+    const pt=tacticalProject(x,y),pos=`left:${pt.x/10}%;top:${pt.y/6}%;z-index:${Math.round(pt.y)}`;
+    if(terrain==='shelf')pieces.push(`<span class="rt-prop" style="${pos}" aria-hidden="true"><i></i><i></i><i></i><i></i></span>`);
+    if(actor)pieces.push(`<span class="rt-piece ${actor.side==='enemy'?'rt-enemy':'rt-ally'} ${actor.id===u?.id?'rt-acting':''} ${actor.kind==='boss'?'rt-boss':''}" data-unit="${actor.id}" style="${pos}" aria-hidden="true"><span class="rt-base"></span><span class="rt-avatar rt-${actor.tone}">${tacticalUnitArt(actor)}</span><span class="rt-piece-label">${rogueEscape(actor.name)}</span><span class="rt-cell-hp"><i style="width:${Math.max(0,Math.min(100,actor.hp/actor.maxHp*100))}%"></i></span><span class="rt-facing">${{E:'▶',W:'◀',N:'▲',S:'▼'}[actor.facing]}</span>${enemyAction?`<span class="rt-target-marker">${enemyAction.kind}</span>`:''}${marked?'<span class="rt-target-marker rt-target-ally">표적</span>':''}</span>`);
+
   }
   const modes=[['move','이동',1,'↔'],['attack','일반 공격',1,'✦'],['skill','스킬',2,'★']];
   const ap=u?.ap||0,portrait=u?.portrait||u?.image||'',portraitHTML=portrait?`<img src="${rogueEscape(portrait)}" alt="">`:`<span>${u?.icon||'◇'}</span>`;
-  panel.innerHTML=`<div class="rt-top"><div class="rt-heading-copy"><small>OPERATION ARCHIVE · FLOOR ${rogueState.floor}</small><h3>${rogueEscape(objective)}</h3><p>ROUND ${s.round}${s.objective==='survive'?' / 5':''} · ${rogueState.node.type==='boss'?'보스':rogueState.node.type==='elite'?'정예':'일반'} 교전</p></div><div class="rt-turn-label"><div class="rt-label-top"><span class="rt-turn-chip">${isAlly?'아군 차례':'적 차례'}</span><span class="rt-turn-badge">AP ${ap}/2</span></div><div class="rt-turn-name"><span class="rt-turn-avatar">${portraitHTML}</span><div><b>${rogueEscape(u?.name||'전술 종료')}</b><small>${rogueEscape(u?.role||'')} · ${rogueEscape(u?.facing||'')} · SPD ${u?.spd||0}</small></div></div></div></div>${s.telegraph?`<div class="rt-warning">⚠ 보스 강공 예고: <b>${rogueEscape(s.telegraph.label)}</b> · ${s.telegraph.resolveRound}라운드에 붉은 영역 타격</div>`:''}<div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-axis">${[1,2,3,4,5,6].map(v=>`<span>${v}</span>`).join('')}</div><div class="rt-board" role="group" aria-label="6열 5행 전술 전장">${board.join('')}</div><div class="rt-legend"><span>🟩 이동 가능</span><span>🟥 공격 가능</span><span>⚡ 균열</span><span>📚 장애물</span><span>▰ 엄폐</span><span>↗ 발판</span></div></div></div><aside class="rt-side"><section class="rt-glass rt-active"><h4><span>행동 선택</span><span>${rogueEscape(u?.faction||'')}</span></h4><div class="rt-active-card"><div class="rt-portrait">${portraitHTML}</div><div class="rt-active-meta"><b>${rogueEscape(u?.name||'')}</b><small>HP ${Math.ceil(u?.hp||0)}/${u?.maxHp||0} · 사거리 ${u?.range||0} · 이동 ${u?.move||0}</small>${u?.skillName?`<span class="rt-skill-chip">★ ${rogueEscape(u.skillName)}</span>`:''}</div></div><div class="rt-action-grid">${modes.map(([name,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===name?'selected':''}" data-tactical-mode="${name}" ${!isAlly||rogueBusy||tacticalBusy||ap<cost?'disabled':''}><span class="rt-action-icon">${icon}</span>${label}<span>${cost} AP</span></button>`).join('')}</div><p>${s.mode==='move'?`1 AP당 최대 ${u?.move||0}칸 이동 · 도착할 칸을 선택`:s.mode==='attack'?`일반 사거리 ${u?.range||0}칸 · 타격할 적 선택`:`${rogueEscape(u?.skillName||'스킬')} · 스킬 사거리 ${u?.skillRange||0}칸${u?.role==='사격형'?' · 착탄점 주위 AOE':''}`}</p><div class="rt-buttons"><button type="button" data-tactical-action="guard" ${!isAlly||ap<1||rogueBusy||tacticalBusy?'disabled':''}>🛡 방어<small>1 AP · 피해 40% 감소</small></button><button type="button" data-tactical-action="end" ${!isAlly||rogueBusy||tacticalBusy?'disabled':''}>⏭ 턴 종료<small>다음 SPD</small></button><button type="button" class="rt-surrender" data-tactical-action="surrender" ${rogueBusy||tacticalBusy?'disabled':''}>⚐ 항복<small>현재 전투 패배 처리</small></button></div></section><section class="rt-glass"><h4><span>SPD 행동 순서</span><span>${s.order.length} UNIT</span></h4><div class="rt-initiative">${s.order.map((id,i)=>{const v=s.units.find(a=>a.id===id);return v?`<span class="${i===s.cursor?'is-active':''} ${i<s.cursor?'is-done':''}"><strong>${v.side==='ally'?'●':'◆'} ${rogueEscape(v.name)}</strong><small>${v.spd}</small></span>`:'';}).join('')}</div></section><section class="rt-glass"><h4><span>적 행동 예고</span><span>${forecast.length} ENEMY</span></h4><div class="rt-forecast">${forecast.map(({e,t,kind})=>`<div><div class="rt-forecast-avatar">${e.image?`<img src="${rogueEscape(e.image)}" alt="">`:`<span>${e.icon||'◇'}</span>`}</div><div class="rt-forecast-copy"><span>${rogueEscape(e.name)}</span><b>${kind}${t?' → '+rogueEscape(t.name):''}</b><small>${rogueEscape(e.skillName||'기본 행동')} · HP ${Math.ceil(e.hp)} · ATK ${e.atk} · DEF ${e.def} · SPD ${e.spd} · 사거리 ${e.range}</small></div></div>`).join('')}</div></section></aside></div><div class="rt-bottom"><div class="rt-team">${s.units.filter(v=>v.side==='ally').map(v=>`<span class="${v.hp<=0?'is-fallen':''} ${v.escaped?'is-escaped':''}">${rogueEscape(v.name)} <b>${Math.ceil(v.hp)}/${v.maxHp}</b>${v.escaped?' 🚪':''}</span>`).join('')}</div><details class="rt-log"><summary>전투 기록 (${s.messages.length})</summary><ol>${s.messages.map(v=>`<li>${rogueEscape(v)}</li>`).join('')}</ol></details></div><p class="rt-save-note">행동마다 계정 체크포인트 저장 · 재접속 시 마지막 저장 성공 시점의 위치, HP, 라운드와 AP 복원</p>`;
+  panel.innerHTML=`<div class="rt-top"><div class="rt-heading-copy"><small>OPERATION ARCHIVE · FLOOR ${rogueState.floor}</small><h3>${rogueEscape(objective)}</h3><p>ROUND ${s.round}${s.objective==='survive'?' / 5':''} · ${rogueState.node.type==='boss'?'보스':rogueState.node.type==='elite'?'정예':'일반'} 교전</p></div><div class="rt-turn-label"><div class="rt-label-top"><span class="rt-turn-chip">${isAlly?'아군 차례':'적 차례'}</span><span class="rt-turn-badge">AP ${ap}/2</span></div><div class="rt-turn-name"><span class="rt-turn-avatar">${portraitHTML}</span><div><b>${rogueEscape(u?.name||'전술 종료')}</b><small>${rogueEscape(u?.role||'')} · ${rogueEscape(u?.facing||'')} · SPD ${u?.spd||0}</small></div></div></div></div>${s.telegraph?`<div class="rt-warning">⚠ 보스 강공 예고: <b>${rogueEscape(s.telegraph.label)}</b> · ${s.telegraph.resolveRound}라운드에 붉은 영역 타격</div>`:''}<div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-axis">${[1,2,3,4,5,6].map(v=>`<span>${v}</span>`).join('')}</div><div class="rt-board" role="group" aria-label="6열 5행 전술 전장"><div class="rt-grid-plane">${board.join('')}</div><div class="rt-unit-layer">${pieces.join('')}</div></div><div class="rt-legend"><span>🟩 이동 가능</span><span>🟥 공격 가능</span><span>⚡ 균열</span><span>📚 장애물</span><span>▰ 엄폐</span><span>↗ 발판</span></div></div></div><aside class="rt-side"><section class="rt-glass rt-active"><h4><span>행동 선택</span><span>${rogueEscape(u?.faction||'')}</span></h4><div class="rt-active-card"><div class="rt-portrait">${portraitHTML}</div><div class="rt-active-meta"><b>${rogueEscape(u?.name||'')}</b><small>HP ${Math.ceil(u?.hp||0)}/${u?.maxHp||0} · 사거리 ${u?.range||0} · 이동 ${u?.move||0}</small>${u?.skillName?`<span class="rt-skill-chip">★ ${rogueEscape(u.skillName)}</span>`:''}</div></div><div class="rt-action-grid">${modes.map(([name,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===name?'selected':''}" data-tactical-mode="${name}" ${!isAlly||rogueBusy||tacticalBusy||ap<cost?'disabled':''}><span class="rt-action-icon">${icon}</span>${label}<span>${cost} AP</span></button>`).join('')}</div><p>${s.mode==='move'?`1 AP당 최대 ${u?.move||0}칸 이동 · 도착할 칸을 선택`:s.mode==='attack'?`일반 사거리 ${u?.range||0}칸 · 타격할 적 선택`:`${rogueEscape(u?.skillName||'스킬')} · 스킬 사거리 ${u?.skillRange||0}칸${u?.role==='사격형'?' · 착탄점 주위 AOE':''}`}</p><div class="rt-buttons"><button type="button" data-tactical-action="guard" ${!isAlly||ap<1||rogueBusy||tacticalBusy?'disabled':''}>🛡 방어<small>1 AP · 피해 40% 감소</small></button><button type="button" data-tactical-action="end" ${!isAlly||rogueBusy||tacticalBusy?'disabled':''}>⏭ 턴 종료<small>다음 SPD</small></button><button type="button" class="rt-surrender" data-tactical-action="surrender" ${rogueBusy||tacticalBusy?'disabled':''}>⚐ 항복<small>현재 전투 패배 처리</small></button></div></section><section class="rt-glass"><h4><span>SPD 행동 순서</span><span>${s.order.length} UNIT</span></h4><div class="rt-initiative">${s.order.map((id,i)=>{const v=s.units.find(a=>a.id===id);return v?`<span class="${i===s.cursor?'is-active':''} ${i<s.cursor?'is-done':''}"><strong>${v.side==='ally'?'●':'◆'} ${rogueEscape(v.name)}</strong><small>${v.spd}</small></span>`:'';}).join('')}</div></section><section class="rt-glass"><h4><span>적 행동 예고</span><span>${forecast.length} ENEMY</span></h4><div class="rt-forecast">${forecast.map(({e,t,kind})=>`<div><div class="rt-forecast-avatar">${e.image?`<img src="${rogueEscape(e.image)}" alt="">`:`<span>${e.icon||'◇'}</span>`}</div><div class="rt-forecast-copy"><span>${rogueEscape(e.name)}</span><b>${kind}${t?' → '+rogueEscape(t.name):''}</b><small>${rogueEscape(e.skillName||'기본 행동')} · HP ${Math.ceil(e.hp)} · ATK ${e.atk} · DEF ${e.def} · SPD ${e.spd} · 사거리 ${e.range}</small></div></div>`).join('')}</div></section></aside></div><div class="rt-bottom"><div class="rt-team">${s.units.filter(v=>v.side==='ally').map(v=>`<span class="${v.hp<=0?'is-fallen':''} ${v.escaped?'is-escaped':''}">${rogueEscape(v.name)} <b>${Math.ceil(v.hp)}/${v.maxHp}</b>${v.escaped?' 🚪':''}</span>`).join('')}</div><details class="rt-log"><summary>전투 기록 (${s.messages.length})</summary><ol>${s.messages.map(v=>`<li>${rogueEscape(v)}</li>`).join('')}</ol></details></div><p class="rt-save-note">행동마다 계정 체크포인트 저장 · 재접속 시 마지막 저장 성공 시점의 위치, HP, 라운드와 AP 복원</p>`;
   panel.querySelectorAll('[data-tactical-mode]').forEach(b=>b.addEventListener('click',()=>tacticalInput('mode',b.dataset.tacticalMode)));
   panel.querySelectorAll('[data-tactical-action]').forEach(b=>b.addEventListener('click',()=>tacticalInput(b.dataset.tacticalAction)));
   panel.querySelectorAll('[data-tactical-cell]').forEach(b=>b.addEventListener('click',()=>{const [cx,cy]=b.dataset.tacticalCell.split(',').map(Number);tacticalInput('tile',cx,cy);}));
@@ -10208,17 +10332,17 @@ function rogueBossPreparedStats(monster) {
     const values=rogueBossClueValues();
     if(values.atkDown)monster.stats.atk=Math.max(1,Math.floor(monster.stats.atk*(1-values.atkDown)));
     if(values.defDown)monster.stats.def=Math.max(0,Math.floor(monster.stats.def*(1-values.defDown)));
-    // 경로 미리보기와 실제 전투에 동일한 체력을 표시합니다.
+    // Estimate the actual 2 AP tactical damage; original card powers can exceed this mode's cap.
     const party=rogueState.team.filter(card=>card.stats.hp>0);
-    const burst=party.reduce((sum,card)=>{
-        const power=Math.max(1,...(card.skills||[]).filter(skill=>!['heal','buff_atk','buff_def','debuff_atk','debuff_def'].includes(skill.type))
-            .map(skill=>Math.min(10,Math.max(1,Number(skill.power)||1))));
-        return sum+Math.max(1,Math.floor(card.stats.atk*power)-monster.stats.def);
+    const perRound=party.reduce((sum,card)=>{
+        const role=tacticalRole(card),skill=tacticalPickSkill(card,role);
+        const normal=Math.max(1,card.stats.atk-monster.stats.def)*2;
+        const burst=Math.max(1,card.stats.atk*(role==='사격형'?1.22:skill.power)-monster.stats.def*(role==='수비형'?.35:1));
+        return sum+Math.max(normal,burst);
     },0);
-    const steady=party.reduce((sum,card)=>sum+Math.max(1,card.stats.atk-monster.stats.def),0);
-    // Five actors can unload all ready skills before the boss moves; allow several full turns.
-    const minimum=Math.ceil(burst*(rogueState.floor>=12?4.4:3.5)+steady*(rogueState.floor>=12?3:2.5));
-    monster.maxHp=monster.stats.hp=Math.max(monster.maxHp,minimum);
+    const final=rogueState.floor>=12;
+    const low=Math.ceil(perRound*(final?3.8:3.0)),high=Math.ceil(perRound*(final?5:4));
+    monster.maxHp=monster.stats.hp=Math.max(1,Math.min(Math.max(monster.stats.hp,low),high));
     return monster;
 }
 function rogueBossSetup(session,monster) {
