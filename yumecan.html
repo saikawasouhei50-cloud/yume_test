@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v14-45-skills">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v16-null-turn-fix">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2060,6 +2060,11 @@ html.dark-mode #rogue-tactical .rt-skill-description>small{color:#9cd7c8}
 #rogue-tactical-skill-guide small{display:block;font-size:10px;opacity:.75;margin-top:2px}
 #rogue-tactical-skill-guide p{margin:5px 0}
 </style>
+<style>
+#rogue-tactical .rt-ap .rt-ap-reason{display:block;color:#a45743;font-size:10px;font-weight:700;line-height:1.4;margin-top:3px;max-width:90px;white-space:normal}
+#rogue-tactical .rt-ap .rt-ap-used{color:var(--rt-muted)}
+html.dark-mode #rogue-tactical .rt-ap .rt-ap-reason:not(.rt-ap-used){color:#efbb91}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
@@ -3245,7 +3250,7 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
 <details id="rogue-investigation-journal" class="rg-panel hidden"><summary>조사 기록 · <span id="rogue-investigation-count">0건</span></summary><div id="rogue-investigation-list"></div></details>
 <details class="rg-panel rg-rules"><summary>전술전 스킬 도감 · 45종</summary><div id="rogue-tactical-skill-guide"></div></details>
 <details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 6층 중간 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 최종 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
- <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 일반 승리 시 잊힌 서표 30% (1개), 정예 승리 시 1~2개, 보스 승리 시 3~5개를 발견합니다. 서표는 귀환·전멸 시 장비와 함께 정산됩니다.</p><p>다음 층의 경로는 층을 올라갈 때 무작위로 열립니다. 6층 중간 보스와 12층 최종 보스만 고정입니다. 진행 중인 탐사 기록과 선택 결과는 계정에 자동 저장됩니다.</p><p>전투는 6×5 격자의 SPD 기반 전술전입니다. 캐릭터당 AP 2, 이동·일반 공격·방어 1 AP, 스킬 2 AP. 엄폐·균열·가시·함정·이동 발판과 방향 판정이 적용됩니다. 일반 교전은 적 전멸 50% / 5라운드 생존 25% / 3명 EXIT 탈출 25%, 정예·보스는 적 전멸이 목표입니다. 적은 한 차례에 일반 공격을 1회 사용하며, 스킬은 3라운드 간격으로 사용합니다. 보스는 4라운드마다 흑잉크 폭발·충격 박치기·절단 광선을 사용하며 8층 이후 사거리가 증가합니다.</p></details>
+ <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 일반 승리 시 잊힌 서표 30% (1개), 정예 승리 시 1~2개, 보스 승리 시 3~5개를 발견합니다. 서표는 귀환·전멸 시 장비와 함께 정산됩니다.</p><p>다음 층의 경로는 층을 올라갈 때 무작위로 열립니다. 6층 중간 보스와 12층 최종 보스만 고정입니다. 진행 중인 탐사 기록과 선택 결과는 계정에 자동 저장됩니다.</p><p>전투는 6×5 격자의 SPD 기반 전술전입니다. 캐릭터당 AP 2, 이동·일반 공격·방어 1 AP, 스킬 2 AP. 엄폐·균열·가시·함정·이동 발판과 방향 판정이 적용됩니다. 함정은 진입 시 최대 HP의 7% 피해를 주고 다음 라운드 AP를 1 줄입니다. 재접속하면 저장된 남은 AP가 복원됩니다. 일반 교전은 적 전멸 50% / 5라운드 생존 25% / 3명 EXIT 탈출 25%, 정예·보스는 적 전멸이 목표입니다. 적은 한 차례에 일반 공격을 1회 사용하며, 스킬은 3라운드 간격으로 사용합니다. 보스는 4라운드마다 흑잉크 폭발·충격 박치기·절단 광선을 사용하며 8층 이후 사거리가 증가합니다.</p></details>
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
                 <div id="dispatch-view" class="hidden w-full flex flex-col items-center">
@@ -5149,7 +5154,7 @@ function tacticalActor(s){return s.units.find(u=>u.id===s.order[s.cursor])||null
 function tacticalLive(s,side){return s.units.filter(u=>u.hp>0&&!u.escaped&&(!side||u.side===side));}
 function tacticalCell(s,x,y){return s.terrain[y*TACTICAL_W+x];}
 function tacticalOccupant(s,x,y,exclude){return tacticalLive(s).find(u=>u!==exclude&&u.x===x&&u.y===y);}
-function tacticalRole(c){if(c.tacticalIdentity?.version===14&&['근접형','사격형','수비형'].includes(c.tacticalIdentity.role))return c.tacticalIdentity.role;const atk=Math.max(1,Number(c.stats.atk)||1),def=Math.max(0,Number(c.stats.def)||0),spd=battleSpeed(c);return def>=atk*.70?'수비형':atk>=def*1.55||spd>=12?'사격형':'근접형';}
+function tacticalRole(c){if(c.tacticalIdentity?.version===15&&['근접형','사격형','수비형'].includes(c.tacticalIdentity.role))return c.tacticalIdentity.role;const atk=Math.max(1,Number(c.stats.atk)||1),def=Math.max(0,Number(c.stats.def)||0),spd=battleSpeed(c);return def>=atk*.90?'수비형':atk>=def*1.80&&spd>=10?'사격형':'근접형';}
 function tacticalUnit(name,side,x,y,props){
   return {id:props.id,name,side,x,y,facing:side==='ally'?'E':'W',hp:props.hp,maxHp:props.maxHp||props.hp,atk:props.atk,def:props.def,spd:props.spd||0,role:props.role,kind:props.kind||'',icon:props.icon||'◇',tone:props.tone||'silver',image:props.image||'',portrait:props.portrait||props.image||'',cardData:props.cardData||null,faction:props.faction||props.cardData?.faction||'기타',range:props.range||1,skillRange:props.skillRange||2,move:props.move||2,ap:2,guarded:false,effects:[],block:props.role==='수비형',trapped:0,escaped:false,memberIndex:props.memberIndex??null,skillData:props.skillData||null,skillName:props.skillName||props.skillData?.name||'전술 스킬',skillType:props.skillType||props.skillData?.type||'damage',skillPower:props.skillPower??props.skillData?.power??1.4};
 }
@@ -5160,76 +5165,76 @@ const TACTICAL_SKILL_TYPES=['damage','true_damage','debuff_atk','debuff_def','va
 const TACTICAL_SKILLS={
  '근접형':{
  damage:[
- {name:'돌파 베기',power:1.6,range:2,dash:true,desc:'2칸 이내 적에게 접근해 ATK 160% 피해. 접근할 빈 칸이 필요합니다.'},
- {name:'원형 참격',power:1.15,shape:'selfArea',radius:1,desc:'자신과 상하좌우로 인접한 모든 적에게 ATK 115% 피해.'},
- {name:'틈새 추격',power:1.4,mark:.15,buff:{type:'atkUp',value:.1,scope:'self'},desc:'ATK 140% 피해. 대상의 받는 피해 +15%, 자신의 공격력 +10% (2라운드).'}],
+ {name:'전술 효과',power:1.6,range:2,dash:true,desc:'2칸 이내 적에게 접근해 ATK 160% 피해. 접근할 빈 칸이 필요합니다.'},
+ {name:'전술 효과',power:1.15,shape:'selfArea',radius:1,desc:'자신과 상하좌우로 인접한 모든 적에게 ATK 115% 피해.'},
+ {name:'전술 효과',power:1.4,mark:.15,buff:{type:'atkUp',value:.1,scope:'self'},desc:'ATK 140% 피해. 대상의 받는 피해 +15%, 자신의 공격력 +10% (2라운드).'}],
  true_damage:[
- {name:'급소 찌르기',power:1.5,penetration:.65,desc:'적 1명에게 ATK 150% 피해. 방어력 65% 무시.'},
- {name:'관통 연격',power:1.15,range:2,shape:'line',penetration:1,desc:'같은 행·열의 지정 방향으로 2칸까지 ATK 115% 피해. 방어력 전부 무시.'},
- {name:'파쇄 돌진',power:1.35,penetration:.5,push:true,selfShield:.08,desc:'ATK 135% 피해, 방어력 50% 무시. 적을 1칸 밀치고 자신에게 최대 HP 8% 보호막 (2라운드).'}],
+ {name:'전술 효과',power:1.5,penetration:.65,desc:'적 1명에게 ATK 150% 피해. 방어력 65% 무시.'},
+ {name:'전술 효과',power:1.15,range:2,shape:'line',penetration:1,desc:'같은 행·열의 지정 방향으로 2칸까지 ATK 115% 피해. 방어력 전부 무시.'},
+ {name:'전술 효과',power:1.35,penetration:.5,push:true,selfShield:.08,desc:'ATK 135% 피해, 방어력 50% 무시. 적을 1칸 밀치고 자신에게 최대 HP 8% 보호막 (2라운드).'}],
  debuff_atk:[
- {name:'무장 꺾기',power:1.1,debuff:{type:'atkDown',value:.25},desc:'ATK 110% 피해. 대상 공격력 -25% (2라운드).'},
- {name:'위압의 포효',power:.8,shape:'selfArea',radius:2,debuff:{type:'atkDown',value:.15},taunt:true,desc:'자신의 2칸 이내 적에게 ATK 80% 피해, 공격력 -15%. 자신이 적의 공격 우선 대상이 됨 (2라운드).'},
- {name:'견제 베기',power:1.2,debuff:{type:'atkDown',value:.15},slow:1,desc:'ATK 120% 피해. 대상 공격력 -15%, 이동 거리 -1칸 (2라운드).'}],
+ {name:'전술 효과',power:1.1,debuff:{type:'atkDown',value:.25},desc:'ATK 110% 피해. 대상 공격력 -25% (2라운드).'},
+ {name:'전술 효과',power:.8,shape:'selfArea',radius:2,debuff:{type:'atkDown',value:.15},taunt:true,desc:'자신의 2칸 이내 적에게 ATK 80% 피해, 공격력 -15%. 자신이 적의 공격 우선 대상이 됨 (2라운드).'},
+ {name:'전술 효과',power:1.2,debuff:{type:'atkDown',value:.15},slow:1,desc:'ATK 120% 피해. 대상 공격력 -15%, 이동 거리 -1칸 (2라운드).'}],
  debuff_def:[
- {name:'갑주 가르기',power:1.25,debuff:{type:'defDown',value:.3},desc:'ATK 125% 피해. 대상 방어력 -30% (2라운드).'},
- {name:'쐐기 참격',power:1.05,shape:'targetArea',radius:1,debuff:{type:'defDown',value:.15},desc:'지정한 적과 상하좌우로 인접한 적에게 ATK 105% 피해. 방어력 -15% (2라운드).'},
- {name:'약점 노출',power:1.1,debuff:{type:'defDown',value:.2},mark:.2,desc:'ATK 110% 피해. 대상 방어력 -20%, 받는 피해 +20% (2라운드).'}],
+ {name:'전술 효과',power:1.25,debuff:{type:'defDown',value:.3},desc:'ATK 125% 피해. 대상 방어력 -30% (2라운드).'},
+ {name:'전술 효과',power:1.05,shape:'targetArea',radius:1,debuff:{type:'defDown',value:.15},desc:'지정한 적과 상하좌우로 인접한 적에게 ATK 105% 피해. 방어력 -15% (2라운드).'},
+ {name:'전술 효과',power:1.1,debuff:{type:'defDown',value:.2},mark:.2,desc:'ATK 110% 피해. 대상 방어력 -20%, 받는 피해 +20% (2라운드).'}],
  vampire:[
- {name:'흡혈 참격',power:1.4,drain:.4,desc:'ATK 140% 피해. 실제 입힌 피해의 40%만큼 자신의 HP 회복.'},
- {name:'피의 격려',power:1.1,drain:.25,buff:{type:'atkUp',value:.15,scope:'allies',radius:1},desc:'ATK 110% 피해, 피해의 25% 흡혈. 자신과 1칸 이내 아군 공격력 +15% (2라운드).'},
- {name:'생명 회수',power:1.05,drain:.3,teamHeal:.08,teamRadius:1,desc:'ATK 105% 피해, 피해의 30% 흡혈. 자신과 1칸 이내 아군을 각자 최대 HP의 8%만큼 회복.'}]
+ {name:'전술 효과',power:1.4,drain:.4,desc:'ATK 140% 피해. 실제 입힌 피해의 40%만큼 자신의 HP 회복.'},
+ {name:'전술 효과',power:1.1,drain:.25,buff:{type:'atkUp',value:.15,scope:'allies',radius:1},desc:'ATK 110% 피해, 피해의 25% 흡혈. 자신과 1칸 이내 아군 공격력 +15% (2라운드).'},
+ {name:'전술 효과',power:1.05,drain:.3,teamHeal:.08,teamRadius:1,desc:'ATK 105% 피해, 피해의 30% 흡혈. 자신과 1칸 이내 아군을 각자 최대 HP의 8%만큼 회복.'}]
  },
  '사격형':{
  damage:[
- {name:'집중 사격',power:1.8,range:4,desc:'4칸 이내 적 1명에게 ATK 180% 피해.'},
- {name:'확산 탄막',power:1,range:3,shape:'targetArea',radius:1,desc:'3칸 이내 지정한 적과 상하좌우 인접한 적에게 ATK 100% 피해.'},
- {name:'엄호 사격',power:1.2,range:4,buff:{type:'defUp',value:.15,scope:'allies',radius:2},desc:'ATK 120% 피해. 자신과 2칸 이내 아군 방어력 +15% (2라운드).'}],
+ {name:'전술 효과',power:1.8,range:4,desc:'4칸 이내 적 1명에게 ATK 180% 피해.'},
+ {name:'전술 효과',power:1,range:3,shape:'targetArea',radius:1,desc:'3칸 이내 지정한 적과 상하좌우 인접한 적에게 ATK 100% 피해.'},
+ {name:'전술 효과',power:1.2,range:4,buff:{type:'defUp',value:.15,scope:'allies',radius:2},desc:'ATK 120% 피해. 자신과 2칸 이내 아군 방어력 +15% (2라운드).'}],
  true_damage:[
- {name:'관통 저격',power:1.65,range:4,penetration:.75,desc:'적 1명에게 ATK 165% 피해. 방어력 75% 무시.'},
- {name:'직선 관통탄',power:1.1,range:4,shape:'line',penetration:.65,desc:'같은 행·열의 지정 방향으로 4칸까지 ATK 110% 피해. 방어력 65% 무시.'},
- {name:'철갑 표식탄',power:1.3,range:4,penetration:.5,mark:.15,desc:'ATK 130% 피해, 방어력 50% 무시. 대상의 받는 피해 +15% (2라운드).'}],
+ {name:'전술 효과',power:1.65,range:4,penetration:.75,desc:'적 1명에게 ATK 165% 피해. 방어력 75% 무시.'},
+ {name:'전술 효과',power:1.1,range:4,shape:'line',penetration:.65,desc:'같은 행·열의 지정 방향으로 4칸까지 ATK 110% 피해. 방어력 65% 무시.'},
+ {name:'전술 효과',power:1.3,range:4,penetration:.5,mark:.15,desc:'ATK 130% 피해, 방어력 50% 무시. 대상의 받는 피해 +15% (2라운드).'}],
  debuff_atk:[
- {name:'제압 사격',power:1.1,range:4,debuff:{type:'atkDown',value:.25},desc:'ATK 110% 피해. 대상 공격력 -25% (2라운드).'},
- {name:'교란 탄막',power:.8,range:3,shape:'targetArea',radius:1,debuff:{type:'atkDown',value:.15},desc:'지정 대상과 상하좌우 인접 적에게 ATK 80% 피해. 공격력 -15% (2라운드).'},
- {name:'동작 봉쇄탄',power:1,range:4,debuff:{type:'atkDown',value:.15},slow:1,desc:'ATK 100% 피해. 대상 공격력 -15%, 이동 거리 -1칸 (2라운드).'}],
+ {name:'전술 효과',power:1.1,range:4,debuff:{type:'atkDown',value:.25},desc:'ATK 110% 피해. 대상 공격력 -25% (2라운드).'},
+ {name:'전술 효과',power:.8,range:3,shape:'targetArea',radius:1,debuff:{type:'atkDown',value:.15},desc:'지정 대상과 상하좌우 인접 적에게 ATK 80% 피해. 공격력 -15% (2라운드).'},
+ {name:'전술 효과',power:1,range:4,debuff:{type:'atkDown',value:.15},slow:1,desc:'ATK 100% 피해. 대상 공격력 -15%, 이동 거리 -1칸 (2라운드).'}],
  debuff_def:[
- {name:'약점 조준',power:1.1,range:4,debuff:{type:'defDown',value:.3},desc:'ATK 110% 피해. 대상 방어력 -30% (2라운드).'},
- {name:'파쇄 유탄',power:.85,range:3,shape:'targetArea',radius:1,debuff:{type:'defDown',value:.2},desc:'지정 대상과 상하좌우 인접 적에게 ATK 85% 피해. 방어력 -20% (2라운드).'},
- {name:'추적 표식',power:1.15,range:4,mark:.25,debuff:{type:'defDown',value:.1},desc:'ATK 115% 피해. 대상 방어력 -10%, 받는 피해 +25% (2라운드).'}],
+ {name:'전술 효과',power:1.1,range:4,debuff:{type:'defDown',value:.3},desc:'ATK 110% 피해. 대상 방어력 -30% (2라운드).'},
+ {name:'전술 효과',power:.85,range:3,shape:'targetArea',radius:1,debuff:{type:'defDown',value:.2},desc:'지정 대상과 상하좌우 인접 적에게 ATK 85% 피해. 방어력 -20% (2라운드).'},
+ {name:'전술 효과',power:1.15,range:4,mark:.25,debuff:{type:'defDown',value:.1},desc:'ATK 115% 피해. 대상 방어력 -10%, 받는 피해 +25% (2라운드).'}],
  vampire:[
- {name:'생명 흡수탄',power:1.35,range:4,drain:.4,desc:'ATK 135% 피해. 실제 입힌 피해의 40%만큼 자신의 HP 회복.'},
- {name:'회복 지원탄',power:0,range:4,target:'ally',heal:.22,cleanse:true,cooldown:3,desc:'4칸 이내 아군 1명을 대상 최대 HP의 22%만큼 회복하고 해로운 상태를 모두 해제.'},
- {name:'재생 신호탄',power:0,range:4,target:'ally',shape:'targetArea',radius:1,heal:.08,regen:.06,cooldown:3,desc:'지정 아군과 상하좌우 인접 아군을 최대 HP의 8%만큼 회복. 다음 2라운드 시작에 최대 HP 6%씩 추가 회복.'}]
+ {name:'전술 효과',power:1.35,range:4,drain:.4,desc:'ATK 135% 피해. 실제 입힌 피해의 40%만큼 자신의 HP 회복.'},
+ {name:'전술 효과',power:0,range:4,target:'ally',heal:.22,cleanse:true,cooldown:3,desc:'4칸 이내 아군 1명을 대상 최대 HP의 22%만큼 회복하고 해로운 상태를 모두 해제.'},
+ {name:'전술 효과',power:0,range:4,target:'ally',shape:'targetArea',radius:1,heal:.08,regen:.06,cooldown:3,desc:'지정 아군과 상하좌우 인접 아군을 최대 HP의 8%만큼 회복. 다음 2라운드 시작에 최대 HP 6%씩 추가 회복.'}]
  },
  '수비형':{
  damage:[
- {name:'방패 강타',power:1.25,push:true,desc:'인접한 적에게 ATK 125% 피해를 주고 1칸 밀쳐냅니다.'},
- {name:'수호자의 맹세',power:0,target:'self',shape:'allyArea',radius:1,buff:{type:'defUp',value:.2,scope:'targets'},shield:.12,cooldown:3,desc:'자신과 1칸 이내 아군 방어력 +20%, 각자 최대 HP 12% 보호막 (2라운드).'},
- {name:'반격 태세',power:0,target:'self',counter:.65,selfShield:.15,guard:true,cooldown:3,desc:'방어 태세와 최대 HP 15% 보호막을 얻음. 직접 피격 시 ATK 65%로 반격 (보호막·반격 2라운드, 반격당 대상 최대 HP 12% 상한).'}],
+ {name:'전술 효과',power:1.25,push:true,desc:'인접한 적에게 ATK 125% 피해를 주고 1칸 밀쳐냅니다.'},
+ {name:'전술 효과',power:0,target:'self',shape:'allyArea',radius:1,buff:{type:'defUp',value:.2,scope:'targets'},shield:.12,cooldown:3,desc:'자신과 1칸 이내 아군 방어력 +20%, 각자 최대 HP 12% 보호막 (2라운드).'},
+ {name:'전술 효과',power:0,target:'self',counter:.65,selfShield:.15,guard:true,cooldown:3,desc:'방어 태세와 최대 HP 15% 보호막을 얻음. 직접 피격 시 ATK 65%로 반격 (보호막·반격 2라운드, 반격당 대상 최대 HP 12% 상한).'}],
  true_damage:[
- {name:'방패 분쇄',power:1.35,penetration:.65,desc:'인접한 적에게 ATK 135% 피해. 방어력 65% 무시.'},
- {name:'철벽 응징',power:1.4,stat:'def',penetration:.5,desc:'인접한 적에게 자신의 DEF × 1.8 × 1.4 기준 피해. 대상 방어력 50% 무시.'},
- {name:'관통 저지',power:1.1,penetration:1,slow:1,desc:'ATK 110% 피해. 방어력을 전부 무시하고 대상 이동 거리 -1칸 (2라운드).'}],
+ {name:'전술 효과',power:1.35,penetration:.65,desc:'인접한 적에게 ATK 135% 피해. 방어력 65% 무시.'},
+ {name:'전술 효과',power:1.4,stat:'def',penetration:.5,desc:'인접한 적에게 자신의 DEF × 1.8 × 1.4 기준 피해. 대상 방어력 50% 무시.'},
+ {name:'전술 효과',power:1.1,penetration:1,slow:1,desc:'ATK 110% 피해. 방어력을 전부 무시하고 대상 이동 거리 -1칸 (2라운드).'}],
  debuff_atk:[
- {name:'수호의 도발',power:0,target:'self',taunt:true,auraDebuff:{type:'atkDown',value:.2,radius:2},guard:true,cooldown:3,desc:'방어 태세에 진입. 자신이 적의 공격 우선 대상이 되고 2칸 이내 적 공격력 -20% (2라운드).'},
- {name:'쇠약의 방진',power:.8,shape:'selfArea',radius:2,debuff:{type:'atkDown',value:.2},desc:'자신의 2칸 이내 적에게 ATK 80% 피해. 대상 공격력 -20% (2라운드).'},
- {name:'전선 지휘',power:0,target:'self',shape:'allyArea',radius:2,buff:{type:'atkUp',value:.15,scope:'targets'},extraBuff:{type:'defUp',value:.15,scope:'targets'},cooldown:3,desc:'자신과 2칸 이내 아군 공격력·방어력 +15% (2라운드).'}],
+ {name:'전술 효과',power:0,target:'self',taunt:true,auraDebuff:{type:'atkDown',value:.2,radius:2},guard:true,cooldown:3,desc:'방어 태세에 진입. 자신이 적의 공격 우선 대상이 되고 2칸 이내 적 공격력 -20% (2라운드).'},
+ {name:'전술 효과',power:.8,shape:'selfArea',radius:2,debuff:{type:'atkDown',value:.2},desc:'자신의 2칸 이내 적에게 ATK 80% 피해. 대상 공격력 -20% (2라운드).'},
+ {name:'전술 효과',power:0,target:'self',shape:'allyArea',radius:2,buff:{type:'atkUp',value:.15,scope:'targets'},extraBuff:{type:'defUp',value:.15,scope:'targets'},cooldown:3,desc:'자신과 2칸 이내 아군 공격력·방어력 +15% (2라운드).'}],
  debuff_def:[
- {name:'방패 틈새',power:1.1,debuff:{type:'defDown',value:.3},desc:'인접한 적에게 ATK 110% 피해. 대상 방어력 -30% (2라운드).'},
- {name:'포위 진형',power:.8,shape:'selfArea',radius:1,debuff:{type:'defDown',value:.2},buff:{type:'atkUp',value:.1,scope:'allies',radius:1},desc:'인접 적에게 ATK 80% 피해, 방어력 -20%. 자신과 인접 아군 공격력 +10% (2라운드).'},
- {name:'균열의 일격',power:1.25,debuff:{type:'defDown',value:.2},mark:.15,desc:'인접한 적에게 ATK 125% 피해. 방어력 -20%, 받는 피해 +15% (2라운드).'}],
+ {name:'전술 효과',power:1.1,debuff:{type:'defDown',value:.3},desc:'인접한 적에게 ATK 110% 피해. 대상 방어력 -30% (2라운드).'},
+ {name:'전술 효과',power:.8,shape:'selfArea',radius:1,debuff:{type:'defDown',value:.2},buff:{type:'atkUp',value:.1,scope:'allies',radius:1},desc:'인접 적에게 ATK 80% 피해, 방어력 -20%. 자신과 인접 아군 공격력 +10% (2라운드).'},
+ {name:'전술 효과',power:1.25,debuff:{type:'defDown',value:.2},mark:.15,desc:'인접한 적에게 ATK 125% 피해. 방어력 -20%, 받는 피해 +15% (2라운드).'}],
  vampire:[
- {name:'생명 보호막',power:0,range:2,target:'ally',shield:.25,regen:.04,cooldown:3,desc:'2칸 이내 아군 1명에게 최대 HP 25% 보호막 (2라운드). 다음 2라운드 시작에 최대 HP 4%씩 회복.'},
- {name:'야전 응급처치',power:0,range:2,target:'ally',heal:.25,cleanse:true,cooldown:3,desc:'2칸 이내 아군 1명을 최대 HP의 25%만큼 회복하고 해로운 상태를 모두 해제.'},
- {name:'수호의 재생',power:0,target:'self',shape:'allyArea',radius:2,heal:.1,regen:.05,cooldown:3,desc:'자신과 2칸 이내 아군을 최대 HP의 10%만큼 회복. 다음 2라운드 시작에 최대 HP 5%씩 추가 회복.'}]
+ {name:'전술 효과',power:0,range:2,target:'ally',shield:.25,regen:.04,cooldown:3,desc:'2칸 이내 아군 1명에게 최대 HP 25% 보호막 (2라운드). 다음 2라운드 시작에 최대 HP 4%씩 회복.'},
+ {name:'전술 효과',power:0,range:2,target:'ally',heal:.25,cleanse:true,cooldown:3,desc:'2칸 이내 아군 1명을 최대 HP의 25%만큼 회복하고 해로운 상태를 모두 해제.'},
+ {name:'전술 효과',power:0,target:'self',shape:'allyArea',radius:2,heal:.1,regen:.05,cooldown:3,desc:'자신과 2칸 이내 아군을 최대 HP의 10%만큼 회복. 다음 2라운드 시작에 최대 HP 5%씩 추가 회복.'}]
  }
 };
 for(const [role,groups] of Object.entries(TACTICAL_SKILLS))for(const [category,skills] of Object.entries(groups))skills.forEach((skill,i)=>Object.assign(skill,{id:`${role}:${category}:${i}`,role,category,target:skill.target||'enemy',shape:skill.shape||'single',range:skill.range||(skill.shape==='selfArea'?skill.radius:role==='사격형'?4:1),cooldown:skill.cooldown||2}));
 function renderTacticalSkillGuide(){
  const box=document.getElementById('rogue-tactical-skill-guide');if(!box||box.innerHTML)return;
  const labels={damage:'공격 계열',true_damage:'관통 계열',debuff_atk:'공격 약화·지원 계열',debuff_def:'방어 약화·강화 계열',vampire:'흡혈·회복 계열'};
- box.innerHTML=`<p>원본 스킬의 유형과 입장 전 역할에 따라 후보 3종 중 하나가 카드별로 고정 배정됩니다. 탐사 중 역할과 배정 스킬은 변하지 않습니다. 같은 상태 효과는 중첩되지 않고 더 강한 수치로 유지되며, 재적용 시 지속 시간이 갱신됩니다.</p>${Object.entries(TACTICAL_SKILLS).map(([role,groups])=>`<details class="rt-guide-role"><summary>${role} · 15종</summary>${Object.entries(groups).map(([type,list])=>`<section><h4>${labels[type]}</h4>${list.map(k=>`<div><b>${k.name}</b><small>2 AP · 재사용 ${k.cooldown}라운드 · 사거리 ${k.range}칸</small><p>${k.desc}</p></div>`).join('')}</section>`).join('')}</details>`).join('')}`;
+ box.innerHTML=`<p>원본 스킬의 유형과 입장 전 역할에 따라 후보 3종 중 하나가 카드별로 고정 배정됩니다. 탐사 중 역할과 배정 스킬은 변하지 않습니다. 같은 상태 효과는 중첩되지 않고 더 강한 수치로 유지되며, 재적용 시 지속 시간이 갱신됩니다.</p>${Object.entries(TACTICAL_SKILLS).map(([role,groups])=>`<details class="rt-guide-role"><summary>${role} · 15종</summary>${Object.entries(groups).map(([type,list])=>`<section><h4>${labels[type]}</h4>${list.map((k,i)=>`<div><b>${labels[type]} · 효과 ${i+1}</b><small>2 AP · 재사용 ${k.cooldown}라운드 · 사거리 ${k.range}칸</small><p>${k.desc}</p></div>`).join('')}</section>`).join('')}</details>`).join('')}`;
 }
 function tacticalOriginalSkill(card){
  const list=(card?.skills||[]).filter(Boolean);
@@ -5241,16 +5246,16 @@ function tacticalPickSkill(card,role){
  const source=tacticalOriginalSkill(card),category=tacticalSkillCategory(source),pool=TACTICAL_SKILLS[role][category];
  const saved=card?.tacticalIdentity?.skillId;
  const picked=pool.find(s=>s.id===saved)||pool[tacticalSkillHash(`${card.name}|${source.name}|${role}|${category}`)%3];
- return {...picked,type:source.type||'damage',sourceName:source.name||'전술 스킬',dialogue:source.dialogue||'',tactical:true};
+ return {...picked,name:source.name||'전술 스킬',type:source.type||'damage',sourceName:source.name||'전술 스킬',dialogue:source.dialogue||'',tactical:true};
 }
 function tacticalLockCard(card){
- if(card.tacticalIdentity?.version===14&&TACTICAL_SKILLS[card.tacticalIdentity.role])return;
+ if(card.tacticalIdentity?.version===15&&TACTICAL_SKILLS[card.tacticalIdentity.role])return;
  const role=tacticalRole({...card,tacticalIdentity:null}),skill=tacticalPickSkill({...card,tacticalIdentity:null},role);
- card.tacticalIdentity={version:14,role,skillId:skill.id};
+ card.tacticalIdentity={version:15,role,skillId:skill.id};
 }
 function tacticalEnsureRunIdentity(){
  for(const member of rogueState.team||[]){
-  if(member.tacticalIdentity?.version===14)continue;
+  if(member.tacticalIdentity?.version===15)continue;
   // Old saves have no entry snapshot. Recover role from the owned card before relic bonuses.
   let stats=null;
   if(typeof playerInventory!=='undefined'&&typeof getEnhancedStats==='function'){
@@ -5273,9 +5278,9 @@ function renderTacticalCardDetails(character,stats,instance=null){
   const profile=tacticalCardProfile(source),esc=rogueEscape;
   box.innerHTML=`<header><h3>TACTICAL COMBAT // 전술전 정보</h3></header><p class="detail-tactical-role">폐기된 서고 전용 효과 <b>${esc(profile.role)}</b></p>
     <dl class="detail-tactical-ranges"><div><dt>이동 · 1 AP</dt><dd>${profile.move}<small>칸</small></dd></div><div><dt>일반 공격 · 1 AP</dt><dd>${profile.range}<small>칸</small></dd></div><div><dt>스킬 · 2 AP</dt><dd>${profile.skill.target==='self'?'자신':profile.skillRange}${profile.skill.target==='self'?'':'<small>칸</small>'}</dd></div></dl>
-    <div class="detail-tactical-effect"><b>${esc(profile.skill.name)}</b><p>${esc(tacticalCardEffect(profile))}</p><small>소모 2 AP · 재사용 간격 ${profile.skill.cooldown}라운드 · ${profile.skill.target==='self'?'자신 대상':profile.skill.target==='ally'?'아군 대상':'적 대상'}</small><small>원본 스킬 · ${esc(profile.skill.sourceName)}</small></div>
+    <div class="detail-tactical-effect"><b>${esc(profile.skill.name)}</b><p>${esc(tacticalCardEffect(profile))}</p><small>소모 2 AP · 재사용 간격 ${profile.skill.cooldown}라운드 · ${profile.skill.target==='self'?'자신 대상':profile.skill.target==='ally'?'아군 대상':'적 대상'}</small></div>
     <p class="detail-tactical-note">거리는 상하좌우 칸 수를 합산합니다. 피해량은 대상 방어력·방향·엄폐·방어 상태에 따라 달라집니다.</p>
-    <details><summary>역할·이동·사거리 판정 기준</summary><p>① DEF ≥ ATK × 0.7 → 수비형<br>② 그 외에 ATK ≥ DEF × 1.55 또는 SPD ≥ 12 → 사격형<br>③ 나머지 → 근접형</p><p>수비형은 이동 1칸, 근접형·사격형은 이동 2칸입니다. SPD는 행동 순서를 정합니다.</p><p>${instance?'현재 강화·장비 능력치와 계승 스킬 기준입니다. 탐사 입장 시 역할·스킬이 고정되며 이후 유물·영감으로 바뀌지 않습니다.':'도감의 기본 능력치 기준입니다. 강화·장비에 따라 입장 전 역할은 달라질 수 있으며, 탐사 중에는 고정됩니다.'}</p></details><details class="detail-tactical-variants"><summary>같은 분류의 전술 스킬 3종</summary>${TACTICAL_SKILLS[profile.role][profile.skill.category].map(k=>`<div><b>${k.id===profile.skill.id?'● ':''}${esc(k.name)}</b><p>${esc(k.desc)}</p></div>`).join('')}<p>카드별로 한 가지가 자동 배정되어 유지됩니다.</p></details>`;
+    <details><summary>역할·이동·사거리 판정 기준</summary><p>① DEF ≥ ATK × 0.9 → 수비형<br>② 그 외에 ATK ≥ DEF × 1.8이면서 SPD ≥ 10 → 사격형<br>③ 나머지 → 근접형</p><p>수비형은 이동 1칸, 근접형·사격형은 이동 2칸입니다. SPD는 행동 순서를 정합니다.</p><p>${instance?'현재 강화·장비 능력치와 계승 스킬 기준입니다. 탐사 입장 시 역할·스킬이 고정되며 이후 유물·영감으로 바뀌지 않습니다.':'도감의 기본 능력치 기준입니다. 강화·장비에 따라 입장 전 역할은 달라질 수 있으며, 탐사 중에는 고정됩니다.'}</p></details><details class="detail-tactical-variants"><summary>같은 분류의 전술 효과 3종</summary>${TACTICAL_SKILLS[profile.role][profile.skill.category].map((k,i)=>`<div><b>${k.id===profile.skill.id?'● 적용 중 · ':''}전술 효과 ${i+1}</b><p>${esc(k.desc)}</p></div>`).join('')}<p>스킬 이름은 원본 이름을 사용하며, 위 효과 중 하나가 카드별로 고정 배정됩니다.</p></details>`;
 }
 
 function tacticalEnemyPool(){const allyBases=new Set((rogueState?.team||[]).map(c=>String(c.baseName||c.name||'').trim()).filter(Boolean));const unique=new Map();(characters||[]).forEach(card=>{if(!card||!card.name||!(card.skills||[]).length)return;const key=String(card.baseName||card.name||'').trim();if(!key||allyBases.has(key)||unique.has(key))return;unique.set(key,card);});const rank={SSR:4,SR:3,R:2,N:1};const pool=[...unique.values()].sort((a,b)=>(rank[b.rarity]||0)-(rank[a.rarity]||0)||String(a.name).localeCompare(String(b.name),'ko'));return pool.length?pool:[...(characters||[]).filter(card=>card&&card.name).slice(0,12)];}
@@ -5405,8 +5410,8 @@ function tacticalRoundEffects(s){
  }
 }
 function tacticalStatusText(s,u){return (u?.effects||[]).map(e=>`${TACTICAL_STATUS_LABELS[e.type]||e.type}${e.type==='shield'?' '+Math.ceil(e.value):''}`).join(' · ');}
-function tacticalSkillReady(s,u){return !!u?.skillData&&s.round-(Number.isFinite(u.lastSkillRound)?u.lastSkillRound:-99)>=(u.side==='enemy'?Math.max(3,u.skillData.cooldown||2):u.skillData.cooldown||2);}
-function tacticalSkillWait(s,u){return Math.max(0,(u.side==='enemy'?Math.max(3,u.skillData?.cooldown||2):u.skillData?.cooldown||2)-(s.round-(Number.isFinite(u.lastSkillRound)?u.lastSkillRound:-99)));}
+function tacticalSkillReady(s,u){return !!s&&!!u?.skillData&&s.round-(Number.isFinite(u.lastSkillRound)?u.lastSkillRound:-99)>=(u.side==='enemy'?Math.max(3,u.skillData.cooldown||2):u.skillData.cooldown||2);}
+function tacticalSkillWait(s,u){if(!s||!u?.skillData)return 0;return Math.max(0,(u.side==='enemy'?Math.max(3,u.skillData?.cooldown||2):u.skillData?.cooldown||2)-(s.round-(Number.isFinite(u.lastSkillRound)?u.lastSkillRound:-99)));}
 function tacticalDashStep(s,a,target){
  if(tacticalDist(a,target)<=1)return {x:a.x,y:a.y};
  if(tacticalLive(s,a.side==='ally'?'enemy':'ally').some(u=>u.guarded&&u.role==='수비형'&&tacticalDist(u,a)<=1))return null;
@@ -5439,17 +5444,17 @@ function tacticalSkillBuff(s,a,entry,targets){
  for(const u of friends)tacticalAddEffect(s,u,entry.type,entry.value);
 }
 function tacticalSkillUpgrade(s){
- if(s.skillSystemVersion===14)return;
+ if(s.skillSystemVersion===15)return;
  tacticalEnsureRunIdentity();
  for(const u of s.units){
   if(u.id==='echo')continue;
-  const card=u.side==='ally'?rogueState.team[u.memberIndex]:(u.cardData||{name:u.name,stats:{atk:u.atk,def:u.def},skills:u.skillData?[u.skillData]:[]});
+  const card=u.side==='ally'?rogueState.team[u.memberIndex]:(u.cardData||{name:u.name,stats:{atk:u.atk,def:u.def},skills:u.skillData?[{...u.skillData,name:u.skillData.sourceName||u.skillData.name}]:[]});
   if(!card)continue;
   const role=u.side==='ally'?card.tacticalIdentity.role:u.role,skill=tacticalPickSkill(card,role);
   u.role=role;u.block=role==='수비형';if(u.side==='ally'){u.move=role==='수비형'?1:2;u.range=role==='사격형'?3:1;}
   u.skillRange=skill.range;u.skillData=skill;u.skillName=skill.name;u.skillPower=skill.power;u.skillType=skill.type;u.effects=u.effects||[];
  }
- s.skillSystemVersion=14;
+ s.skillSystemVersion=15;
 }
 async function tacticalCastSkill(s,a,target){
  if(a.ap<2||!tacticalSkillCanTarget(s,a,target))return false;
@@ -5512,7 +5517,7 @@ function tacticalMake(){
   const enemies=Array.from({length:count},(_,i)=>{const card=pool[(i*3+floor+Math.floor(rogueRand()*Math.max(pool.length,1)))%Math.max(pool.length,1)]||pool[i%Math.max(pool.length,1)]||characters[0]||{name:'기록 누락',stats:{hp:100,atk:10,def:5},skills:[]};const role=tacticalRole(card),kind=boss?'boss':tacticalEnemyKind(card,role,i),t=TACTICAL_ENEMIES[kind]||TACTICAL_ENEMIES.cutter,skill=tacticalPickSkill(card,role),hp=Math.max(5,Math.round(base.stats.hp*(boss?1:t.hp/count))),atk=Math.max(2,Math.round(base.stats.atk*(boss?1:t.atk*.64))),def=Math.max(0,Math.round(base.stats.def*t.def)),y=boss?2:[0,1,3,4][i],x=boss?5:5;return tacticalUnit(boss?`[봉인] ${card.name}`:card.name,'enemy',x,y,{id:`e${i}`,kind,role:boss?(role==='수비형'?'수비형':role):role,hp,atk,def,spd:boss?2:t.spd+Math.min(6,Math.floor(floor/3)),range:boss?2+(floor>=8?1:0):t.range,skillRange:skill.range,move:t.move,icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️',tone:tacticalToneForKind(kind),image:tacticalSafeImage(card),portrait:tacticalSafePortrait(card),cardData:card,faction:card.faction,skillData:skill,skillName:skill.name,skillType:skill.type,skillPower:skill.power});});
   enemies.forEach(tacticalEaseEnemy);
   const clues=rogueBossClueValues();
-  const s={version:3,skillSystemVersion:14,width:6,height:5,runId:rogueState.runId,nodeId:node.id,objective,round:1,terrain,units:[...allies,...enemies],order:[],cursor:0,mode:'move',messages:[],escaped:0,bossPatterns:boss?Math.floor(rogueRand()*3):0,balanceVersion:9,nextBossRound:clues.delaySpecial?5:4,telegraph:null,firstSpecialSkipped:false,spawnedClone:false,firstInkResolved:false,firstLaserResolved:false};
+  const s={version:3,skillSystemVersion:15,width:6,height:5,runId:rogueState.runId,nodeId:node.id,objective,round:1,terrain,units:[...allies,...enemies],order:[],cursor:0,mode:'move',messages:[],escaped:0,bossPatterns:boss?Math.floor(rogueRand()*3):0,balanceVersion:9,nextBossRound:clues.delaySpecial?5:4,telegraph:null,firstSpecialSkipped:false,spawnedClone:false,firstInkResolved:false,firstLaserResolved:false};
   tacticalRoundStart(s);tacticalRecord(s,objective==='kill'?'목표: 적 전멸':objective==='survive'?'목표: 5라운드 생존':'목표: 3명을 오른쪽 EXIT로 탈출');
   return s;
 }
@@ -5520,7 +5525,7 @@ function tacticalRecord(s,line){s.messages.unshift(line);s.messages.length=Math.
 function tacticalRoundStart(s){
   tacticalRoundEffects(s);
   s.order=tacticalLive(s).sort((a,b)=>b.spd-a.spd||a.id.localeCompare(b.id)).map(u=>u.id);s.cursor=0;
-  for(const u of tacticalLive(s)){u.ap=Math.max(0,2-(u.trapped?1:0));u.trapped=0;u.activated=false;}
+  for(const u of tacticalLive(s)){u.apStartPenalty=u.trapped?1:0;u.ap=2-u.apStartPenalty;if(u.apStartPenalty)tacticalRecord(s,`⚠ ${u.name} · 함정 페널티로 이번 라운드 AP 1/2`);u.trapped=0;u.activated=false;}
   if(s.units.some(u=>u.kind==='boss')&&s.round===s.nextBossRound-1){
     const boss=tacticalLive(s,'enemy').find(u=>u.kind==='boss'),targets=tacticalLive(s,'ally');
     if(boss&&targets.length){const target=targets.slice().sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
@@ -5583,7 +5588,7 @@ function tacticalHurt(s,attacker,target,mult=1,opts={}){
 }
 function tacticalEnter(s,u){
   const type=tacticalCell(s,u.x,u.y);
-  if(type==='spike'||type==='trap'){const d=Math.max(1,Math.ceil(u.maxHp*(type==='spike'?.05:.07)));u.hp=Math.max(0,u.hp-d);if(type==='trap')u.trapped=1;tacticalRecord(s,`${u.name} ${type==='spike'?'가시':'함정'} · ${d} 피해${type==='trap'?' / 다음 턴 AP -1':''}`);}
+  if(type==='spike'||type==='trap'){const d=Math.max(1,Math.ceil(u.maxHp*(type==='spike'?.05:.07)));u.hp=Math.max(0,u.hp-d);if(type==='trap')u.trapped=1;tacticalRecord(s,`${u.name} ${type==='spike'?'가시':'함정'} · ${d} 피해${type==='trap'?' / 다음 라운드 AP -1':''}`);}
   if(type==='platform') {const other=u.x===1?{x:4,y:4}:{x:1,y:4};if(tacticalPassable(s,other.x,other.y,u)){u.x=other.x;u.y=other.y;tacticalRecord(s,`${u.name} 이동 발판 작동`);}}
   if(u.side==='ally'&&s.objective==='escape'&&u.x===5&&u.hp>0){u.escaped=true;s.escaped++;tacticalRecord(s,`🚪 ${u.name} 탈출 성공 (${s.escaped}/3)`);}
 }
@@ -5765,7 +5770,7 @@ function renderTactical(){
   const s=rogueState.tactical,visible=rogueState.active&&rogueState.phase==='combat'&&!!s;
   panel.classList.toggle('hidden',!visible);if(!visible)return;
   tacticalBalanceUpgrade(s);tacticalSkillUpgrade(s);
-  const u=tacticalActor(s),isAlly=u?.side==='ally',locked=!isAlly||rogueBusy||tacticalBusy,ap=u?.ap||0;
+  const current=tacticalActor(s),u=current?.hp>0&&!current.escaped?current:null,isAlly=u?.side==='ally',locked=!isAlly||rogueBusy||tacticalBusy,ap=u?.ap||0;
   const esc=rogueEscape,danger=tacticalTelegraphCells(s),objective={kill:'모든 적 격파',survive:'5라운드 생존',escape:`3명 탈출 · ${s.escaped}/3`}[s.objective];
   const enemies=tacticalLive(s,'enemy'),forecast=enemies.map(e=>{const skillTarget=tacticalAISkillTarget(s,e),t=skillTarget||tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'강공':skillTarget?'스킬':tacticalCanHit(s,e,t)?'공격':'이동'};});
   const board=[],pieces=[];
@@ -5776,7 +5781,7 @@ function renderTactical(){
     const canMove=isAlly&&ap>=1&&s.mode==='move'&&!actor&&tacticalPath(s,u,{x,y},tacticalMoveDistance(s,u))?.length>0;
     const canHit=isAlly&&!!actor&&s.mode!=='move'&&tacticalCanHit(s,u,actor,s.mode==='skill')&&ap>=(s.mode==='skill'?2:1);
     const friendlyTarget=canHit&&s.mode==='skill'&&actor.side===u.side;
-    const tele=danger.has(tacticalKey(x,y)),terrainName={plain:'빈 공간',rift:'균열 · 턴 종료 시 HP 8% 피해',cover:'엄폐 · 원거리 피해 25% 감소',spike:'가시',trap:'함정',platform:'이동 발판'}[terrain]||'바닥';
+    const tele=danger.has(tacticalKey(x,y)),terrainName={plain:'빈 공간',rift:'균열 · 턴 종료 시 HP 8% 피해',cover:'엄폐 · 원거리 피해 25% 감소',spike:'가시',trap:'함정 · 진입 HP 7% 피해 · 다음 라운드 AP −1',platform:'이동 발판'}[terrain]||'바닥';
     const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp+(tacticalStatusText(s,actor)?' · '+tacticalStatusText(s,actor):''):terrainName}${tele?' · 강공 위험 구역':''}`;
     board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?(friendlyTarget?' rt-supportable':' rt-targetable'):''}${tele?' rt-danger':''}${goal?' rt-exit':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${locked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}</span></button>`);
     if(actor){const pt=tacticalProject(x,y),intent=forecast.find(v=>v.e.id===actor.id),short=actor.name.replace(/^\[[^\]]*\]\s*/,'');
@@ -5784,14 +5789,14 @@ function renderTactical(){
     }
   }
   const modes=[['move','이동',1,'↔'],['attack','일반 공격',1,'✦'],['skill','스킬',2,'★']];
-  const instruction=!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`공격할 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'청록색 아군 칸을 선택하세요':'붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
+  const instruction=!u?'차례를 갱신하고 있습니다':!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`공격할 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'청록색 아군 칸을 선택하세요':'붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
   const allies=s.units.filter(v=>v.side==='ally');
   panel.innerHTML=`
-    <header class="rt-top"><div class="rt-heading-copy"><small>폐기된 서고 · ${rogueState.floor}층</small><h3>${esc(objective)}</h3></div><div class="rt-operation-status"><strong>ROUND ${s.round}${s.objective==='survive'?' / 5':''}</strong><span>남은 적 ${enemies.length}</span><b>${isAlly?'아군 차례':'적 행동 중'}</b></div></header>
+    <header class="rt-top"><div class="rt-heading-copy"><small>폐기된 서고 · ${rogueState.floor}층</small><h3>${esc(objective)}</h3></div><div class="rt-operation-status"><strong>ROUND ${s.round}${s.objective==='survive'?' / 5':''}</strong><span>남은 적 ${enemies.length}</span><b>${!u?'차례 갱신 중':isAlly?'아군 차례':'적 행동 중'}</b></div></header>
     ${s.telegraph?`<div class="rt-warning"><strong>⚠ ${esc(s.telegraph.label)}</strong><span>${s.telegraph.resolveRound}라운드 발동 · 빗금 표시 칸에서 벗어나거나 방어하세요</span></div>`:''}
     <div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-board" role="group" aria-label="6열 5행 전술 전장"><div class="rt-grid-plane">${board.join('')}</div><div class="rt-unit-layer">${pieces.join('')}</div></div><div class="rt-legend"><span><i class="rt-key-move"></i>이동 가능</span><span><i class="rt-key-attack"></i>공격 가능</span><span>▰ 엄폐</span><span>ϟ 균열</span><span>↗ 발판</span></div></div></div>
-    <div class="rt-command"><div class="rt-operator"><div class="rt-command-portrait">${portrait(u)}</div><div><small>현재 행동</small><b>${esc(u?.name||'행동 대기')}</b><span>${esc(u?.role||'')} · HP <strong>${Math.ceil(u?.hp||0)} / ${u?.maxHp||0}</strong></span></div><div class="rt-ap"><strong>${ap}<small> / 2</small></strong><span>AP</span></div></div>
-    <div class="rt-command-buttons">${modes.map(([mode,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===mode?'selected':''}" data-tactical-mode="${mode}" ${locked||ap<cost||(mode==='skill'&&!tacticalSkillReady(s,u))?'disabled':''}><b>${icon} ${label}</b><small>${mode==='skill'&&!tacticalSkillReady(s,u)?'대기 '+tacticalSkillWait(s,u)+'라운드':cost+' AP'}</small></button>`).join('')}<button type="button" class="rt-guard-button" data-tactical-action="guard" ${locked||ap<1?'disabled':''}><b>방어</b><small>1 AP · 피해 −40%</small></button><button type="button" class="rt-end-button" data-tactical-action="end" ${locked?'disabled':''}><b>턴 종료 →</b><small>다음 인물로</small></button></div><div class="rt-skill-description"><b>${esc(u?.skillName||'')}</b><span>${esc(u?.skillData?.desc||'')}</span>${tacticalStatusText(s,u)?`<small>현재 효과 · ${esc(tacticalStatusText(s,u))}</small>`:''}</div><p class="rt-instruction">${esc(instruction)}</p></div></div>
+    <div class="rt-command"><div class="rt-operator"><div class="rt-command-portrait">${portrait(u)}</div><div><small>현재 행동</small><b>${esc(u?.name||'행동 대기')}</b><span>${esc(u?.role||'')} · HP <strong>${Math.ceil(u?.hp||0)} / ${u?.maxHp||0}</strong></span></div><div class="rt-ap"><strong>${ap}<small> / 2</small></strong><span>AP</span>${u?.apStartPenalty?'<small class="rt-ap-reason">함정 −1 AP</small>':u?.trapped?'<small class="rt-ap-reason">다음 라운드 −1</small>':ap<2?'<small class="rt-ap-reason rt-ap-used">남은 AP</small>':''}</div></div>
+    <div class="rt-command-buttons">${modes.map(([mode,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===mode?'selected':''}" data-tactical-mode="${mode}" ${locked||ap<cost||(mode==='skill'&&!tacticalSkillReady(s,u))?'disabled':''}><b>${icon} ${label}</b><small>${mode==='skill'&&!tacticalSkillReady(s,u)?u?.skillData?'대기 '+tacticalSkillWait(s,u)+'라운드':'선택 대기':cost+' AP'}</small></button>`).join('')}<button type="button" class="rt-guard-button" data-tactical-action="guard" ${locked||ap<1?'disabled':''}><b>방어</b><small>1 AP · 피해 −40%</small></button><button type="button" class="rt-end-button" data-tactical-action="end" ${locked?'disabled':''}><b>턴 종료 →</b><small>다음 인물로</small></button></div><div class="rt-skill-description"><b>${esc(u?.skillName||'')}</b><span>${esc(u?.skillData?.desc||'')}</span>${tacticalStatusText(s,u)?`<small>현재 효과 · ${esc(tacticalStatusText(s,u))}</small>`:''}</div><p class="rt-instruction">${esc(instruction)}</p></div></div>
     <div class="rt-team-strip">${allies.map(v=>`<div class="rt-party-card ${v.id===u?.id?'rt-party-current':''} ${v.hp<=0?'is-fallen':''}"><span class="rt-party-image">${portrait(v)}</span><div><b title="${esc(v.name)}">${esc(v.name.replace(/^\[[^\]]*\]\s*/,''))}</b><span class="rt-party-meter"><i style="width:${v.hp/v.maxHp*100}%"></i></span><small>${Math.ceil(v.hp)} / ${v.maxHp}${v.escaped?' · 탈출':''}</small></div></div>`).join('')}</div>
     <details class="rt-combat-detail" ${panel.querySelector('.rt-combat-detail')?.open?'open':''}><summary>행동 순서 · 적 정보 <span>${enemies.length}명</span></summary><div class="rt-detail-grid"><section><h4>SPD 행동 순서</h4><div class="rt-turn-strip">${s.order.map((id,i)=>{const v=s.units.find(a=>a.id===id);return v?`<span class="${i===s.cursor?'is-active':''} ${i<s.cursor?'is-done':''}">${v.side==='ally'?'●':'◆'} ${esc(v.name.replace(/^\[[^\]]*\]\s*/,''))} <b>${v.spd}</b></span>`:'';}).join('')}</div></section><section><h4>적 행동 예고</h4><div class="rt-enemy-cards">${forecast.map(({e,t,kind})=>`<div><b>${esc(e.name)}</b><strong>${kind}${t?' → '+esc(t.name.replace(/^\[[^\]]*\]\s*/,'')):''}</strong><small>HP ${Math.ceil(e.hp)}/${e.maxHp} · ATK ${e.atk} · DEF ${e.def}</small><span>${esc(e.skillName)}${tacticalEnemySkillReady(s,e)?' · 스킬 준비':' · 스킬 대기'} · ${esc(tacticalStatusText(s,e))}</span></div>`).join('')}</div></section></div></details>
     <footer class="rt-footer"><details class="rt-log"><summary>전투 기록</summary><ol>${s.messages.map(v=>`<li>${esc(v)}</li>`).join('')}</ol></details><button type="button" class="rt-retreat" data-tactical-action="surrender" ${rogueBusy||tacticalBusy?'disabled':''}>항복</button></footer>`;
