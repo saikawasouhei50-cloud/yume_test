@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v12-card-preview">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v13-combat-motion">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1997,6 +1997,45 @@ html.dark-mode #detail-tactical-container :is(header small,dt,.detail-tactical-e
 html.dark-mode #detail-tactical-container :is(.detail-tactical-ranges>div,.detail-tactical-effect){background:#2c4058;border-color:#526d89}
 html.dark-mode #detail-tactical-container h3 span{background:#3c5b78;color:#e0f2ff}
 html.dark-mode #detail-tactical-container details{border-color:#526d89}
+
+</style>
+<style id="tactical-v13-visual-polish">
+/* Same neutral panel treatment as the other card details. */
+#detail-tactical-container{background:var(--dream-panel,#fff);color:var(--dream-ink,#303237);border:1px solid var(--dream-line,#dddfe2);border-radius:15px;padding:15px;font-size:12px}
+#detail-tactical-container header{border-bottom:1px solid var(--dream-line,#dddfe2);margin-bottom:12px;padding-bottom:7px}
+#detail-tactical-container h3{font-family:inherit;font-size:12px;letter-spacing:.035em;font-weight:700;margin:0;line-height:1.6}
+#detail-tactical-container .detail-tactical-role{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;color:#666970;font-size:11px}
+#detail-tactical-container .detail-tactical-role b{font-size:11px;font-weight:700;color:#454a52;background:#edeff1;border:1px solid #d9dde2;border-radius:5px;padding:2px 8px}
+#detail-tactical-container .detail-tactical-ranges{gap:8px;margin-bottom:14px}
+#detail-tactical-container .detail-tactical-ranges>div{border:0;background:transparent;border-radius:0;padding:2px 0 7px}
+#detail-tactical-container dt{font-family:inherit;color:#666970;font-size:10px}
+#detail-tactical-container dd{font-family:inherit;font-size:23px;color:inherit}
+#detail-tactical-container .detail-tactical-effect{background:transparent;border:1px solid var(--dream-line,#dddfe2);border-radius:0;padding:11px 12px}
+#detail-tactical-container .detail-tactical-effect b{font-size:12px;font-weight:700}
+#detail-tactical-container .detail-tactical-effect p{line-height:1.7}
+#detail-tactical-container .detail-tactical-effect small,#detail-tactical-container .detail-tactical-note{color:#666970;font-size:11px}
+#detail-tactical-container details{border-top:1px solid var(--dream-line,#dddfe2)}
+#detail-tactical-container summary{font-size:11px;font-weight:600}
+html.dark-mode #detail-tactical-container{background:#243143;color:#e4ebf4;border-color:#45576d}
+html.dark-mode #detail-tactical-container header,html.dark-mode #detail-tactical-container details{border-color:#45576d}
+html.dark-mode #detail-tactical-container :is(.detail-tactical-ranges>div,.detail-tactical-effect){background:transparent;border-color:#45576d}
+html.dark-mode #detail-tactical-container :is(.detail-tactical-role,dt,.detail-tactical-effect small,.detail-tactical-note){color:#b7c3d3}
+html.dark-mode #detail-tactical-container .detail-tactical-role b{background:#34445a;color:#e4ebf4;border-color:#53657c}
+/* Keep action badges close to the sprite, inside the top edge of the battlefield. */
+#rogue-tactical .rt-piece .rt-target-marker{top:32%;left:50%;transform:translate(-50%,-100%);font-size:10px;padding:2px 6px;line-height:1.4;border:1px solid #fff9;box-shadow:0 1px 4px #52333a30}
+#rogue-tactical .rt-motion{display:flex;align-items:flex-end;justify-content:center;width:100%;height:100%;transform-origin:50% 85%;will-change:transform}
+.rt-number-hit,.rt-number-damage-skill{z-index:11920;font-size:23px;letter-spacing:-.02em;text-shadow:0 2px 4px #152a3e,1px 0 2px #152a3e,-1px 0 2px #152a3e}
+.rt-number-damage-skill{font-size:29px;color:#ffe8a6}
+.rt-hit-sparks{width:0;height:0;z-index:11910}
+.rt-hit-sparks i{position:absolute;width:5px;height:16px;left:-2px;top:-8px;border-radius:2px;background:#fff7cc;box-shadow:0 0 8px var(--fx);animation:rtHitShard .32s ease-out forwards;--dx:28px;--dy:-30px;--angle:35deg}
+.rt-hit-sparks i:nth-child(2){--dx:-32px;--dy:-22px;--angle:-50deg}.rt-hit-sparks i:nth-child(3){--dx:35px;--dy:15px;--angle:100deg}.rt-hit-sparks i:nth-child(4){--dx:-22px;--dy:28px;--angle:140deg}.rt-hit-sparks i:nth-child(5){--dx:4px;--dy:-42px;--angle:15deg}.rt-hit-sparks i:nth-child(6){--dx:-8px;--dy:38px;--angle:175deg}
+.rt-fallen-ghost{transform:translate(-50%,-100%);pointer-events:none;animation:rtDefeatFade .35s ease-out forwards}
+.rt-fallen-ghost .rt-avatar-img{width:100%;height:100%;object-fit:contain;transform:scale(1.48);transform-origin:50% 85%}
+.rt-fallen-ghost.rt-ghost-ally .rt-avatar-img{transform:scale(-1.48,1.48)}
+@keyframes rtHitShard{0%{opacity:1;transform:translate(0,0) rotate(var(--angle)) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--angle)) scale(.3)}}
+@keyframes rtDefeatFade{0%{opacity:1;translate:0 0;filter:brightness(2)}25%{translate:7px -3px;filter:brightness(1)}50%{translate:-4px 0}100%{opacity:0;translate:8px 10px}}
+@media(max-width:660px){#rogue-tactical .rt-piece .rt-target-marker{top:34%;font-size:8px;padding:1px 4px}.rt-number-hit{font-size:18px}.rt-number-damage-skill{font-size:23px}}
+@media(prefers-reduced-motion:reduce){#rogue-tactical .rt-motion{will-change:auto}.rt-hit-sparks,.rt-fallen-ghost{display:none}}
 
 </style>
 </head>
@@ -5106,7 +5145,7 @@ function renderTacticalCardDetails(character,stats,instance=null){
   const box=document.getElementById('detail-tactical-container');if(!box||!character)return;
   const source={...character,stats:{...(stats||character.stats)},skills:instance?.inherited?.skills||character.skills||[]};
   const profile=tacticalCardProfile(source),esc=rogueEscape;
-  box.innerHTML=`<header><small>폐기된 서고</small><h3>전술전 정보 <span>${esc(profile.role)}</span></h3></header>
+  box.innerHTML=`<header><h3>TACTICAL COMBAT // 전술전 정보</h3></header><p class="detail-tactical-role">폐기된 서고 전용 효과 <b>${esc(profile.role)}</b></p>
     <dl class="detail-tactical-ranges"><div><dt>이동 · 1 AP</dt><dd>${profile.move}<small>칸</small></dd></div><div><dt>일반 공격 · 1 AP</dt><dd>${profile.range}<small>칸</small></dd></div><div><dt>스킬 · 2 AP</dt><dd>${profile.skillRange}<small>칸</small></dd></div></dl>
     <div class="detail-tactical-effect"><b>${esc(profile.skill.name)}</b><p>${esc(tacticalCardEffect(profile))}</p><small>아군 쿨타임 없음 · AP가 2 남아 있으면 사용 가능</small></div>
     <p class="detail-tactical-note">거리는 상하좌우 칸 수를 합산합니다. 피해량은 대상 방어력·방향·엄폐·방어 상태에 따라 달라집니다.</p>
@@ -5142,9 +5181,58 @@ function tacticalEaseEnemy(e){
   if(!boss)e.spd=Math.max(0,e.spd-2);
   return e;
 }
+// Animate an inner wrapper so recoil never replaces the allied SD mirror transform.
+async function tacticalAnimateUnit(id,frames,duration){
+  if(window.yumecanSettings?.calm)return;
+  const el=document.querySelector(`#rogue-tactical [data-unit="${id}"] .rt-motion`);if(!el?.animate)return;
+  const speed=[1,2,4].includes(Number(window.yumecanSettings?.battleSpeed))?Number(window.yumecanSettings.battleSpeed):1;
+  const animation=el.animate(frames,{duration:duration/speed,easing:'ease-out',fill:'none'});
+  if(animation?.finished)await animation.finished.catch(()=>{});
+}
+async function tacticalAttackMotion(actor,target,skill=false){
+  const a=tacticalScreenPoint(actor.x,actor.y),b=tacticalScreenPoint(target.x,target.y);if(!a||!b)return;
+  const length=Math.hypot(b.x-a.x,b.y-a.y)||1,dx=(b.x-a.x)/length,dy=(b.y-a.y)/length;
+  const ranged=actor.role==='사격형',force=skill?1.3:1;
+  const x=dx*(ranged?-8:18)*force,y=dy*(ranged?-8:18)*force;
+  await tacticalAnimateUnit(actor.id,[
+    {transform:'translate(0,0)',offset:0},
+    {transform:`translate(${-dx*5}px,${-dy*5}px) scale(.97,1.03)`,offset:.2},
+    {transform:`translate(${x}px,${y}px) scale(1.05,.96)`,offset:.45},
+    {transform:`translate(${-x*.15}px,${-y*.15}px)`,offset:.75},
+    {transform:'translate(0,0)',offset:1}
+  ],skill?330:250);
+}
+async function tacticalPresentHits(hits,attacker){
+  const jobs=[];
+  for(const hit of hits){
+    const a=tacticalScreenPoint(attacker.x,attacker.y),p=tacticalScreenPoint(hit.x,hit.y);if(!p)continue;
+    const length=a?Math.hypot(p.x-a.x,p.y-a.y)||1:1,dx=a?(p.x-a.x)/length:1,dy=a?(p.y-a.y)/length:0;
+    if(!window.yumecanSettings?.calm){
+      const spark=document.createElement('span');spark.className=`rt-screen-fx rt-hit-sparks ${attacker.side==='enemy'?'rt-fx-enemy':''}`;
+      spark.style.left=`${p.x}px`;spark.style.top=`${p.y-35}px`;spark.innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i>';document.body.appendChild(spark);setTimeout(()=>spark.remove(),400);
+      // A defeated sprite is kept briefly as an overlay for the hit and fade-out.
+      if(hit.hp<=0&&hit.art){
+        const ghost=document.createElement('span');ghost.className=`rt-screen-fx rt-fallen-ghost ${hit.side==='ally'?'rt-ghost-ally':''}`;
+        const rect=document.querySelector('#rogue-tactical .rt-board')?.getBoundingClientRect(),w=(rect?.width||700)*.105;
+        ghost.style.cssText=`left:${p.x}px;top:${p.y}px;width:${w}px;height:${w*1.37}px`;
+        ghost.innerHTML=hit.art;document.body.appendChild(ghost);setTimeout(()=>ghost.remove(),400);
+      }
+    }
+    jobs.push(tacticalAnimateUnit(hit.id,[
+      {transform:'translate(0,0)',filter:'brightness(1)',offset:0},
+      {transform:`translate(${dx*10}px,${dy*10}px) rotate(3deg)`,filter:'brightness(2.2) saturate(.4)',offset:.15},
+      {transform:`translate(${-dx*7}px,${-dy*5}px) rotate(-3deg)`,filter:'brightness(1.2)',offset:.32},
+      {transform:`translate(${dx*5}px,${dy*3}px) rotate(2deg)`,offset:.5},
+      {transform:`translate(${-dx*3}px,${-dy*2}px)`,offset:.7},
+      {transform:'translate(0,0)',filter:'brightness(1)',offset:1}
+    ],320));
+  }
+  await Promise.all([...jobs,tacticalPause(hits.length?320:100)]);
+}
+
 function tacticalSpawnFx(x,y,kind,label){
   const pt=tacticalScreenPoint(x,y);if(!pt)return;
-  const fx=document.createElement('span');fx.className=`rt-screen-fx rt-number rt-number-${kind}`;fx.textContent=label||'';fx.style.left=`${pt.x}px`;fx.style.top=`${pt.y-20}px`;document.body.appendChild(fx);setTimeout(()=>fx.remove(),850);
+  const fx=document.createElement('span');fx.className=`rt-screen-fx rt-number rt-number-${kind}`;fx.textContent=label||'';fx.style.left=`${pt.x}px`;fx.style.top=`${pt.y-(kind==='hit'||kind==='damage-skill'?48:20)}px`;document.body.appendChild(fx);setTimeout(()=>fx.remove(),850);
 }
 function tacticalShakeBoard(){
   const board=document.querySelector('#rogue-tactical .rt-board-shell');if(!board||window.yumecanSettings?.calm)return;
@@ -5235,7 +5323,8 @@ function tacticalHurt(s,attacker,target,mult=1,opts={}){
   const raw=Math.max(1,Math.round((attacker?.atk||target.maxHp*.08)*mult*flank-target.def*(opts.pierce?(opts.pattern?.65:.35):1)));
   const dmg=Math.min(target.hp,Math.max(1,Math.round(Math.min(raw,opts.hpCap?target.maxHp*opts.hpCap:Infinity)*(target.guarded?.6:1)*(opts.pierce?1:cover))));target.hp-=dmg;
   tacticalRecord(s,`${attacker?.name||'지형'} → ${target.name} ${dmg} 피해${rel==='rear'?' · 배후':rel==='side'?' · 측면':''}${target.guarded?' · 방어 40%':''}${target.hp<=0?' · 전투불능':''}`);
-  tacticalSound('hit'); tacticalSpawnFx(target.x,target.y,'hit',`-${dmg}`); tacticalShakeBoard();
+  if(opts.hits)opts.hits.push({id:target.id,x:target.x,y:target.y,hp:target.hp,side:target.side,damage:dmg,art:tacticalUnitArt(target)});
+  tacticalSound('hit'); tacticalSpawnFx(target.x,target.y,opts.skill?'damage-skill':'hit',`-${dmg}`); tacticalShakeBoard();
   if(target.kind==='boss'&&target.hp>0&&target.hp<=target.maxHp*.45&&!s.spawnedClone){
     s.spawnedClone=true;
     const slot=[{x:4,y:2},{x:4,y:1},{x:4,y:3},{x:3,y:2},{x:5,y:0}].find(p=>tacticalPassable(s,p.x,p.y,target));
@@ -5267,14 +5356,15 @@ async function tacticalAttack(s,a,target,skill=false,byAI=false){if(!tacticalCan
   renderTactical();
   if(skill)await tacticalPlayCutin(a,a.skillData||{name:a.skillName});
   const affected=a.side==='enemy'?[target]:skill&&a.role==='사격형'?tacticalLive(s,target.side).filter(u=>tacticalDist(u,target)<=1):skill&&a.role==='근접형'?tacticalLive(s,target.side).filter(u=>tacticalDist(u,a)<=2):[target];
-  await tacticalSkillEffect(a,affected,skill?'skill':'attack');
+  await Promise.all([tacticalAttackMotion(a,target,skill),tacticalSkillEffect(a,affected,skill?'skill':'attack')]);
+  const hits=[];
 
-  for(const u of affected){tacticalHurt(s,a,u,skill?(a.role==='사격형'?1.22:a.skillPower):1,{pierce:skill&&a.role==='수비형',hpCap:a.side==='enemy'?(skill?.24:.18):undefined});}
+  for(const u of affected){tacticalHurt(s,a,u,skill?(a.role==='사격형'?1.22:a.skillPower):1,{pierce:skill&&a.role==='수비형',hpCap:a.side==='enemy'?(skill?.24:.18):undefined,skill,hits});}
   if((a.role==='근접형'||a.kind==='cutter'||a.kind==='boss')&&target.hp>0&&tacticalDist(a,target)===1)tacticalPush(s,a,target);
   tacticalFacing(a,target.x-a.x,target.y-a.y);
-  if(skill){tacticalRecord(s,`✦ ${a.name} · ${a.skillName}${affected.length>1?' (AOE)':''}`);tacticalSpawnFx(target.x,target.y,'skill',a.side==='enemy'?'ENEMY':'SKILL');}
+  if(skill){tacticalRecord(s,`✦ ${a.name} · ${a.skillName}${affected.length>1?' (AOE)':''}`);}
   else{tacticalSound('attack');}
-  renderTactical();await tacticalPause(230);
+  renderTactical();await tacticalPresentHits(hits,a);
   return true;
 }
 function tacticalGuard(s,a){if(a.ap<1)return false;a.ap--;a.guarded=true;const enemies=tacticalLive(s,a.side==='ally'?'enemy':'ally').sort((left,right)=>tacticalDist(left,a)-tacticalDist(right,a));if(enemies.length)tacticalFacing(a,enemies[0].x-a.x,enemies[0].y-a.y);tacticalRecord(s,`${a.name} 방어 태세 · 피해 -40%${a.role==='수비형'?' / 주변 아군 저지':''}`);tacticalSound('guard');tacticalSpawnFx(a.x,a.y,'guard','GUARD');return true;}
@@ -5307,9 +5397,9 @@ async function tacticalAI(s,u){
     if(!s.firstSpecialSkipped&&rogueBossClueValues().skipFirstSpecial){s.firstSpecialSkipped=true;tacticalRecord(s,'봉인 방패 · 첫 보스 특수 행동 무효화');}
     else{
       const area=tacticalTelegraphCells(s),clue=rogueBossClueValues();
-      const victims=tacticalLive(s,'ally').filter(v=>area.has(tacticalKey(v.x,v.y)));
+      const victims=tacticalLive(s,'ally').filter(v=>area.has(tacticalKey(v.x,v.y))),hits=[];
       await tacticalPlayCutin(u,{name:t.label,dialogue:'봉인을 넘을 수 있을까.',type:'damage'});
-      await tacticalSkillEffect(u,[...area].map(k=>{const [x,y]=k.split(',').map(Number);return {x,y};}),t.kind);
+      await Promise.all([tacticalAttackMotion(u,target,true),tacticalSkillEffect(u,[...area].map(k=>{const [x,y]=k.split(',').map(Number);return {x,y};}),t.kind)]);
       const firstInk=t.kind==='ink'&&!s.firstInkResolved,firstLaser=t.kind==='laser'&&!s.firstLaserResolved;
       const skipInk=firstInk&&Boolean(clue.skipBloom);
       if(skipInk)tacticalRecord(s,'온실 단서 · 첫 흑잉크 폭발 피해 무효');
@@ -5318,13 +5408,14 @@ async function tacticalAI(s,u){
         if(firstInk&&clue.bloomHp)damage*=.65;
         if(firstInk&&clue.bloomGuard)damage*=.6;
         if(firstLaser&&clue.replySafe)damage*=.6;
-        if(!skipInk)tacticalHurt(s,u,ally,damage,{pierce:t.kind==='laser',pattern:true,ignoreBlock:true,hpCap:t.kind==='laser'?.28:.24});
+        if(!skipInk)tacticalHurt(s,u,ally,damage,{pierce:t.kind==='laser',pattern:true,ignoreBlock:true,hpCap:t.kind==='laser'?.28:.24,skill:true,hits});
         if(t.kind==='ram'&&ally.hp>0)tacticalPush(s,u,ally);
       }
       if(firstInk)s.firstInkResolved=true;if(firstLaser)s.firstLaserResolved=true;
       if(t.kind==='ink')for(const k of area){const [x,y]=k.split(',').map(Number);if(tacticalCell(s,x,y)==='plain')s.terrain[y*6+x]='rift';}
       if(t.kind==='ram'){const dest={x:Math.min(4,t.x+1),y:t.y};if(tacticalPassable(s,dest.x,dest.y,u))tacticalMoveForced(s,u,dest.x,dest.y);}
       tacticalRecord(s,`💥 보스 패턴 발동 · ${t.label}`);
+      renderTactical();await tacticalPresentHits(hits,u);
     }
     s.bossPatterns++;s.nextBossRound+=4;s.telegraph=null;renderTactical();await tacticalPause(320);return;
   }
@@ -5452,7 +5543,7 @@ function renderTactical(){
     const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp:terrainName}${tele?' · 강공 위험 구역':''}`;
     board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?' rt-targetable':''}${tele?' rt-danger':''}${goal?' rt-exit':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${locked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}</span></button>`);
     if(actor){const pt=tacticalProject(x,y),intent=forecast.find(v=>v.e.id===actor.id),short=actor.name.replace(/^\[[^\]]*\]\s*/,'');
-      pieces.push(`<span class="rt-piece rt-${actor.side} ${actor.id===u?.id?'rt-acting':''} ${actor.kind==='boss'?'rt-boss':''}" data-unit="${actor.id}" style="left:${pt.x/10}%;top:${pt.y/6}%;z-index:${Math.round(pt.y)}" aria-hidden="true"><span class="rt-base"></span><span class="rt-avatar rt-${actor.tone}">${tacticalUnitArt(actor)}</span><span class="rt-piece-label">${esc(short)}</span>${hpbar(actor)}<span class="rt-piece-hp">${Math.ceil(actor.hp)}</span>${intent?`<span class="rt-target-marker">${intent.kind}</span>`:''}${actor.guarded?'<span class="rt-guard-mark">방어</span>':''}</span>`);
+      pieces.push(`<span class="rt-piece rt-${actor.side} ${actor.id===u?.id?'rt-acting':''} ${actor.kind==='boss'?'rt-boss':''}" data-unit="${actor.id}" style="left:${pt.x/10}%;top:${pt.y/6}%;z-index:${Math.round(pt.y)}" aria-hidden="true"><span class="rt-base"></span><span class="rt-avatar rt-${actor.tone}"><span class="rt-motion">${tacticalUnitArt(actor)}</span></span><span class="rt-piece-label">${esc(short)}</span>${hpbar(actor)}<span class="rt-piece-hp">${Math.ceil(actor.hp)}</span>${intent?`<span class="rt-target-marker">${intent.kind}</span>`:''}${actor.guarded?'<span class="rt-guard-mark">방어</span>':''}</span>`);
     }
   }
   const modes=[['move','이동',1,'↔'],['attack','일반 공격',1,'✦'],['skill','스킬',2,'★']];
