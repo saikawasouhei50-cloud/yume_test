@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v18-direct-actions">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v19-background-save-ranges">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2084,6 +2084,24 @@ html.dark-mode #rogue-tactical .rt-skill-description>small{color:#9cd7c8}
 #rogue-tactical .rt-ap .rt-ap-reason{display:block;color:#a45743;font-size:10px;font-weight:700;line-height:1.4;margin-top:3px;max-width:90px;white-space:normal}
 #rogue-tactical .rt-ap .rt-ap-used{color:var(--rt-muted)}
 html.dark-mode #rogue-tactical .rt-ap .rt-ap-reason:not(.rt-ap-used){color:#efbb91}
+</style>
+
+<style>
+/* Empty cells show reach; saturated cells identify an actionable unit. */
+#rogue-tactical .rt-tile.rt-attack-range{background:#f9dcd8!important;border:2px solid #d79b95!important;box-shadow:inset 0 0 0 1px #f4bbb4,0 5px 0 #d3a7a3!important}
+#rogue-tactical .rt-tile.rt-skill-range{background:#e9dff6!important;border:2px solid #ad94c6!important;box-shadow:inset 0 0 0 1px #cdb7e3,0 5px 0 #bba8d0!important}
+#rogue-tactical .rt-tile.rt-skill-range.rt-support-range{background:#d4eee8!important;border-color:#88bcb0!important;box-shadow:inset 0 0 0 1px #b1d8cd,0 5px 0 #a2c9be!important}
+#rogue-tactical .rt-tile.rt-targetable:is(.rt-attack-range,.rt-skill-range){background:#efadb4!important;border:3px solid #b5455a!important;box-shadow:inset 0 0 0 2px #fbdce0,0 5px 0 #bb7d88!important}
+#rogue-tactical .rt-tile.rt-skill-range.rt-supportable{background:#8bd6c8!important;border:3px solid #217e6d!important;box-shadow:inset 0 0 0 2px #d7f3eb,0 5px 0 #6eada0!important}
+#rogue-tactical .rt-tile:is(.rt-attack-range,.rt-skill-range).rt-danger{background-image:repeating-linear-gradient(135deg,transparent 0 9px,#ce4a4a30 9px 13px)!important}
+#rogue-tactical .rt-key-attack-range{background:#f9dcd8;border:1px solid #d79b95}
+#rogue-tactical .rt-key-skill-range{background:#e9dff6;border:1px solid #ad94c6}
+#rogue-tactical .rt-key-support-range{background:#d4eee8;border:1px solid #88bcb0}
+html.dark-mode #rogue-tactical .rt-tile.rt-attack-range{background:#6b4249!important;border-color:#c58a8c!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-skill-range{background:#594567!important;border-color:#ac91c5!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-skill-range.rt-support-range{background:#365e59!important;border-color:#80b7a8!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-targetable:is(.rt-attack-range,.rt-skill-range){background:#b6576b!important;border-color:#ffd0d6!important}
+html.dark-mode #rogue-tactical .rt-tile.rt-skill-range.rt-supportable{background:#3e9686!important;border-color:#bdf2e3!important}
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -5656,9 +5674,9 @@ async function tacticalDeploymentInput(s,action,x,y){
   if(at?.side==='ally'){if(selected&&at.id!==selected.id&&x<2){[selected.x,at.x]=[at.x,selected.x];[selected.y,at.y]=[at.y,selected.y];}s.deploySelected=at.id;}
   else if(!at&&x<2&&selected){selected.x=x;selected.y=y;}
   else return;
-  tacticalBusy=true;try{await tacticalSave(s);}finally{tacticalBusy=false;updateRogueUI();}return;
+  tacticalBusy=true;try{tacticalSave(s);}finally{tacticalBusy=false;tacticalRefreshUI();}return;
  }
- if(action==='deploy-select'){if(s.units.some(u=>u.id===x&&u.side==='ally'&&u.hp>0))s.deploySelected=x;updateRogueUI();return;}
+ if(action==='deploy-select'){if(s.units.some(u=>u.id===x&&u.side==='ally'&&u.hp>0))s.deploySelected=x;tacticalRefreshUI();return;}
  if(action==='deploy-start'){
   const allies=tacticalLive(s,'ally');if(!allies.length||allies.some(u=>u.x>1)||new Set(allies.map(u=>tacticalKey(u.x,u.y))).size!==allies.length)return;
   s.phase='battle';delete s.pending;tacticalRecord(s,'배치 확정 · 작전 개시');await tacticalStart();
@@ -5923,28 +5941,43 @@ async function tacticalProceed(s){
   console.warn('Tactical turn loop limit exceeded');return null;
 }
 function tacticalSyncHP(s){for(const u of s.units.filter(v=>v.side==='ally')){const card=rogueState.team[u.memberIndex];if(card)card.stats.hp=Math.max(0,Math.min(card.maxHp,Math.round(u.hp)));}}
-async function tacticalSave(s){tacticalSyncHP(s);await roguePersist();}
+let tacticalCheckpoint=null;
+function tacticalRememberCheckpoint(s){
+ if(rogueState.tactical!==s)return;
+ tacticalCheckpoint={runId:rogueState.runId,nodeId:s.nodeId,run:JSON.stringify(rogueState)};
+}
+function tacticalRunForSave(){
+ // Queued saves can start during the next animation. Persist a completed turn state.
+ if(tacticalBusy&&rogueState.phase==='combat'&&rogueState.tactical&&tacticalCheckpoint?.runId===rogueState.runId&&tacticalCheckpoint.nodeId===rogueState.tactical.nodeId)return tacticalCheckpoint.run;
+ return JSON.stringify(rogueState);
+}
+function tacticalSave(s){
+ tacticalSyncHP(s);tacticalRememberCheckpoint(s);
+ // The shared Firebase queue serializes writes; the combat input lock never awaits it.
+ void saveGameToFirebase();
+}
+function tacticalRefreshUI(){if(rogueState.active&&rogueState.phase==='combat'&&rogueState.tactical)renderTactical();else updateRogueUI();}
 async function tacticalStart(){
   if(rogueState.phase!=='combat'||tacticalBusy)return;
   tacticalBusy=true;
   try{
     if(!rogueState.tactical)rogueState.tactical=tacticalMake();
-    const s=rogueState.tactical;tacticalOperationUpgrade(s);if(s.phase==='deploy'){await tacticalSave(s);return;}const result=await tacticalProceed(s);
+    const s=rogueState.tactical;tacticalOperationUpgrade(s);tacticalSyncHP(s);tacticalRememberCheckpoint(s);if(s.phase==='deploy'){tacticalSave(s);return;}const result=await tacticalProceed(s);
     if(result){tacticalSyncHP(s);rogueState.tactical=null;completeRogueCombat(result==='win',rogueState.team);}
-    else await tacticalSave(s);
-  }finally{tacticalBusy=false;updateRogueUI();}
+    else tacticalSave(s);
+  }finally{tacticalBusy=false;tacticalRefreshUI();}
 }
 let tacticalBusy=false;
 async function tacticalInput(action,x,y){
  if(rogueBusy||tacticalBusy||rogueState.phase!=='combat'||!rogueState.tactical)return;
  if(action==='surrender'){
-  if(confirm('정말 항복하시겠습니까? 현재 전술전은 패배 처리되며, 진행 중인 전장은 종료됩니다.')){tacticalSound('surrender');tacticalRecord(rogueState.tactical,'항복 · 전술전을 중단했습니다');tacticalSyncHP(rogueState.tactical);rogueState.tactical=null;completeRogueCombat(false,rogueState.team);updateRogueUI();}return;
+  if(confirm('정말 항복하시겠습니까? 현재 전술전은 패배 처리되며, 진행 중인 전장은 종료됩니다.')){tacticalSound('surrender');tacticalRecord(rogueState.tactical,'항복 · 전술전을 중단했습니다');tacticalSyncHP(rogueState.tactical);rogueState.tactical=null;completeRogueCombat(false,rogueState.team);tacticalRefreshUI();}return;
  }
  const s=rogueState.tactical;tacticalOperationUpgrade(s);
  if(s.phase==='deploy')return tacticalDeploymentInput(s,action,x,y);
- if(action==='threat'){s.showThreat=!s.showThreat;updateRogueUI();return;}
+ if(action==='threat'){s.showThreat=!s.showThreat;tacticalRefreshUI();return;}
  const u=tacticalActor(s);if(!u||u.side!=='ally'||u.hp<=0||u.escaped)return;
- if(action==='mode'){if(['move','attack','skill'].includes(x)){s.mode=x;updateRogueUI();}return;}
+ if(action==='mode'){if(['move','attack','skill'].includes(x)){s.mode=x;tacticalRefreshUI();}return;}
  if(action==='tile'){
   if(!tacticalInside(x,y))return;const occupant=tacticalOccupant(s,x,y),mode=s.mode;
   if(mode==='move')action='move';
@@ -5952,6 +5985,7 @@ async function tacticalInput(action,x,y){
   else return;
  }
  if(!['move','attack','skill','guard','interact','end'].includes(action))return;
+ tacticalSyncHP(s);tacticalRememberCheckpoint(s);
  tacticalBusy=true;
  try{
   let valid=false;
@@ -5960,12 +5994,27 @@ async function tacticalInput(action,x,y){
   else if(action==='guard')valid=tacticalGuard(s,u);
   else if(action==='interact')valid=tacticalInteract(s,u);
   else if(action==='end'){tacticalEndActor(s,u);valid=true;}
-  if(!valid){updateRogueUI();return;}
+  if(!valid){tacticalRefreshUI();return;}
   if(action!=='end'&&(u.ap<=0||u.hp<=0||u.escaped))tacticalEndActor(s,u);
   let result=tacticalOutcome(s);if(!result)result=await tacticalProceed(s);
   if(result){tacticalSyncHP(s);rogueState.tactical=null;tacticalRecord(s,result==='win'?'전술전 승리':'전술전 패배');completeRogueCombat(result==='win',rogueState.team);}
-  else await tacticalSave(s);
- }finally{tacticalBusy=false;updateRogueUI();}
+  else tacticalSave(s);
+ }finally{tacticalBusy=false;tacticalRefreshUI();}
+}
+function tacticalActionRange(s,a,mode){
+ const cells=new Set();if(!a||a.hp<=0||a.escaped||s.phase==='deploy'||!['attack','skill'].includes(mode)||a.ap<(mode==='skill'?2:1))return cells;
+ const k=a.skillData;if(mode==='skill'&&(!k||!tacticalSkillReady(s,a)))return cells;
+ if(mode==='skill'&&k.target==='self'){
+  const radius=Math.max(k.shape==='allyArea'||k.shape==='selfArea'?k.radius||1:0,k.auraDebuff?.radius||0,k.buff?.scope==='allies'?k.buff.radius||1:0,k.extraBuff?.scope==='allies'?k.extraBuff.radius||1:0);
+  for(let y=0;y<TACTICAL_H;y++)for(let x=0;x<TACTICAL_W;x++)if(tacticalDist(a,{x,y})<=radius)cells.add(tacticalKey(x,y));
+  return cells;
+ }
+ for(let y=0;y<TACTICAL_H;y++)for(let x=0;x<TACTICAL_W;x++){
+  if(tacticalCell(s,x,y)==='shelf'||x===a.x&&y===a.y&&!(mode==='skill'&&k.target==='ally'))continue;
+  const point={id:'range-cell',x,y,hp:1,escaped:false,side:mode==='skill'&&k.target==='ally'?a.side:a.side==='ally'?'enemy':'ally'};
+  if(mode==='skill'?tacticalSkillCanTarget(s,a,point):tacticalCanHit(s,a,point))cells.add(tacticalKey(x,y));
+ }
+ return cells;
 }
 function tacticalUnitArt(u){
   const img=u?.image||tacticalSafeImage(u?.cardData);
@@ -5980,7 +6029,7 @@ function renderTactical(){
   tacticalBalanceUpgrade(s);tacticalSkillUpgrade(s);tacticalOperationUpgrade(s);
   const deploy=s.phase==='deploy';
   const current=deploy?s.units.find(v=>v.id===s.deploySelected):tacticalActor(s),u=current?.hp>0&&!current.escaped?current:null,isAlly=u?.side==='ally',busy=rogueBusy||tacticalBusy,locked=deploy||!isAlly||busy,tileLocked=deploy?busy:locked,ap=u?.ap||0;
-  const esc=rogueEscape,danger=tacticalTelegraphCells(s),objective=tacticalObjectiveText(s),threat=s.showThreat?tacticalThreatCells(s):new Set();
+  const esc=rogueEscape,danger=tacticalTelegraphCells(s),objective=tacticalObjectiveText(s),threat=s.showThreat?tacticalThreatCells(s):new Set(),range=isAlly?tacticalActionRange(s,u,s.mode):new Set(),supportRange=s.mode==='skill'&&u?.skillData?.target!=='enemy';
   const enemies=tacticalLive(s,'enemy'),forecast=enemies.filter(e=>!e.passive).map(e=>{const skillTarget=tacticalAISkillTarget(s,e),t=skillTarget||tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'강공':skillTarget?'스킬':tacticalCanHit(s,e,t)?'공격':'이동'};});
   const board=[],pieces=[];
   const hpbar=v=>`<span class="rt-cell-hp"><i style="width:${Math.max(0,Math.min(100,v.hp/v.maxHp*100))}%"></i></span>`;
@@ -5989,22 +6038,22 @@ function renderTactical(){
     const actor=tacticalOccupant(s,x,y),terrain=tacticalCell(s,x,y),goal=['escape','retrieve','rescue'].includes(s.objective)&&x===5,marker=tacticalObjectiveMarker(s,x,y);
     const canMove=!deploy&&isAlly&&ap>=1&&s.mode==='move'&&!actor&&tacticalPath(s,u,{x,y},tacticalMoveDistance(s,u))?.length>0;
     const canHit=!deploy&&isAlly&&!!actor&&s.mode!=='move'&&tacticalCanHit(s,u,actor,s.mode==='skill')&&ap>=(s.mode==='skill'?2:1);
-    const friendlyTarget=canHit&&s.mode==='skill'&&actor.side===u.side;
+    const friendlyTarget=canHit&&s.mode==='skill'&&actor.side===u.side,inRange=range.has(tacticalKey(x,y));
     const tele=danger.has(tacticalKey(x,y)),terrainName={plain:'빈 공간',rift:'균열 · 턴 종료 시 HP 8% 피해',cover:'엄폐 · 원거리 피해 25% 감소',spike:'가시',trap:'함정 · 진입 HP 7% 피해 · 다음 라운드 AP −1',platform:'이동 발판'}[terrain]||'바닥';
-    const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp+(tacticalStatusText(s,actor)?' · '+tacticalStatusText(s,actor):''):terrainName}${tele?' · 강공 위험 구역':''}`;
-    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?(friendlyTarget?' rt-supportable':' rt-targetable'):''}${tele?' rt-danger':''}${goal?' rt-exit':''}${deploy&&x<2?' rt-deploy-zone':''}${threat.has(tacticalKey(x,y))?' rt-threat':''}${marker?' rt-objective-cell':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${tileLocked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}${marker?`<span class="rt-objective-label">${esc(marker)}</span>`:''}</span></button>`);
+    const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp+(tacticalStatusText(s,actor)?' · '+tacticalStatusText(s,actor):''):terrainName}${tele?' · 강공 위험 구역':''}${inRange?s.mode==='attack'?' · 공격 사거리':' · 스킬 범위':''}${canHit?' · 선택 가능한 대상':''}`;
+    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${inRange?(s.mode==='attack'?' rt-attack-range':' rt-skill-range'+(supportRange?' rt-support-range':'')):''}${canHit?(friendlyTarget?' rt-supportable':' rt-targetable'):''}${tele?' rt-danger':''}${goal?' rt-exit':''}${deploy&&x<2?' rt-deploy-zone':''}${threat.has(tacticalKey(x,y))?' rt-threat':''}${marker?' rt-objective-cell':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${tileLocked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}${marker?`<span class="rt-objective-label">${esc(marker)}</span>`:''}</span></button>`);
     if(actor){const pt=tacticalProject(x,y),intent=forecast.find(v=>v.e.id===actor.id),short=actor.name.replace(/^\[[^\]]*\]\s*/,'');
       pieces.push(`<span class="rt-piece rt-${actor.side} ${actor.id===u?.id?'rt-acting':''} ${actor.kind==='boss'?'rt-boss':''}" data-unit="${actor.id}" style="left:${pt.x/10}%;top:${pt.y/6}%;z-index:${Math.round(pt.y)}" aria-hidden="true"><span class="rt-base"></span><span class="rt-avatar rt-${actor.tone}"><span class="rt-motion">${tacticalUnitArt(actor)}</span></span><span class="rt-piece-label">${esc(short)}</span>${hpbar(actor)}<span class="rt-piece-hp">${Math.ceil(actor.hp)}</span>${intent?`<span class="rt-target-marker">${intent.kind}</span>`:''}${actor.guarded?'<span class="rt-guard-mark">방어</span>':''}</span>`);
     }
   }
   const modes=[['move','이동',1,'↔'],['attack','일반 공격',1,'✦'],['skill','스킬',2,'★']];
-  const instruction=deploy?'아군 선택 → 왼쪽 두 열에 배치 → 전투 시작':!u?'차례를 갱신하고 있습니다':!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`공격할 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'청록색 아군 칸을 선택하세요':'붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
+  const instruction=deploy?'아군 선택 → 왼쪽 두 열에 배치 → 전투 시작':!u?'차례를 갱신하고 있습니다':!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`연한 빨강은 공격 사거리 · 진한 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'연한 청록은 스킬 사거리 · 진한 청록색 아군 칸을 선택하세요':'연한 보라는 스킬 사거리 · 진한 붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
   const allies=s.units.filter(v=>v.side==='ally');
   panel.innerHTML=`
     <header class="rt-top"><div class="rt-heading-copy"><small>폐기된 서고 · ${rogueState.floor}층</small><h3>${esc(objective)}</h3></div><div class="rt-operation-status"><strong>ROUND ${s.round}${s.objective==='survive'?' / 5':''}</strong><span>남은 적 ${enemies.length}</span><b>${deploy?'전투 준비':!u?'차례 갱신 중':isAlly?'아군 차례':'적 행동 중'}</b></div></header>
     ${s.telegraph?`<div class="rt-warning"><strong>⚠ ${esc(s.telegraph.label)}</strong><span>${s.telegraph.resolveRound}라운드 발동 · 빗금 표시 칸에서 벗어나거나 방어하세요</span></div>`:''}
     ${tacticalOperationUI(s,deploy?busy:locked)}
-    <div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-board" role="group" aria-label="6열 5행 전술 전장"><div class="rt-grid-plane">${board.join('')}</div><div class="rt-unit-layer">${pieces.join('')}</div></div><div class="rt-legend"><span><i class="rt-key-move"></i>이동 가능</span><span><i class="rt-key-attack"></i>공격 가능</span><span>▰ 엄폐</span><span>ϟ 균열</span><span>↗ 발판</span></div></div></div>
+    <div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-board" role="group" aria-label="6열 5행 전술 전장"><div class="rt-grid-plane">${board.join('')}</div><div class="rt-unit-layer">${pieces.join('')}</div></div><div class="rt-legend"><span><i class="rt-key-move"></i>이동 가능</span><span><i class="rt-key-attack-range"></i>공격 사거리</span><span><i class="rt-key-skill-range"></i>스킬 범위</span><span><i class="rt-key-attack"></i>선택 가능한 적</span><span><i class="rt-key-support-range"></i>아군 스킬 범위</span><span>▰ 엄폐</span><span>ϟ 균열</span><span>↗ 발판</span></div></div></div>
     <div class="rt-command${deploy?' hidden':''}"><div class="rt-operator"><div class="rt-command-portrait">${portrait(u)}</div><div><small>현재 행동</small><b>${esc(u?.name||'행동 대기')}</b><span>${esc(u?.role||'')} · HP <strong>${Math.ceil(u?.hp||0)} / ${u?.maxHp||0}</strong></span></div><div class="rt-ap"><strong>${ap}<small> / 2</small></strong><span>AP</span>${u?.apStartPenalty?'<small class="rt-ap-reason">함정 −1 AP</small>':u?.trapped?'<small class="rt-ap-reason">다음 라운드 −1</small>':ap<2?'<small class="rt-ap-reason rt-ap-used">남은 AP</small>':''}</div></div>
     <div class="rt-command-buttons">${modes.map(([mode,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===mode?'selected':''}" data-tactical-mode="${mode}" ${locked||ap<cost||(mode==='skill'&&!tacticalSkillReady(s,u))?'disabled':''}><b>${icon} ${label}</b><small>${mode==='skill'&&!tacticalSkillReady(s,u)?u?.skillData?'대기 '+tacticalSkillWait(s,u)+'라운드':'선택 대기':cost+' AP'}</small></button>`).join('')}<button type="button" class="rt-guard-button" data-tactical-action="guard" ${locked||ap<1?'disabled':''}><b>방어</b><small>1 AP · 피해 −40%</small></button>${tacticalCanInteract(s,u)?`<button type="button" class="rt-action" data-tactical-action="interact" ${locked?'disabled':''}><b>${s.objective==='retrieve'?'원고 회수':'구조 / 합류'}</b><small>1 AP</small></button>`:''}<button type="button" class="rt-end-button" data-tactical-action="end" ${locked?'disabled':''}><b>턴 종료 →</b><small>다음 인물로</small></button></div><div class="rt-skill-description"><b>${esc(u?.skillName||'')}</b><span>${esc(u?.skillData?.desc||'')}</span>${tacticalStatusText(s,u)?`<small>현재 효과 · ${esc(tacticalStatusText(s,u))}</small>`:''}</div><p class="rt-instruction">${esc(instruction)}</p></div></div>
     <div class="rt-team-strip">${allies.map(v=>`<div class="rt-party-card ${v.id===u?.id?'rt-party-current':''} ${v.hp<=0?'is-fallen':''}"><span class="rt-party-image">${portrait(v)}</span><div><b title="${esc(v.name)}">${esc(v.name.replace(/^\[[^\]]*\]\s*/,''))}</b><span class="rt-party-meter"><i style="width:${v.hp/v.maxHp*100}%"></i></span><small>${Math.ceil(v.hp)} / ${v.maxHp}${v.escaped?' · 탈출':''}</small></div></div>`).join('')}</div>
@@ -6554,7 +6603,7 @@ function buildGameSnapshot() {
         summonHistory: summonHistory,
         tutorialFinished: playerTutorialFinished,
         guide: playerGuide,
-        rogueRun: JSON.stringify(rogueState),
+        rogueRun: tacticalRunForSave(),
         rogueMeta: rogueMeta,
         clearedStageStories: clearedStageStories || [],
         playerChoices: playerChoices || {},
@@ -6582,6 +6631,8 @@ function saveGameToFirebase() {
     const uid = currentUser.uid;
     setSaveStatus('저장 중…');
     const operation = saveQueue.then(async () => {
+        if(!currentUser||currentUser.uid!==uid)return false;
+        setSaveStatus('저장 중…');
         try {
             // 대기 중인 저장이 확장 구매 뒤의 잔액/객실 단계를 덮어쓰지 않도록 실행 시점에 만든다.
             const snapshot = buildGameSnapshot();
