@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v19-background-save-ranges">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v20-responsive-choices">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4621,6 +4621,7 @@ function updateDispatchClock() {
         }
         let rogueMeta = {runs:0,clears:0,best:0,last:null,investigations:[]};
         let rogueBusy = false;
+        let rogueChoiceVersion = 0;
         let rogueVisibleStep = '';
         let rogueScrollFrame = null;
         function revealRogueStep() {
@@ -4680,7 +4681,7 @@ function updateDispatchClock() {
             if(rogueBusy||!rogueState.active||rogueState.phase!=='event'||!rogueIncident()||rogueState.incidentPrepared||rogueState.shards<cost)return;
             rogueState.shards-=cost;rogueState.incidentPrepared=true;
             rogueLog(`${rogueState.floor}층 사건 · 단서 정리 (조각 -${cost}, 조사 성공 확률 +12%)`);
-            await roguePersist();
+            roguePersist();
         }
         function rogueIncidentEffect(incident,trait,success) {
             const clue=(kind,value,desc)=>{rogueState.bossClues=rogueState.bossClues||[];rogueState.bossClues.push({kind,value});return desc+' · 다음 보스전';};
@@ -4717,11 +4718,11 @@ function updateDispatchClock() {
                 leaderLine:rogueState.eventResult.leaderLine,companionLine:rogueState.eventResult.companionLine};
             rogueMeta.investigations=[record,...(rogueMeta.investigations||[]).filter(entry=>entry.id!==record.id)].slice(0,30);
             rogueState.phase='event-result';rogueLog(`${incident.name} · ${trait} ${success?'성공':'실패'} (${chance}%) · ${effect}`);
-            await roguePersist();
+            roguePersist();
         }
         async function finishRogueIncident() {
             if(rogueBusy||rogueState.phase!=='event-result'||!rogueState.eventResult)return;
-            rogueState.eventResult=null;rogueState.incidentPrepared=false;advanceRogueFloor();await roguePersist();
+            rogueState.eventResult=null;rogueState.incidentPrepared=false;advanceRogueFloor();roguePersist();
         }
         function rogueRand() { let x=rogueState.seed|0; x^=x<<13;x^=x>>>17;x^=x<<5;rogueState.seed=x>>>0;return (x>>>0)/4294967296; }
         function rogueShuffle(items) { const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(rogueRand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
@@ -4735,10 +4736,10 @@ function updateDispatchClock() {
             });
         }
         function rogueRevive(percent) { const c=rogueState.team.find(c=>c.stats.hp<=0);if(c)c.stats.hp=Math.max(1,Math.floor(c.maxHp*percent));else rogueHeal(.25); }
-        async function roguePersist() {
-            rogueBusy=true;updateRogueUI();
-            try { return await saveGame(); }
-            finally { rogueBusy=false;updateRogueUI(); }
+        function roguePersist() {
+            // Apply a completed choice immediately; all writes share the Firebase queue.
+            updateRogueUI();
+            void saveGameToFirebase();
         }
         function restoreRogueProgress(saved) {
             const meta=saved.rogueMeta;
@@ -4830,7 +4831,7 @@ function updateDispatchClock() {
             grantRogueRelic(rogueRelics.find(r=>r.id===selected)||rogueRelics[0]);
             playerBookmarks-=5;if(playerBookmarks>=MAX_BOOKMARKS-5)lastBookmarkUpdateTime=Date.now();
             rogueMeta.runs++;rogueLog('책갈피 5개를 사용해 폐기된 서고에 진입했습니다.');
-            updateUI();await roguePersist();
+            updateUI();roguePersist();
         }
         function rogueEnemyPlan(node) {
             const f=rogueState.floor,b=rogueState.baseline;
@@ -4903,7 +4904,17 @@ function updateDispatchClock() {
         }
         function rogueChoiceButton(title,desc,callback,disabled=false) {
             const b=document.createElement('button');b.type='button';b.className='rg-choice';b.disabled=rogueBusy||disabled;
-            const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=desc;b.append(h,p);b.onclick=callback;return b;
+            const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=desc;b.append(h,p);
+            const version=rogueChoiceVersion;let used=false;
+            const release=()=>{if(version===rogueChoiceVersion){used=false;b.disabled=rogueBusy||disabled;}};
+            b.onclick=()=>{
+                // A removed button must never apply a second choice to the next room.
+                if(used||b.disabled||rogueBusy||version!==rogueChoiceVersion)return;
+                used=true;b.disabled=true;
+                try{Promise.resolve(callback()).then(release,error=>{release();console.error('Rogue choice failed',error);});}
+                catch(error){release();console.error('Rogue choice failed',error);}
+            };
+            return b;
         }
         function rogueShopCost(action){
             const prices={buyHeal:30,buyBuff:45,buyReroll:25,buyRevive:50,buyGuard:35,buyWard:55,buyRelic:75};
@@ -4933,11 +4944,11 @@ function updateDispatchClock() {
                 const index=select.value===''?null:Number(select.value);
                 if(select.dataset.rogueActor==='leader')rogueState.eventActors={leaderIndex:index??living[0]?.index??0,companionIndex:companion?.index??null};
                 else rogueState.eventActors={leaderIndex:leader?.index??0,companionIndex:index};
-                updateRogueUI();saveGame();
+                roguePersist();
             }));
         }
         function renderRogueChoices() {
-            const box=document.getElementById('rogue-choices');box.replaceChildren();
+            const box=document.getElementById('rogue-choices');rogueChoiceVersion++;box.replaceChildren();
             const phase=rogueState.phase;
             renderTacticalCorrection(box);
             const add=(title,desc,callback,disabled)=>box.append(rogueChoiceButton(title,desc,callback,disabled));
@@ -4954,7 +4965,7 @@ function updateDispatchClock() {
                 const pool=phase==='buff'?rogueBuffPool:rogueRelics;
                 for(const id of rogueState.choices){const item=pool.find(b=>b.id===id);if(item)add(item.name,(item.school?`[${rogueSchools[item.school]}] `:'')+item.desc,()=>chooseRogueReward(id));}
                 if(phase==='buff')add(`후보 새로고침 (${rogueState.rerolls}회)`, '이번 탐사에서만 사용 · 현재 후보는 제외',rogueReroll,rogueState.rerolls<=0);
-                if(!rogueState.choices.length)add('다음 층으로','모든 유물을 획득했습니다.',async()=>{if(rogueBusy)return;advanceRogueFloor();await roguePersist();});
+                if(!rogueState.choices.length)add('다음 층으로','모든 유물을 획득했습니다.',async()=>{if(rogueBusy)return;advanceRogueFloor();roguePersist();});
             } else if(phase==='rest') {
                 add('휴식','생존자 최대 체력 40% 회복',()=>resolveRogueRoom('rest'));
                 add('퇴고','회복을 포기하고 전원 공격력 +12%',()=>resolveRogueRoom('forge'));
@@ -4998,14 +5009,12 @@ function updateDispatchClock() {
             if(['battle','elite','boss'].includes(node.type)) {
                 if(!rogueState.team.some(c=>c.stats.hp>0))return endRoguelikeRun('defeat');
                 rogueState.phase='combat';
-                const saved=await roguePersist();
-                if(!saved){rogueState.phase='route';rogueState.retryNode=id;updateRogueUI();return;}
                 try{
-                    rogueState.tactical=tacticalMake(); // 첫 전장부터 저장하여 재접속 때 목표/배치 유지
-                    const saved=await roguePersist();
-                    if(!saved){rogueState.tactical=null;rogueState.phase='route';rogueState.retryNode=id;updateRogueUI();return;}
+                    // Construct a valid board before queueing its first checkpoint.
+                    rogueState.tactical=tacticalMake();
+                    updateRogueUI();
                     await tacticalStart();
-                }catch(error){console.error('Tactical start failed',error);rogueState.tactical=null;rogueState.phase='route';rogueState.retryNode=id;updateRogueUI();await roguePersist();alert('전술전을 시작하지 못했습니다. 같은 경로를 다시 선택해 주세요.');}
+                }catch(error){console.error('Tactical start failed',error);rogueState.tactical=null;rogueState.phase='route';rogueState.retryNode=id;roguePersist();alert('전술전을 시작하지 못했습니다. 같은 경로를 다시 선택해 주세요.');}
             } else {
                 rogueState.phase=node.type;
                 if(node.type==='event'&&node.eventId){const living=rogueState.team.map((card,index)=>card.stats.hp>0?index:-1).filter(index=>index>=0);rogueState.eventActors={leaderIndex:living[0]??0,companionIndex:living[1]??null};rogueState.incidentPrepared=false;}
@@ -5015,7 +5024,7 @@ function updateDispatchClock() {
                     rogueState.shopRelic=rogueShuffle(rogueRelics.filter(relic=>!rogueState.relics.includes(relic.id)))[0]?.id||null;
                     if(rogueState.relics.includes('coin')){rogueState.shards+=15;rogueLog('은박 주화 · 행상인 탐사 조각 +15');}
                 }
-                await roguePersist();
+                roguePersist();
             }
         }
         function generateRogueFloor() { displayRoguelikeView(); }
@@ -5023,7 +5032,7 @@ function updateDispatchClock() {
             const available=rogueBuffPool.filter(b=>!exclude.includes(b.id));
             return rogueShuffle(available).slice(0,3).map(b=>b.id);
         }
-        function showRogueBuffSelection() { rogueState.phase='buff';rogueState.choices=rollRogueBuffs();updateRogueUI(); }
+        function showRogueBuffSelection() { rogueState.phase='buff';rogueState.choices=rollRogueBuffs(); }
         function applyRogueBuff(buff) {
             if(!buff)return;
             if(['atk','def','maxHp'].includes(buff.type))rogueStat(buff.type,buff.val);
@@ -5053,7 +5062,7 @@ function updateDispatchClock() {
         }
         async function rogueReroll() {
             if(rogueBusy||!rogueState.active||rogueState.phase!=='buff'||rogueState.rerolls<=0)return;
-            rogueState.rerolls--;rogueState.choices=rollRogueBuffs(rogueState.choices);await roguePersist();
+            rogueState.rerolls--;rogueState.choices=rollRogueBuffs(rogueState.choices);roguePersist();
         }
         async function chooseRogueReward(id) {
             if(rogueBusy||!rogueState.active||!['buff','relic'].includes(rogueState.phase)||!rogueState.choices.includes(id))return;
@@ -5065,7 +5074,7 @@ function updateDispatchClock() {
                     if(!rogueState.choices.length){rogueState.shards+=20;advanceRogueFloor();}
                 }else advanceRogueFloor();
             } else {grantRogueRelic(rogueRelics.find(r=>r.id===id));advanceRogueFloor();}
-            await roguePersist();
+            roguePersist();
         }
         function advanceRogueFloor() {
             rogueState.cleared=rogueState.floor;
@@ -5096,7 +5105,7 @@ function updateDispatchClock() {
                 if(action==='buyGuard')rogueStat('def',1.12);
                 if(action==='buyWard'){rogueState.bossClues=rogueState.bossClues||[];rogueState.bossClues.push({kind:'skipFirstSpecial',value:1});}
                 if(action==='buyRelic')grantRogueRelic(relic);
-                rogueLog(`행상인 · ${cost} 조각 사용`);await roguePersist();return;
+                rogueLog(`행상인 · ${cost} 조각 사용`);roguePersist();return;
             }
             if(action==='help'&&rogueState.shards<20)return;
             if(action==='rest')rogueHeal(.40);
@@ -5111,7 +5120,7 @@ function updateDispatchClock() {
             if(action==='memory')rogueRevive(.30);
             if(action==='collect')rogueState.shards+=35;
             if(phase==='rest'&&rogueState.relics.includes('tea'))rogueHeal(.10);
-            rogueLog(`${rogueState.floor}층 선택 완료`);advanceRogueFloor();await roguePersist();
+            rogueLog(`${rogueState.floor}층 선택 완료`);advanceRogueFloor();roguePersist();
         }
         function rollRogueEquipment() {
             const node=rogueState.node;
@@ -5711,7 +5720,7 @@ async function tacticalCorrectSkill(index,id){
  if(rogueBusy||!rogueState.active||!['rest','event'].includes(rogueState.phase)||!rogueState.node||(rogueState.correctedNodes||[]).includes(rogueState.node.id)||!Number.isInteger(index)||index<0||index>=5)return false;
  tacticalEnsureRunIdentity();const c=rogueState.team[index],p=tacticalCardProfile(c),bucket=TACTICAL_SKILLS[p.role][p.skill.category];if(!bucket.some(k=>k.id===id)||p.skill.id===id)return false;
  c.tacticalIdentity.skillId=id;rogueState.correctedNodes=[...(rogueState.correctedNodes||[]),rogueState.node.id];
- rogueLog(`${c.name} · ${p.skill.name} 전술 효과 교정 (역할·원래 스킬명 유지)`);await roguePersist();return true;
+ rogueLog(`${c.name} · ${p.skill.name} 전술 효과 교정 (역할·원래 스킬명 유지)`);roguePersist();return true;
 }
 
 function tacticalMake(){
@@ -6082,7 +6091,7 @@ function renderTactical(){
         async function endRoguelikeRun(reason='retire') {
             if(!rogueState.active||rogueBusy||isCombatRunning||rogueState.phase==='combat')return;
             if(reason==='retire'&&!confirm('탐사를 마치고 보상을 정산할까요? 획득한 영감·유물·탐사 조각은 다음 탐사로 이어지지 않습니다.'))return;
-            settleRogueRun('귀환');await roguePersist();
+            settleRogueRun('귀환');roguePersist();
         }
 	// gacha3.html - downloadSaveData 함수 (기존 함수 전체 교체)
 function downloadSaveData() {
