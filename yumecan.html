@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="yumecan-build" content="2026-10-17-tactical-v16-null-turn-fix">
+    <meta name="yumecan-build" content="2026-10-17-tactical-v17-operations">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -340,6 +340,30 @@ document.addEventListener('DOMContentLoaded', () => {
 .room-zoom-controls .room-zoom-reset{min-width:56px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:650;white-space:nowrap}
 #myroom-view .room-wrapper.room-zoomed{cursor:grab;touch-action:none}#myroom-view .room-wrapper.room-panning{cursor:grabbing}
 @media(max-width:600px){.room-zoom-controls{top:8px;right:8px;padding:3px;gap:0}.room-zoom-controls button{min-width:38px;height:38px}.room-zoom-controls .room-zoom-reset{min-width:49px}}
+
+
+/* Tactical operation panels share the existing combat palette and board dimensions. */
+#rogue-tactical .rt-operation-info{display:flex;flex-direction:column;gap:5px;padding:12px 15px;margin:10px 0;border:1px solid var(--rt-border);border-radius:10px;background:var(--rt-panel);color:var(--rt-text);font-size:12px;line-height:1.65}
+#rogue-tactical .rt-operation-info small{color:var(--rt-muted);line-height:1.7}
+#rogue-tactical .rt-deployment,#rogue-tactical .rt-preview{padding:14px 16px;margin:10px 0;border:1px solid var(--rt-border);border-radius:10px;background:var(--rt-panel);color:var(--rt-text);font-size:12px;line-height:1.7}
+#rogue-tactical .rt-deployment p,#rogue-tactical .rt-preview p{margin:0 0 8px;overflow-wrap:anywhere}
+#rogue-tactical .rt-deployment>div,#rogue-tactical .rt-preview>div{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}
+#rogue-tactical .rt-deployment button,#rogue-tactical .rt-preview button,#rogue-tactical .rt-tactical-tools>button{padding:8px 12px;border:1px solid var(--rt-border);border-radius:7px;background:var(--rt-panel);color:var(--rt-text);font-size:12px;font-weight:700;min-height:36px}
+#rogue-tactical .rt-deployment button.selected,#rogue-tactical [data-tactical-action="confirm"],#rogue-tactical [data-tactical-action="deploy-start"]{background:#426778;color:#fff;border-color:#426778}
+#rogue-tactical .rt-preview{border-color:#78a7b4;box-shadow:inset 3px 0 #78a7b4}
+#rogue-tactical .rt-preview ul{list-style:disc;margin:7px 0 8px;padding-left:20px;display:grid;gap:5px}
+#rogue-tactical .rt-preview small{color:var(--rt-muted);display:block}
+#rogue-tactical .rt-tactical-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:var(--rt-muted);font-size:12px;margin:10px 0}
+#rogue-tactical .rt-tactical-tools details{flex:1;min-width:140px}#rogue-tactical .rt-tactical-tools p{line-height:1.9;background:var(--rt-panel);padding:10px;border-radius:8px;color:var(--rt-text)}
+#rogue-tactical .rt-deploy-zone .rt-cell-surface{background:linear-gradient(135deg,#d4e8e4,#bcd7d2);border:2px dashed #4a8a79}
+#rogue-tactical .rt-threat .rt-cell-surface{box-shadow:inset 0 0 0 3px #c07b36}
+#rogue-tactical .rt-preview-cell .rt-cell-surface{box-shadow:inset 0 0 0 4px #47a4b3,0 0 8px #47a4b366}
+#rogue-tactical .rt-objective-label{position:absolute;bottom:3px;left:3px;right:3px;font-size:9px;line-height:1.4;font-weight:800;color:#fff;background:#665d7c;padding:2px 3px;border-radius:3px;white-space:normal;z-index:3}
+.rt-correction{grid-column:1/-1;border:1px solid #d2dae3;border-radius:12px;padding:15px;background:#f8fafc;color:#3b4b5c;text-align:left}.rt-correction h4{font-size:14px;font-weight:800;margin:0 0 6px}.rt-correction p{font-size:12px;line-height:1.7;color:#67788a;margin:0 0 10px}.rt-correction-members{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.rt-correction button{border:1px solid #d2dae3;background:#fff;color:#3b4b5c;border-radius:7px;padding:9px 10px;font-size:12px;min-height:36px}.rt-correction button.selected{background:#e1edf1;border-color:#809fac}.rt-correction button:disabled{opacity:.5;cursor:default}.rt-correction> b{font-size:12px}.rt-correction-variants{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.rt-correction-variants button{text-align:left;display:flex;flex-direction:column;gap:6px;line-height:1.7}.rt-correction-variants span{font-size:11px}
+html.dark-mode .rt-correction{background:#232c38;border-color:#465364;color:#e1e7ed}html.dark-mode .rt-correction p{color:#a6b7c8}html.dark-mode .rt-correction button{background:#2d3846;color:#e1e7ed;border-color:#536174}html.dark-mode .rt-correction button.selected{background:#3c5364}
+#rogue-tactical .rt-command-buttons:has([data-tactical-action="interact"]){grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:660px){#rogue-tactical .rt-command-buttons:has([data-tactical-action="interact"]) button:nth-last-child(2){grid-column:auto}}
+@media(max-width:600px){.rt-correction-variants{grid-template-columns:1fr}#rogue-tactical .rt-operation-info,#rogue-tactical .rt-deployment,#rogue-tactical .rt-preview{padding:10px 12px}#rogue-tactical .rt-objective-label{font-size:7px;padding:1px}}
 
 </style>
 
@@ -3250,7 +3274,7 @@ document.querySelectorAll('#card-detail-modal .detail-mobile-shortcuts button').
 <details id="rogue-investigation-journal" class="rg-panel hidden"><summary>조사 기록 · <span id="rogue-investigation-count">0건</span></summary><div id="rogue-investigation-list"></div></details>
 <details class="rg-panel rg-rules"><summary>전술전 스킬 도감 · 45종</summary><div id="rogue-tactical-skill-guide"></div></details>
 <details class="rg-panel rg-rules"><summary>폐기된 서고 전용 장비 · 드롭 확률과 능력</summary><p>일반 교전·상점·가챠에서는 드롭되지 않습니다. 같은 장비를 여러 개 획득할 수 있으며, 캐릭터당 기존 장비 슬롯 1개에 장착합니다. 획득한 장비는 모든 전투에서 사용 가능합니다. 진행 중인 탐사의 편성 능력치는 입장 시 고정됩니다.</p><p>정예: 장비 25%, 획득 시 SR 90% / SSR 10%. 6층 중간 보스: 장비 75%, 획득 시 SR 65% / SSR 35%. 12층 최종 보스: 1개 확정, SSR 85% / UR 15%. 각 등급 내 장비는 동일 확률입니다.</p><div class="rg-loot-grid"><div class="rg-loot-card" data-rarity="SR"><strong>🖋️ [SR] 금서의 펜촉</strong><p>공격력 +18% · 방어력 +8%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>📕 [SR] 불멸의 장정</strong><p>체력 +25% · 방어력 +10%</p></div><div class="rg-loot-card" data-rarity="SR"><strong>🔍 [SR] 진실의 교정경</strong><p>공격력 +12% · 체력 +18%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>⌛ [SSR] 역행하는 모래시계</strong><p>공격력 +30% · 방어력 +15%</p></div><div class="rg-loot-card" data-rarity="SSR"><strong>📜 [SSR] 침묵의 봉인서</strong><p>체력 +40% · 방어력 +25%</p></div><div class="rg-loot-card" data-rarity="UR"><strong>✒️ [UR] 종언을 쓰는 펜</strong><p>공격력 +42% · 체력 +25% · 방어력 +20%</p></div></div></details>
- <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 일반 승리 시 잊힌 서표 30% (1개), 정예 승리 시 1~2개, 보스 승리 시 3~5개를 발견합니다. 서표는 귀환·전멸 시 장비와 함께 정산됩니다.</p><p>다음 층의 경로는 층을 올라갈 때 무작위로 열립니다. 6층 중간 보스와 12층 최종 보스만 고정입니다. 진행 중인 탐사 기록과 선택 결과는 계정에 자동 저장됩니다.</p><p>전투는 6×5 격자의 SPD 기반 전술전입니다. 캐릭터당 AP 2, 이동·일반 공격·방어 1 AP, 스킬 2 AP. 엄폐·균열·가시·함정·이동 발판과 방향 판정이 적용됩니다. 함정은 진입 시 최대 HP의 7% 피해를 주고 다음 라운드 AP를 1 줄입니다. 재접속하면 저장된 남은 AP가 복원됩니다. 일반 교전은 적 전멸 50% / 5라운드 생존 25% / 3명 EXIT 탈출 25%, 정예·보스는 적 전멸이 목표입니다. 적은 한 차례에 일반 공격을 1회 사용하며, 스킬은 3라운드 간격으로 사용합니다. 보스는 4라운드마다 흑잉크 폭발·충격 박치기·절단 광선을 사용하며 8층 이후 사거리가 증가합니다.</p></details>
+ <details class="rg-panel rg-rules"><summary>탐사 규칙과 보상 안내</summary><p>생존자의 남은 체력은 다음 전투로 이어집니다. 전투불능은 부활 선택으로만 복귀합니다. 강화와 유물은 이번 탐사에만 적용되며 보유 카드 원본에는 영향을 주지 않습니다.</p><p>일반·정예·보스 승리마다 보석 10개와 만년필 50개, 3승마다 잉크병 1개. 보스 승리 시 보석 20개 추가. 일반 승리 시 잊힌 서표 30% (1개), 정예 승리 시 1~2개, 보스 승리 시 3~5개를 발견합니다. 서표는 귀환·전멸 시 장비와 함께 정산됩니다.</p><p>다음 층의 경로는 층을 올라갈 때 무작위로 열립니다. 6층 중간 보스와 12층 최종 보스만 고정입니다. 진행 중인 탐사 기록과 선택 결과는 계정에 자동 저장됩니다.</p><p>전투는 6×5 격자의 SPD 기반 전술전입니다. 캐릭터당 AP 2, 이동·일반 공격·방어 1 AP, 스킬 2 AP. 엄폐·균열·가시·함정·이동 발판과 방향 판정이 적용됩니다. 함정은 진입 시 최대 HP의 7% 피해를 주고 다음 라운드 AP를 1 줄입니다. 재접속하면 저장된 남은 AP가 복원됩니다. 일반 교전은 적 전멸 35% / 생존 15% / 탈출 10% / 원고 회수 15% / 거점 점령 10% / 사서 호위 10% / 의식 저지 5%입니다. 생존자가 부족하면 다인원 목표는 원고 회수로 대체됩니다. 정예·보스는 적 전멸이 목표입니다. 전투 전에 왼쪽 두 열에 배치하고, 행동 결과를 미리 확인한 뒤 실행합니다. 역할 연계는 팀 전체에서 라운드당 1회. 휴식·사건 방에서 같은 분류 안의 전술 효과를 무료로 1회 교정할 수 있습니다. 적은 한 차례에 일반 공격을 1회 사용하며, 스킬은 3라운드 간격으로 사용합니다. 포격진의 범위 스킬은 최대 2명, 각자 최대 HP 12% 피해 상한입니다. 보스는 4라운드마다 흑잉크 폭발·충격 박치기·절단 광선을 사용하며 8층 이후 사거리가 증가합니다.</p></details>
 </div>
                 <!-- 현장 조사 (파견) 뷰 -->
                 <div id="dispatch-view" class="hidden w-full flex flex-col items-center">
@@ -4548,7 +4572,7 @@ function updateDispatchClock() {
             {id:'wax',name:'밀랍 봉투',desc:'행상인의 모든 물품 가격이 탐사 조각 10개 감소'}
         ];
         const rogueNodeInfo = {
-            battle:['교전','전술전 · 전멸 50% / 생존 25% / 탈출 25% · 영감 / 조각 25'], elite:['정예','강한 적 · 영감 + 유물 / 조각 45'],
+            battle:['교전','전술전 · 전멸·생존·탈출·회수·점령·호위·의식 저지 · 영감 / 조각 25'], elite:['정예','강한 적 · 영감 + 유물 / 조각 45'],
             rest:['쉼터','회복 / 강화 / 재정비 중 하나 선택'], shop:['행상인','탐사 조각으로 보급품 구입'],
             event:['미완의 기록','선택에 따라 달라지는 사건'], boss:['봉인 수호자','구역 보스 · 영감 + 유물 / 조각 60']
         };
@@ -4731,11 +4755,11 @@ function updateDispatchClock() {
                     &&t.units.every(u=>u&&typeof u.id==='string'&&Number.isFinite(u.hp)&&Number.isFinite(u.maxHp)&&u.maxHp>0
                         &&Number.isInteger(u.x)&&Number.isInteger(u.y)&&tacticalInside(u.x,u.y)&&['ally','enemy'].includes(u.side))
                     &&Array.isArray(t.order)&&Number.isInteger(t.cursor)&&t.cursor>=0&&t.cursor<=t.order.length
-                    &&Number.isInteger(t.round)&&t.round>=1&&['kill','survive','escape'].includes(t.objective);
+                    &&Number.isInteger(t.round)&&t.round>=1&&tacticalOperationValid(t);
                 if(!validTactical){
                     rogueState.tactical=null;rogueState.phase='route';rogueState.retryNode=rogueState.node?.id;
                     rogueLog(r.version===2?'v2 전투 데이터를 계승했습니다. 해당 전투만 시작 지점에서 다시 진행합니다.':'초기 전투 저장을 복구했습니다. 해당 경로를 다시 선택하세요.');
-                }else{tacticalBalanceUpgrade(t);tacticalSkillUpgrade(t);tacticalSyncHP(t);rogueLog(`${t.round}라운드 전술 체크포인트 복원 · 현재 AP/위치 보존`);}
+                }else{tacticalBalanceUpgrade(t);tacticalSkillUpgrade(t);tacticalOperationUpgrade(t);t.pending=null;tacticalSyncHP(t);rogueLog(`${t.round}라운드 전술 체크포인트 복원 · 현재 AP/위치 보존`);}
             }
             if(['rest','shop','event','event-result','buff','relic'].includes(rogueState.phase)&&!rogueState.node){rogueState=emptyRogueState();return;}
             if(rogueState.phase==='event-result'&&!rogueState.eventResult){rogueState.phase='event';}
@@ -4901,6 +4925,7 @@ function updateDispatchClock() {
         function renderRogueChoices() {
             const box=document.getElementById('rogue-choices');box.replaceChildren();
             const phase=rogueState.phase;
+            renderTacticalCorrection(box);
             const add=(title,desc,callback,disabled)=>box.append(rogueChoiceButton(title,desc,callback,disabled));
             if(phase==='route') {
                 for(const node of rogueState.map[rogueState.floor-1]) {
@@ -5280,7 +5305,7 @@ function renderTacticalCardDetails(character,stats,instance=null){
     <dl class="detail-tactical-ranges"><div><dt>이동 · 1 AP</dt><dd>${profile.move}<small>칸</small></dd></div><div><dt>일반 공격 · 1 AP</dt><dd>${profile.range}<small>칸</small></dd></div><div><dt>스킬 · 2 AP</dt><dd>${profile.skill.target==='self'?'자신':profile.skillRange}${profile.skill.target==='self'?'':'<small>칸</small>'}</dd></div></dl>
     <div class="detail-tactical-effect"><b>${esc(profile.skill.name)}</b><p>${esc(tacticalCardEffect(profile))}</p><small>소모 2 AP · 재사용 간격 ${profile.skill.cooldown}라운드 · ${profile.skill.target==='self'?'자신 대상':profile.skill.target==='ally'?'아군 대상':'적 대상'}</small></div>
     <p class="detail-tactical-note">거리는 상하좌우 칸 수를 합산합니다. 피해량은 대상 방어력·방향·엄폐·방어 상태에 따라 달라집니다.</p>
-    <details><summary>역할·이동·사거리 판정 기준</summary><p>① DEF ≥ ATK × 0.9 → 수비형<br>② 그 외에 ATK ≥ DEF × 1.8이면서 SPD ≥ 10 → 사격형<br>③ 나머지 → 근접형</p><p>수비형은 이동 1칸, 근접형·사격형은 이동 2칸입니다. SPD는 행동 순서를 정합니다.</p><p>${instance?'현재 강화·장비 능력치와 계승 스킬 기준입니다. 탐사 입장 시 역할·스킬이 고정되며 이후 유물·영감으로 바뀌지 않습니다.':'도감의 기본 능력치 기준입니다. 강화·장비에 따라 입장 전 역할은 달라질 수 있으며, 탐사 중에는 고정됩니다.'}</p></details><details class="detail-tactical-variants"><summary>같은 분류의 전술 효과 3종</summary>${TACTICAL_SKILLS[profile.role][profile.skill.category].map((k,i)=>`<div><b>${k.id===profile.skill.id?'● 적용 중 · ':''}전술 효과 ${i+1}</b><p>${esc(k.desc)}</p></div>`).join('')}<p>스킬 이름은 원본 이름을 사용하며, 위 효과 중 하나가 카드별로 고정 배정됩니다.</p></details>`;
+    <details><summary>역할·이동·사거리 판정 기준</summary><p>① DEF ≥ ATK × 0.9 → 수비형<br>② 그 외에 ATK ≥ DEF × 1.8이면서 SPD ≥ 10 → 사격형<br>③ 나머지 → 근접형</p><p>수비형은 이동 1칸, 근접형·사격형은 이동 2칸입니다. SPD는 행동 순서를 정합니다.</p><p>${instance?'현재 강화·장비 능력치와 계승 스킬 기준입니다. 탐사 입장 시 역할·스킬이 고정되며 이후 유물·영감으로 바뀌지 않습니다.':'도감의 기본 능력치 기준입니다. 강화·장비에 따라 입장 전 역할은 달라질 수 있으며, 탐사 중에는 고정됩니다.'}</p></details><details class="detail-tactical-variants"><summary>같은 분류의 전술 효과 3종</summary>${TACTICAL_SKILLS[profile.role][profile.skill.category].map((k,i)=>`<div><b>${k.id===profile.skill.id?'● 적용 중 · ':''}전술 효과 ${i+1}</b><p>${esc(k.desc)}</p></div>`).join('')}<p>스킬 이름은 원본 이름을 사용하며, 위 효과 중 하나가 카드별로 기본 배정됩니다. 휴식·사건 방의 전술 교정에서 같은 분류 안의 다른 효과로 바꿀 수 있으며, 변경은 이번 탐사에 적용됩니다.</p></details>`;
 }
 
 function tacticalEnemyPool(){const allyBases=new Set((rogueState?.team||[]).map(c=>String(c.baseName||c.name||'').trim()).filter(Boolean));const unique=new Map();(characters||[]).forEach(card=>{if(!card||!card.name||!(card.skills||[]).length)return;const key=String(card.baseName||card.name||'').trim();if(!key||allyBases.has(key)||unique.has(key))return;unique.set(key,card);});const rank={SSR:4,SR:3,R:2,N:1};const pool=[...unique.values()].sort((a,b)=>(rank[b.rarity]||0)-(rank[a.rarity]||0)||String(a.name).localeCompare(String(b.name),'ko'));return pool.length?pool:[...(characters||[]).filter(card=>card&&card.name).slice(0,12)];}
@@ -5399,9 +5424,9 @@ function tacticalAddEffect(s,u,type,value,turns=2){
  u.effects.push({type,value:Math.max(value,old?.value||0),expiresRound:s.round+turns,...(type==='regen'?{ticks:2,expiresRound:s.round+3}: {})});
  tacticalRecord(s,`${u.name} · ${TACTICAL_STATUS_LABELS[type]}${type==='shield'?' '+Math.round(value):''}`);
 }
-function tacticalHealUnit(s,u,amount,label='회복'){
- if(!u||u.hp<=0||u.escaped)return 0;const healed=Math.max(0,Math.min(u.maxHp-u.hp,Math.round(amount)));u.hp+=healed;
- if(healed){tacticalRecord(s,`${u.name} · ${label} +${healed}`);tacticalSpawnFx(u.x,u.y,'heal',`+${healed}`);}return healed;
+function tacticalHealUnit(s,u,amount,label='회복',source=null){
+ if(!u||u.hp<=0||u.escaped)return 0;const healed=Math.max(0,Math.min(u.maxHp-u.hp,Math.round(amount)));const before=u.hp;u.hp+=healed;tacticalHealCombo(s,u,before,source);
+ if(healed){tacticalRecord(s,`${u.name} · ${label} +${healed}`);if(!s.preview)tacticalSpawnFx(u.x,u.y,'heal',`+${healed}`);}return healed;
 }
 function tacticalRoundEffects(s){
  for(const u of tacticalLive(s)){
@@ -5436,8 +5461,8 @@ function tacticalSkillTargets(s,a,target){
   out=tacticalLive(s,side).filter(u=>{const x=u.x-a.x,y=u.y-a.y;return (dx?y===0&&Math.sign(x)===dx:x===0&&Math.sign(y)===dy)&&tacticalDist(u,a)<=a.skillRange&&tacticalLOS(s,a,u);});
  }else out=[target];
  // Preserve the enemy difficulty reduction: ordinary enemy card skills damage one target.
- if(a.side==='enemy'&&!friends)out=out.includes(target)?[target]:out.slice(0,1);
- return out;
+ if(a.side==='enemy'&&!friends){if(a.formationAOE)out=[target,...out.filter(u=>u.id!==target.id)].filter(u=>u.hp>0&&!u.escaped).slice(0,2);else out=out.includes(target)?[target]:out.slice(0,1);}
+ return out.filter(u=>!friends||!u.passive);
 }
 function tacticalSkillBuff(s,a,entry,targets){
  if(!entry)return;const friends=entry.scope==='targets'?targets:entry.scope==='allies'?tacticalLive(s,a.side).filter(u=>tacticalDist(u,a)<=(entry.radius||1)):[a];
@@ -5447,7 +5472,7 @@ function tacticalSkillUpgrade(s){
  if(s.skillSystemVersion===15)return;
  tacticalEnsureRunIdentity();
  for(const u of s.units){
-  if(u.id==='echo')continue;
+  if(u.id==='echo'||u.passive)continue;
   const card=u.side==='ally'?rogueState.team[u.memberIndex]:(u.cardData||{name:u.name,stats:{atk:u.atk,def:u.def},skills:u.skillData?[{...u.skillData,name:u.skillData.sourceName||u.skillData.name}]:[]});
   if(!card)continue;
   const role=u.side==='ally'?card.tacticalIdentity.role:u.role,skill=tacticalPickSkill(card,role);
@@ -5456,31 +5481,39 @@ function tacticalSkillUpgrade(s){
  }
  s.skillSystemVersion=15;
 }
-async function tacticalCastSkill(s,a,target){
+function tacticalPrepareSkill(s,a,target){
  if(a.ap<2||!tacticalSkillCanTarget(s,a,target))return false;
- const k=a.skillData;a.ap-=2;a.lastSkillRound=s.round;
- if(k.dash&&tacticalDist(a,target)>1){const step=tacticalDashStep(s,a,target);if(step)tacticalMoveForced(s,a,step.x,step.y);if(a.hp<=0)return true;}
- renderTactical();await tacticalPlayCutin(a,k);
- const targets=tacticalSkillTargets(s,a,target),hits=[],friends=k.target!=='enemy';
- await Promise.all([tacticalAttackMotion(a,target,true),tacticalSkillEffect(a,targets,friends?'support':'skill')]);
- let total=0;
+ a.ap-=2;a.lastSkillRound=s.round;
+ if(a.skillData.dash&&tacticalDist(a,target)>1){const step=tacticalDashStep(s,a,target);if(step)tacticalMoveForced(s,a,step.x,step.y);}
+ return true;
+}
+function tacticalResolveSkill(s,a,target,prepared=false){
+ if(!prepared&&!tacticalPrepareSkill(s,a,target))return false;
+ if(a.hp<=0)return [];
+ const k=a.skillData,targets=tacticalSkillTargets(s,a,target),hits=[],friends=k.target!=='enemy';let total=0;
  for(const u of targets){
   if(a.hp<=0)break;
   if(friends){
-   if(k.cleanse){u.effects=(u.effects||[]).filter(e=>!['atkDown','defDown','mark','moveDown'].includes(e.type));tacticalRecord(s,`${u.name} · 해로운 상태 해제`);}
-   if(k.heal)tacticalHealUnit(s,u,u.maxHp*(a.side==='enemy'?Math.min(.1,k.heal):k.heal));
+   if(k.cleanse){u.effects=(u.effects||[]).filter(e=>!TACTICAL_NEGATIVE.includes(e.type));tacticalRecord(s,`${u.name} · 해로운 상태 해제`);}
+   if(k.heal)tacticalHealUnit(s,u,u.maxHp*(a.side==='enemy'?Math.min(.1,k.heal):k.heal),'회복',a);
    if(k.shield)tacticalAddEffect(s,u,'shield',Math.round(u.maxHp*k.shield));
    if(k.regen)tacticalAddEffect(s,u,'regen',a.side==='enemy'?Math.min(.03,k.regen):k.regen);
   }else{
-   const attacker=a;
-   const hitIndex=hits.length;total+=tacticalHurt(s,attacker,u,k.power,{penetration:k.penetration||0,attackOverride:k.stat==='def'?tacticalStat(a,'def')*1.8:undefined,skill:true,hits,hpCap:a.side==='enemy'?.24:undefined});
+   const hitIndex=hits.length,eligible=(u.effects||[]).some(e=>e.type==='moveDown'&&e.sourceRole==='사격형'&&e.sourceSide==='ally');
+   const dealt=tacticalHurt(s,a,u,k.power,{penetration:k.penetration||0,attackOverride:k.stat==='def'?tacticalStat(a,'def')*1.8:undefined,skill:true,hits,hpCap:a.side==='enemy'?(a.formationAOE?.12:.24):undefined});total+=dealt;
    const victim=s.units.find(v=>v.id===hits[hitIndex]?.id)||u;
-   if(victim.hp>0){if(k.debuff)tacticalAddEffect(s,victim,k.debuff.type,k.debuff.value);if(k.mark)tacticalAddEffect(s,victim,'mark',k.mark);if(k.slow)tacticalAddEffect(s,victim,'moveDown',k.slow);if(k.push)tacticalPush(s,a,victim);}
+   if(eligible&&victim.id===u.id&&dealt>0&&a.hp>0&&a.side==='ally'&&a.role==='근접형'&&tacticalCombo(s,'사격 제압 → 근접 돌입 · AP +1'))a.ap=Math.min(2,a.ap+1);
+   if(victim.hp>0){
+    if(k.debuff)tacticalAddEffect(s,victim,k.debuff.type,k.debuff.value);
+    if(k.mark)tacticalAddEffect(s,victim,'mark',k.mark);
+    if(k.slow){tacticalAddEffect(s,victim,'moveDown',k.slow);Object.assign(victim.effects.find(e=>e.type==='moveDown'),{sourceRole:a.role,sourceSide:a.side});}
+    if(k.push&&a.hp>0)tacticalPush(s,a,victim);
+   }
   }
  }
  if(a.hp>0){
   if(k.drain)tacticalHealUnit(s,a,total*k.drain,'흡혈');
-  if(k.teamHeal)for(const u of tacticalLive(s,a.side).filter(u=>tacticalDist(u,a)<=(k.teamRadius||1)))tacticalHealUnit(s,u,u.maxHp*k.teamHeal);
+  if(k.teamHeal)for(const u of tacticalLive(s,a.side).filter(u=>!u.passive&&tacticalDist(u,a)<=(k.teamRadius||1)))tacticalHealUnit(s,u,u.maxHp*k.teamHeal,'회복',a);
   if(k.selfShield)tacticalAddEffect(s,a,'shield',Math.round(a.maxHp*k.selfShield));
   if(k.counter)tacticalAddEffect(s,a,'counter',k.counter);
   if(k.taunt)tacticalAddEffect(s,a,'taunt',1);
@@ -5490,23 +5523,217 @@ async function tacticalCastSkill(s,a,target){
  }
  if(a.id!==target.id)tacticalFacing(a,target.x-a.x,target.y-a.y);
  tacticalRecord(s,`✦ ${a.name} · ${k.name}${targets.length>1?' / '+targets.length+'명':''}`);
- renderTactical();await tacticalPresentHits(hits,a);return true;
+ tacticalObjectiveUpdate(s);return hits;
+}
+async function tacticalCastSkill(s,a,target){
+ if(!tacticalPrepareSkill(s,a,target))return false;
+ if(a.hp<=0)return true;
+ renderTactical();await tacticalPlayCutin(a,a.skillData);
+ const targets=tacticalSkillTargets(s,a,target);
+ await Promise.all([tacticalAttackMotion(a,target,true),tacticalSkillEffect(a,targets,a.skillData.target==='enemy'?'skill':'support')]);
+ const hits=tacticalResolveSkill(s,a,target,true);renderTactical();await tacticalPresentHits(hits,a);return true;
 }
 function tacticalAISkillTarget(s,u){
- const k=u.skillData;if(!k||!tacticalSkillReady(s,u)||u.ap<2)return null;
+ const k=u.skillData;if(u.passive||!k||!tacticalSkillReady(s,u)||u.ap<2)return null;
  if(k.target==='self'){
   if(k.heal||k.regen)return tacticalLive(s,u.side).some(a=>a.hp<a.maxHp*.9&&tacticalDist(a,u)<=(k.radius||0))?u:null;
   if(k.taunt&&tacticalEffectValue(u,'taunt'))return null;
   return u;
  }
- if(k.target==='ally')return tacticalLive(s,u.side).filter(a=>tacticalSkillCanTarget(s,u,a)&&(k.heal?a.hp<a.maxHp*.9:!tacticalEffectValue(a,'shield'))).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]||null;
+ if(k.target==='ally')return tacticalLive(s,u.side).filter(a=>!a.passive&&tacticalSkillCanTarget(s,u,a)&&(k.heal?a.hp<a.maxHp*.9:!tacticalEffectValue(a,'shield'))).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0]||null;
  const target=tacticalAIIntent(s,u);return target&&tacticalSkillCanTarget(s,u,target)?target:null;
+}
+
+// Tactical operations: all state below is serializable with the existing checkpoint.
+const TACTICAL_OBJECTIVES=['kill','survive','escape','retrieve','control','rescue','ritual'];
+const TACTICAL_NEGATIVE=['atkDown','defDown','mark','moveDown'];
+function tacticalOperationValid(s){
+ if(!TACTICAL_OBJECTIVES.includes(s.objective))return false;
+ if(!['retrieve','control','rescue','ritual'].includes(s.objective))return true;
+ const d=s.objectiveData;if(!d)return false;
+ if(s.objective==='ritual')return Number.isInteger(d.deadline)&&d.deadline>0&&s.units.some(u=>u.id===d.targetId&&u.side==='enemy');
+ if(s.objective==='control')return Array.isArray(d.points)&&d.points.length===2&&d.points.every(p=>tacticalInside(p.x,p.y))&&Number.isInteger(d.held)&&d.held>=0;
+ return tacticalInside(d.x,d.y)&&(!d.carrierId||s.units.some(u=>u.id===d.carrierId&&u.side==='ally'));
+}
+function tacticalOperationUpgrade(s){
+ if(!s.operationVersion){s.operationVersion=17;s.phase='battle';s.comboRound=0;s.intercepts=[];}
+ s.intercepts=s.intercepts||[];
+ // A selected action is transient; a restored checkpoint always asks for a fresh preview.
+ if(s.phase!=='deploy'&&s.phase!=='battle')s.phase='battle';
+}
+function tacticalPrepareOperation(s,boss,elite){
+ s.operationVersion=17;s.phase='deploy';s.deploySelected=tacticalLive(s,'ally')[0]?.id;s.comboRound=0;s.intercepts=[];
+ if(!boss&&!elite){const r=rogueRand();s.objective=r<.35?'kill':r<.50?'survive':r<.60?'escape':r<.75?'retrieve':r<.85?'control':r<.95?'rescue':'ritual';}
+ // Objectives requiring several participants are only offered to a viable party.
+ const living=tacticalLive(s,'ally').length;
+ if(s.objective==='escape'&&living<3||s.objective==='control'&&living<2)s.objective='retrieve';
+ if(s.objective==='retrieve')s.objectiveData={x:3,y:2,carrierId:null,delivered:false};
+ if(s.objective==='rescue')s.objectiveData={x:4,y:2,carrierId:null,rescued:false,delivered:false};
+ if(s.objective==='control')s.objectiveData={points:[{x:2,y:1},{x:3,y:3}],held:0,required:2};
+ if(s.objective==='ritual')s.objectiveData={targetId:tacticalLive(s,'enemy').at(-1).id,deadline:6};
+ if(boss){
+  s.bossSeals=true;const b=s.units.find(u=>u.kind==='boss');b.hp=b.maxHp=Math.max(1,Math.round(b.maxHp*.8));
+  for(const [i,y] of [0,4].entries()){
+   const device=tacticalUnit('봉인 장치 '+(i+1),'enemy',4,y,{id:'seal'+i,kind:'sealDevice',role:'장치',hp:Math.max(1,Math.round(b.maxHp*.075)),atk:0,def:0,spd:0,range:1,move:1,icon:'◇'});
+   device.passive=true;device.bossId=b.id;s.units.push(device);
+  }
+  s.formation={name:'봉인 수호진',desc:'장치가 남아 있으면 보스가 받는 피해 45% 감소. 두 장치 파괴 시 보스가 받는 피해 20% 증가. 장치는 행동하지 않습니다.'};
+ }else tacticalArrangeFormation(s);
+ tacticalRecord(s,'작전: '+tacticalObjectiveText(s));
+}
+function tacticalArrangeFormation(s){
+ const enemies=tacticalLive(s,'enemy'),pool=tacticalEnemyPool(),type=Math.floor(rogueRand()*3);
+ const layouts=[[[4,2],[5,1],[5,3],[4,4]],[[4,1],[5,2],[4,3],[5,4]],[[4,0],[4,4],[5,2],[5,3]]];
+ const roles=type===0?['수비형','사격형','수비형','근접형']:type===1?['수비형','사격형','근접형','근접형']:['근접형','근접형','사격형','수비형'];
+ enemies.forEach((e,i)=>{
+  const desired=roles[i],support=type===0&&i===2;
+  let candidates=pool.filter(c=>support?tacticalRole(c)!=='근접형'&&tacticalSkillCategory(tacticalOriginalSkill(c))==='vampire':tacticalRole(c)===desired);
+  if(support&&!candidates.length)candidates=pool.filter(c=>tacticalRole(c)==='수비형');
+  if(type===2&&i===2){const artillery=pool.filter(c=>tacticalRole(c)==='사격형'&&TACTICAL_SKILLS['사격형'][tacticalSkillCategory(tacticalOriginalSkill(c))].some(k=>k.shape==='targetArea'&&k.target==='enemy'));if(artillery.length)candidates=artillery;}
+  const card=candidates.length?candidates[(rogueState.floor+i)%candidates.length]:e.cardData;
+  const role=card?tacticalRole(card):e.role;
+  if(card){
+   const original=tacticalOriginalSkill(card),category=tacticalSkillCategory(original),bucket=TACTICAL_SKILLS[role][category];
+   let index=Math.max(0,bucket.findIndex(k=>k.id===tacticalPickSkill(card,role).id));
+   if(support){const j=bucket.findIndex(k=>k.target!=='enemy'&&(k.heal||k.shield||k.buff));if(j>=0)index=j;}
+   if(type===2&&i===2){const j=bucket.findIndex(k=>k.shape==='targetArea'&&k.target==='enemy');if(j>=0){index=j;e.formationAOE=true;}}
+   const k={...bucket[index],name:original.name,sourceName:original.name,dialogue:original.dialogue||'',tactical:true,type:category};
+   Object.assign(e,{name:card.name,role,cardData:card,image:tacticalSafeImage(card),portrait:tacticalSafePortrait(card),skillData:k,skillName:k.name,skillRange:k.range,skillType:k.type,skillPower:k.power,range:role==='사격형'?3:1,move:role==='수비형'?1:2,block:role==='수비형',icon:role==='수비형'?'🛡️':role==='사격형'?'🎯':'⚔️'});
+   e.kind=role==='수비형'?'warden':role==='사격형'?'marksman':'cutter';
+   if(support)e.supportPriority=!!(k.heal||k.shield||k.regen||k.buff);
+   if(e.formationAOE)e.atk=Math.max(1,Math.round(e.atk*.9));
+  }
+  [e.x,e.y]=layouts[type][i];
+ });
+ if(type===0)s.formation={name:'수호·지원진',desc:'전열을 세운 수비병과 후방 사격·지원병. 회복병은 다친 동료를, 방어 지원병은 보호막·강화를 우선 사용합니다.'};
+ if(type===1){
+  const leader=enemies[0];s.formation={name:'지휘관 편성',desc:'지휘관 '+leader.name+' 생존 중 동료 방어력 +10%. 지휘관을 쓰러뜨리면 강화가 해제됩니다.',leaderId:leader.id};
+  for(const e of enemies.slice(1)){tacticalAddEffect(s,e,'defUp',.1,999);e.effects.find(v=>v.type==='defUp').sourceLeader=leader.id;}
+ }
+ if(type===2)s.formation={name:'양익·포격진',desc:enemies.some(e=>e.formationAOE)?'양쪽에서 접근하는 근접병과 후방 포격수. 포격 스킬은 지정 대상과 인접 아군 중 최대 2명을 공격하며 각자 최대 HP의 12% 상한. 아군을 분산하세요.':'양쪽에서 접근하는 근접병과 후방 사격병. 전열을 나누어 대응하세요.'};
+}
+function tacticalObjectiveText(s){
+ const d=s.objectiveData||{};
+ return {kill:'모든 적 격파',survive:'5라운드 생존',escape:`3명 탈출 · ${s.escaped}/3`,retrieve:`원고 회수 후 오른쪽 EXIT로 운반${d.delivered?' · 완료':d.carrierId?' · '+(s.units.find(u=>u.id===d.carrierId)?.name||'아군')+' 운반 중':''}`,control:`두 거점 동시 점령 · ${d.held||0}/${d.required||2}라운드`,rescue:`사서 구조 후 오른쪽 EXIT까지 호위${d.delivered?' · 완료':d.carrierId?' · '+(s.units.find(u=>u.id===d.carrierId)?.name||'아군')+' 호위 중':d.rescued?' · 재합류 필요':''}`,ritual:`${s.units.find(u=>u.id===d.targetId)?.name||'의식 집행자'} 격파 · ${d.deadline||6}라운드 종료 전`}[s.objective]||'작전';
+}
+function tacticalObjectiveHelp(s){return {retrieve:'원고와 인접하거나 같은 칸에서 「원고 회수」 1 AP. 운반자를 EXIT로 이동시키세요. 운반자가 쓰러지면 원고를 그 자리에 떨어뜨립니다.',rescue:'사서와 인접하거나 같은 칸에서 「구조 / 합류」 1 AP. 호위자와 사서가 함께 EXIT로 이동합니다. 호위자가 쓰러지면 사서는 그 자리에 남습니다.',control:'각 라운드가 끝날 때 서로 다른 아군이 두 거점을 동시에 점유하면 1회 진행. 2회 연속 유지하면 승리합니다. 점유가 끊기면 진행도가 초기화됩니다.',ritual:'표식이 있는 의식 집행자만 기한 안에 격파하면 승리합니다. 다른 적을 전멸시킬 필요는 없습니다.',escape:'오른쪽 EXIT에 도달한 아군은 전장에서 이탈합니다. 3명이 탈출해야 승리합니다.',survive:'5라운드가 끝날 때까지 아군을 한 명 이상 생존시키세요.',kill:'남아 있는 모든 적을 격파하세요.'}[s.objective];}
+function tacticalObjectiveUpdate(s,endRound=false){
+ const d=s.objectiveData;if(!d)return;
+ if(d.carrierId&&!d.delivered){const carrier=s.units.find(u=>u.id===d.carrierId);if(carrier){d.x=carrier.x;d.y=carrier.y;if(carrier.hp<=0){d.carrierId=null;tacticalRecord(s,s.objective==='rescue'?'호위자 전투불능 · 사서 재합류 필요':'운반자 전투불능 · 원고를 떨어뜨림');}else if(carrier.x===5){d.delivered=true;tacticalRecord(s,s.objective==='rescue'?'사서 호위 완료':'원고 운반 완료');}}}
+ if(s.objective==='control'&&endRound){const held=d.points.every(p=>tacticalLive(s,'ally').some(u=>u.x===p.x&&u.y===p.y));d.held=held?(d.held||0)+1:0;tacticalRecord(s,`거점 유지 ${d.held}/${d.required}`);}
+}
+function tacticalCanInteract(s,a){
+ const d=s.objectiveData;return !!a&&a.side==='ally'&&a.hp>0&&a.ap>=1&&['retrieve','rescue'].includes(s.objective)&&!!d&&!d.delivered&&!d.carrierId&&tacticalDist(a,d)<=1;
+}
+function tacticalInteract(s,a){if(!tacticalCanInteract(s,a))return false;a.ap--;const d=s.objectiveData;d.carrierId=a.id;d.rescued=s.objective==='rescue';tacticalRecord(s,a.name+(s.objective==='rescue'?' · 사서 구조 / 합류':' · 원고 회수'));tacticalObjectiveUpdate(s);return true;}
+function tacticalCombo(s,label){if(s.comboRound===s.round)return false;s.comboRound=s.round;tacticalRecord(s,'연계 · '+label);return true;}
+function tacticalHealCombo(s,u,before,source){
+ if(source?.side!=='ally'||u.side!=='ally'||source.id===u.id||before>=u.maxHp*.5||u.hp<u.maxHp*.5)return;
+ if((u.effects||[]).some(e=>TACTICAL_NEGATIVE.includes(e.type))&&tacticalCombo(s,'회복 → 상태 해제'))u.effects=u.effects.filter(e=>!TACTICAL_NEGATIVE.includes(e.type));
+}
+function tacticalFollowPush(s,a,target){
+ if(a.side!=='ally'||a.role!=='수비형'||a.hp<=0||target.hp<=0||s.comboRound===s.round)return;
+ const friend=tacticalLive(s,'ally').filter(u=>u.id!==a.id&&tacticalDist(u,target)===1).sort((a,b)=>a.id.localeCompare(b.id))[0];
+ if(friend&&tacticalCombo(s,'밀치기 → '+friend.name+' 협공'))tacticalHurt(s,friend,target,.4,{noCombo:true,noCounter:true});
+}
+function tacticalReleaseLeader(s){
+ for(const u of s.units)u.effects=(u.effects||[]).filter(e=>!e.sourceLeader||s.units.some(v=>v.id===e.sourceLeader&&v.hp>0));
+}
+function tacticalBasicResolve(s,a,target){
+ if(!tacticalCanHit(s,a,target)||a.ap<1)return false;
+ a.ap--;const hits=[];tacticalHurt(s,a,target,1,{hpCap:a.side==='enemy'?.18:undefined,hits});
+ const victim=s.units.find(u=>u.id===hits[0]?.id)||target;
+ if(a.hp>0&&(a.role==='근접형'||a.kind==='cutter'||a.kind==='boss')&&victim.hp>0&&tacticalDist(a,victim)===1)tacticalPush(s,a,victim);
+ tacticalFacing(a,target.x-a.x,target.y-a.y);return hits;
+}
+function tacticalThreatCells(s){
+ const cells=new Set();for(const e of tacticalLive(s,'enemy').filter(u=>!u.passive))for(let y=0;y<5;y++)for(let x=0;x<6;x++){
+  const point={x,y};if(tacticalDist(e,point)<=e.range&&tacticalLOS(s,e,point))cells.add(tacticalKey(x,y));
+  const k=e.skillData;if(k&&k.target==='enemy'&&tacticalSkillReady(s,e)&&tacticalDist(e,point)<=e.skillRange&&(!k.dash||tacticalDist(e,point)<=1)&&(!(k.shape==='line')||e.x===x||e.y===y)&&tacticalLOS(s,e,point))cells.add(tacticalKey(x,y));
+ }
+ return cells;
+}
+function tacticalApplyPreview(s,a,p){
+ const target=s.units.find(u=>u.id===p.targetId);
+ if(p.action==='move')return tacticalMove(s,a,p.x,p.y);
+ if(p.action==='attack')return !!tacticalBasicResolve(s,a,target);
+ if(p.action==='skill')return tacticalResolveSkill(s,a,target)!==false;
+ if(p.action==='guard')return tacticalGuard(s,a);
+ if(p.action==='interact')return tacticalInteract(s,a);
+ if(p.action==='end'){tacticalEndActor(s,a);return true;}
+ return false;
+}
+function tacticalPreview(s,p){
+ const clone=JSON.parse(JSON.stringify(s));clone.preview=true;clone.pending=null;
+ const a=clone.units.find(u=>u.id===p.actorId);if(!a||a.id!==tacticalActor(s)?.id||a.hp<=0)return null;
+ clone.messages=[];
+ if(!tacticalApplyPreview(clone,a,p))return null;if(p.action!=='end'&&(a.ap<=0||a.hp<=0||a.escaped))tacticalEndActor(clone,a);tacticalObjectiveUpdate(clone);tacticalReleaseLeader(clone);
+ const changes=clone.units.map(u=>{
+  const old=s.units.find(v=>v.id===u.id);if(!old)return {id:u.id,name:u.name,text:'출현',x:u.x,y:u.y};
+  const parts=[];const loss=old.hp-u.hp;if(loss)parts.push(loss>0?`${loss} 피해 (HP ${Math.ceil(u.hp)})`:`${-loss} 회복 (HP ${Math.ceil(u.hp)})`);
+  const shield=tacticalEffectValue(u,'shield')-tacticalEffectValue(old,'shield');if(shield)parts.push('보호막 '+(shield>0?'+':'')+Math.ceil(shield));
+  if(old.x!==u.x||old.y!==u.y)parts.push(`${u.x+1}열 ${u.y+1}행으로 이동 · ${tacticalCell(clone,u.x,u.y)}`);
+  if(u.hp<=0&&old.hp>0)parts.push('전투불능');
+  const before=JSON.stringify(old.effects||[]),after=JSON.stringify(u.effects||[]);if(before!==after)parts.push(tacticalStatusText(clone,u)||'상태 효과 해제');
+  if(old.guarded!==u.guarded)parts.push(u.guarded?'방어 태세':'방어 해제');
+  return parts.length?{id:u.id,name:u.name,text:parts.join(' / '),x:u.x,y:u.y}:null;
+ }).filter(Boolean);
+ const cells=new Set(changes.map(u=>tacticalKey(u.x,u.y)));if(p.targetId){const t=s.units.find(v=>v.id===p.targetId);if(t)cells.add(tacticalKey(t.x,t.y));}
+ if(p.action==='skill'&&targetForPreview(s,p))for(const t of tacticalSkillTargets(s,s.units.find(u=>u.id===p.actorId),targetForPreview(s,p)))cells.add(tacticalKey(t.x,t.y));
+ return {changes,cells,ap:a.ap,logs:clone.messages.slice().reverse(),outcome:tacticalOutcome(clone)};
+}
+function targetForPreview(s,p){return s.units.find(u=>u.id===p.targetId);}
+function tacticalActionStamp(s){return JSON.stringify([s.round,s.cursor,s.units.map(u=>[u.id,u.hp,u.x,u.y,u.ap,u.guarded,u.effects]),s.comboRound,s.objectiveData]);}
+async function tacticalDeploymentInput(s,action,x,y){
+ if(action==='tile'&&tacticalInside(x,y)){
+  const at=tacticalOccupant(s,x,y),selected=s.units.find(u=>u.id===s.deploySelected&&u.side==='ally'&&u.hp>0);
+  if(at?.side==='ally'){if(selected&&at.id!==selected.id&&x<2){[selected.x,at.x]=[at.x,selected.x];[selected.y,at.y]=[at.y,selected.y];}s.deploySelected=at.id;}
+  else if(!at&&x<2&&selected){selected.x=x;selected.y=y;}
+  else return;
+  tacticalBusy=true;try{await tacticalSave(s);}finally{tacticalBusy=false;updateRogueUI();}return;
+ }
+ if(action==='deploy-select'){if(s.units.some(u=>u.id===x&&u.side==='ally'&&u.hp>0))s.deploySelected=x;updateRogueUI();return;}
+ if(action==='deploy-start'){
+  const allies=tacticalLive(s,'ally');if(!allies.length||allies.some(u=>u.x>1)||new Set(allies.map(u=>tacticalKey(u.x,u.y))).size!==allies.length)return;
+  s.phase='battle';s.pending=null;tacticalRecord(s,'배치 확정 · 작전 개시');await tacticalStart();
+ }
+}
+function tacticalOperationUI(s,locked){
+ const esc=rogueEscape,deploy=s.phase==='deploy',selected=s.units.find(u=>u.id===s.deploySelected),p=s.pending,preview=p?tacticalPreview(s,p):null;
+ let html=`<div class="rt-operation-info"><b>${deploy?'전투 전 배치':'작전 안내'}</b><span>${esc(tacticalObjectiveHelp(s))}</span>${s.formation?`<small>${esc(s.formation.name)} · ${esc(s.formation.desc)}</small>`:''}</div>`;
+ if(deploy)html+=`<div class="rt-deployment"><p>아군을 선택하고 왼쪽 두 열의 칸을 누르세요. 다른 아군 칸은 자리를 교환합니다. 배치 중에는 AP와 지형 효과가 적용되지 않습니다.</p><div>${tacticalLive(s,'ally').map(u=>`<button type="button" data-deploy-select="${u.id}" class="${u.id===selected?.id?'selected':''}" ${locked?'disabled':''}>${esc(u.name)} · ${u.x+1}.${u.y+1}</button>`).join('')}</div><button type="button" data-tactical-action="deploy-start" ${locked?'disabled':''}>배치 확정 · 전투 시작</button></div>`;
+ else html+=`<div class="rt-tactical-tools"><button type="button" data-tactical-action="threat">${s.showThreat?'위협 범위 숨기기':'적 위협 범위 보기'}</button><span>${s.comboRound===s.round?'이번 라운드 연계 사용 완료':'이번 라운드 팀 연계 1회 가능'}</span><details><summary>역할 연계 조건</summary><p>사격형이 건 이동 저하 → 근접형 공격 스킬: AP 1 환급<br>수비형 밀치기 → 밀려난 적 옆 아군: ATK 40% 협공<br>이번·직전 라운드에 수비형이 대신 피격 → 같은 적을 사격형이 공격: 엄폐 무시<br>다른 아군의 회복으로 HP 50%를 넘기면: 해로운 상태 추가 해제<br>팀 전체에서 라운드당 가장 먼저 성립한 연계 한 번만 발동합니다.</p></details></div>${s.showThreat?'<p class="rt-instruction">주황색은 적의 현재 위치 기준 일반 공격·준비된 직접 스킬 사거리입니다. 이동 후 공격과 범위 스킬의 주변 확산은 포함하지 않습니다. 보스 예고는 붉은 빗금으로 표시합니다.</p>':''}`;
+ if(!deploy&&preview)html+=`<section class="rt-preview" aria-live="polite"><b>${esc({move:'이동',attack:'일반 공격',skill:tacticalActor(s)?.skillName||'스킬',guard:'방어',interact:s.objective==='retrieve'?'원고 회수':'구조 / 합류',end:'턴 종료'}[p.action]||'행동')} 결과 미리보기 · 남는 AP ${preview.ap}/2${preview.outcome?' · '+(preview.outcome==='win'?'목표 달성':'패배 위험'):''}</b><ul>${preview.changes.map(c=>`<li><strong>${esc(c.name)}</strong> ${esc(c.text)}</li>`).join('')||'<li>HP 변화 없음</li>'}</ul><p>${esc(preview.logs.filter(l=>/연계|함정|균열|장치|원고|사서|거점|차단|보호막|배후|측면/.test(l)).join(' · '))}</p><small>지형·보호막·방어·대신 피격·반격을 반영한 결과입니다. 확인 후 적의 다음 행동이 이어질 수 있습니다.</small><div><button type="button" data-tactical-action="confirm" ${locked?'disabled':''}>이대로 실행</button><button type="button" data-tactical-action="cancel" ${locked?'disabled':''}>취소</button></div></section>`;
+ return html;
+}
+function tacticalObjectiveMarker(s,x,y){
+ const d=s.objectiveData;if(!d)return '';
+ if(s.objective==='control'){const i=d.points.findIndex(p=>p.x===x&&p.y===y);if(i>=0)return '거점 '+(i+1);}
+ if(['retrieve','rescue'].includes(s.objective)&&d.x===x&&d.y===y&&!d.delivered)return s.objective==='retrieve'?(d.carrierId?'원고 운반':'원고'):(d.carrierId?'사서 호위':'사서');
+ if(s.objective==='ritual'){const u=s.units.find(u=>u.id===d.targetId);if(u?.x===x&&u.y===y&&u.hp>0)return '의식 집행자';}
+ return '';
+}
+function renderTacticalCorrection(box){
+ const node=rogueState.node;if(!node||!['rest','event'].includes(rogueState.phase))return;
+ tacticalEnsureRunIdentity();const used=(rogueState.correctedNodes||[]).includes(node.id);
+ const section=document.createElement('section');section.className='rt-correction';
+ const selected=Math.max(0,Math.min(4,Number(rogueState.correctionMember)||0)),card=rogueState.team[selected],profile=tacticalCardProfile(card),bucket=TACTICAL_SKILLS[profile.role][profile.skill.category];
+ section.innerHTML=`<h4>전술 교정 ${used?'· 이용 완료':'· 방마다 무료 1회'}</h4><p>원래 스킬 이름과 역할을 유지하고, 같은 분류의 전술 효과 세 가지 중 하나로 바꿉니다. 변경 효과는 이번 탐사에 적용됩니다. 교정 후에도 이 방의 일반 선택을 할 수 있습니다.</p><div class="rt-correction-members">${rogueState.team.map((c,i)=>`<button type="button" data-correction-member="${i}" class="${i===selected?'selected':''}" ${rogueBusy?'disabled':''}>${rogueEscape(c.name)}</button>`).join('')}</div><b>${rogueEscape(card.name)} · ${rogueEscape(profile.role)} · ${rogueEscape(profile.skill.name)}</b><div class="rt-correction-variants">${bucket.map((k,i)=>`<button type="button" data-correction-skill="${k.id}" ${used||rogueBusy||k.id===profile.skill.id?'disabled':''}><b>효과 ${i+1}${k.id===profile.skill.id?' · 현재':''}</b><span>${rogueEscape(k.desc)}</span></button>`).join('')}</div>`;
+ section.querySelectorAll('[data-correction-member]').forEach(b=>b.addEventListener('click',()=>{if(rogueBusy)return;rogueState.correctionMember=Number(b.dataset.correctionMember);renderRogueChoices();}));
+ section.querySelectorAll('[data-correction-skill]').forEach(b=>b.addEventListener('click',()=>tacticalCorrectSkill(selected,b.dataset.correctionSkill)));
+ box.append(section);
+}
+async function tacticalCorrectSkill(index,id){
+ if(rogueBusy||!rogueState.active||!['rest','event'].includes(rogueState.phase)||!rogueState.node||(rogueState.correctedNodes||[]).includes(rogueState.node.id)||!Number.isInteger(index)||index<0||index>=5)return false;
+ tacticalEnsureRunIdentity();const c=rogueState.team[index],p=tacticalCardProfile(c),bucket=TACTICAL_SKILLS[p.role][p.skill.category];if(!bucket.some(k=>k.id===id)||p.skill.id===id)return false;
+ c.tacticalIdentity.skillId=id;rogueState.correctedNodes=[...(rogueState.correctedNodes||[]),rogueState.node.id];
+ rogueLog(`${c.name} · ${p.skill.name} 전술 효과 교정 (역할·원래 스킬명 유지)`);await roguePersist();return true;
 }
 
 function tacticalMake(){
   tacticalEnsureRunIdentity();
   const node=rogueState.node, floor=rogueState.floor, base=rogueEnemyPlan(node), boss=node.type==='boss',elite=node.type==='elite';
-  const objective=boss||elite?'kill':rogueRand()<.5?'kill':rogueRand()<.5?'survive':'escape';
+  const objective='kill';
   const terrain=Array(TACTICAL_W*TACTICAL_H).fill('plain');
   const put=(x,y,t)=>{if(tacticalInside(x,y))terrain[y*TACTICAL_W+x]=t;};
   put(2,4,'rift');put(3,0,'rift');put(1,2,'cover');put(4,3,'cover');
@@ -5518,14 +5745,14 @@ function tacticalMake(){
   enemies.forEach(tacticalEaseEnemy);
   const clues=rogueBossClueValues();
   const s={version:3,skillSystemVersion:15,width:6,height:5,runId:rogueState.runId,nodeId:node.id,objective,round:1,terrain,units:[...allies,...enemies],order:[],cursor:0,mode:'move',messages:[],escaped:0,bossPatterns:boss?Math.floor(rogueRand()*3):0,balanceVersion:9,nextBossRound:clues.delaySpecial?5:4,telegraph:null,firstSpecialSkipped:false,spawnedClone:false,firstInkResolved:false,firstLaserResolved:false};
-  tacticalRoundStart(s);tacticalRecord(s,objective==='kill'?'목표: 적 전멸':objective==='survive'?'목표: 5라운드 생존':'목표: 3명을 오른쪽 EXIT로 탈출');
+  tacticalPrepareOperation(s,boss,elite);tacticalRoundStart(s);
   return s;
 }
 function tacticalRecord(s,line){s.messages.unshift(line);s.messages.length=Math.min(16,s.messages.length);}
 function tacticalRoundStart(s){
-  tacticalRoundEffects(s);
-  s.order=tacticalLive(s).sort((a,b)=>b.spd-a.spd||a.id.localeCompare(b.id)).map(u=>u.id);s.cursor=0;
-  for(const u of tacticalLive(s)){u.apStartPenalty=u.trapped?1:0;u.ap=2-u.apStartPenalty;if(u.apStartPenalty)tacticalRecord(s,`⚠ ${u.name} · 함정 페널티로 이번 라운드 AP 1/2`);u.trapped=0;u.activated=false;}
+  tacticalRoundEffects(s);s.intercepts=(s.intercepts||[]).filter(v=>v.round>=s.round-1);
+  s.order=tacticalLive(s).filter(u=>!u.passive).sort((a,b)=>b.spd-a.spd||a.id.localeCompare(b.id)).map(u=>u.id);s.cursor=0;
+  for(const u of tacticalLive(s)){u.apStartPenalty=u.trapped?1:0;u.ap=u.passive?0:2-u.apStartPenalty;if(u.apStartPenalty)tacticalRecord(s,`⚠ ${u.name} · 함정 페널티로 이번 라운드 AP 1/2`);u.trapped=0;u.activated=false;}
   if(s.units.some(u=>u.kind==='boss')&&s.round===s.nextBossRound-1){
     const boss=tacticalLive(s,'enemy').find(u=>u.kind==='boss'),targets=tacticalLive(s,'ally');
     if(boss&&targets.length){const target=targets.slice().sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
@@ -5555,25 +5782,33 @@ function tacticalLOS(s,a,b){
 }
 function tacticalCanHit(s,a,b,skill=false){if(skill)return tacticalSkillCanTarget(s,a,b);if(!a||!b||b.hp<=0||b.escaped||a.side===b.side)return false;return tacticalDist(a,b)<=a.range&&tacticalLOS(s,a,b);}
 function tacticalFlank(attacker,target){const [dx,dy]=TACTICAL_DIR[target.facing]||[1,0],px=attacker.x-target.x,py=attacker.y-target.y,dot=dx*px+dy*py;return dot<0?'rear':dot===0?'side':'front';}
-function tacticalPush(s,attacker,target){const dx=target.x-attacker.x,dy=target.y-attacker.y;let sx=Math.abs(dx)>=Math.abs(dy)?Math.sign(dx):0,sy=sx?0:Math.sign(dy);if(!sx&&!sy)sx=1;
-  if(tacticalPassable(s,target.x+sx,target.y+sy,target)){target.x+=sx;target.y+=sy;tacticalEnter(s,target);tacticalRecord(s,`${target.name} 밀려남`);}else {const hit=Math.max(1,Math.round(target.maxHp*.035));target.hp=Math.max(0,target.hp-hit);tacticalRecord(s,`${target.name} 장애물 충돌 · ${hit} 피해`);}
+function tacticalPush(s,attacker,target){
+ if(target.passive)return;
+ const dx=target.x-attacker.x,dy=target.y-attacker.y;let sx=Math.abs(dx)>=Math.abs(dy)?Math.sign(dx):0,sy=sx?0:Math.sign(dy);if(!sx&&!sy)sx=1;
+ if(tacticalPassable(s,target.x+sx,target.y+sy,target)){target.x+=sx;target.y+=sy;tacticalEnter(s,target);tacticalRecord(s,`${target.name} 밀려남`);tacticalFollowPush(s,attacker,target);}
+ else {const hit=Math.min(target.hp,Math.max(1,Math.round(target.maxHp*.035)));target.hp-=hit;tacticalRecord(s,`${target.name} 장애물 충돌 · ${hit} 피해`);if(!s.preview)tacticalSpawnFx(target.x,target.y,'hit',`-${hit}`);}
+ tacticalObjectiveUpdate(s);tacticalReleaseLeader(s);
 }
 function tacticalHurt(s,attacker,target,mult=1,opts={}){
   if(!target||target.hp<=0)return 0;
-  if(!opts.ignoreBlock){
+  if(!opts.ignoreBlock&&!target.passive){
     const guards=tacticalLive(s,target.side).filter(u=>u.id!==target.id&&u.role==='수비형'&&u.guarded&&tacticalDist(u,target)===1);
-    if(guards.length){target=guards[0];tacticalRecord(s,`🛡 ${target.name} 저지 · 아군 대신 공격을 받음`);}
+    if(guards.length){target=guards[0];if(target.side==='ally'&&attacker?.side==='enemy'){s.intercepts=s.intercepts||[];s.intercepts=s.intercepts.filter(v=>v.attackerId!==attacker.id);s.intercepts.push({attackerId:attacker.id,defenderId:target.id,round:s.round});}tacticalRecord(s,`🛡 ${target.name} 저지 · 아군 대신 공격을 받음`);}
   }
   const rel=attacker?tacticalFlank(attacker,target):'front',flank=opts.pattern?1:attacker?.side==='enemy'?(rel==='rear'?1.15:rel==='side'?1.05:1):rel==='rear'?1.35:rel==='side'?1.15:1;
+  const coverCombo=attacker?.side==='ally'&&attacker.role==='사격형'&&attacker.range>1&&tacticalDist(attacker,target)>1&&tacticalCell(s,target.x,target.y)==='cover'&&(s.intercepts||[]).some(v=>v.attackerId===target.id&&v.round>=s.round-1&&s.units.some(u=>u.id===v.defenderId&&u.hp>0))&&tacticalCombo(s,'저지 → 지원 사격 · 엄폐 무시');
   const ranged=attacker&&attacker.range>1&&tacticalDist(attacker,target)>1,cover=ranged&&tacticalCell(s,target.x,target.y)==='cover'?.75:1;
   const attack=opts.attackOverride??(attacker?tacticalStat(attacker,'atk'):target.maxHp*.08),penetration=opts.penetration??(opts.pierce?(opts.pattern?.35:.65):0);
   const raw=Math.max(1,Math.round((attack*mult*flank-tacticalStat(target,'def')*(1-penetration))*(1+tacticalEffectValue(target,'mark'))));
-  let dmg=Math.max(1,Math.round(Math.min(raw,opts.hpCap?target.maxHp*opts.hpCap:Infinity)*(target.guarded?.6:1)*(opts.pierce?1:cover)));
+  let dmg=Math.max(1,Math.round(Math.min(raw,opts.hpCap?target.maxHp*opts.hpCap:Infinity)*(target.guarded?.6:1)*(opts.pierce||opts.ignoreCover||coverCombo?1:cover)));
+  if(target.kind==='boss'&&s.bossSeals){const sealed=tacticalLive(s,'enemy').some(u=>u.kind==='sealDevice'&&u.bossId===target.id);dmg=Math.max(1,Math.round(dmg*(sealed?.55:1.2)));}
   const shield=target.effects?.find(e=>e.type==='shield');if(shield){const absorbed=Math.min(shield.value,dmg);shield.value-=absorbed;dmg-=absorbed;if(shield.value<=0)target.effects=target.effects.filter(e=>e!==shield);if(absorbed)tacticalRecord(s,`${target.name} 보호막 · ${absorbed} 흡수`);}
   dmg=Math.min(target.hp,dmg);target.hp-=dmg;
   tacticalRecord(s,`${attacker?.name||'지형'} → ${target.name} ${dmg} 피해${rel==='rear'?' · 배후':rel==='side'?' · 측면':''}${target.guarded?' · 방어 40%':''}${target.hp<=0?' · 전투불능':''}`);
   if(opts.hits)opts.hits.push({id:target.id,x:target.x,y:target.y,hp:target.hp,side:target.side,damage:dmg,art:tacticalUnitArt(target)});
-  tacticalSound('hit'); tacticalSpawnFx(target.x,target.y,opts.skill?'damage-skill':'hit',`-${dmg}`); tacticalShakeBoard();
+  if(!s.preview){tacticalSound('hit');tacticalSpawnFx(target.x,target.y,opts.skill?'damage-skill':'hit',`-${dmg}`);tacticalShakeBoard();}
+  tacticalReleaseLeader(s);tacticalObjectiveUpdate(s);
+  if(target.kind==='sealDevice'&&target.hp<=0&&!tacticalLive(s,'enemy').some(u=>u.kind==='sealDevice'))tacticalRecord(s,'봉인 장치 전부 파괴 · 보스 약점 노출 / 받는 피해 +20%');
   if(target.kind==='boss'&&target.hp>0&&target.hp<=target.maxHp*.45&&!s.spawnedClone){
     s.spawnedClone=true;
     const slot=[{x:4,y:2},{x:4,y:1},{x:4,y:3},{x:3,y:2},{x:5,y:0}].find(p=>tacticalPassable(s,p.x,p.y,target));
@@ -5589,8 +5824,9 @@ function tacticalHurt(s,attacker,target,mult=1,opts={}){
 function tacticalEnter(s,u){
   const type=tacticalCell(s,u.x,u.y);
   if(type==='spike'||type==='trap'){const d=Math.max(1,Math.ceil(u.maxHp*(type==='spike'?.05:.07)));u.hp=Math.max(0,u.hp-d);if(type==='trap')u.trapped=1;tacticalRecord(s,`${u.name} ${type==='spike'?'가시':'함정'} · ${d} 피해${type==='trap'?' / 다음 라운드 AP -1':''}`);}
-  if(type==='platform') {const other=u.x===1?{x:4,y:4}:{x:1,y:4};if(tacticalPassable(s,other.x,other.y,u)){u.x=other.x;u.y=other.y;tacticalRecord(s,`${u.name} 이동 발판 작동`);}}
+  if(type==='platform'&&!u.passive) {const other=u.x===1?{x:4,y:4}:{x:1,y:4};if(tacticalPassable(s,other.x,other.y,u)){u.x=other.x;u.y=other.y;tacticalRecord(s,`${u.name} 이동 발판 작동`);}}
   if(u.side==='ally'&&s.objective==='escape'&&u.x===5&&u.hp>0){u.escaped=true;s.escaped++;tacticalRecord(s,`🚪 ${u.name} 탈출 성공 (${s.escaped}/3)`);}
+  tacticalObjectiveUpdate(s);tacticalReleaseLeader(s);
 }
 function tacticalMove(s,u,x,y){const path=tacticalPath(s,u,{x,y},tacticalMoveDistance(s,u));if(!path||!path.length||u.ap<1)return false;
   const wardens=tacticalLive(s,u.side==='ally'?'enemy':'ally').filter(v=>v.role==='수비형'&&v.guarded);
@@ -5599,24 +5835,22 @@ function tacticalMove(s,u,x,y){const path=tacticalPath(s,u,{x,y},tacticalMoveDis
   const walked=stop>=0?path.slice(0,stop+1):path;
   const last=walked[walked.length-1],prev=walked.length>1?walked[walked.length-2]:[u.x,u.y];tacticalFacing(u,last[0]-prev[0],last[1]-prev[1]);u.x=last[0];u.y=last[1];u.ap--;tacticalEnter(s,u);
   if(stop>=0)tacticalRecord(s,`🛡 ${u.name} 이동 저지 · 방어형이 전진 차단`);
-  tacticalRecord(s,`${u.name} 이동 (${walked.length}칸 · 1 AP)`);tacticalSound('move');tacticalSpawnFx(u.x,u.y,'move','MOVE');return true;
+  tacticalRecord(s,`${u.name} 이동 (${walked.length}칸 · 1 AP)`);if(!s.preview){tacticalSound('move');tacticalSpawnFx(u.x,u.y,'move','MOVE');}return true;
 }
 async function tacticalAttack(s,a,target,skill=false,byAI=false){
-  if(skill)return tacticalCastSkill(s,a,target);
-  if(!tacticalCanHit(s,a,target)||a.ap<1)return false;
-  a.ap--;renderTactical();
-  await Promise.all([tacticalAttackMotion(a,target,false),tacticalSkillEffect(a,[target],'attack')]);
-  const hits=[];tacticalHurt(s,a,target,1,{hpCap:a.side==='enemy'?.18:undefined,hits});
-  if((a.role==='근접형'||a.kind==='cutter'||a.kind==='boss')&&target.hp>0&&tacticalDist(a,target)===1)tacticalPush(s,a,target);
-  tacticalFacing(a,target.x-a.x,target.y-a.y);renderTactical();await tacticalPresentHits(hits,a);return true;
+ if(skill)return tacticalCastSkill(s,a,target);
+ if(!tacticalCanHit(s,a,target)||a.ap<1)return false;
+ renderTactical();await Promise.all([tacticalAttackMotion(a,target,false),tacticalSkillEffect(a,[target],'attack')]);
+ const hits=tacticalBasicResolve(s,a,target);renderTactical();await tacticalPresentHits(hits,a);return true;
 }
-function tacticalGuard(s,a){if(a.ap<1)return false;a.ap--;a.guarded=true;const enemies=tacticalLive(s,a.side==='ally'?'enemy':'ally').sort((left,right)=>tacticalDist(left,a)-tacticalDist(right,a));if(enemies.length)tacticalFacing(a,enemies[0].x-a.x,enemies[0].y-a.y);tacticalRecord(s,`${a.name} 방어 태세 · 피해 -40%${a.role==='수비형'?' / 주변 아군 저지':''}`);tacticalSound('guard');tacticalSpawnFx(a.x,a.y,'guard','GUARD');return true;}
+function tacticalGuard(s,a){if(a.ap<1)return false;a.ap--;a.guarded=true;const enemies=tacticalLive(s,a.side==='ally'?'enemy':'ally').sort((left,right)=>tacticalDist(left,a)-tacticalDist(right,a));if(enemies.length)tacticalFacing(a,enemies[0].x-a.x,enemies[0].y-a.y);tacticalRecord(s,`${a.name} 방어 태세 · 피해 -40%${a.role==='수비형'?' / 주변 아군 저지':''}`);if(!s.preview){tacticalSound('guard');tacticalSpawnFx(a.x,a.y,'guard','GUARD');}return true;}
 function tacticalAIIntent(s,u){
   const enemies=tacticalLive(s,u.side==='ally'?'enemy':'ally');if(!enemies.length)return null;
   const scored=enemies.map(target=>{
     let score=tacticalDist(u,target)*6+(target.hp/target.maxHp)*5;
     if(tacticalEffectValue(target,'taunt')&&tacticalDist(u,target)<=Math.max(u.range,u.skillRange))score-=100;
     if(u.kind==='marksman'&&target.role==='사격형')score-=8;
+    if(u.kind==='cutter'&&target.skillData&&(target.skillData.heal||target.skillData.regen||target.skillData.teamHeal))score-=10;
     if(u.kind==='stalker'||u.kind==='cutter')score-=10*(1-target.hp/target.maxHp);
     if(u.kind==='phantom'&&tacticalFlank(u,target)==='rear')score-=7;
     if(u.kind==='warden'&&target.role==='근접형')score-=3;
@@ -5635,7 +5869,7 @@ function tacticalClosestReachable(s,u,target){let best=null,score=Infinity;
   return best;
 }
 async function tacticalAI(s,u){
-  const target=tacticalAIIntent(s,u);if(!target||u.ap<=0)return;
+  if(u.passive)return;const target=tacticalAIIntent(s,u);if(!target||u.ap<=0)return;
   if(u.kind==='boss'&&s.telegraph?.resolveRound===s.round&&u.ap>=2){
     const t=s.telegraph;u.ap-=2;
     if(!s.firstSpecialSkipped&&rogueBossClueValues().skipFirstSpecial){s.firstSpecialSkipped=true;tacticalRecord(s,'봉인 방패 · 첫 보스 특수 행동 무효화');}
@@ -5691,23 +5925,29 @@ function tacticalTelegraphCells(s){const t=s.telegraph,set=new Set();if(!t)retur
 }
 function tacticalEndActor(s,u){
   if(u.hp>0&&!u.escaped&&tacticalCell(s,u.x,u.y)==='rift'){const d=Math.max(1,Math.ceil(u.maxHp*.08));u.hp=Math.max(0,u.hp-d);tacticalRecord(s,`⚡ ${u.name} 균열 · 최대 HP 8% (${d}) 피해`);}
-  u.ap=0;s.cursor++;
+  u.ap=0;s.cursor++;tacticalObjectiveUpdate(s);tacticalReleaseLeader(s);
 }
 function tacticalOutcome(s){
-  // 일반전 목표는 독립적이다. 탈출/생존전에서는 적을 모두 처치해도 즉시 승리하지 않는다.
-  if(s.objective==='escape'&&s.escaped>=3)return 'win';
-  if(!tacticalLive(s,'ally').length)return 'lose';
-  if(s.objective==='escape')return null;
-  if(s.objective==='survive')return s.round>5?'win':null;
-  return !tacticalLive(s,'enemy').length?'win':null;
+ tacticalObjectiveUpdate(s);tacticalReleaseLeader(s);
+ if(s.phase==='deploy')return null;
+ const d=s.objectiveData||{};
+ if(s.objective==='escape'&&s.escaped>=3)return 'win';
+ if(!tacticalLive(s,'ally').length)return 'lose';
+ if(s.objective==='escape')return tacticalLive(s,'ally').length+s.escaped<3?'lose':null;
+ if(s.objective==='survive')return s.round>5?'win':null;
+ if(s.objective==='retrieve'||s.objective==='rescue')return d.delivered?'win':null;
+ if(s.objective==='control')return d.held>=d.required?'win':tacticalLive(s,'ally').length<2?'lose':null;
+ if(s.objective==='ritual'){const target=s.units.find(u=>u.id===d.targetId);return target?.hp<=0?'win':s.round>d.deadline?'lose':null;}
+ return !tacticalLive(s,'enemy').length?'win':null;
 }
 async function tacticalProceed(s){
+  if(s.phase==='deploy')return null;
   let loop=0;
   while(loop++<60){
     const outcome=tacticalOutcome(s);if(outcome)return outcome;
-    if(s.cursor>=s.order.length){s.round++;if(s.objective==='survive'&&s.round>5)return 'win';tacticalRoundStart(s);tacticalRecord(s,`ROUND ${s.round} · 행동 순서 갱신`);continue;}
+    if(s.cursor>=s.order.length){tacticalObjectiveUpdate(s,true);const roundResult=tacticalOutcome(s);if(roundResult)return roundResult;s.round++;if(s.objective==='survive'&&s.round>5)return 'win';tacticalRoundStart(s);tacticalRecord(s,`ROUND ${s.round} · 행동 순서 갱신`);continue;}
     const u=tacticalActor(s);
-    if(!u||u.hp<=0||u.escaped){s.cursor++;continue;}
+    if(!u||u.hp<=0||u.escaped||u.passive){s.cursor++;continue;}
     if(!u.ap){tacticalEndActor(s,u);continue;}
     if(!u.activated){u.guarded=false;u.activated=true;}
     if(u.side==='ally')return null;
@@ -5723,41 +5963,49 @@ async function tacticalStart(){
   tacticalBusy=true;
   try{
     if(!rogueState.tactical)rogueState.tactical=tacticalMake();
-    const s=rogueState.tactical,result=await tacticalProceed(s);
+    const s=rogueState.tactical;tacticalOperationUpgrade(s);if(s.phase==='deploy'){await tacticalSave(s);return;}const result=await tacticalProceed(s);
     if(result){tacticalSyncHP(s);rogueState.tactical=null;completeRogueCombat(result==='win',rogueState.team);}
     else await tacticalSave(s);
   }finally{tacticalBusy=false;updateRogueUI();}
 }
 let tacticalBusy=false;
 async function tacticalInput(action,x,y){
-  if(rogueBusy||tacticalBusy||rogueState.phase!=='combat'||!rogueState.tactical)return;
-  if(action==='surrender'){
-    if(confirm('정말 항복하시겠습니까? 현재 전술전은 패배 처리되며, 진행 중인 전장은 종료됩니다.')){tacticalSound('surrender');tacticalRecord(rogueState.tactical,'항복 · 전술전을 중단했습니다');tacticalSyncHP(rogueState.tactical);rogueState.tactical=null;completeRogueCombat(false,rogueState.team);updateRogueUI();}
-    return;
-  }
-  const s=rogueState.tactical,u=tacticalActor(s);if(!u||u.side!=='ally'||u.hp<=0)return;
-  if(action==='mode'){s.mode=x;updateRogueUI();return;}
-  if(action==='tile'){
-    if(!tacticalInside(x,y))return;
-    const occupant=tacticalOccupant(s,x,y),mode=s.mode;
-    if(mode==='move')action='move';
-    else if(occupant&&(mode==='skill'?tacticalSkillCanTarget(s,u,occupant):occupant.side==='enemy'))action=mode==='skill'?'skill':'attack',x=occupant;
-    else return;
-  }
-  tacticalBusy=true;
-  try{
-    let valid=false;
-    if(action==='move'&&Number.isInteger(x)&&Number.isInteger(y))valid=tacticalMove(s,u,x,y);
-    else if((action==='attack'||action==='skill')&&x&&typeof x==='object')valid=await tacticalAttack(s,u,x,action==='skill');
-    else if(action==='guard')valid=tacticalGuard(s,u);
-    else if(action==='end'){tacticalEndActor(s,u);valid=true;}
-    if(!valid){updateRogueUI();return;}
-    if(action!=='end'&&(u.ap<=0||u.hp<=0||u.escaped))tacticalEndActor(s,u);
-    let result=tacticalOutcome(s);
-    if(!result)result=await tacticalProceed(s);
-    if(result){tacticalSyncHP(s);rogueState.tactical=null;tacticalRecord(s,result==='win'?'전술전 승리':'전술전 패배');completeRogueCombat(result==='win',rogueState.team);}
-    else await tacticalSave(s);
-  }finally{tacticalBusy=false;updateRogueUI();}
+ if(rogueBusy||tacticalBusy||rogueState.phase!=='combat'||!rogueState.tactical)return;
+ if(action==='surrender'){
+  if(confirm('정말 항복하시겠습니까? 현재 전술전은 패배 처리되며, 진행 중인 전장은 종료됩니다.')){tacticalSound('surrender');tacticalRecord(rogueState.tactical,'항복 · 전술전을 중단했습니다');tacticalSyncHP(rogueState.tactical);rogueState.tactical=null;completeRogueCombat(false,rogueState.team);updateRogueUI();}return;
+ }
+ const s=rogueState.tactical;tacticalOperationUpgrade(s);
+ if(s.phase==='deploy')return tacticalDeploymentInput(s,action,x,y);
+ if(action==='threat'){s.showThreat=!s.showThreat;updateRogueUI();return;}
+ const u=tacticalActor(s);if(!u||u.side!=='ally'||u.hp<=0)return;
+ if(action==='cancel'){s.pending=null;updateRogueUI();return;}
+ if(action==='mode'){s.mode=x;s.pending=null;updateRogueUI();return;}
+ if(action==='tile'){
+  if(!tacticalInside(x,y))return;const occupant=tacticalOccupant(s,x,y),mode=s.mode;
+  if(mode==='move')action='move';
+  else if(occupant&&(mode==='skill'?tacticalSkillCanTarget(s,u,occupant):occupant.side==='enemy'))action=mode==='skill'?'skill':'attack',x=occupant;
+  else return;
+ }
+ if(action!=='confirm'){
+  const p={action,actorId:u.id,targetId:x&&typeof x==='object'?x.id:null,x:Number.isInteger(x)?x:null,y:Number.isInteger(y)?y:null,stamp:tacticalActionStamp(s)};
+  if(tacticalPreview(s,p)){s.pending=p;updateRogueUI();}return;
+ }
+ const p=s.pending;if(!p||p.actorId!==u.id||p.stamp!==tacticalActionStamp(s)||!tacticalPreview(s,p)){s.pending=null;updateRogueUI();return;}
+ s.pending=null;action=p.action;x=p.targetId?s.units.find(v=>v.id===p.targetId):p.x;y=p.y;
+ tacticalBusy=true;
+ try{
+  let valid=false;
+  if(action==='move')valid=tacticalMove(s,u,x,y);
+  else if(action==='attack'||action==='skill')valid=await tacticalAttack(s,u,x,action==='skill');
+  else if(action==='guard')valid=tacticalGuard(s,u);
+  else if(action==='interact')valid=tacticalInteract(s,u);
+  else if(action==='end'){tacticalEndActor(s,u);valid=true;}
+  if(!valid){updateRogueUI();return;}
+  if(action!=='end'&&(u.ap<=0||u.hp<=0||u.escaped))tacticalEndActor(s,u);
+  let result=tacticalOutcome(s);if(!result)result=await tacticalProceed(s);
+  if(result){tacticalSyncHP(s);rogueState.tactical=null;tacticalRecord(s,result==='win'?'전술전 승리':'전술전 패배');completeRogueCombat(result==='win',rogueState.team);}
+  else await tacticalSave(s);
+ }finally{tacticalBusy=false;updateRogueUI();}
 }
 function tacticalUnitArt(u){
   const img=u?.image||tacticalSafeImage(u?.cardData);
@@ -5769,37 +6017,40 @@ function renderTactical(){
   const panel=document.getElementById('rogue-tactical');if(!panel)return;
   const s=rogueState.tactical,visible=rogueState.active&&rogueState.phase==='combat'&&!!s;
   panel.classList.toggle('hidden',!visible);if(!visible)return;
-  tacticalBalanceUpgrade(s);tacticalSkillUpgrade(s);
-  const current=tacticalActor(s),u=current?.hp>0&&!current.escaped?current:null,isAlly=u?.side==='ally',locked=!isAlly||rogueBusy||tacticalBusy,ap=u?.ap||0;
-  const esc=rogueEscape,danger=tacticalTelegraphCells(s),objective={kill:'모든 적 격파',survive:'5라운드 생존',escape:`3명 탈출 · ${s.escaped}/3`}[s.objective];
-  const enemies=tacticalLive(s,'enemy'),forecast=enemies.map(e=>{const skillTarget=tacticalAISkillTarget(s,e),t=skillTarget||tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'강공':skillTarget?'스킬':tacticalCanHit(s,e,t)?'공격':'이동'};});
+  tacticalBalanceUpgrade(s);tacticalSkillUpgrade(s);tacticalOperationUpgrade(s);
+  const deploy=s.phase==='deploy';
+  const current=deploy?s.units.find(v=>v.id===s.deploySelected):tacticalActor(s),u=current?.hp>0&&!current.escaped?current:null,isAlly=u?.side==='ally',busy=rogueBusy||tacticalBusy,locked=deploy||!isAlly||busy,tileLocked=deploy?busy:locked,ap=u?.ap||0;
+  const esc=rogueEscape,danger=tacticalTelegraphCells(s),objective=tacticalObjectiveText(s),threat=s.showThreat?tacticalThreatCells(s):new Set(),preview=s.pending?tacticalPreview(s,s.pending):null;
+  const enemies=tacticalLive(s,'enemy'),forecast=enemies.filter(e=>!e.passive).map(e=>{const skillTarget=tacticalAISkillTarget(s,e),t=skillTarget||tacticalAIIntent(s,e);return {e,t,kind:e.kind==='boss'&&s.telegraph?.resolveRound===s.round?'강공':skillTarget?'스킬':tacticalCanHit(s,e,t)?'공격':'이동'};});
   const board=[],pieces=[];
   const hpbar=v=>`<span class="rt-cell-hp"><i style="width:${Math.max(0,Math.min(100,v.hp/v.maxHp*100))}%"></i></span>`;
   const portrait=v=>v?.portrait||v?.image?`<img src="${esc(v.portrait||v.image)}" alt="">`:`<span>${v?.icon||'◇'}</span>`;
   for(let y=0;y<TACTICAL_H;y++)for(let x=0;x<TACTICAL_W;x++){
-    const actor=tacticalOccupant(s,x,y),terrain=tacticalCell(s,x,y),goal=s.objective==='escape'&&x===5;
-    const canMove=isAlly&&ap>=1&&s.mode==='move'&&!actor&&tacticalPath(s,u,{x,y},tacticalMoveDistance(s,u))?.length>0;
-    const canHit=isAlly&&!!actor&&s.mode!=='move'&&tacticalCanHit(s,u,actor,s.mode==='skill')&&ap>=(s.mode==='skill'?2:1);
+    const actor=tacticalOccupant(s,x,y),terrain=tacticalCell(s,x,y),goal=['escape','retrieve','rescue'].includes(s.objective)&&x===5,marker=tacticalObjectiveMarker(s,x,y);
+    const canMove=!deploy&&isAlly&&ap>=1&&s.mode==='move'&&!actor&&tacticalPath(s,u,{x,y},tacticalMoveDistance(s,u))?.length>0;
+    const canHit=!deploy&&isAlly&&!!actor&&s.mode!=='move'&&tacticalCanHit(s,u,actor,s.mode==='skill')&&ap>=(s.mode==='skill'?2:1);
     const friendlyTarget=canHit&&s.mode==='skill'&&actor.side===u.side;
     const tele=danger.has(tacticalKey(x,y)),terrainName={plain:'빈 공간',rift:'균열 · 턴 종료 시 HP 8% 피해',cover:'엄폐 · 원거리 피해 25% 감소',spike:'가시',trap:'함정 · 진입 HP 7% 피해 · 다음 라운드 AP −1',platform:'이동 발판'}[terrain]||'바닥';
     const title=`${x+1}열 ${y+1}행 · ${actor?actor.name+' HP '+Math.ceil(actor.hp)+'/'+actor.maxHp+(tacticalStatusText(s,actor)?' · '+tacticalStatusText(s,actor):''):terrainName}${tele?' · 강공 위험 구역':''}`;
-    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?(friendlyTarget?' rt-supportable':' rt-targetable'):''}${tele?' rt-danger':''}${goal?' rt-exit':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${locked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}</span></button>`);
+    board.push(`<button type="button" class="rt-tile rt-${terrain}${actor?' rt-occupied':''}${actor?.side==='ally'?' rt-ally':''}${actor?.side==='enemy'?' rt-enemy':''}${actor?.id===u?.id?' rt-current':''}${canMove?' rt-reachable':''}${canHit?(friendlyTarget?' rt-supportable':' rt-targetable'):''}${tele?' rt-danger':''}${goal?' rt-exit':''}${deploy&&x<2?' rt-deploy-zone':''}${threat.has(tacticalKey(x,y))?' rt-threat':''}${preview?.cells.has(tacticalKey(x,y))?' rt-preview-cell':''}${marker?' rt-objective-cell':''}" data-tactical-cell="${x},${y}" title="${esc(title)}" aria-label="${esc(title)}" ${tileLocked?'disabled':''}><span class="rt-cell-surface"><span class="rt-terrain-icon" aria-hidden="true">${{rift:'ϟ',cover:'▰',spike:'✦',trap:'◇',platform:'↗',plain:''}[terrain]||''}</span><span class="rt-coordinate">${x+1}.${y+1}</span>${goal?'<span class="rt-exit-label">EXIT</span>':''}${tele?'<span class="rt-danger-label">危</span>':''}${marker?`<span class="rt-objective-label">${esc(marker)}</span>`:''}</span></button>`);
     if(actor){const pt=tacticalProject(x,y),intent=forecast.find(v=>v.e.id===actor.id),short=actor.name.replace(/^\[[^\]]*\]\s*/,'');
       pieces.push(`<span class="rt-piece rt-${actor.side} ${actor.id===u?.id?'rt-acting':''} ${actor.kind==='boss'?'rt-boss':''}" data-unit="${actor.id}" style="left:${pt.x/10}%;top:${pt.y/6}%;z-index:${Math.round(pt.y)}" aria-hidden="true"><span class="rt-base"></span><span class="rt-avatar rt-${actor.tone}"><span class="rt-motion">${tacticalUnitArt(actor)}</span></span><span class="rt-piece-label">${esc(short)}</span>${hpbar(actor)}<span class="rt-piece-hp">${Math.ceil(actor.hp)}</span>${intent?`<span class="rt-target-marker">${intent.kind}</span>`:''}${actor.guarded?'<span class="rt-guard-mark">방어</span>':''}</span>`);
     }
   }
   const modes=[['move','이동',1,'↔'],['attack','일반 공격',1,'✦'],['skill','스킬',2,'★']];
-  const instruction=!u?'차례를 갱신하고 있습니다':!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`공격할 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'청록색 아군 칸을 선택하세요':'붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
+  const instruction=deploy?'아군 선택 → 왼쪽 두 열에 배치 → 전투 시작':!u?'차례를 갱신하고 있습니다':!isAlly?'적의 행동을 확인하세요':s.mode==='move'?`이동할 초록색 칸을 선택하세요 · 최대 ${tacticalMoveDistance(s,u)}칸`:s.mode==='attack'?`공격할 붉은색 적 칸을 선택하세요 · 사거리 ${u.range}칸`:`${u.skillName} · ${tacticalSkillWait(s,u)?'재사용까지 '+tacticalSkillWait(s,u)+'라운드':u.skillData?.target==='self'?'자신의 칸을 선택하세요':u.skillData?.target==='ally'?'청록색 아군 칸을 선택하세요':'붉은색 적 칸을 선택하세요'} · 사거리 ${u.skillRange}칸`;
   const allies=s.units.filter(v=>v.side==='ally');
   panel.innerHTML=`
-    <header class="rt-top"><div class="rt-heading-copy"><small>폐기된 서고 · ${rogueState.floor}층</small><h3>${esc(objective)}</h3></div><div class="rt-operation-status"><strong>ROUND ${s.round}${s.objective==='survive'?' / 5':''}</strong><span>남은 적 ${enemies.length}</span><b>${!u?'차례 갱신 중':isAlly?'아군 차례':'적 행동 중'}</b></div></header>
+    <header class="rt-top"><div class="rt-heading-copy"><small>폐기된 서고 · ${rogueState.floor}층</small><h3>${esc(objective)}</h3></div><div class="rt-operation-status"><strong>ROUND ${s.round}${s.objective==='survive'?' / 5':''}</strong><span>남은 적 ${enemies.length}</span><b>${deploy?'전투 준비':!u?'차례 갱신 중':isAlly?'아군 차례':'적 행동 중'}</b></div></header>
     ${s.telegraph?`<div class="rt-warning"><strong>⚠ ${esc(s.telegraph.label)}</strong><span>${s.telegraph.resolveRound}라운드 발동 · 빗금 표시 칸에서 벗어나거나 방어하세요</span></div>`:''}
+    ${tacticalOperationUI(s,deploy?busy:locked)}
     <div class="rt-main"><div class="rt-board-wrap"><div class="rt-board-shell"><div class="rt-board" role="group" aria-label="6열 5행 전술 전장"><div class="rt-grid-plane">${board.join('')}</div><div class="rt-unit-layer">${pieces.join('')}</div></div><div class="rt-legend"><span><i class="rt-key-move"></i>이동 가능</span><span><i class="rt-key-attack"></i>공격 가능</span><span>▰ 엄폐</span><span>ϟ 균열</span><span>↗ 발판</span></div></div></div>
-    <div class="rt-command"><div class="rt-operator"><div class="rt-command-portrait">${portrait(u)}</div><div><small>현재 행동</small><b>${esc(u?.name||'행동 대기')}</b><span>${esc(u?.role||'')} · HP <strong>${Math.ceil(u?.hp||0)} / ${u?.maxHp||0}</strong></span></div><div class="rt-ap"><strong>${ap}<small> / 2</small></strong><span>AP</span>${u?.apStartPenalty?'<small class="rt-ap-reason">함정 −1 AP</small>':u?.trapped?'<small class="rt-ap-reason">다음 라운드 −1</small>':ap<2?'<small class="rt-ap-reason rt-ap-used">남은 AP</small>':''}</div></div>
-    <div class="rt-command-buttons">${modes.map(([mode,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===mode?'selected':''}" data-tactical-mode="${mode}" ${locked||ap<cost||(mode==='skill'&&!tacticalSkillReady(s,u))?'disabled':''}><b>${icon} ${label}</b><small>${mode==='skill'&&!tacticalSkillReady(s,u)?u?.skillData?'대기 '+tacticalSkillWait(s,u)+'라운드':'선택 대기':cost+' AP'}</small></button>`).join('')}<button type="button" class="rt-guard-button" data-tactical-action="guard" ${locked||ap<1?'disabled':''}><b>방어</b><small>1 AP · 피해 −40%</small></button><button type="button" class="rt-end-button" data-tactical-action="end" ${locked?'disabled':''}><b>턴 종료 →</b><small>다음 인물로</small></button></div><div class="rt-skill-description"><b>${esc(u?.skillName||'')}</b><span>${esc(u?.skillData?.desc||'')}</span>${tacticalStatusText(s,u)?`<small>현재 효과 · ${esc(tacticalStatusText(s,u))}</small>`:''}</div><p class="rt-instruction">${esc(instruction)}</p></div></div>
+    <div class="rt-command${deploy?' hidden':''}"><div class="rt-operator"><div class="rt-command-portrait">${portrait(u)}</div><div><small>현재 행동</small><b>${esc(u?.name||'행동 대기')}</b><span>${esc(u?.role||'')} · HP <strong>${Math.ceil(u?.hp||0)} / ${u?.maxHp||0}</strong></span></div><div class="rt-ap"><strong>${ap}<small> / 2</small></strong><span>AP</span>${u?.apStartPenalty?'<small class="rt-ap-reason">함정 −1 AP</small>':u?.trapped?'<small class="rt-ap-reason">다음 라운드 −1</small>':ap<2?'<small class="rt-ap-reason rt-ap-used">남은 AP</small>':''}</div></div>
+    <div class="rt-command-buttons">${modes.map(([mode,label,cost,icon])=>`<button type="button" class="rt-action ${s.mode===mode?'selected':''}" data-tactical-mode="${mode}" ${locked||ap<cost||(mode==='skill'&&!tacticalSkillReady(s,u))?'disabled':''}><b>${icon} ${label}</b><small>${mode==='skill'&&!tacticalSkillReady(s,u)?u?.skillData?'대기 '+tacticalSkillWait(s,u)+'라운드':'선택 대기':cost+' AP'}</small></button>`).join('')}<button type="button" class="rt-guard-button" data-tactical-action="guard" ${locked||ap<1?'disabled':''}><b>방어</b><small>1 AP · 피해 −40%</small></button>${tacticalCanInteract(s,u)?`<button type="button" class="rt-action" data-tactical-action="interact" ${locked?'disabled':''}><b>${s.objective==='retrieve'?'원고 회수':'구조 / 합류'}</b><small>1 AP</small></button>`:''}<button type="button" class="rt-end-button" data-tactical-action="end" ${locked?'disabled':''}><b>턴 종료 →</b><small>다음 인물로</small></button></div><div class="rt-skill-description"><b>${esc(u?.skillName||'')}</b><span>${esc(u?.skillData?.desc||'')}</span>${tacticalStatusText(s,u)?`<small>현재 효과 · ${esc(tacticalStatusText(s,u))}</small>`:''}</div><p class="rt-instruction">${esc(instruction)} · 선택 후 미리보기에서 「이대로 실행」을 누르세요.</p></div></div>
     <div class="rt-team-strip">${allies.map(v=>`<div class="rt-party-card ${v.id===u?.id?'rt-party-current':''} ${v.hp<=0?'is-fallen':''}"><span class="rt-party-image">${portrait(v)}</span><div><b title="${esc(v.name)}">${esc(v.name.replace(/^\[[^\]]*\]\s*/,''))}</b><span class="rt-party-meter"><i style="width:${v.hp/v.maxHp*100}%"></i></span><small>${Math.ceil(v.hp)} / ${v.maxHp}${v.escaped?' · 탈출':''}</small></div></div>`).join('')}</div>
     <details class="rt-combat-detail" ${panel.querySelector('.rt-combat-detail')?.open?'open':''}><summary>행동 순서 · 적 정보 <span>${enemies.length}명</span></summary><div class="rt-detail-grid"><section><h4>SPD 행동 순서</h4><div class="rt-turn-strip">${s.order.map((id,i)=>{const v=s.units.find(a=>a.id===id);return v?`<span class="${i===s.cursor?'is-active':''} ${i<s.cursor?'is-done':''}">${v.side==='ally'?'●':'◆'} ${esc(v.name.replace(/^\[[^\]]*\]\s*/,''))} <b>${v.spd}</b></span>`:'';}).join('')}</div></section><section><h4>적 행동 예고</h4><div class="rt-enemy-cards">${forecast.map(({e,t,kind})=>`<div><b>${esc(e.name)}</b><strong>${kind}${t?' → '+esc(t.name.replace(/^\[[^\]]*\]\s*/,'')):''}</strong><small>HP ${Math.ceil(e.hp)}/${e.maxHp} · ATK ${e.atk} · DEF ${e.def}</small><span>${esc(e.skillName)}${tacticalEnemySkillReady(s,e)?' · 스킬 준비':' · 스킬 대기'} · ${esc(tacticalStatusText(s,e))}</span></div>`).join('')}</div></section></div></details>
     <footer class="rt-footer"><details class="rt-log"><summary>전투 기록</summary><ol>${s.messages.map(v=>`<li>${esc(v)}</li>`).join('')}</ol></details><button type="button" class="rt-retreat" data-tactical-action="surrender" ${rogueBusy||tacticalBusy?'disabled':''}>항복</button></footer>`;
+  panel.querySelectorAll('[data-deploy-select]').forEach(b=>b.addEventListener('click',()=>tacticalInput('deploy-select',b.dataset.deploySelect)));
   panel.querySelectorAll('[data-tactical-mode]').forEach(b=>b.addEventListener('click',()=>tacticalInput('mode',b.dataset.tacticalMode)));
   panel.querySelectorAll('[data-tactical-action]').forEach(b=>b.addEventListener('click',()=>tacticalInput(b.dataset.tacticalAction)));
   panel.querySelectorAll('[data-tactical-cell]').forEach(b=>b.addEventListener('click',()=>{const [cx,cy]=b.dataset.tacticalCell.split(',').map(Number);tacticalInput('tile',cx,cy);}));
